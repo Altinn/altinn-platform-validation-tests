@@ -1,5 +1,6 @@
 import http from "k6/http";
 
+import { jsonBody, requestParams } from "../common/request.js";
 import { XacmlJsonRequestRootExternal, XacmlRequestApiModel } from "./types.js";
 
 const TAGS = {
@@ -52,35 +53,21 @@ class DecisionClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     DecisionPost(request, contentType = "application/json", labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}/decision`;
-
-        let tags = {
-            endpoint: url,
-            name: url,
-            action: TAGS.DecisionPost.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
         const body = typeof request === "string"
             ? request
-            : JSON.stringify(request);
+            : jsonBody(request);
 
-        return http.post(url, body, {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": contentType,
-                Accept: "application/json",
-            },
-        });
+        return http.post(
+            `${this.FULL_PATH}/decision`,
+            body,
+            requestParams({
+                endpoint: `${this.FULL_PATH}/decision`,
+                action: TAGS.DecisionPost.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+                headers: { "Content-Type": contentType },
+            }),
+        );
     }
 
     /**
@@ -94,31 +81,17 @@ class DecisionClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     AuthorizePost(request, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}/authorize`;
-
-        let tags = {
-            endpoint: url,
-            name: url,
-            action: TAGS.AuthorizePost.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.post(url, JSON.stringify(request), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json",
-                Accept: "application/json",
-            },
-        });
+        return http.post(
+            `${this.FULL_PATH}/authorize`,
+            jsonBody(request),
+            requestParams({
+                endpoint: `${this.FULL_PATH}/authorize`,
+                action: TAGS.AuthorizePost.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+                json: true,
+            }),
+        );
     }
 }
 

@@ -59,7 +59,14 @@ export function followNextUrlPagination(token, nextUrl, maxPages = 10, labels = 
         // loop condition checked.
         const url = currentUrl;
 
-        let tags = { name: "next-url" };
+        // The next link is built by the server and carries a continuation token,
+        // so both tags name the step instead of the URL: one series for the whole
+        // pagination rather than one per page.
+        let tags = {
+            endpoint: "next-url",
+            name: "next-url",
+            action: "follow-next-url",
+        };
         if (labels != null) {
             tags = { ...labels, ...tags };
         }
@@ -155,7 +162,14 @@ export function collectNextUrlPages(token, nextUrl, maxPages = 10, labels = null
         // condition checked.
         const url = currentUrl;
 
-        let tags = { name: "next-url" };
+        // The next link is built by the server and carries a continuation token,
+        // so both tags name the step instead of the URL: one series for the whole
+        // pagination rather than one per page.
+        let tags = {
+            endpoint: "next-url",
+            name: "next-url",
+            action: "follow-next-url",
+        };
         if (labels != null) {
             tags = { ...labels, ...tags };
         }

@@ -1,0 +1,68 @@
+{
+  "https://docs.altinn.studio/swagger/altinn-broker-v1.json": {
+    "last_modified": "Thu, 10 Sep 2026 10:27:58 GMT",
+    "hash": "48e89fe1297ab06c12a4694852cb367a273b43fee63d1083e93f1f7f587d895e"
+  },
+  "https://docs.altinn.studio/swagger/altinn-notifications-v1.json": {
+    "last_modified": "Thu, 10 Sep 2026 10:27:58 GMT",
+    "hash": "e302a968b20d96df592fb3b1ae380ef0840f6eedbe90b79d3caa5bdb9191a80b"
+  },
+  "https://docs.altinn.studio/swagger/altinn-platform-accessmanagement-v1-apps.json": {
+    "last_modified": "Thu, 10 Sep 2026 10:27:58 GMT",
+    "hash": "928f698f4fd792dffb98517c336027a2786045274ec3ebc97937f9bcea5395e3"
+  },
+  "https://docs.altinn.studio/swagger/altinn-platform-accessmanagement-v1-consententerprise.json": {
+    "last_modified": "Thu, 10 Sep 2026 10:27:58 GMT",
+    "hash": "fc76c251d72e07bec5ddf3dd65a79dd082a53d5d76c1c71f2d0971d1083dea50"
+  },
+  "https://docs.altinn.studio/swagger/altinn-platform-accessmanagement-v1-enduser.json": {
+    "last_modified": "Thu, 10 Sep 2026 10:27:58 GMT",
+    "hash": "5a4bf54184b1fee68709b9e5221640428f048843c79ab06396aa27d9e22cef18"
+  },
+  "https://docs.altinn.studio/swagger/altinn-platform-accessmanagement-v1-metadata.json": {
+    "last_modified": "Thu, 10 Sep 2026 10:27:58 GMT",
+    "hash": "510c0588a54a2d2e39be030a2bc7a88bd3842d913ff900df162a7114defc486e"
+  },
+  "https://docs.altinn.studio/swagger/altinn-platform-accessmanagement-v1-resourceowner.json": {
+    "last_modified": "Thu, 10 Sep 2026 10:27:58 GMT",
+    "hash": "1f6ac0691f55bc9a483c3179ec52f486819e1e84d3492e70d09efb54779509ef"
+  },
+  "https://docs.altinn.studio/swagger/altinn-platform-accessmanagement-v1-serviceowner.json": {
+    "last_modified": "Thu, 10 Sep 2026 10:27:58 GMT",
+    "hash": "1fde51b23b4b7eed70e6f131cec92c012d20c5d1d8697355c1afd02fab086480"
+  },
+  "https://docs.altinn.studio/swagger/altinn-platform-accessmanagement-v2-enduser.json": {
+    "last_modified": "Thu, 10 Sep 2026 10:27:58 GMT",
+    "hash": "a23eda2be749f776274a0fe42f841cbfca21929374151950e6218ab024c702a2"
+  },
+  "https://docs.altinn.studio/swagger/altinn-platform-authentication-v1.json": {
+    "last_modified": "Thu, 10 Sep 2026 10:27:58 GMT",
+    "hash": "f8e936547ef5c2f00b4f1425b63ebc1c2d1e62c44b715586197f43d0ce2e6226"
+  },
+  "https://docs.altinn.studio/swagger/altinn-platform-authorization-v1.json": {
+    "last_modified": "Thu, 10 Sep 2026 10:27:58 GMT",
+    "hash": "3cef4a44d3b2d90668c8410c80df73d23735e3835c5ce968d675661da1d0c813"
+  },
+  "https://docs.altinn.studio/swagger/altinn-platform-events-v1.json": {
+    "last_modified": "Thu, 10 Sep 2026 10:27:58 GMT",
+    "hash": "95c75afabca354336f5d410e6c7d08d33cdd6b5da751855fb6e86b46f5c49c65"
+  },
+  "https://docs.altinn.studio/swagger/altinn-platform-profile-v1.json": {
+    "last_modified": "Thu, 10 Sep 2026 10:27:58 GMT",
+    "hash": "9e3618a7692b632bf1a54a1df7d08567aacca0bb6948329db2d3a989220449c1"
+  },
+  "https://docs.altinn.studio/swagger/altinn-platform-storage-v1.json": {
+    "last_modified": "Thu, 10 Sep 2026 10:27:58 GMT",
+    "hash": "f6c84be01583632a8315ef7fda9f45e787fcfe92e0793f46c65512514d982c75"
+  },
+  "https://docs.altinn.studio/swagger/altinn-resource-registry-v1.json": {
+    "last_modified": "Thu, 10 Sep 2026 10:27:58 GMT",
+    "hash": "2839a226c26cfe0c8bce74b1574198fa98c02da0af8bcaf93268833862fb71cf"
+  },
+  "https://platform.tt02.altinn.no/correspondence/api/v1/swagger/v1/swagger.json": {
+    "hash": "249cfa6dddfeb9b28c877720b318dba23d602e1f9c16713bb1c2b9c4ef1f27d9"
+  },
+  "https://platform.tt02.altinn.no/dialogporten/swagger/v1/swagger.json": {
+    "hash": "3209d7872239bc9f3f80376566ce150724820b4321ea62e207f8c4b0d5688639"
+  }
+}

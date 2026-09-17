@@ -1,5 +1,6 @@
 import http from "k6/http";
 
+import { jsonBody, requestParams } from "../common/request.js";
 import { XacmlJsonRequestRootExternal } from "./types.js";
 
 const TAGS = {
@@ -56,34 +57,18 @@ class AuthorizeClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     AuthorizePost(request, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}/authorize`;
-
-        let tags = {
-            endpoint: url,
-            name: url,
-            action: TAGS.AuthorizePost.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.post(url, JSON.stringify(request), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json",
-                Accept: "application/json",
-                ...(this.subscriptionKey !== null && {
-                    "Ocp-Apim-Subscription-Key": this.subscriptionKey,
-                }),
-            },
-        });
+        return http.post(
+            `${this.FULL_PATH}/authorize`,
+            jsonBody(request),
+            requestParams({
+                endpoint: `${this.FULL_PATH}/authorize`,
+                action: TAGS.AuthorizePost.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+                json: true,
+                headers: { "Ocp-Apim-Subscription-Key": this.subscriptionKey },
+            }),
+        );
     }
 }
 

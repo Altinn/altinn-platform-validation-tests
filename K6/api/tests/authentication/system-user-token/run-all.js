@@ -15,6 +15,3 @@ export default async function (data) {
     await runGetSystemUserToken(data);
     await runExchangeSystemUserToken(data);
 }
-
-// Shared end-of-test summary logging (prints check pass/fail counts).
-export { handleSummary } from "../../../../common-imports.js";

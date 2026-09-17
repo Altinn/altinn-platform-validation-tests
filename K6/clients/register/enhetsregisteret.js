@@ -1,5 +1,6 @@
 import http from "k6/http";
 
+import { requestParams } from "../common/request.js";
 import { ErRoleFieldTypes } from "./types.js";
 
 const TAGS = {
@@ -102,28 +103,22 @@ class EnhetsregisteretClient {
    </soapenv:Body>
 </soapenv:Envelope>`;
 
-        let tags = {
-            endpoint: this.LABEL_PATH,
-            name: this.LABEL_PATH,
-            action: TAGS.AddCcrRole.action,
-            ccrRole: ccrRole,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.post(this.FULL_PATH, body, {
-            tags,
-            headers: {
-                "Content-Type": "text/xml",
-                SOAPAction:
-                    "\"http://www.altinn.no/services/Register/ER/2013/06/IRegisterERExternalBasic/SubmitERDataBasic\"",
-            },
-        });
+        return http.post(
+            this.FULL_PATH,
+            body,
+            requestParams({
+                endpoint: this.LABEL_PATH,
+                action: TAGS.AddCcrRole.action,
+                labels: { ...labels, ccrRole: ccrRole },
+                token: null,
+                accept: null,
+                headers: {
+                    "Content-Type": "text/xml",
+                    SOAPAction:
+                        "\"http://www.altinn.no/services/Register/ER/2013/06/IRegisterERExternalBasic/SubmitERDataBasic\"",
+                },
+            }),
+        );
     }
 
     /**
@@ -176,28 +171,22 @@ class EnhetsregisteretClient {
    </soapenv:Body>
 </soapenv:Envelope>`;
 
-        let tags = {
-            endpoint: this.LABEL_PATH,
-            name: this.LABEL_PATH,
-            action: TAGS.RemoveCcrRole.action,
-            ccrRole: ccrRole,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.post(this.FULL_PATH, body, {
-            tags,
-            headers: {
-                "Content-Type": "text/xml",
-                SOAPAction:
-                    "\"http://www.altinn.no/services/Register/ER/2013/06/IRegisterERExternalBasic/SubmitERDataBasic\"",
-            },
-        });
+        return http.post(
+            this.FULL_PATH,
+            body,
+            requestParams({
+                endpoint: this.LABEL_PATH,
+                action: TAGS.RemoveCcrRole.action,
+                labels: { ...labels, ccrRole: ccrRole },
+                token: null,
+                accept: null,
+                headers: {
+                    "Content-Type": "text/xml",
+                    SOAPAction:
+                        "\"http://www.altinn.no/services/Register/ER/2013/06/IRegisterERExternalBasic/SubmitERDataBasic\"",
+                },
+            }),
+        );
     }
 }
 

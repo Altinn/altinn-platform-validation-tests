@@ -1,5 +1,6 @@
 import http from "k6/http";
 
+import { buildUrl, requestParams } from "../common/request.js";
 import { AccessListMembershipsQuery } from "./types.js";
 
 const TAGS = {
@@ -43,59 +44,15 @@ class AccessListMembershipsClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     AccessListMembershipsGetMemberships(query = null, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        let url = this.FULL_PATH;
-
-        if (query !== null) {
-            const params = /** @type {string[]} */ ([]);
-
-            Object.entries(query).forEach(([key, value]) => {
-
-                if (value === undefined || value === null) {
-                    return;
-                }
-
-                if (Array.isArray(value)) {
-                    value.forEach((item) => {
-                        params.push(
-                            `${encodeURIComponent(key)}=${encodeURIComponent(item)}`,
-                        );
-                    });
-
-                    return;
-                }
-
-                params.push(
-                    `${encodeURIComponent(key)}=${encodeURIComponent(value)}`,
-                );
-            });
-
-            if (params.length > 0) {
-                url = `${url}?${params.join("&")}`;
-            }
-        }
-
-        let tags = {
-            endpoint: this.FULL_PATH,
-            name: this.FULL_PATH,
-            action: TAGS.AccessListMembershipsGetMemberships.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url, {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.get(
+            buildUrl(this.FULL_PATH, query),
+            requestParams({
+                endpoint: this.FULL_PATH,
+                action: TAGS.AccessListMembershipsGetMemberships.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 }
 

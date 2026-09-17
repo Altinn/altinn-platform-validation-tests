@@ -41,6 +41,3 @@ export default function (rows) {
         ConsentDomainChecks.CheckConsentResponse(consent, "LookupConsent");
     });
 }
-
-// add the custom reporting for this test to the default summary
-export { handleSummary } from "../../../../common-imports.js";

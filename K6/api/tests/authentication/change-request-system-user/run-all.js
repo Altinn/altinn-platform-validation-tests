@@ -47,6 +47,3 @@ export function teardown(data) {
     cleanupArranged(data.createAndDelete);
     cleanupArranged(data.listBySystem);
 }
-
-// Shared end-of-test summary logging (prints check pass/fail counts).
-export { handleSummary } from "../../../../common-imports.js";

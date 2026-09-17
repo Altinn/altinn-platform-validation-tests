@@ -1,5 +1,6 @@
 import http from "k6/http";
 
+import { jsonBody, requestParams } from "../../common/request.js";
 import { SubscriptionRequestModel } from "../types.js";
 
 const TAGS = {
@@ -55,31 +56,17 @@ class SubscriptionClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     SubscriptionCreate(request, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}`;
-
-        let tags = {
-            endpoint: url,
-            name: url,
-            action: TAGS.SubscriptionCreate.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.post(url, JSON.stringify(request), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json",
-                Accept: "application/json",
-            },
-        });
+        return http.post(
+            this.FULL_PATH,
+            jsonBody(request),
+            requestParams({
+                endpoint: this.FULL_PATH,
+                action: TAGS.SubscriptionCreate.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+                json: true,
+            }),
+        );
     }
 
     /**
@@ -90,30 +77,15 @@ class SubscriptionClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     SubscriptionGetAll(labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}`;
-
-        let tags = {
-            endpoint: url,
-            name: url,
-            action: TAGS.SubscriptionGetAll.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url, {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.get(
+            this.FULL_PATH,
+            requestParams({
+                endpoint: this.FULL_PATH,
+                action: TAGS.SubscriptionGetAll.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 
     /**
@@ -125,30 +97,15 @@ class SubscriptionClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     SubscriptionGet(id, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}/${id}`;
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/{id}`,
-            name: `${this.FULL_PATH}/{id}`,
-            action: TAGS.SubscriptionGet.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url, {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.get(
+            `${this.FULL_PATH}/${id}`,
+            requestParams({
+                endpoint: `${this.FULL_PATH}/{id}`,
+                action: TAGS.SubscriptionGet.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 
     /**
@@ -160,30 +117,16 @@ class SubscriptionClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     SubscriptionDelete(id, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}/${id}`;
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/{id}`,
-            name: `${this.FULL_PATH}/{id}`,
-            action: TAGS.SubscriptionDelete.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.del(url, null, {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.del(
+            `${this.FULL_PATH}/${id}`,
+            null,
+            requestParams({
+                endpoint: `${this.FULL_PATH}/{id}`,
+                action: TAGS.SubscriptionDelete.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 
     /**
@@ -195,30 +138,16 @@ class SubscriptionClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     SubscriptionValidate(id, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}/validate/${id}`;
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/validate/{id}`,
-            name: `${this.FULL_PATH}/validate/{id}`,
-            action: TAGS.SubscriptionValidate.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.put(url, null, {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.put(
+            `${this.FULL_PATH}/validate/${id}`,
+            null,
+            requestParams({
+                endpoint: `${this.FULL_PATH}/validate/{id}`,
+                action: TAGS.SubscriptionValidate.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 }
 

@@ -1,5 +1,6 @@
 import http from "k6/http";
 
+import { buildUrl, jsonBody, requestParams } from "../../common/request.js";
 import { DelegateSingleRightsQuery, GetResourceDelegationsQuery, GetResourceRightsQuery, GetRightsMetaQuery, GetSingleRightDelegationCheckQuery, RevokeSingleRightsQuery, UpdateSingleRightsQuery } from "./single-right.types.js";
 
 const TAGS = {
@@ -65,44 +66,15 @@ class SingleRightClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetSingleRightDelegationCheck(query = null, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(`${this.FULL_PATH}/delegationcheck`);
-
-        if (query !== null) {
-            for (const [key, value] of Object.entries(query)) {
-                if (value === undefined || value === null) {
-                    continue;
-                }
-
-                if (Array.isArray(value)) {
-                    value.forEach((v) => url.searchParams.append(key, v));
-                } else {
-                    url.searchParams.append(key, value);
-                }
-            }
-        }
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/delegationcheck`,
-            name: `${this.FULL_PATH}/delegationcheck`,
-            action: TAGS.GetSingleRightDelegationCheck.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url.toString(), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.get(
+            buildUrl(`${this.FULL_PATH}/delegationcheck`, query),
+            requestParams({
+                endpoint: `${this.FULL_PATH}/delegationcheck`,
+                action: TAGS.GetSingleRightDelegationCheck.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 
     /**
@@ -114,44 +86,15 @@ class SingleRightClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetRightsMeta(query = null, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(`${this.FULL_PATH}/rightsmeta`);
-
-        if (query !== null) {
-            for (const [key, value] of Object.entries(query)) {
-                if (value === undefined || value === null) {
-                    continue;
-                }
-
-                if (Array.isArray(value)) {
-                    value.forEach((v) => url.searchParams.append(key, v));
-                } else {
-                    url.searchParams.append(key, value);
-                }
-            }
-        }
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/rightsmeta`,
-            name: `${this.FULL_PATH}/rightsmeta`,
-            action: TAGS.GetRightsMeta.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url.toString(), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.get(
+            buildUrl(`${this.FULL_PATH}/rightsmeta`, query),
+            requestParams({
+                endpoint: `${this.FULL_PATH}/rightsmeta`,
+                action: TAGS.GetRightsMeta.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 
     /**
@@ -164,48 +107,16 @@ class SingleRightClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     DelegateSingleRights(query = null, body = null, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(`${this.FULL_PATH}/delegate`);
-
-        if (query !== null) {
-            for (const [key, value] of Object.entries(query)) {
-                if (value === undefined || value === null) {
-                    continue;
-                }
-
-                if (Array.isArray(value)) {
-                    value.forEach((v) => url.searchParams.append(key, v));
-                } else {
-                    url.searchParams.append(key, value);
-                }
-            }
-        }
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/delegate`,
-            name: `${this.FULL_PATH}/delegate`,
-            action: TAGS.DelegateSingleRights.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
         return http.post(
-            url.toString(),
-            body !== null ? JSON.stringify(body) : null,
-            {
-                tags,
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    "Content-Type": "application/json",
-                    Accept: "application/json",
-                },
-            },
+            buildUrl(`${this.FULL_PATH}/delegate`, query),
+            jsonBody(body),
+            requestParams({
+                endpoint: `${this.FULL_PATH}/delegate`,
+                action: TAGS.DelegateSingleRights.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+                json: true,
+            }),
         );
     }
 
@@ -218,44 +129,15 @@ class SingleRightClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetResourceDelegations(query = null, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(`${this.FULL_PATH}/delegation/resources`);
-
-        if (query !== null) {
-            for (const [key, value] of Object.entries(query)) {
-                if (value === undefined || value === null) {
-                    continue;
-                }
-
-                if (Array.isArray(value)) {
-                    value.forEach((v) => url.searchParams.append(key, v));
-                } else {
-                    url.searchParams.append(key, value);
-                }
-            }
-        }
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/delegation/resources`,
-            name: `${this.FULL_PATH}/delegation/resources`,
-            action: TAGS.GetResourceDelegations.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url.toString(), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.get(
+            buildUrl(`${this.FULL_PATH}/delegation/resources`, query),
+            requestParams({
+                endpoint: `${this.FULL_PATH}/delegation/resources`,
+                action: TAGS.GetResourceDelegations.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 
     /**
@@ -267,44 +149,15 @@ class SingleRightClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetResourceRights(query = null, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(`${this.FULL_PATH}/delegation/resources/rights`);
-
-        if (query !== null) {
-            for (const [key, value] of Object.entries(query)) {
-                if (value === undefined || value === null) {
-                    continue;
-                }
-
-                if (Array.isArray(value)) {
-                    value.forEach((v) => url.searchParams.append(key, v));
-                } else {
-                    url.searchParams.append(key, value);
-                }
-            }
-        }
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/delegation/resources/rights`,
-            name: `${this.FULL_PATH}/delegation/resources/rights`,
-            action: TAGS.GetResourceRights.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url.toString(), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.get(
+            buildUrl(`${this.FULL_PATH}/delegation/resources/rights`, query),
+            requestParams({
+                endpoint: `${this.FULL_PATH}/delegation/resources/rights`,
+                action: TAGS.GetResourceRights.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 
     /**
@@ -316,47 +169,15 @@ class SingleRightClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     RevokeSingleRights(query = null, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(`${this.FULL_PATH}/revoke`);
-
-        if (query !== null) {
-            for (const [key, value] of Object.entries(query)) {
-                if (value === undefined || value === null) {
-                    continue;
-                }
-
-                if (Array.isArray(value)) {
-                    value.forEach((v) => url.searchParams.append(key, v));
-                } else {
-                    url.searchParams.append(key, value);
-                }
-            }
-        }
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/revoke`,
-            name: `${this.FULL_PATH}/revoke`,
-            action: TAGS.RevokeSingleRights.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
         return http.del(
-            url.toString(),
+            buildUrl(`${this.FULL_PATH}/revoke`, query),
             null,
-            {
-                tags,
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    Accept: "application/json",
-                },
-            },
+            requestParams({
+                endpoint: `${this.FULL_PATH}/revoke`,
+                action: TAGS.RevokeSingleRights.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
         );
     }
 
@@ -370,48 +191,16 @@ class SingleRightClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     UpdateSingleRights(query = null, body = null, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(`${this.FULL_PATH}/update`);
-
-        if (query !== null) {
-            for (const [key, value] of Object.entries(query)) {
-                if (value === undefined || value === null) {
-                    continue;
-                }
-
-                if (Array.isArray(value)) {
-                    value.forEach((v) => url.searchParams.append(key, v));
-                } else {
-                    url.searchParams.append(key, value);
-                }
-            }
-        }
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/update`,
-            name: `${this.FULL_PATH}/update`,
-            action: TAGS.UpdateSingleRights.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
         return http.put(
-            url.toString(),
-            body !== null ? JSON.stringify(body) : null,
-            {
-                tags,
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    "Content-Type": "application/json",
-                    Accept: "application/json",
-                },
-            },
+            buildUrl(`${this.FULL_PATH}/update`, query),
+            jsonBody(body),
+            requestParams({
+                endpoint: `${this.FULL_PATH}/update`,
+                action: TAGS.UpdateSingleRights.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+                json: true,
+            }),
         );
     }
 }

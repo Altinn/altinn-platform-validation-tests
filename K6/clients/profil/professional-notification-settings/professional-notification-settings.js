@@ -1,5 +1,6 @@
 import http from "k6/http";
 
+import { jsonBody, requestParams } from "../../common/request.js";
 import { NotificationSettingsPatchRequest, NotificationSettingsRequest } from "./professional-notification-settings.types.js";
 
 const TAGS = {
@@ -55,30 +56,15 @@ class ProfessionalNotificationSettingsClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetNotificationSettings(partyUuid, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}/parties/${partyUuid}`;
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/parties/{partyUuid}`,
-            name: `${this.FULL_PATH}/parties/{partyUuid}`,
-            action: TAGS.GetNotificationSettings.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url, {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.get(
+            `${this.FULL_PATH}/parties/${partyUuid}`,
+            requestParams({
+                endpoint: `${this.FULL_PATH}/parties/{partyUuid}`,
+                action: TAGS.GetNotificationSettings.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 
     /**
@@ -96,31 +82,17 @@ class ProfessionalNotificationSettingsClient {
         request,
         labels = null,
     ) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}/parties/${partyUuid}`;
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/parties/{partyUuid}`,
-            name: `${this.FULL_PATH}/parties/{partyUuid}`,
-            action: TAGS.CreateOrUpdateNotificationSettings.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.put(url, JSON.stringify(request), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json",
-                Accept: "application/json",
-            },
-        });
+        return http.put(
+            `${this.FULL_PATH}/parties/${partyUuid}`,
+            jsonBody(request),
+            requestParams({
+                endpoint: `${this.FULL_PATH}/parties/{partyUuid}`,
+                action: TAGS.CreateOrUpdateNotificationSettings.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+                json: true,
+            }),
+        );
     }
 
     /**
@@ -134,31 +106,17 @@ class ProfessionalNotificationSettingsClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     PatchNotificationSettings(partyUuid, request, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}/parties/${partyUuid}`;
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/parties/{partyUuid}`,
-            name: `${this.FULL_PATH}/parties/{partyUuid}`,
-            action: TAGS.PatchNotificationSettings.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.patch(url, JSON.stringify(request), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json",
-                Accept: "application/json",
-            },
-        });
+        return http.patch(
+            `${this.FULL_PATH}/parties/${partyUuid}`,
+            jsonBody(request),
+            requestParams({
+                endpoint: `${this.FULL_PATH}/parties/{partyUuid}`,
+                action: TAGS.PatchNotificationSettings.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+                json: true,
+            }),
+        );
     }
 
     /**
@@ -170,30 +128,16 @@ class ProfessionalNotificationSettingsClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     DeleteNotificationSettings(partyUuid, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}/parties/${partyUuid}`;
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/parties/{partyUuid}`,
-            name: `${this.FULL_PATH}/parties/{partyUuid}`,
-            action: TAGS.DeleteNotificationSettings.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.del(url, null, {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.del(
+            `${this.FULL_PATH}/parties/${partyUuid}`,
+            null,
+            requestParams({
+                endpoint: `${this.FULL_PATH}/parties/{partyUuid}`,
+                action: TAGS.DeleteNotificationSettings.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 
     /**
@@ -204,30 +148,15 @@ class ProfessionalNotificationSettingsClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetAllNotificationSettings(labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}/parties`;
-
-        let tags = {
-            endpoint: url,
-            name: url,
-            action: TAGS.GetAllNotificationSettings.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url, {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.get(
+            `${this.FULL_PATH}/parties`,
+            requestParams({
+                endpoint: `${this.FULL_PATH}/parties`,
+                action: TAGS.GetAllNotificationSettings.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 }
 

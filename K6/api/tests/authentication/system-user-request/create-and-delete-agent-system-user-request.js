@@ -126,6 +126,3 @@ export default function (data) {
 export function teardown(data) {
     sweepSystems(data.vendorOrgNo, SYSTEM_NAME_PREFIX);
 }
-
-// add the custom reporting for this test to the default summary
-export { handleSummary } from "../../../../common-imports.js";

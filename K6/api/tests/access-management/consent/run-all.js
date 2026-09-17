@@ -37,5 +37,3 @@ export default function (data) {
     runConsentRequestEvents(data.consentRequestEvents);
     runLookup(data.lookup);
 }
-
-export { handleSummary } from "../../../../common-imports.js";

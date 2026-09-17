@@ -46,6 +46,3 @@ export async function teardown() {
     await teardownSystemRegisterRights();
     await teardownSystemRegisterAccessPackages();
 }
-
-// Shared end-of-test summary logging (prints check pass/fail counts).
-export { handleSummary } from "../../../../common-imports.js";

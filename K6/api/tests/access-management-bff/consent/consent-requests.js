@@ -32,6 +32,3 @@ export default function (data) {
 
     ConsentDomainChecks.CheckConsentResponse(activeConsents, "GetActiveConsents");
 }
-
-// add the custom reporting for this test to the default summary
-export { handleSummary } from "../../../../common-imports.js";

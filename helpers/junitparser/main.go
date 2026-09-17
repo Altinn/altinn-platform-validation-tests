@@ -240,6 +240,43 @@ func parseJUnit(file string, deployEnv string) bool {
 	return hasFailedTests
 }
 
+func pushMetrics(pusher *push.Pusher) error {
+	const (
+		maxAttempts = 6
+		initialWait = 2 * time.Second
+		maxWait     = 30 * time.Second
+	)
+
+	var err error
+
+	for attempt := 1; attempt <= maxAttempts; attempt++ {
+		if err = pusher.Push(); err == nil {
+			return nil
+		}
+
+		if attempt == maxAttempts {
+			break
+		}
+
+		wait := min(
+			initialWait*time.Duration(1<<(attempt-1)),
+			maxWait,
+		)
+
+		log.Printf(
+			"Could not push metrics (attempt %d/%d): %v; retrying in %s",
+			attempt,
+			maxAttempts,
+			err,
+			wait,
+		)
+
+		time.Sleep(wait)
+	}
+
+	return err
+}
+
 func main() {
 	xmlFile := flag.String(
 		"xml",
@@ -306,11 +343,12 @@ func main() {
 	// grouping key as the canonical environment label.
 	// This will require updating the Prometheus scrape configuration
 	// (honor_labels)
-	if err := push.
+	pusher := push.
 		New(*promPushGatewayEndpoint, "playwright_tests").
 		Grouping("environment", deployEnv).
-		Gatherer(reg).
-		Push(); err != nil {
+		Gatherer(reg)
+
+	if err := pushMetrics(pusher); err != nil {
 		log.Fatalf("Could not push metrics: %v", err)
 	}
 

@@ -41,7 +41,7 @@
  * @property {string|null} id
  * @property {{[key: string]: string}|null} description
  * @property {Array<string>|null} allowedContentTypes
- * @property {Array<string>|null} allowedContributers
+ * @property {Array<string>|null} allowedContributers Deprecated in Swagger; use allowedContributors.
  * @property {Array<string>|null} allowedContributors
  * @property {string|null} actionRequiredToRead
  * @property {string|null} actionRequiredToWrite
@@ -76,7 +76,7 @@
  * @property {boolean} autoDeleteOnProcessEnd
  * @property {boolean} disallowUserCreate
  * @property {boolean} disallowUserDelete
- * @property {boolean} allowInSubform
+ * @property {boolean} allowInSubform Deprecated in Swagger; retained for compatibility.
  * @property {ShadowFields|null} shadowFields
  */
 

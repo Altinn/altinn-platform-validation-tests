@@ -1,4 +1,3 @@
-export { handleSummary } from "../../../../../common-imports.js";
 export { setup } from "./common.js";
 import { group } from "k6";
 

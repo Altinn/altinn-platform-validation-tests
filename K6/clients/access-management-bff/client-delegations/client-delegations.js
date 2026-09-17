@@ -1,5 +1,6 @@
 import http from "k6/http";
 
+import { buildUrl, jsonBody, requestParams } from "../../common/request.js";
 import { DelegationBatchInputDto, ResourceDelegationBatchInputDto, ValidatePersonInput } from "../common/common.types.js";
 import { CreateAgentAccessPackagesQuery, CreateAgentQuery, CreateAgentResourcesQuery, DeleteAgentAccessPackagesQuery, DeleteAgentQuery, DeleteAgentResourcesQuery, DeleteMyClientProvidersQuery, DeleteMyClientResourcesQuery, DeleteMyClientsQuery, GetAgentAccessPackagesQuery, GetAgentResourcesQuery, GetAgentsQuery, GetClientAccessPackagesQuery, GetClientResourcesQuery, GetClientsQuery, GetMyClientsQuery } from "./client-delegations.types.js";
 
@@ -93,44 +94,15 @@ class ClientDelegationsClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetMyClients(query = null, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(`${this.FULL_PATH}/my/clients`);
-
-        if (query !== null) {
-            for (const [key, value] of Object.entries(query)) {
-                if (value === undefined || value === null) {
-                    continue;
-                }
-
-                if (Array.isArray(value)) {
-                    value.forEach((v) => url.searchParams.append(key, v));
-                } else {
-                    url.searchParams.append(key, value);
-                }
-            }
-        }
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/my/clients`,
-            name: `${this.FULL_PATH}/my/clients`,
-            action: TAGS.GetMyClients.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url.toString(), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.get(
+            buildUrl(`${this.FULL_PATH}/my/clients`, query),
+            requestParams({
+                endpoint: `${this.FULL_PATH}/my/clients`,
+                action: TAGS.GetMyClients.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 
     /**
@@ -144,48 +116,16 @@ class ClientDelegationsClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     DeleteMyClients(query = null, body = null, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(`${this.FULL_PATH}/my/clients`);
-
-        if (query !== null) {
-            for (const [key, value] of Object.entries(query)) {
-                if (value === undefined || value === null) {
-                    continue;
-                }
-
-                if (Array.isArray(value)) {
-                    value.forEach((v) => url.searchParams.append(key, v));
-                } else {
-                    url.searchParams.append(key, value);
-                }
-            }
-        }
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/my/clients`,
-            name: `${this.FULL_PATH}/my/clients`,
-            action: TAGS.DeleteMyClients.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
         return http.del(
-            url.toString(),
-            body !== null ? JSON.stringify(body) : null,
-            {
-                tags,
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    "Content-Type": "application/json",
-                    Accept: "application/json",
-                },
-            },
+            buildUrl(`${this.FULL_PATH}/my/clients`, query),
+            jsonBody(body),
+            requestParams({
+                endpoint: `${this.FULL_PATH}/my/clients`,
+                action: TAGS.DeleteMyClients.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+                json: true,
+            }),
         );
     }
 
@@ -198,47 +138,15 @@ class ClientDelegationsClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     DeleteMyClientProviders(query = null, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(`${this.FULL_PATH}/my/clientproviders`);
-
-        if (query !== null) {
-            for (const [key, value] of Object.entries(query)) {
-                if (value === undefined || value === null) {
-                    continue;
-                }
-
-                if (Array.isArray(value)) {
-                    value.forEach((v) => url.searchParams.append(key, v));
-                } else {
-                    url.searchParams.append(key, value);
-                }
-            }
-        }
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/my/clientproviders`,
-            name: `${this.FULL_PATH}/my/clientproviders`,
-            action: TAGS.DeleteMyClientProviders.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
         return http.del(
-            url.toString(),
+            buildUrl(`${this.FULL_PATH}/my/clientproviders`, query),
             null,
-            {
-                tags,
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    Accept: "application/json",
-                },
-            },
+            requestParams({
+                endpoint: `${this.FULL_PATH}/my/clientproviders`,
+                action: TAGS.DeleteMyClientProviders.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
         );
     }
 
@@ -251,44 +159,15 @@ class ClientDelegationsClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetClients(query = null, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(`${this.FULL_PATH}/clients`);
-
-        if (query !== null) {
-            for (const [key, value] of Object.entries(query)) {
-                if (value === undefined || value === null) {
-                    continue;
-                }
-
-                if (Array.isArray(value)) {
-                    value.forEach((v) => url.searchParams.append(key, v));
-                } else {
-                    url.searchParams.append(key, value);
-                }
-            }
-        }
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/clients`,
-            name: `${this.FULL_PATH}/clients`,
-            action: TAGS.GetClients.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url.toString(), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.get(
+            buildUrl(`${this.FULL_PATH}/clients`, query),
+            requestParams({
+                endpoint: `${this.FULL_PATH}/clients`,
+                action: TAGS.GetClients.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 
     /**
@@ -300,44 +179,15 @@ class ClientDelegationsClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetAgents(query = null, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(`${this.FULL_PATH}/agents`);
-
-        if (query !== null) {
-            for (const [key, value] of Object.entries(query)) {
-                if (value === undefined || value === null) {
-                    continue;
-                }
-
-                if (Array.isArray(value)) {
-                    value.forEach((v) => url.searchParams.append(key, v));
-                } else {
-                    url.searchParams.append(key, value);
-                }
-            }
-        }
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/agents`,
-            name: `${this.FULL_PATH}/agents`,
-            action: TAGS.GetAgents.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url.toString(), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.get(
+            buildUrl(`${this.FULL_PATH}/agents`, query),
+            requestParams({
+                endpoint: `${this.FULL_PATH}/agents`,
+                action: TAGS.GetAgents.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 
     /**
@@ -352,48 +202,16 @@ class ClientDelegationsClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     CreateAgent(body = null, query = null, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(`${this.FULL_PATH}/agents`);
-
-        if (query !== null) {
-            for (const [key, value] of Object.entries(query)) {
-                if (value === undefined || value === null) {
-                    continue;
-                }
-
-                if (Array.isArray(value)) {
-                    value.forEach((v) => url.searchParams.append(key, v));
-                } else {
-                    url.searchParams.append(key, value);
-                }
-            }
-        }
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/agents`,
-            name: `${this.FULL_PATH}/agents`,
-            action: TAGS.CreateAgent.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
         return http.post(
-            url.toString(),
-            body !== null ? JSON.stringify(body) : null,
-            {
-                tags,
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    "Content-Type": "application/json",
-                    Accept: "application/json",
-                },
-            },
+            buildUrl(`${this.FULL_PATH}/agents`, query),
+            jsonBody(body),
+            requestParams({
+                endpoint: `${this.FULL_PATH}/agents`,
+                action: TAGS.CreateAgent.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+                json: true,
+            }),
         );
     }
 
@@ -406,47 +224,15 @@ class ClientDelegationsClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     DeleteAgent(query = null, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(`${this.FULL_PATH}/agents`);
-
-        if (query !== null) {
-            for (const [key, value] of Object.entries(query)) {
-                if (value === undefined || value === null) {
-                    continue;
-                }
-
-                if (Array.isArray(value)) {
-                    value.forEach((v) => url.searchParams.append(key, v));
-                } else {
-                    url.searchParams.append(key, value);
-                }
-            }
-        }
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/agents`,
-            name: `${this.FULL_PATH}/agents`,
-            action: TAGS.DeleteAgent.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
         return http.del(
-            url.toString(),
+            buildUrl(`${this.FULL_PATH}/agents`, query),
             null,
-            {
-                tags,
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    Accept: "application/json",
-                },
-            },
+            requestParams({
+                endpoint: `${this.FULL_PATH}/agents`,
+                action: TAGS.DeleteAgent.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
         );
     }
 
@@ -459,44 +245,15 @@ class ClientDelegationsClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetAgentAccessPackages(query = null, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(`${this.FULL_PATH}/agents/accesspackages`);
-
-        if (query !== null) {
-            for (const [key, value] of Object.entries(query)) {
-                if (value === undefined || value === null) {
-                    continue;
-                }
-
-                if (Array.isArray(value)) {
-                    value.forEach((v) => url.searchParams.append(key, v));
-                } else {
-                    url.searchParams.append(key, value);
-                }
-            }
-        }
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/agents/accesspackages`,
-            name: `${this.FULL_PATH}/agents/accesspackages`,
-            action: TAGS.GetAgentAccessPackages.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url.toString(), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.get(
+            buildUrl(`${this.FULL_PATH}/agents/accesspackages`, query),
+            requestParams({
+                endpoint: `${this.FULL_PATH}/agents/accesspackages`,
+                action: TAGS.GetAgentAccessPackages.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 
     /**
@@ -510,48 +267,16 @@ class ClientDelegationsClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     CreateAgentAccessPackages(query = null, body = null, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(`${this.FULL_PATH}/agents/accesspackages`);
-
-        if (query !== null) {
-            for (const [key, value] of Object.entries(query)) {
-                if (value === undefined || value === null) {
-                    continue;
-                }
-
-                if (Array.isArray(value)) {
-                    value.forEach((v) => url.searchParams.append(key, v));
-                } else {
-                    url.searchParams.append(key, value);
-                }
-            }
-        }
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/agents/accesspackages`,
-            name: `${this.FULL_PATH}/agents/accesspackages`,
-            action: TAGS.CreateAgentAccessPackages.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
         return http.post(
-            url.toString(),
-            body !== null ? JSON.stringify(body) : null,
-            {
-                tags,
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    "Content-Type": "application/json",
-                    Accept: "application/json",
-                },
-            },
+            buildUrl(`${this.FULL_PATH}/agents/accesspackages`, query),
+            jsonBody(body),
+            requestParams({
+                endpoint: `${this.FULL_PATH}/agents/accesspackages`,
+                action: TAGS.CreateAgentAccessPackages.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+                json: true,
+            }),
         );
     }
 
@@ -566,48 +291,16 @@ class ClientDelegationsClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     DeleteAgentAccessPackages(query = null, body = null, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(`${this.FULL_PATH}/agents/accesspackages`);
-
-        if (query !== null) {
-            for (const [key, value] of Object.entries(query)) {
-                if (value === undefined || value === null) {
-                    continue;
-                }
-
-                if (Array.isArray(value)) {
-                    value.forEach((v) => url.searchParams.append(key, v));
-                } else {
-                    url.searchParams.append(key, value);
-                }
-            }
-        }
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/agents/accesspackages`,
-            name: `${this.FULL_PATH}/agents/accesspackages`,
-            action: TAGS.DeleteAgentAccessPackages.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
         return http.del(
-            url.toString(),
-            body !== null ? JSON.stringify(body) : null,
-            {
-                tags,
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    "Content-Type": "application/json",
-                    Accept: "application/json",
-                },
-            },
+            buildUrl(`${this.FULL_PATH}/agents/accesspackages`, query),
+            jsonBody(body),
+            requestParams({
+                endpoint: `${this.FULL_PATH}/agents/accesspackages`,
+                action: TAGS.DeleteAgentAccessPackages.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+                json: true,
+            }),
         );
     }
 
@@ -620,44 +313,15 @@ class ClientDelegationsClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetClientAccessPackages(query = null, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(`${this.FULL_PATH}/clients/accesspackages`);
-
-        if (query !== null) {
-            for (const [key, value] of Object.entries(query)) {
-                if (value === undefined || value === null) {
-                    continue;
-                }
-
-                if (Array.isArray(value)) {
-                    value.forEach((v) => url.searchParams.append(key, v));
-                } else {
-                    url.searchParams.append(key, value);
-                }
-            }
-        }
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/clients/accesspackages`,
-            name: `${this.FULL_PATH}/clients/accesspackages`,
-            action: TAGS.GetClientAccessPackages.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url.toString(), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.get(
+            buildUrl(`${this.FULL_PATH}/clients/accesspackages`, query),
+            requestParams({
+                endpoint: `${this.FULL_PATH}/clients/accesspackages`,
+                action: TAGS.GetClientAccessPackages.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 
     /**
@@ -669,44 +333,15 @@ class ClientDelegationsClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetAgentResources(query = null, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(`${this.FULL_PATH}/agents/resources`);
-
-        if (query !== null) {
-            for (const [key, value] of Object.entries(query)) {
-                if (value === undefined || value === null) {
-                    continue;
-                }
-
-                if (Array.isArray(value)) {
-                    value.forEach((v) => url.searchParams.append(key, v));
-                } else {
-                    url.searchParams.append(key, value);
-                }
-            }
-        }
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/agents/resources`,
-            name: `${this.FULL_PATH}/agents/resources`,
-            action: TAGS.GetAgentResources.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url.toString(), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.get(
+            buildUrl(`${this.FULL_PATH}/agents/resources`, query),
+            requestParams({
+                endpoint: `${this.FULL_PATH}/agents/resources`,
+                action: TAGS.GetAgentResources.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 
     /**
@@ -720,48 +355,16 @@ class ClientDelegationsClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     CreateAgentResources(query = null, body = null, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(`${this.FULL_PATH}/agents/resources`);
-
-        if (query !== null) {
-            for (const [key, value] of Object.entries(query)) {
-                if (value === undefined || value === null) {
-                    continue;
-                }
-
-                if (Array.isArray(value)) {
-                    value.forEach((v) => url.searchParams.append(key, v));
-                } else {
-                    url.searchParams.append(key, value);
-                }
-            }
-        }
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/agents/resources`,
-            name: `${this.FULL_PATH}/agents/resources`,
-            action: TAGS.CreateAgentResources.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
         return http.post(
-            url.toString(),
-            body !== null ? JSON.stringify(body) : null,
-            {
-                tags,
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    "Content-Type": "application/json",
-                    Accept: "application/json",
-                },
-            },
+            buildUrl(`${this.FULL_PATH}/agents/resources`, query),
+            jsonBody(body),
+            requestParams({
+                endpoint: `${this.FULL_PATH}/agents/resources`,
+                action: TAGS.CreateAgentResources.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+                json: true,
+            }),
         );
     }
 
@@ -776,48 +379,16 @@ class ClientDelegationsClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     DeleteAgentResources(query = null, body = null, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(`${this.FULL_PATH}/agents/resources`);
-
-        if (query !== null) {
-            for (const [key, value] of Object.entries(query)) {
-                if (value === undefined || value === null) {
-                    continue;
-                }
-
-                if (Array.isArray(value)) {
-                    value.forEach((v) => url.searchParams.append(key, v));
-                } else {
-                    url.searchParams.append(key, value);
-                }
-            }
-        }
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/agents/resources`,
-            name: `${this.FULL_PATH}/agents/resources`,
-            action: TAGS.DeleteAgentResources.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
         return http.del(
-            url.toString(),
-            body !== null ? JSON.stringify(body) : null,
-            {
-                tags,
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    "Content-Type": "application/json",
-                    Accept: "application/json",
-                },
-            },
+            buildUrl(`${this.FULL_PATH}/agents/resources`, query),
+            jsonBody(body),
+            requestParams({
+                endpoint: `${this.FULL_PATH}/agents/resources`,
+                action: TAGS.DeleteAgentResources.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+                json: true,
+            }),
         );
     }
 
@@ -830,44 +401,15 @@ class ClientDelegationsClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetClientResources(query = null, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(`${this.FULL_PATH}/clients/resources`);
-
-        if (query !== null) {
-            for (const [key, value] of Object.entries(query)) {
-                if (value === undefined || value === null) {
-                    continue;
-                }
-
-                if (Array.isArray(value)) {
-                    value.forEach((v) => url.searchParams.append(key, v));
-                } else {
-                    url.searchParams.append(key, value);
-                }
-            }
-        }
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/clients/resources`,
-            name: `${this.FULL_PATH}/clients/resources`,
-            action: TAGS.GetClientResources.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url.toString(), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.get(
+            buildUrl(`${this.FULL_PATH}/clients/resources`, query),
+            requestParams({
+                endpoint: `${this.FULL_PATH}/clients/resources`,
+                action: TAGS.GetClientResources.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 
     /**
@@ -881,48 +423,16 @@ class ClientDelegationsClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     DeleteMyClientResources(query = null, body = null, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(`${this.FULL_PATH}/my/clients/resources`);
-
-        if (query !== null) {
-            for (const [key, value] of Object.entries(query)) {
-                if (value === undefined || value === null) {
-                    continue;
-                }
-
-                if (Array.isArray(value)) {
-                    value.forEach((v) => url.searchParams.append(key, v));
-                } else {
-                    url.searchParams.append(key, value);
-                }
-            }
-        }
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/my/clients/resources`,
-            name: `${this.FULL_PATH}/my/clients/resources`,
-            action: TAGS.DeleteMyClientResources.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
         return http.del(
-            url.toString(),
-            body !== null ? JSON.stringify(body) : null,
-            {
-                tags,
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    "Content-Type": "application/json",
-                    Accept: "application/json",
-                },
-            },
+            buildUrl(`${this.FULL_PATH}/my/clients/resources`, query),
+            jsonBody(body),
+            requestParams({
+                endpoint: `${this.FULL_PATH}/my/clients/resources`,
+                action: TAGS.DeleteMyClientResources.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+                json: true,
+            }),
         );
     }
 }
