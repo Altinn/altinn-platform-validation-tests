@@ -1,9 +1,10 @@
+import { Testbruker } from "../../testdata";
 import { test } from "../../fixtures/test";
 import { runInEnvironment } from "../../miljo";
 
 runInEnvironment("at23");
 
-test.use({ testbrukerPath: "privatPersonUtenVirksomhet" });
+test.use({ testbrukerPath: Testbruker.PrivatPersonUtenVirksomhet });
 
 test("Cookievalg fra arbeidsflate tas hensyn til i infoportalen", async ({
   innlogging,

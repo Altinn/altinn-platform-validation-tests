@@ -1,9 +1,10 @@
+import { Testbruker } from "../../testdata";
 import { test, Flate } from "../../fixtures/test";
 import { runInEnvironment } from "../../miljo";
 
 runInEnvironment("at23", "tt02", "prod");
 
-test.use({ testbrukerPath: "privatPersonUtenVirksomhet" });
+test.use({ testbrukerPath: Testbruker.PrivatPersonUtenVirksomhet });
 
 const flater: { start: Flate; landing: Flate }[] = [
   { start: "arbeidsflate", landing: "arbeidsflate" },

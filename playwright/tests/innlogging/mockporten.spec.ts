@@ -1,9 +1,10 @@
+import { Testbruker } from "../../testdata";
 import { test } from "../../fixtures/test";
 import { runInEnvironment } from "../../miljo";
 
 runInEnvironment("at22", "at23", "tt02", "prod");
 
-test.use({ testbrukerPath: "privatPersonUtenVirksomhet" });
+test.use({ testbrukerPath: Testbruker.PrivatPersonUtenVirksomhet });
 
 test("Mockporten gir en innlogget sesjon på tvers av flatene", async ({
   innlogging,

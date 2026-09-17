@@ -1,10 +1,11 @@
+import { Testbruker } from "../../testdata";
 import { test, Flate } from "../../fixtures/test";
 import { runInEnvironment } from "../../miljo";
 
 // Mockporten brukes til innlogging i prod, men har ikke en fungerende utloggingsside.
 runInEnvironment("at23", "tt02");
 
-test.use({ testbrukerPath: "privatPersonUtenVirksomhet" });
+test.use({ testbrukerPath: Testbruker.PrivatPersonUtenVirksomhet });
 
 /**
  * Flatene som skal være utlogget etterpå. Infoportalen er med her, men ikke som

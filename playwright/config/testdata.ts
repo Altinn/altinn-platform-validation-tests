@@ -2,6 +2,8 @@ import { parse } from "csv-parse/sync";
 import fs from "fs";
 import { join } from "path";
 
+import { Testbruker } from "../testdata";
+
 import { requireEnv } from "./environment";
 
 export type TestUser = {
@@ -11,11 +13,11 @@ export type TestUser = {
 
 const testdatamappe = join(__dirname, "..", "testdata");
 
-function testbrukerfil(path: string): string {
-  return join(testdatamappe, path, `${requireEnv("ENVIRONMENT")}.csv`);
+function testbrukerfil(path: Testbruker): string {
+  return join(__dirname, "..", path, `${requireEnv("ENVIRONMENT")}.csv`);
 }
 
-function lesTestbrukere(path: string): TestUser[] | null {
+function lesTestbrukere(path: Testbruker): TestUser[] | null {
   let innhold: string;
 
   try {
@@ -31,7 +33,7 @@ function lesTestbrukere(path: string): TestUser[] | null {
   return parse(innhold, { columns: true, skip_empty_lines: true, trim: true });
 }
 
-export function getTestUsers(path: string): TestUser[] {
+export function getTestUsers(path: Testbruker): TestUser[] {
   const brukere = lesTestbrukere(path);
 
   if (!brukere?.length) {
@@ -45,7 +47,7 @@ export function getTestUsers(path: string): TestUser[] {
  * Leser samme CSV-struktur i alle miljøer. Inntil testdatafilen er tilgjengelig,
  * kan én testperson oppgis med TEST_USER_PID og TEST_USER_NAME.
  */
-export function getTestUser(path: string, indeks = 0, workers = 1): TestUser {
+export function getTestUser(path: Testbruker, indeks = 0, workers = 1): TestUser {
   const brukere = lesTestbrukere(path);
 
   if (brukere !== null) {
@@ -62,7 +64,9 @@ export function getTestUser(path: string, indeks = 0, workers = 1): TestUser {
     return brukere[indeks];
   }
 
-  const grupper = fs.readdirSync(testdatamappe);
+  const grupper = fs.readdirSync(testdatamappe, { withFileTypes: true })
+    .filter((oppf) => oppf.isDirectory())
+    .map((oppf) => `testdata/${oppf.name}`);
   if (!grupper.includes(path)) {
     throw new Error(`Ukjent testbrukerPath "${path}". Tilgjengelige grupper: ${grupper.join(", ")}.`);
   }

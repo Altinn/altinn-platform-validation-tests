@@ -1,3 +1,4 @@
+import { Testbruker } from "../../testdata";
 import { test } from "../../fixtures/test";
 import { alleSprak } from "../../config/sprak";
 import { Seksjon } from "../../pages/tilgangsstyring/seksjoner";
@@ -17,7 +18,7 @@ const forventedeSeksjoner = [
 
 for (const valgtSprak of alleSprak) {
   test.describe(`Tilgangsstyring på ${valgtSprak}`, () => {
-    test.use({ sprak: valgtSprak, testbrukerPath: "dagligLeder" });
+    test.use({ sprak: valgtSprak, testbrukerPath: Testbruker.DagligLeder });
 
     test("Daglig leder som representerer seg selv ser sine navigasjonsvalg", async ({
       innlogging,

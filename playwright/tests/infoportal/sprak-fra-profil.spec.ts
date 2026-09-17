@@ -1,10 +1,11 @@
+import { Testbruker } from "../../testdata";
 import { test } from "../../fixtures/test";
 import { runInEnvironment } from "../../miljo";
 import { alleSprak } from "../../config/sprak";
 
 runInEnvironment("at23", "tt02");
 
-test.use({ testbrukerPath: "privatPersonUtenVirksomhet" });
+test.use({ testbrukerPath: Testbruker.PrivatPersonUtenVirksomhet });
 
 test.describe("Språkvalg fra profilen i infoportalen", () => {
   for (const sprak of alleSprak) {

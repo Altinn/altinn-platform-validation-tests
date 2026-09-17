@@ -17,7 +17,7 @@ Sett `TEST_IDP_PASSWORD` i `.env` for Mockporten-testen. Tilgangsverdien hentes 
 teamets hemmelighetsforvaltning. For et annet miljø kopierer du den tilsvarende
 miljøfilen fra `example_env/`. Lokale `.env`-filer er gitignorert.
 
-Testpersoner leses fra `testdata/<testbrukerPath>/<miljø>.csv` i alle miljøer.
+Testpersoner leses fra `<testbrukerPath>/<miljø>.csv`, relativt til `playwright/`, i alle miljøer.
 En tom fil gir feil. at23 og tt02 har filer i repoet; hvordan øvrige testdatafiler
 skal leveres som secrets, er ikke bestemt ennå.
 
@@ -62,13 +62,23 @@ Hver spec-fil (testfil) sier selv hvilke miljøer den kan kjøres i, og hvilken
 fil den henter testdata fra øverst i fila
 
 ```ts
+import { Testbruker } from "../../testdata";
+
 runInEnvironment("at22", "at23", "tt02");
-test.use({ testbrukerPath: "privatPersonUtenVirksomhet" }); // eller "dagligLeder"
+test.use({ testbrukerPath: Testbruker.PrivatPersonUtenVirksomhet }); // eller Testbruker.DagligLeder
 ```
 
 Nye tester bør minst være kjørt i `at23` og `tt02` og merget og verifisert ok etter merge til main før man legger til prod.
 
-Testpersonene ligger i `testdata/`, og standarden er `privatPersonUtenVirksomhet`.
+Enumen `Testbruker` i [testdata/index.ts](testdata/index.ts) inneholder mappestiene
+relativt til `playwright/`, for eksempel `testdata/privatPersonUtenVirksomhet`.
+`ENVIRONMENT=at23` gir da filen [testdata/privatPersonUtenVirksomhet/at23.csv](testdata/privatPersonUtenVirksomhet/at23.csv).
+Bruk «Gå til definisjon» på enum-medlemmet for å åpne `testdata/index.ts`,
+rett ved siden av mappene med CSV-filer. Hvert medlem har
+også dokumentasjonslenker til CSV-filene for at23 og tt02.
+Standarden er `Testbruker.PrivatPersonUtenVirksomhet`. Nye brukergrupper legges til
+i enumen med mappestien som verdi. Feilstavede enum-navn og fritekstverdier
+gir feil i editoren og ved `npm run typecheck`. Playwright typesjekker ikke selv ved kjøring.
 Hvem hver test faktisk kjørte som står i rapporten, som `testperson`.
 Et miljø som ikke er listet i `runInEnvironment`, skipper testene. Manglende
 miljødeklarasjon stopper kjøringen. Prod skal bare legges til for tester som
