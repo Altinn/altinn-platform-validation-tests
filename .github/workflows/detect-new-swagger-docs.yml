@@ -35,7 +35,6 @@ jobs:
           ./detect-new-swagger-versions
           exit_code=$?
           echo "exit_code=$exit_code" >> "$GITHUB_OUTPUT"
-          exit 0
 
       - name: Notify Slack
         if: ${{ steps.detect-swagger.outputs.exit_code == '2' }}
