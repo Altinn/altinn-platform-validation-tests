@@ -26,14 +26,15 @@ jobs:
 
       - name: Check Swagger documents
         id: detect-swagger
-        # continue-on-error: true
+        continue-on-error: true
         working-directory: helpers/detect-new-swagger-versions
         run: |
+          go build .
+          chmod +x ./detect-new-swagger-versions
           set +e
-          go run .
+          ./detect-new-swagger-versions
           exit_code=$?
           echo "exit_code=$exit_code" >> "$GITHUB_OUTPUT"
-          exit 0
 
       - name: Notify Slack
         if: ${{ steps.detect-swagger.outputs.exit_code == '2' }}
