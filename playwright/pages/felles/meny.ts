@@ -1,5 +1,6 @@
 import { expect, Page } from "@playwright/test";
 import { Sprak } from "../../config/sprak";
+import { TestUser } from "../../config/testdata";
 import { REDIRECT_TIMEOUT } from "./navigasjon";
 
 export class Meny {
@@ -42,7 +43,7 @@ export class Meny {
      * Venter på at én av de to tilstandene inntreffer, siden velgeren åpner seg
      * et lite øyeblikk etter at flaten er tilbake, og ikke på alle flatene.
      */
-    async lukkAktorvelger() {
+    async lukkAktorvelger(user: TestUser) {
         await expect
             .poll(
                 async () =>
@@ -55,22 +56,16 @@ export class Meny {
             .toBe(true);
 
         if (await this.aktorvelger().isVisible()) {
-            await this.segSelv().click();
+            await this.segSelv(user).click();
             await expect(this.aktorvelger(), 'Aktørvelgeren er lukket').toBeHidden();
         }
     }
 
-    /**
-     * Brukeren selv i aktørvelgeren. Personer står med fødselsdato der
-     * virksomhetene står med organisasjonsnummer, og lista er virtualisert, så
-     * det er ikke gitt at alle valgene finnes i DOM-en. Profilens lagrede språk
-     * kan være bokmål, nynorsk eller engelsk allerede før testen velger språk.
-     */
-    private segSelv() {
+    /** Velger den innloggede testpersonen med navn, uavhengig av profilspråk. */
+    private segSelv(user: TestUser) {
         return this.aktorvelger()
             .getByRole('menuitem')
-            .filter({ hasText: /(?:Født|Fødd|Born):/ })
-            .first();
+            .filter({ has: this.page.getByText(user.name, { exact: true }) });
     }
 
     private aktorvelger() {

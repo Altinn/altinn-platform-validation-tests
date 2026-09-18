@@ -67,7 +67,7 @@ export class Innlogging {
         await this.meny.clickLoginButton();
       }
       await this.idporten.login(user);
-      await this.meny.lukkAktorvelger();
+      await this.meny.lukkAktorvelger(user);
     });
   }
 
