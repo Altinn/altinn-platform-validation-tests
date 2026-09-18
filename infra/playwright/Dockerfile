@@ -46,7 +46,7 @@ ENV PLAYWRIGHT_BROWSERS_PATH=/home/playwright/.cache/ms-playwright
 
 RUN playwright install --with-deps
 
-WORKDIR /tmp
+WORKDIR /home/playwright/
 
 COPY --from=builder /app/generateMetricsFromJunitReport .
 
