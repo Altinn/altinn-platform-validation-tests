@@ -13,7 +13,7 @@ set +e
 npm run "test:${ENVIRONMENT}"
 playwright_exit=$?
 
-/tmp/generateMetricsFromJunitReport
+generateMetricsFromJunitReport
 metrics_exit=$?
 set -e
 

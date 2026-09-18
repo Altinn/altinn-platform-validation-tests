@@ -61,6 +61,6 @@ USER playwright
 #    https://swalocaldeployv2-bndtgugjgqc3dhdx.b01.azurefd.net/downloads/689a6c1fe8fc32f40348cc41223a7e9d83dd43d2/linux/StaticSitesClient@689a6c1fe8fc32f40348cc41223a7e9d83dd43d2 \
 #    -o ~/.swa/deploy/689a6c1fe8fc32f40348cc41223a7e9d83dd43d2/StaticSitesClient
 
-ENV PATH=$PATH:/opt/az/bin
+ENV PATH=$PATH:/opt/az/bin:/home/playwright
 
 ENTRYPOINT ["bash", "./run-playwright-tests.sh"]
