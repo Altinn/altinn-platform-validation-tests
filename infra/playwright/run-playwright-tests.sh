@@ -5,6 +5,7 @@ ENVIRONMENT="${1:?Environment must be provided}"
 
 git clone https://github.com/Altinn/altinn-platform-validation-tests.git
 cd altinn-platform-validation-tests/playwright
+git checkout remove-firefox
 
 npm install
 
@@ -12,7 +13,7 @@ set +e
 npm run "test:${ENVIRONMENT}"
 playwright_exit=$?
 
-/tmp/generateMetricsFromJunitReport
+generateMetricsFromJunitReport
 metrics_exit=$?
 set -e
 
