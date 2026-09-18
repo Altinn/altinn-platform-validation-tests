@@ -91,7 +91,6 @@ export default defineConfig({
       name: 'firefox',
       use: devices['Desktop Firefox']
     },
-    */
     {
       name: 'edge',
       use: devices['Desktop Edge']
@@ -99,5 +98,6 @@ export default defineConfig({
       name: 'safari',
       use: devices['Desktop Safari']
     },
+    */
   ]
 });
