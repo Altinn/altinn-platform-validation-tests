@@ -8,14 +8,14 @@ import { Testbruker } from "../testdata";
  * test.use({ testbrukerPath: Testbruker.DagligLeder }). Hvem hver test faktisk kjørte som
  * står i rapporten, som annotasjonen under legger inn.
  *
- * CSV-brukere fordeles med parallelIndex innenfor én kjøring. Fallback til én
- * miljøkonfigurert person krever én worker. Separate kjøringer deler brukerpool.
+ * CSV-brukere fordeles med parallelIndex innenfor én kjøring.
+ * Separate kjøringer deler brukerpool.
  */
 export const test = base.extend<{ testbrukerPath: Testbruker; user: TestUser }>({
   testbrukerPath: [Testbruker.PrivatPersonUtenVirksomhet, { option: true }],
 
   user: async ({ testbrukerPath }, use, testInfo) => {
-    const bruker = getTestUser(testbrukerPath, testInfo.parallelIndex, testInfo.config.workers);
+    const bruker = getTestUser(testbrukerPath, testInfo.parallelIndex);
 
     testInfo.annotations.push({
       type: "testperson",

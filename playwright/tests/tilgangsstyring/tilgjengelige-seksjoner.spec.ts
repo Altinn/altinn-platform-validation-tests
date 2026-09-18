@@ -34,7 +34,7 @@ for (const valgtSprak of alleSprak) {
         await innlogging.setLanguage(valgtSprak);
       });
 
-      await test.step("Ser seksjonene hun har som seg selv, ikke som virksomheten", async () => {
+      await test.step("Daglig leder ser seksjonene som gjelder ved representasjon av seg selv", async () => {
         await tilgangsstyring.forside.assertSections(forventedeSeksjoner);
       });
     });

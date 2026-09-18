@@ -8,6 +8,9 @@ import { REDIRECT_TIMEOUT } from "../pages/felles/navigasjon";
 import { Side } from "../pages/side";
 import { gjeldendeMiljo } from "../miljo";
 
+// Sesjonscookiene skal være tømt når utloggingen er fullført.
+const SESJONSCOOKIES = ["AltinnStudioRuntime", "altinnsession"];
+
 /**
  * Innlogging går på tvers av alle flatene, og ligger derfor her framfor i et av
  * områdene.
@@ -40,7 +43,7 @@ export class Innlogging {
   }
 
   /**
-   * Eksplisitt Mockporten-innlogging for mekanismens egen test og for prod.
+   * Mockporten-innlogging for prod.
    */
   async viaMockporten(side: Side, user: TestUser) {
     await test.step("Innlogging med Mockporten", async () => {
@@ -95,6 +98,16 @@ export class Innlogging {
       }),
       this.meny.clickLogoutButton(),
     ]);
+  }
+
+  /** Venter på at sesjonen er ryddet, også om flatene skulle være utilgjengelige. */
+  async assertLoggedOut() {
+    await expect.poll(
+      async () => (await this.page.context().cookies())
+        .filter((cookie) => SESJONSCOOKIES.includes(cookie.name) && cookie.value !== "")
+        .map((cookie) => cookie.name),
+      { message: "Sesjonscookiene er borte etter utlogging", timeout: REDIRECT_TIMEOUT },
+    ).toEqual([]);
   }
 
   async assertOnIdportenLogin() {

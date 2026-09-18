@@ -63,12 +63,13 @@ export class Meny {
     /**
      * Brukeren selv i aktørvelgeren. Personer står med fødselsdato der
      * virksomhetene står med organisasjonsnummer, og lista er virtualisert, så
-     * det er ikke gitt at alle valgene finnes i DOM-en.
+     * det er ikke gitt at alle valgene finnes i DOM-en. Profilens lagrede språk
+     * kan være bokmål, nynorsk eller engelsk allerede før testen velger språk.
      */
     private segSelv() {
         return this.aktorvelger()
             .getByRole('menuitem')
-            .filter({ hasText: /(Født|Born):/ })
+            .filter({ hasText: /(?:Født|Fødd|Born):/ })
             .first();
     }
 

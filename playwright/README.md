@@ -13,18 +13,15 @@ cp example_env/.env.example .env
 cp example_env/.env.at23.local.example .env.at23.local
 ```
 
-Sett `TEST_IDP_PASSWORD` i `.env` for Mockporten-testen. Tilgangsverdien hentes fra
+Sett `TEST_IDP_PASSWORD` i `.env` for innlogging i prod. Tilgangsverdien hentes fra
 teamets hemmelighetsforvaltning. For et annet miljø kopierer du den tilsvarende
 miljøfilen fra `example_env/`. Lokale `.env`-filer er gitignorert.
 
 Testpersoner leses fra `<testbrukerPath>/<miljø>.csv`, relativt til `playwright/`, i alle miljøer.
-En tom fil gir feil. at23 og tt02 har filer i repoet; hvordan øvrige testdatafiler
-skal leveres som secrets, er ikke bestemt ennå.
-
-Når filen mangler, brukes foreløpig `TEST_USER_PID` og `TEST_USER_NAME` fra
-miljøfilen. Når en brukergruppe mangler CSV, velger oppsettet automatisk én worker.
-Fallbacken gir samme person uavhengig av brukergruppe. Personen må derfor passe til testen du velger å kjøre.
-Når CSV-filen blir tilgjengelig, brukes den automatisk uten kodeendringer.
+Manglende eller tom fil for en brukergruppe stopper kjøringen før workerne starter.
+at23 og tt02 har filer i repoet. For øvrige miljøer må CSV-filer leveres på samme sti, for eksempel
+som monterte Kubernetes Secrets. Filene skal ha kolonnene `pid,name`.
+Det er ingen fallback til en miljøkonfigurert testperson.
 CSV-brukere fordeles mellom workerne innenfor én kjøring; separate kjøringer
 deler fortsatt brukerpool.
 
@@ -50,9 +47,6 @@ Den bruker samme miljøfordeling, og lar testen kontrollere landingen direkte.
 Produksjonstestene dekker innlogget sesjon og funksjonalitet med syntetiske
 testpersoner, ikke ordinær eID-innlogging.
 
-`tests/innlogging/mockporten.spec.ts` tester Mockporten eksplisitt én gang per
-miljøkjøring, i alle fire miljøer. Den logger inn én gang og kontrollerer sesjonen
-på tvers av flatene. I prod bruker også de øvrige innloggede testene Mockporten.
 Utlogging testes bare i at23 og tt02, siden Mockportens utloggingsside svarer 404.
 Prod-suiten dekker derfor ikke utlogging.
 
@@ -85,3 +79,15 @@ miljødeklarasjon stopper kjøringen. Prod skal bare legges til for tester som
 ikke endrer data.
 
 `npm run typecheck` typesjekker. `npm run report` åpner siste testrapport.
+
+## Språk i page objects
+
+Felles navigasjon og handlinger må fungere på bokmål, nynorsk og engelsk,
+også før testen har satt språk: profilen kan ha et lagret språk fra en tidligere
+kjøring. Bruk roller og stabile attributter der det er mulig. Når et element må
+finnes via tekst, skal selektoren dekke alle tre språk.
+
+Assertions som kontrollerer oversettelser skal derimot bare godta det valgte
+språket. Bruk `Record<Sprak, ...>` for forventede tekster og `alleSprak` til å
+kjøre språkspesifikke tester. `sprak`-fixturen angir forventningen; den endrer
+ikke profilens språk. Testen må selv velge språket før den kontrollerer teksten.

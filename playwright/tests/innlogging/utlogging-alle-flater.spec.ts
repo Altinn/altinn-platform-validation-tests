@@ -36,6 +36,7 @@ for (const start of utloggingsflater) {
 
     await test.step("Bruker logger ut", async () => {
       await innlogging.logOut();
+      await innlogging.assertLoggedOut();
     });
 
     await test.step("Ingen av flatene viser brukeren som innlogget", async () => {

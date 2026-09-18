@@ -2,6 +2,8 @@ import fs from "fs";
 import path from "path";
 
 import { oppsettsfeil } from "./feil";
+import { getTestUsers } from "./config/testdata";
+import { Testbruker } from "./testdata";
 
 const testDir = path.join(__dirname, "tests");
 
@@ -66,5 +68,10 @@ export default function globalSetup() {
         "Legg kallet øverst i fila med miljøene testene er satt opp for, for eksempel " +
         "runInEnvironment('at22', 'at23', 'tt02')."
     );
+  }
+
+  // Testdata er en forutsetning for miljøkjøringen. Stopp før workere starter.
+  for (const gruppe of Object.values(Testbruker)) {
+    getTestUsers(gruppe);
   }
 }
