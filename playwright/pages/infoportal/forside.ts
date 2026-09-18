@@ -10,10 +10,13 @@ export class InfoportalForside implements Side {
 
   constructor(private page: Page) {}
 
+  // Litt lenger timeout fordi infoportalen laster mye innhold
   async navigateTo() {
     await gaaTil(this.page, this.url, 15_000);
   }
 
+  // Infoportalen har ingen egen innloggingsindikator, så navnet på brukeren er
+  // det vi har å gå etter.
   async assertLoggedIn(user: TestUser) {
     await this.assertOnPage();
     await expect(
@@ -22,6 +25,11 @@ export class InfoportalForside implements Side {
     ).toBeVisible();
   }
 
+  /**
+   * Infoportalen er åpen, så en utlogget bruker blir stående på siden. Det er
+   * innloggingsknappen som sier at siden faktisk har rendret utlogget, siden et
+   * navn som ikke er der ennå ser likt ut som et navn som er borte.
+   */
   async assertLoggedOut(user: TestUser) {
     await this.assertOnPage();
 
