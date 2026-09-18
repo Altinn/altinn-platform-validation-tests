@@ -15,7 +15,7 @@ local jobs = [
     environment: 'at23',
     reportUrl:
       'https://jolly-plant-033965703-at23.westeurope.7.azurestaticapps.net',
-    slackWebhookEnabled: true,
+    slackWebhookEnabled: false,
   },
   {
     name: 'playwright-tt02',
