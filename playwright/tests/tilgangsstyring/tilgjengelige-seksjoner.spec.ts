@@ -1,11 +1,13 @@
+import { Testbruker } from "../../testdata";
 import { test } from "../../fixtures/test";
 import { alleSprak } from "../../config/sprak";
 import { Seksjon } from "../../pages/tilgangsstyring/seksjoner";
 import { runInEnvironment } from "../../miljo";
 
 runInEnvironment("prod", "at23", "tt02");
-// Hva denne brukeren skal se. En bruker med færre tilganger får sin egen liste,
-// ikke en conditional i page objectet.
+/**
+ * Regelen for hva som vises ligger i useSidebarItems.tsx i altinn-access-management-frontend.
+ */
 const forventedeSeksjoner = [
   Seksjon.Foresporsler,
   Seksjon.Brukere,
@@ -16,14 +18,14 @@ const forventedeSeksjoner = [
 
 for (const valgtSprak of alleSprak) {
   test.describe(`Tilgangsstyring på ${valgtSprak}`, () => {
-    test.use({ sprak: valgtSprak });
+    test.use({ sprak: valgtSprak, testbrukerPath: Testbruker.DagligLeder });
 
-    test("Bruker ser oversikt over navigasjonsvalg", async ({
+    test("Daglig leder som representerer seg selv ser sine navigasjonsvalg", async ({
       innlogging,
       user,
       tilgangsstyring,
     }) => {
-      await test.step("Innlogget bruker åpner tilgangsstyring", async () => {
+      await test.step("Daglig leder logger inn og representerer seg selv", async () => {
         await innlogging.logIn(tilgangsstyring.forside, user);
         await tilgangsstyring.forside.assertLoggedIn();
       });
@@ -32,7 +34,7 @@ for (const valgtSprak of alleSprak) {
         await innlogging.setLanguage(valgtSprak);
       });
 
-      await test.step("Verifiser tilgjengelige seksjoner", async () => {
+      await test.step("Daglig leder ser seksjonene som gjelder ved representasjon av seg selv", async () => {
         await tilgangsstyring.forside.assertSections(forventedeSeksjoner);
       });
     });

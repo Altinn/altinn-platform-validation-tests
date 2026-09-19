@@ -55,9 +55,9 @@ export default defineConfig({
   testDir: "./tests",
   testMatch: "**/*.spec.ts",
   fullyParallel: true,
-  // Minst én retry, slik at en flaky kjøring ikke rapporteres som feil.
-  // Traces skrives ved første retry
-  retries: retries ? Number(retries) : process.env.CI ? 2 : 1,
+  // Én retry som standard; kan overstyres med --retries.
+  // Traces skrives ved første retry.
+  retries: retries ? Number(retries) : 1,
   workers: workers ? Number(workers) : undefined,
   reporter: [
     ["html", { open: "never" }],

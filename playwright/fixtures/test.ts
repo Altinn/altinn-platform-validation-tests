@@ -1,16 +1,12 @@
 import { mergeTests } from '@playwright/test';
 import { test as arbeidsflate } from './arbeidsflate.fixture';
+import { test as cookiebanner } from './cookiebanner.fixture';
 import { test as infoportal } from './infoportal.fixture';
 import { test as innlogging } from './innlogging.fixture';
 import { test as sprak } from './sprak.fixture';
+import { test as testbruker } from './testbruker.fixture';
 import { test as tilgangsstyring } from './tilgangsstyring.fixture';
 import { Side } from '../pages/side';
-
-/**
- * Testene importerer `test` herfra. Hvert hovedområde har sin egen fixture-fil,
- * og nye områder legges til i mergeTests under.
- */
-const test = mergeTests(innlogging, sprak, arbeidsflate, tilgangsstyring, infoportal);
 
 export type Flate =
     | 'arbeidsflate'
@@ -19,11 +15,22 @@ export type Flate =
     | 'infoportalen';
 
 /**
- * Oppslag fra flatenavn til side, for testene som går på tvers av flatene.
+ * Testene importerer `test` herfra. Hvert hovedområde har sin egen fixture-fil, og
+ * nye områder legges til i mergeTests under.
+ *
+ * `sider` er landingssiden på hver flate, for testene som går på tvers av dem.
  * Testene som holder seg innenfor ett område bruker områdefixturen direkte.
  */
-export const testMedFlater = test.extend<{ flater: Record<Flate, Side> }>({
-    flater: async ({ arbeidsflate, tilgangsstyring, infoportal }, use) => {
+const test = mergeTests(
+    innlogging,
+    testbruker,
+    sprak,
+    cookiebanner,
+    arbeidsflate,
+    tilgangsstyring,
+    infoportal
+).extend<{ sider: Record<Flate, Side> }>({
+    sider: async ({ arbeidsflate, tilgangsstyring, infoportal }, use) => {
         await use({
             'arbeidsflate': arbeidsflate.forside,
             'arbeidsflate-profil': arbeidsflate.profil,
