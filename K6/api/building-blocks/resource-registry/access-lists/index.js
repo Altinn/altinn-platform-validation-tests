@@ -3,7 +3,6 @@ export { AccessListCreateOrUpdate } from "./access-list-create-or-update.js";
 export { AccessListDelete } from "./access-list-delete.js";
 export { AccessListsDeleteResourceConnection } from "./access-list-delete-resource-connection.js";
 export { AccessListGet } from "./access-list-get.js";
-export { AccessListGetByMember } from "./access-list-get-by-member.js";
 export { AccessListGetByOwner } from "./access-list-get-by-owner.js";
 export { AccessListGetMembers } from "./access-list-get-members.js";
 export { AccessListsGetResourceConnections } from "./access-list-get-resource-connections.js";
