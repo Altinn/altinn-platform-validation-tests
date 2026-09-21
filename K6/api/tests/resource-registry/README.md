@@ -23,9 +23,15 @@ after a change to something shared.
 ### Not covered, and why
 
 - `AccessListClient.AccessListPatch`: the registry has the endpoint but does not implement it. `UpdateAccessList`
-  throws `NotImplementedException`, answers 501, and its remarks say to use PUT. The lifecycle test updates through
-  `AccessListUpsert` instead. The client method sends `application/json-patch+json`, which is what the endpoint
-  consumes, so it is ready for the day it is implemented.
+  throws `NotImplementedException`, answers 501, and its remarks say to use PUT
+  ([Altinn/altinn-resource-registry#879](https://github.com/Altinn/altinn-resource-registry/issues/879)). The
+  lifecycle test updates through `AccessListUpsert` instead. The client method sends `application/json-patch+json`,
+  which is what the endpoint consumes, so it is ready for the day it is implemented.
+- `ResourceV2GetPolicyRights` is declared in the swagger as `ResourceDecomposedDto` (`{ "rights": [...] }`) but the
+  registry returns the `RightDto` list directly
+  ([Altinn/altinn-resource-registry#878](https://github.com/Altinn/altinn-resource-registry/issues/878)). The
+  building block returns what is on the wire; switch it back to the generated type once the registry and its swagger
+  agree.
 - `create-resource-and-policy.js` is not in `run-all.js` or any yaml. Deleting a resource leaves rows in
   `resourceregistry.resourcesubjects` behind, reported as
   [Altinn/altinn-resource-registry#848](https://github.com/Altinn/altinn-resource-registry/issues/848), so every run
