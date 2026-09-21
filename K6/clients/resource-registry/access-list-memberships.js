@@ -7,26 +7,24 @@ const TAGS = {
     AccessListMembershipsGetMemberships: {
         action: "access-list-memberships-get-memberships",
     },
-    AccessListGetByMember: {
-        action: "access-list-get-by-member",
-    },
 };
 
 /**
- * Client for the access list endpoints that are reserved for platform
- * components: the memberships query and the get-by-member lookup.
+ * Client for the memberships query, which is reserved for platform
+ * components.
  *
- * Both endpoints authenticate with a platform access token sent in the
+ * The endpoint authenticates with a platform access token sent in the
  * `PlatformAccessToken` header, not as a bearer token, and the token has to be
  * issued for the `platform` organization (AccessTokenRequirement("platform") in
  * the registry). A bearer token gets 401 here, whatever scopes it carries, so
  * the token generator handed to the constructor has to be a
- * PlatformTokenGenerator built with `withOrganization("platform")`. The other
- * access list endpoints take a bearer token and live in AccessListClient.
+ * PlatformTokenGenerator built with `withOrganization("platform")`. The
+ * registry also accepts a bearer token with the
+ * `altinn:resourceregistry/resource.admin` scope on this endpoint, but the
+ * client sticks to the platform access token.
  *
- * The memberships query also accepts a bearer token with the
- * `altinn:resourceregistry/resource.admin` scope, but get-by-member does not,
- * so this client sticks to the platform access token for both.
+ * The get-by-member lookup takes the same token but sits under the Access List
+ * tag in the swagger, so it lives in AccessListClient.
  */
 class AccessListMembershipsClient {
     /**
@@ -48,12 +46,6 @@ class AccessListMembershipsClient {
          * Fully-qualified API path.
          */
         this.FULL_PATH = `${baseUrl}${this.BASE_PATH}`;
-
-        /**
-         * Fully-qualified path of the get-by-member lookup, which sits beside
-         * the memberships path rather than under it.
-         */
-        this.GET_BY_MEMBER_PATH = `${baseUrl}/resourceregistry/api/v1/access-lists/get-by-member`;
     }
 
     static get TAGS() {
@@ -74,27 +66,6 @@ class AccessListMembershipsClient {
             requestParams({
                 endpoint: this.FULL_PATH,
                 action: TAGS.AccessListMembershipsGetMemberships.action,
-                labels,
-                token: null,
-                headers: { PlatformAccessToken: this.tokenGenerator.getToken() },
-            }),
-        );
-    }
-
-    /**
-     * Gets access lists for a given member.
-     *
-     * @param {string} party Member party UUID URN.
-     * @param {{[key: string]: string}|null} [labels] See the API documentation.
-     * Optional k6 request tags.
-     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
-     */
-    AccessListGetByMember(party, labels = null) {
-        return http.get(
-            buildUrl(this.GET_BY_MEMBER_PATH, { party }),
-            requestParams({
-                endpoint: this.GET_BY_MEMBER_PATH,
-                action: TAGS.AccessListGetByMember.action,
                 labels,
                 token: null,
                 headers: { PlatformAccessToken: this.tokenGenerator.getToken() },

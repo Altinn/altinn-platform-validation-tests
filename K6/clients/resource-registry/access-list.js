@@ -4,6 +4,9 @@ import { buildUrl, jsonBody, requestParams } from "../common/request.js";
 import { AccessListGetByOwnerQuery, AccessListGetQuery, AccessListPagedQuery, CreateAccessListModel, JsonPatchOperation, UpsertAccessListResourceConnectionDto } from "./types.js";
 
 const TAGS = {
+    AccessListGetByMember: {
+        action: "access-list-get-by-member",
+    },
     AccessListGetByOwner: {
         action: "access-list-get-by-owner",
     },
@@ -43,17 +46,23 @@ const TAGS = {
 };
 
 /**
- * Client for the access list endpoints that take a bearer token: the lists
- * themselves, their members and their resource connections.
+ * Client for the access list endpoints under the Access List tag: the lists
+ * themselves, their members, their resource connections and the get-by-member
+ * lookup.
  *
- * The two endpoints reserved for platform components, the memberships query and
- * the get-by-member lookup, take a platform access token in a different header
- * and live in AccessListMembershipsClient.
+ * The endpoints do not share an authentication scheme. Everything but
+ * get-by-member takes a bearer token with the access list scopes for the owner
+ * org. get-by-member is reserved for platform components and takes a platform
+ * access token issued for the `platform` organization, sent in the
+ * `PlatformAccessToken` header; a bearer token gets 401 there, whatever scopes
+ * it carries. The token generator handed to the constructor therefore has to
+ * match the methods the caller intends to use, which in practice means one
+ * client instance per token flavour, as RegisterClient does.
  */
 class AccessListClient {
     /**
      * @param {string} baseUrl Base URL, e.g. https://platform.tt02.altinn.no
-     * @param {*} tokenGenerator Generates bearer tokens.
+     * @param {*} tokenGenerator Generates the tokens used to call the API. See the class doc.
      */
     constructor(baseUrl, tokenGenerator) {
         /**
@@ -74,6 +83,31 @@ class AccessListClient {
 
     static get TAGS() {
         return TAGS;
+    }
+
+    /**
+     * Gets access lists for a given member.
+     *
+     * Reserved for platform components: the token generator of this instance
+     * has to be a PlatformTokenGenerator built with `withOrganization("platform")`,
+     * and the token goes in the PlatformAccessToken header, not as a bearer token.
+     *
+     * @param {string} party Member party UUID URN.
+     * @param {{[key: string]: string}|null} [labels] See the API documentation.
+     * Optional k6 request tags.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
+     */
+    AccessListGetByMember(party, labels = null) {
+        return http.get(
+            buildUrl(`${this.FULL_PATH}get-by-member`, { party }),
+            requestParams({
+                endpoint: `${this.FULL_PATH}get-by-member`,
+                action: TAGS.AccessListGetByMember.action,
+                labels,
+                token: null,
+                headers: { PlatformAccessToken: this.tokenGenerator.getToken() },
+            }),
+        );
     }
 
     /**
