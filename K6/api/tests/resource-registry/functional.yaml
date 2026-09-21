@@ -1,0 +1,23 @@
+namespace: resource-registry
+base_dir: K6/api/tests/resource-registry
+test_definitions:
+  - test_file: access-list-lifecycle.js
+    contexts:
+      - environment: at22
+      - environment: at23
+      - environment: tt02
+  - test_file: access-list-etag.js
+    contexts:
+      - environment: at22
+      - environment: at23
+      - environment: tt02
+  - test_file: access-list-memberships.js
+    contexts:
+      - environment: at22
+      - environment: at23
+      - environment: tt02
+  - test_file: resource-v2-policy-rights.js
+    contexts:
+      - environment: at22
+      - environment: at23
+      - environment: tt02
