@@ -4,9 +4,6 @@ import { buildUrl, jsonBody, requestParams } from "../common/request.js";
 import { AccessListGetByOwnerQuery, AccessListGetQuery, AccessListPagedQuery, CreateAccessListModel, JsonPatchOperation, UpsertAccessListResourceConnectionDto } from "./types.js";
 
 const TAGS = {
-    AccessListGetByMember: {
-        action: "access-list-get-by-member",
-    },
     AccessListGetByOwner: {
         action: "access-list-get-by-owner",
     },
@@ -45,6 +42,14 @@ const TAGS = {
     },
 };
 
+/**
+ * Client for the access list endpoints that take a bearer token: the lists
+ * themselves, their members and their resource connections.
+ *
+ * The two endpoints reserved for platform components, the memberships query and
+ * the get-by-member lookup, take a platform access token in a different header
+ * and live in AccessListMembershipsClient.
+ */
 class AccessListClient {
     /**
      * @param {string} baseUrl Base URL, e.g. https://platform.tt02.altinn.no
@@ -69,26 +74,6 @@ class AccessListClient {
 
     static get TAGS() {
         return TAGS;
-    }
-
-    /**
-     * Gets access lists for a given member.
-     *
-     * @param {string} party Member party UUID URN.
-     * @param {{[key: string]: string}|null} [labels] See the API documentation.
-     * Optional k6 request tags.
-     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
-     */
-    AccessListGetByMember(party, labels = null) {
-        return http.get(
-            buildUrl(`${this.FULL_PATH}get-by-member`, { party }),
-            requestParams({
-                endpoint: `${this.FULL_PATH}get-by-member`,
-                action: TAGS.AccessListGetByMember.action,
-                labels,
-                token: this.tokenGenerator.getToken(),
-            }),
-        );
     }
 
     /**
