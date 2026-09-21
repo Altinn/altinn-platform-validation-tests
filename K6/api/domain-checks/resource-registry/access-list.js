@@ -3,7 +3,7 @@ import { check } from "k6";
 import {
     AccessListInfoDto,
     AccessListMembershipDtoAggregateVersionVersionedPaginated,
-    AccessListResourceConnectionDtoAggregateVersionVersionedPaginated,
+    AccessListResourceConnectionDto,
     AccessListResourceMembershipWithActionFilterDtoListObject,
 } from "../../../clients/resource-registry/types.js";
 
@@ -168,25 +168,27 @@ function CheckMembersResolveToParties(page, expectedPartyUuidUrns, operation) {
  * with the action filters that were written. An empty expectation checks that
  * the list has no connections.
  *
- * @param {AccessListResourceConnectionDtoAggregateVersionVersionedPaginated|null} page - The connections page returned by the API.
+ * Takes the connections themselves, so it serves both the connections page
+ * and the `resourceConnections` a listing includes on each list.
+ *
+ * @param {Array<AccessListResourceConnectionDto>|null|undefined} connections - The connections returned by the API.
  * @param {Array<{resourceIdentifier: string, actionFilters: Array<string>|null}>} expected - The connections the list has to hold.
  * @param {string} operation - Name of the operation, used in the check name and logs.
  * @returns {boolean} True if the connections match, false otherwise.
  */
-function CheckResourceConnections(page, expected, operation) {
-    const connections = page?.data ?? [];
-    const identifiers = connections.map((connection) => connection.resourceIdentifier);
+function CheckResourceConnections(connections, expected, operation) {
+    const identifiers = (connections ?? []).map((connection) => connection.resourceIdentifier);
     const wrongFilters = expected
         .filter((wanted) => {
-            const actual = connections.find((connection) => connection.resourceIdentifier === wanted.resourceIdentifier);
+            const actual = (connections ?? []).find((connection) => connection.resourceIdentifier === wanted.resourceIdentifier);
 
             return actual !== undefined && !sameSet(actual.actionFilters, wanted.actionFilters);
         })
         .map((wanted) => wanted.resourceIdentifier);
 
-    const success = check(page, {
-        [`CheckResourceConnections - ${operation} holds exactly the expected connections`]: (response) =>
-            Array.isArray(response?.data) &&
+    const success = check(connections, {
+        [`CheckResourceConnections - ${operation} holds exactly the expected connections`]: (items) =>
+            Array.isArray(items) &&
             sameSet(identifiers, expected.map((wanted) => wanted.resourceIdentifier)) &&
             wrongFilters.length === 0,
     });

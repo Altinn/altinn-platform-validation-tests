@@ -1,3 +1,5 @@
+import http from "k6/http";
+
 import {
     AccessListClient,
     AccessListMembershipsClient,
@@ -164,6 +166,8 @@ export const getResourceV2Client = lazy(function () {
  * (header: orgNo,partyId,partyUuid,orgForm), regenerated with the Tenor CLI as
  * the README in that folder describes. Read from main over HTTP, like every
  * other test data file, so a branch-only edit changes nothing until merged.
+ * TESTDATA_BRANCH reads from another branch instead, for running a test
+ * locally against data that is still in review.
  *
  * @param {"AS"|"ENK"} [orgForm] Keep only businesses of this form.
  * @returns {Array<Business>} The businesses. Fails the test when the file is
@@ -171,7 +175,11 @@ export const getResourceV2Client = lazy(function () {
  */
 export function loadBusinesses(orgForm) {
     /** @type {Array<Business>} */
-    const rows = fetchTestData(`resource-registry/businesses-${__ENV.ENVIRONMENT}.csv`);
+    const rows = fetchTestData(
+        `resource-registry/businesses-${__ENV.ENVIRONMENT}.csv`,
+        true,
+        __ENV.TESTDATA_BRANCH || "main",
+    );
     const businesses = orgForm ? rows.filter((row) => row.orgForm === orgForm) : rows;
 
     if (businesses.length === 0) {
@@ -188,6 +196,71 @@ export function loadBusinesses(orgForm) {
  */
 export function newIdentifier() {
     return `${IDENTIFIER_PREFIX}${uuidv4()}`;
+}
+
+/**
+ * Deletes every access list of the owner that a test created, for teardown.
+ *
+ * Pages through the owner's lists and deletes the ones carrying
+ * IDENTIFIER_PREFIX, so a run that failed halfway leaves nothing behind and
+ * the lists people made by hand in the environment are left alone. Deleting a
+ * list takes its members and resource connections with it.
+ *
+ * @returns {number} How many lists were deleted.
+ */
+export function deleteTestLists() {
+    const client = getAccessListClient();
+    const { owner } = getConfiguration();
+    const maxPages = 20;
+    let deleted = 0;
+    /** @type {string|undefined} */
+    let token = undefined;
+
+    for (let page = 0; page < maxPages; page++) {
+        const res = client.AccessListGetByOwner(owner, token ? { token } : null);
+
+        if (res.status !== 200) {
+            console.error(`deleteTestLists - listing the lists of ${owner} answered ${res.status}: ${res.body}`);
+            break;
+        }
+
+        /** @type {import("../../../clients/resource-registry/types.js").AccessListInfoDtoPaginated} */
+        const listing = JSON.parse(String(res.body));
+
+        for (const list of listing.data.filter((item) => item.identifier.startsWith(IDENTIFIER_PREFIX))) {
+            const deletion = client.AccessListDelete(owner, list.identifier);
+
+            if (deletion.status === 200) {
+                deleted++;
+            } else {
+                console.error(`deleteTestLists - deleting ${list.identifier} answered ${deletion.status}: ${deletion.body}`);
+            }
+        }
+
+        token = nextToken(listing.links?.next);
+
+        if (!token) {
+            break;
+        }
+    }
+
+    return deleted;
+}
+
+/**
+ * The continuation token in a next link, for the `token` query parameter.
+ *
+ * @param {string|null|undefined} nextUrl The next link, if any.
+ * @returns {string|undefined} The token, or undefined when there is no next page.
+ */
+function nextToken(nextUrl) {
+    if (!nextUrl) {
+        return undefined;
+    }
+
+    const match = /[?&]token=([^&]+)/.exec(nextUrl);
+
+    return match ? decodeURIComponent(match[1]) : undefined;
 }
 
 /**
@@ -212,6 +285,31 @@ export function partyUuidUrn(partyUuid) {
  */
 export function resourceUrn(resourceId) {
     return `urn:altinn:resource:${resourceId}`;
+}
+
+/**
+ * Runs one call whose expected answer is an error status, without it counting
+ * as a failed request.
+ *
+ * k6 counts every 4xx and 5xx towards `http_req_failed`, which the strict
+ * options hold at zero. A test that expects a 404 after a delete or a 412 on a
+ * stale ETag therefore has to mark that status as expected for the one call
+ * that is meant to get it. The default expectation is restored afterwards,
+ * so nothing else in the iteration inherits it.
+ *
+ * @template T
+ * @param {number} status The status the call is expected to answer with.
+ * @param {() => T} call The call.
+ * @returns {T} What the call returned.
+ */
+export function expectingStatus(status, call) {
+    http.setResponseCallback(http.expectedStatuses(status));
+
+    try {
+        return call();
+    } finally {
+        http.setResponseCallback(http.expectedStatuses({ min: 200, max: 399 }));
+    }
 }
 
 /**
