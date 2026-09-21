@@ -5,17 +5,16 @@ import {
     AccessListAddMembers,
     AccessListCreateOrUpdate,
     AccessListDelete,
+    AccessListGetByMember,
     AccessListsUpsertResourceConnection,
 } from "../../building-blocks/resource-registry/access-lists/index.js";
-import {
-    AccessListGetByMember,
-    AccessListMembershipsGetMemberships,
-} from "../../building-blocks/resource-registry/index.js";
+import { AccessListMembershipsGetMemberships } from "../../building-blocks/resource-registry/index.js";
 import { AccessListDomainChecks } from "../../domain-checks/resource-registry/access-list.js";
 import {
     deleteTestLists,
     getAccessListClient,
     getAccessListMembershipsClient,
+    getAccessListPlatformClient,
     getConfiguration,
     loadBusinesses,
     newIdentifier,
@@ -64,20 +63,21 @@ export function setup() {
  * The memberships query is what the PDP asks when a resource has access lists
  * enabled, so it reports the party, the resource and the action filters of
  * the connection. get-by-member is the reverse lookup: every list the party
- * sits on. Both take a platform access token, which is why they have their
- * own client. Both listings also hold whatever else the party is a member of
- * in the environment, so the checks look for our entry rather than counting.
+ * sits on. Both take a platform access token rather than the enterprise token
+ * the other access list methods take, so get-by-member goes through a second
+ * AccessListClient built on that token. Both listings also hold whatever else
+ * the party is a member of in the environment, so the checks look for our
+ * entry rather than counting.
  *
  * @param {ReturnType<typeof setup>} data The list created in setup.
  */
 export default function (data) {
-    const client = getAccessListMembershipsClient();
     const { resourceId } = getConfiguration();
     const party = partyUuidUrn(data.member.partyUuid);
 
     group("Look up memberships for a party and a resource", function () {
         // Both filters are URNs; a bare resource identifier is a 400.
-        const memberships = AccessListMembershipsGetMemberships(client, { party: [party], resource: [resourceUrn(resourceId)] }, membershipsLabel);
+        const memberships = AccessListMembershipsGetMemberships(getAccessListMembershipsClient(), { party: [party], resource: [resourceUrn(resourceId)] }, membershipsLabel);
 
         AccessListDomainChecks.CheckMembership(memberships, {
             party,
@@ -87,7 +87,7 @@ export default function (data) {
     });
 
     group("Look up the lists a party is a member of", function () {
-        const lists = AccessListGetByMember(client, party, byMemberLabel);
+        const lists = AccessListGetByMember(getAccessListPlatformClient(), party, byMemberLabel);
 
         AccessListDomainChecks.CheckContainsList(lists, data.identifier, "AccessListGetByMember");
     });

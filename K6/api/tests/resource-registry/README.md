@@ -10,7 +10,7 @@ and runs with [`getStrictOptions`](../../../helpers.js), so a failed check or a 
 | --- | --- | --- | --- |
 | `access-list-lifecycle.js` | `AccessListClient` | `AccessListUpsert` (create and update), `AccessListGet`, `AccessListGetByOwner` (plain and with `include=resource-actions`), `AccessListAddMembers`, `AccessListGetMembers`, `AccessListReplaceMembers`, `AccessListRemoveMembers`, `AccessListUpsertResourceConnection`, `AccessListGetResourceConnections`, `AccessListDeleteResourceConnection`, `AccessListDelete` | at22, at23, tt02 |
 | `access-list-etag.js` | `AccessListClient` | `AccessListGet` and `AccessListGetMembers` with `If-None-Match` (304), `AccessListUpsertResourceConnection` and `AccessListDelete` with a stale (412) and the current (200) `If-Match` | at22, at23, tt02 |
-| `access-list-memberships.js` | `AccessListMembershipsClient` | `AccessListMembershipsGetMemberships`, `AccessListGetByMember` | at22, at23, tt02 |
+| `access-list-memberships.js` | `AccessListMembershipsClient`, `AccessListClient` (platform token) | `AccessListMembershipsGetMemberships`, `AccessListGetByMember` | at22, at23, tt02 |
 | `resource-v2-policy-rights.js` | `ResourceV2Client` | `ResourceV2GetPolicyRights` | at22, at23, tt02 |
 | `get-orgs.js` | `ResourceOwnerClient` | `ResourceOwnerGetOrgs` | healthcheck, every environment |
 | `get-updated-resources.js` | `ResourceClient` | `ResourceUpdated` | healthcheck, every environment |
@@ -41,11 +41,14 @@ after a change to something shared.
 ## Tokens
 
 - `AccessListClient` takes an enterprise token for the owner org with `altinn:resourceregistry/accesslist.read` and
-  `accesslist.write`. The registry checks the token's org against the owner in the path, so the tests can only touch
-  the lists of the configured owner.
-- `AccessListMembershipsClient` takes a platform access token issued for the `platform` org, sent in the
-  `PlatformAccessToken` header. The registry requires that issuer for `memberships` and `get-by-member` and
-  answers 401 to a bearer token, whatever scopes it carries.
+  `accesslist.write` for everything but `get-by-member`. The registry checks the token's org against the owner in the
+  path, so the tests can only touch the lists of the configured owner.
+- `get-by-member` and `memberships` are reserved for platform components and take a platform access token issued
+  for the `platform` org, sent in the `PlatformAccessToken` header. The registry answers 401 to a bearer token there,
+  whatever scopes it carries. `memberships` has its own client, `AccessListMembershipsClient`. `get-by-member` sits in
+  `AccessListClient` because the swagger has it under the Access List tag, so the tests build a second
+  `AccessListClient` on the platform token generator for that one call (`getAccessListPlatformClient` in `commons.js`),
+  the way the register tests keep one `RegisterClient` per token flavour.
 - `ResourceV2Client` takes no token; policy rights are public.
 
 ## Configuration

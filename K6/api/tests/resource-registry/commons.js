@@ -118,25 +118,47 @@ export const getAccessListClient = lazy(function () {
 });
 
 /**
- * Client for the two lookups reserved for platform components: memberships and
- * get-by-member.
+ * Token generator for the two lookups reserved for platform components,
+ * memberships and get-by-member.
  *
  * Platform access token issued for the `platform` org. The registry requires
  * that issuer for both endpoints and rejects a bearer token, whatever scopes
- * it carries, so this cannot share a token with getAccessListClient.
+ * it carries, so neither lookup can share a token with getAccessListClient.
  *
- * @returns {AccessListMembershipsClient} The client.
+ * @returns {PlatformTokenGenerator} The generator.
  */
-export const getAccessListMembershipsClient = lazy(function () {
-    const tokenGenerator = new PlatformTokenGenerator(
+const getPlatformTokenGenerator = lazy(function () {
+    return new PlatformTokenGenerator(
         new PlatformTokenBuilder()
             .withEnvironment(__ENV.ENVIRONMENT)
             .withOrganization("platform")
             .withTtl(3600)
             .build(),
     );
+});
 
-    return new AccessListMembershipsClient(__ENV.BASE_URL, tokenGenerator);
+/**
+ * Client for the memberships query.
+ *
+ * @returns {AccessListMembershipsClient} The client.
+ */
+export const getAccessListMembershipsClient = lazy(function () {
+    return new AccessListMembershipsClient(__ENV.BASE_URL, getPlatformTokenGenerator());
+});
+
+/**
+ * Access list client for the get-by-member lookup only.
+ *
+ * get-by-member sits in AccessListClient, since the swagger has it under the
+ * Access List tag, but takes the platform access token rather than the
+ * enterprise token the rest of that client's methods take. Hence a second
+ * instance of the same client, built on the platform token generator, the way
+ * the register tests keep one RegisterClient per token flavour.
+ *
+ * @returns {AccessListClient} The client.
+ */
+export const getAccessListPlatformClient = lazy(function () {
+    return new AccessListClient(__ENV.BASE_URL, getPlatformTokenGenerator());
 });
 
 /**
