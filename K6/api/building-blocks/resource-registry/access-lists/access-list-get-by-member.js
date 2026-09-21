@@ -1,24 +1,24 @@
 import { check } from "k6";
 
-import { AccessListMembershipsClient } from "../../../clients/resource-registry/index.js";
-import { AccessListInfoDto } from "../../../clients/resource-registry/types.js";
-import { withRetries } from "../common/retry.js";
+import { AccessListClient } from "../../../../clients/resource-registry/index.js";
+import { AccessListInfoDto } from "../../../../clients/resource-registry/types.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Gets access lists for a given member.
  *
- * @param {AccessListMembershipsClient} accessListMembershipsClient Client for the Access List Memberships API.
+ * @param {AccessListClient} accessListClient Client for the Access List API, built with a platform access token generator (see AccessListClient).
  * @param {string} party Member party UUID URN.
  * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {Array<AccessListInfoDto>|null} Access lists.
  */
 export function AccessListGetByMember(
-    accessListMembershipsClient,
+    accessListClient,
     party,
     labels = null,
 ) {
     const res = withRetries(
-        () => accessListMembershipsClient.AccessListGetByMember(party, labels),
+        () => accessListClient.AccessListGetByMember(party, labels),
         "AccessListGetByMember",
     );
 
