@@ -1,11 +1,16 @@
 import { check } from "k6";
 
 import { ResourceV2Client } from "../../../../clients/resource-registry/index.js";
-import { ResourceDecomposedDto, ResourcePolicyRightsQuery } from "../../../../clients/resource-registry/types.js";
+import { ResourcePolicyRightsQuery, RightDto } from "../../../../clients/resource-registry/types.js";
 import { withRetries } from "../../common/retry.js";
 
 /**
  * Gets the policy rights for a resource.
+ *
+ * The swagger declares the body as ResourceDecomposedDto, an object with a
+ * `rights` list, but the controller returns the RightDto list directly
+ * (ResourceV2Controller.GetRights returns Ok(IEnumerable<RightDto>)), and that
+ * is what every environment answers with. This returns what is on the wire.
  *
  * @param {ResourceV2Client} resourceV2Client Client for the Resource V2 API.
  * @param {string} id Resource identifier.
@@ -13,7 +18,7 @@ import { withRetries } from "../../common/retry.js";
  * Optional query parameters.
  * @param {{[key: string]: string}|null} [labels] See the API documentation.
  * Optional k6 request labels.
- * @returns {ResourceDecomposedDto|null} Parsed response body, or null when the call failed.
+ * @returns {Array<RightDto>|null} Parsed response body, or null when the call failed.
  */
 export function ResourceV2GetPolicyRights(
     resourceV2Client,
@@ -30,7 +35,7 @@ export function ResourceV2GetPolicyRights(
         "ResourceV2GetPolicyRights",
     );
 
-    /** @type {ResourceDecomposedDto|null} */
+    /** @type {Array<RightDto>|null} */
     let resource = null;
 
     const succeed = check(res, {

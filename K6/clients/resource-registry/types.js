@@ -495,6 +495,7 @@ export const ResourcePolicyRightsQuery = undefined;
 export const ResourceSearchQuery = undefined;
 export const ResourceSearchQueryBuilder = undefined;
 export const ResourceType = undefined;
+export const RightDto = undefined;
 export const ServiceResource = undefined;
 export const SubjectResourcesPaginated = undefined;
 export const UpdatedResourceSubjectPaginated = undefined;
