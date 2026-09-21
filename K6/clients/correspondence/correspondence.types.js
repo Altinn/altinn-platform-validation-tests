@@ -8,6 +8,7 @@
  * @property {string|null} [instance]
  * @property {string} code
  * @property {string|null} [traceId] OpenTelemetry trace ID for the request.
+ * @property {AltinnProblemDetails} [source]
  * @property {string|null} [errorCode] Altinn error code (e.g. CORR-00001).
  */
 
@@ -20,6 +21,7 @@
  * @property {string|null} [detail]
  * @property {string|null} [instance]
  * @property {string|null} [code] Altinn error code (e.g. STD-00000).
+ * @property {AltinnProblemDetails} [source]
  * @property {Array<object>|null} [validationErrors] Structured validation errors per field.
  * @property {string|null} [traceId] OpenTelemetry trace ID for the request.
  * @property {{[key: string]: Array<string>}|null} [errors] Field-keyed validation error messages (legacy format).
