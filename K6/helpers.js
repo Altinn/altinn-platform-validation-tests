@@ -199,6 +199,79 @@ export function getOptions(labels, groups = []) {
 }
 
 /**
+ * Options for a functional test, where every check and every request has to
+ * succeed for the run to pass.
+ *
+ * getOptions creates tagged metrics for reporting, but its empty thresholds
+ * let a run with failed checks or failed requests exit 0. A functional test
+ * only sends requests it expects to succeed, so this adds the two thresholds
+ * that make k6 exit non-zero, and CI fail, when any check or request fails.
+ * A test that expects an error status (a 404 after a delete, a 412 on a stale
+ * ETag) has to call the client directly and check the status itself, since
+ * those responses count towards `http_req_failed` unless the request marks
+ * them as expected.
+ *
+ * @param {{ [key: string]: string }[]} labels Request labels, as for getOptions.
+ * @param {string[]} groups Group names, as for getOptions.
+ * @returns {ReturnType<typeof getOptions>} Options that fail the run on any
+ * failed check or request.
+ */
+export function getStrictOptions(labels, groups = []) {
+    const options = getOptions(labels, groups);
+
+    options.thresholds.checks = ["rate>=1.0"];
+    options.thresholds.http_req_failed = ["rate<=0.0"];
+
+    return options;
+}
+
+/**
+ * Resolves a test family's per-environment configuration, with an env var
+ * override for every key.
+ *
+ * A family lists what it needs per environment (owner, org number, a resource
+ * to connect to) and the env var that overrides each key for an ad-hoc run.
+ * The value is the env var when set, else the default for `__ENV.ENVIRONMENT`.
+ * A key with neither fails here, naming the key and the variable that sets
+ * it, rather than surfacing later as an undefined in a URL or a body.
+ *
+ * @template {string} K
+ * @param {string} family Family name for the error message, e.g. "resource-registry".
+ * @param {{[environment: string]: Partial<Record<K, string>>}} defaultsByEnvironment
+ * Defaults per environment. An environment that is missing has no defaults,
+ * so every key has to come from its env var.
+ * @param {Record<K, string>} envVarByKey The env var that overrides each key.
+ * @returns {Record<K, string>} The resolved configuration.
+ */
+export function getTestConfiguration(family, defaultsByEnvironment, envVarByKey) {
+    const environment = __ENV.ENVIRONMENT;
+    /** @type {Partial<Record<K, string>>} */
+    const defaults = defaultsByEnvironment[environment] ?? {};
+    /** @type {Partial<Record<K, string>>} */
+    const configuration = {};
+    const missing = [];
+
+    for (const key of /** @type {K[]} */ (Object.keys(envVarByKey))) {
+        const envVar = envVarByKey[key];
+        const value = __ENV[envVar] || defaults[key];
+
+        if (value === undefined || value === "") {
+            missing.push(`${key} (set ${envVar})`);
+        } else {
+            configuration[key] = value;
+        }
+    }
+
+    if (missing.length > 0) {
+        throw new Error(
+            `No ${family} test configuration for environment '${environment}': missing ${missing.join(", ")}`,
+        );
+    }
+
+    return /** @type {Record<K, string>} */ (configuration);
+}
+
+/**
  * @param {string} ip Address to validate.
  * @returns {boolean} True when the address is a valid IPv4 or IPv6 address.
  */
