@@ -22,29 +22,30 @@ businesses are the same everywhere, which is why the same organization numbers c
 
 ## Regenerating
 
-Two steps: fetch businesses with the Tenor CLI in `altinn-access-management-frontend`, then look them up in Register
-with the script in this repository. Tenor needs a Maskinporten client with the scope
+The businesses come from the Tenor CLI in `altinn-access-management-frontend/playwright`, with `--register` so each
+row carries its Altinn party from Register. Tenor needs a Maskinporten client with the scope
 `skatteetaten:testnorge/testdata.read`; the frontend team has one, and its `MASKINPORTEN_CLIENT_ID` and
-`MASKINPORTEN_JWK` go in the frontend repository's gitignored `playwright/config/.env`.
+`MASKINPORTEN_JWK` go in the frontend repository's gitignored `playwright/config/.env`, next to the
+`<ENV>_REGISTER_SUBSCRIPTION_KEY` the enrichment uses.
 
-From `altinn-access-management-frontend/playwright`, per environment:
-
-```sh
-yarn tenor virksomheter -n 20 --env at23 --json > tenor-AS-at23.json
-yarn tenor virksomheter -n 20 --kql "organisasjonsform.kode:ENK" --env at23 --json > tenor-ENK-at23.json
-```
-
-Then from this repository, with the environment's `.conf/<env>.ps1` loaded and `REGISTER_SUBSCRIPTION_KEY` set to the
-Register APIM key for that environment:
+Per environment:
 
 ```sh
-node hack/tenor-to-testdata.mjs --env at23 --out K6/testdata/resource-registry/businesses-at23.csv tenor-AS-at23.json tenor-ENK-at23.json
+yarn tenor virksomheter -n 20 --env at23 --register --json > tenor-AS-at23.json
+yarn tenor virksomheter -n 20 --kql "organisasjonsform.kode:ENK" --env at23 --register --json > tenor-ENK-at23.json
 ```
 
-The script asks Register for every organization number (platform access token from the test token generator plus the
-subscription key), takes `partyId`, `partyUuid` and `unitType` from the answer, drops businesses Register does not know
-and says how many, and refuses to write an empty file. Do the same for at22 and tt02.
+Each row in the output maps onto the CSV like this. Rows with `altinn: null` (Register does not know the business) are
+left out.
 
-The Tenor CLI has a `--register` flag that does the Register lookup itself, but it asks for a field Register does not
-accept (`organization`; Register wants `org`) and fails with a 400 at the time of writing. The script here is the
-workaround until that is fixed in the frontend repository.
+| CSV column | Tenor row |
+| --- | --- |
+| `orgNo` | `organisasjonsnummer` |
+| `partyId` | `altinn.partyId` |
+| `partyUuid` | `altinn.partyUuid` |
+| `orgForm` | `altinn.unitType` |
+
+At the time of writing, `--register` fails with a 400 because the CLI asks Register for a field it does not accept
+(`organization`; Register wants `org`). The current files were built from the same Tenor output with the Register
+lookup done separately, using `fields=party,org`. Once the CLI is fixed, the mapping above is all that is needed; a
+CSV export command in the CLI, like its existing `be-om-tilgang`, would remove the manual step.
