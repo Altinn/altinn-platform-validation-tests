@@ -31,6 +31,12 @@ create-only header, 403 for another owner) and the repeated identical write add 
 a client that retries idempotent writes must not cost a version each time. The registry's own Bruno collection makes
 the same trade the other way, with one permanent list it never deletes.
 
+One run instead of three also means one failure could cascade. The steps the rest of the run builds on (the create,
+the members, the connection, and every ETag the conditional calls need) therefore end the iteration with
+`fail("cannot continue: …")` when they do not hold, the way the authentication and register tests do, so one root
+cause shows up as one failed check and one line in the log rather than a dozen failures downstream. The step labels
+still tell them apart in Grafana, and teardown deletes the list either way.
+
 ### Not covered, and why
 
 - `AccessListClient.AccessListPatch`: the registry has the endpoint but does not implement it. `UpdateAccessList`

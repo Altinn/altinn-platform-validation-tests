@@ -116,6 +116,12 @@ function requireEtag(res, operation) {
  * since the building blocks only accept 200, with the expected status marked as
  * expected so it does not count as a failed request.
  *
+ * The steps the rest of the run builds on (the create, the members, the
+ * connection, and every ETag the conditional calls need) end the iteration
+ * with fail() when they do not hold, so one root cause shows up as one failed
+ * check and a "cannot continue" line rather than a dozen failures downstream.
+ * Teardown deletes the list either way.
+ *
  * @param {ReturnType<typeof setup>} data The members picked in setup.
  */
 export default function (data) {
@@ -145,7 +151,9 @@ export default function (data) {
             description: written.description,
         }, createLabel);
 
-        AccessListDomainChecks.CheckAccessListInfo(created, written, "AccessListCreateOrUpdate");
+        if (!AccessListDomainChecks.CheckAccessListInfo(created, written, "AccessListCreateOrUpdate")) {
+            fail("cannot continue: the access list was not created as written, and every later step builds on it");
+        }
 
         const read = client.AccessListGet(owner, identifier, null, {}, createLabel);
 
@@ -204,7 +212,9 @@ export default function (data) {
             data: all.map((business) => organizationUrn(business.orgNo)),
         }, membersLabel);
 
-        AccessListDomainChecks.CheckMembers(added, all.map((business) => business.orgNo), "AccessListAddMembers");
+        if (!AccessListDomainChecks.CheckMembers(added, all.map((business) => business.orgNo), "AccessListAddMembers")) {
+            fail("cannot continue: the members were not added, so there is nothing to look up, replace or remove");
+        }
 
         const members = AccessListGetMembers(client, owner, identifier, null, membersLabel);
 
@@ -225,7 +235,10 @@ export default function (data) {
 
         const current = client.AccessListUpsertResourceConnection(owner, identifier, resourceId, connection, { "If-Match": etagBeforeConnection }, connectionLabel);
 
-        AccessListDomainChecks.CheckStatus(current, 200, "AccessListUpsertResourceConnection with current If-Match");
+        if (!AccessListDomainChecks.CheckStatus(current, 200, "AccessListUpsertResourceConnection with current If-Match")) {
+            fail("cannot continue: the resource connection was not made, so the lookups and the conditional writes have nothing to work on");
+        }
+
         etagAfterConnection = requireEtag(current, "AccessListUpsertResourceConnection");
         AccessListDomainChecks.CheckEtagChanged(etagBeforeConnection, etagAfterConnection, "AccessListUpsertResourceConnection");
 
