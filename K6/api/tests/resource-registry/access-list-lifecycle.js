@@ -1,47 +1,68 @@
-import { group } from "k6";
+import { fail, group } from "k6";
 
 import { getStrictOptions, pickUnique } from "../../../helpers.js";
 import {
     AccessListAddMembers,
     AccessListCreateOrUpdate,
-    AccessListDelete,
     AccessListGet,
+    AccessListGetByMember,
     AccessListGetByOwner,
     AccessListGetMembers,
     AccessListRemoveMembers,
     AccessListReplaceMembers,
     AccessListsDeleteResourceConnection,
     AccessListsGetResourceConnections,
-    AccessListsUpsertResourceConnection,
 } from "../../building-blocks/resource-registry/access-lists/index.js";
+import { AccessListMembershipsGetMemberships } from "../../building-blocks/resource-registry/index.js";
 import { AccessListDomainChecks } from "../../domain-checks/resource-registry/access-list.js";
 import {
     deleteTestLists,
+    etagOf,
     expectingStatus,
     getAccessListClient,
+    getAccessListMembershipsClient,
+    getAccessListPlatformClient,
     getConfiguration,
     loadBusinesses,
     newIdentifier,
     organizationUrn,
     partyUuidUrn,
     requireFamilyEnv,
+    resourceUrn,
+    versionOf,
 } from "./commons.js";
 
 const createLabel = { step: "Create and read an access list" };
-const updateLabel = { step: "Update the description" };
-const membersLabel = { step: "Add replace and remove members" };
-const connectionsLabel = { step: "Connect and disconnect a resource" };
-const deleteLabel = { step: "Delete the access list" };
+const updateLabel = { step: "Update and create-only upsert" };
+const readsLabel = { step: "Conditional reads with If-None-Match" };
+const membersLabel = { step: "Add members" };
+const connectionLabel = { step: "Connect a resource with If-Match" };
+const lookupsLabel = { step: "Look up memberships and lists by member" };
+const replaceLabel = { step: "Replace and remove members" };
+const disconnectLabel = { step: "Disconnect the resource" };
+const ownerLabel = { step: "Read the lists of another owner" };
+const deleteLabel = { step: "Conditional delete" };
 
 export const options = getStrictOptions([
     createLabel,
     updateLabel,
+    readsLabel,
     membersLabel,
-    connectionsLabel,
+    connectionLabel,
+    lookupsLabel,
+    replaceLabel,
+    disconnectLabel,
+    ownerLabel,
     deleteLabel,
 ]);
 
 const ACTION_FILTERS = ["read", "write"];
+
+/**
+ * An owner the test's token is not issued for, so reading its lists has to be
+ * refused. digdir is a real service owner in every environment.
+ */
+const OTHER_OWNER = "digdir";
 
 /**
  * Picks the businesses this run adds as members: two companies and one sole
@@ -60,15 +81,40 @@ export function setup() {
 }
 
 /**
- * Test: an access list goes through its whole life and every read along the
+ * The ETag of a response, or the end of the test when there is none, since
+ * every conditional call builds on it.
+ *
+ * @param {import("k6/http").RefinedResponse<any>} res The response.
+ * @param {string} operation Name of the operation, for the message.
+ * @returns {string} The ETag.
+ */
+function requireEtag(res, operation) {
+    const etag = etagOf(res);
+
+    AccessListDomainChecks.CheckHasEtag(etag, operation);
+
+    return etag ?? fail(`${operation} carried no ETag, so the conditional calls cannot be made`);
+}
+
+/**
+ * Test: one access list goes through its whole life, and every read along the
  * way returns what was written.
  *
- * Create, read, list by owner, update, add members, replace them, remove them,
- * connect a resource, list by resource, disconnect it, delete, and confirm the
- * list is gone. Every step reads back and checks content, not just status, so
- * a registry that accepts a write and stores something else fails here. The
- * final 404 is checked on the client directly, since the building blocks only
- * accept 200.
+ * Create, read, update, conditional reads, members, a resource connection
+ * written under If-Match, the two platform-component lookups, replacing and
+ * removing the members, disconnecting, a read as the wrong owner, and a
+ * conditional delete. Every step checks content, not just status, so a
+ * registry that accepts a write and stores something else fails here.
+ *
+ * Everything happens on one list on purpose. Access lists are event-sourced in
+ * the registry: deleting a list removes its state, but every write it ever saw
+ * stays in the event log for good. One list per run keeps that to the eight or
+ * nine events a lifecycle needs, and the steps that expect a refusal (412, 403)
+ * or repeat an identical write add no events at all.
+ *
+ * The calls that expect something other than 200 go straight to the client,
+ * since the building blocks only accept 200, with the expected status marked as
+ * expected so it does not count as a failed request.
  *
  * @param {ReturnType<typeof setup>} data The members picked in setup.
  */
@@ -82,6 +128,16 @@ export default function (data) {
         name: `k6 lifecycle ${identifier}`,
         description: "Created by the resource-registry lifecycle test",
     };
+    const all = [...data.companies, data.soleProprietorship];
+    const memberParty = partyUuidUrn(data.soleProprietorship.partyUuid);
+    /** @type {string} */
+    let etag = "";
+    /** @type {string} */
+    let etagBeforeConnection = "";
+    /** @type {string} */
+    let etagAfterConnection = "";
+    /** @type {number|null} */
+    let firstVersion = null;
 
     group("Create and read an access list", function () {
         const created = AccessListCreateOrUpdate(client, owner, identifier, {
@@ -91,35 +147,57 @@ export default function (data) {
 
         AccessListDomainChecks.CheckAccessListInfo(created, written, "AccessListCreateOrUpdate");
 
-        const read = AccessListGet(client, owner, identifier, createLabel);
+        const read = client.AccessListGet(owner, identifier, null, {}, createLabel);
 
-        AccessListDomainChecks.CheckAccessListInfo(read, written, "AccessListGet");
+        AccessListDomainChecks.CheckStatus(read, 200, "AccessListGet");
+        AccessListDomainChecks.CheckAccessListInfo(JSON.parse(String(read.body)), written, "AccessListGet");
+        etag = requireEtag(read, "AccessListGet");
+        firstVersion = versionOf(etag);
 
         const byOwner = AccessListGetByOwner(client, owner, null, createLabel);
 
         AccessListDomainChecks.CheckContainsList(byOwner?.data, identifier, "AccessListGetByOwner");
     });
 
-    group("Update the description", function () {
+    group("Update and create-only upsert", function () {
         // PATCH is not implemented in the registry (it answers 501 and its
         // remarks say to use PUT), so the update goes through the same upsert
         // that created the list.
         const updated = { ...written, description: "Updated by the resource-registry lifecycle test" };
+        const body = { name: updated.name, description: updated.description };
 
-        const upserted = AccessListCreateOrUpdate(client, owner, identifier, {
-            name: updated.name,
-            description: updated.description,
-        }, updateLabel);
+        // If-None-Match: * asks for a create and nothing else, so it has to be
+        // refused now that the list exists, and the description stays as it was.
+        const createOnly = expectingStatus(412, () => client.AccessListUpsert(owner, identifier, body, { "If-None-Match": "*" }, updateLabel));
 
-        AccessListDomainChecks.CheckAccessListInfo(upserted, updated, "AccessListCreateOrUpdate on an existing list");
+        AccessListDomainChecks.CheckStatus(createOnly, 412, "AccessListUpsert with If-None-Match: *");
+
+        // If-Match: * asks for an update of an existing list, which this is, so
+        // the update itself goes through under that header.
+        const updateOnly = client.AccessListUpsert(owner, identifier, body, { "If-Match": "*" }, updateLabel);
+
+        AccessListDomainChecks.CheckStatus(updateOnly, 200, "AccessListUpsert with If-Match: *");
+        AccessListDomainChecks.CheckAccessListInfo(JSON.parse(String(updateOnly.body)), updated, "AccessListUpsert with If-Match: *");
+        AccessListDomainChecks.CheckEtagChanged(etag, etagOf(updateOnly), "AccessListUpsert with If-Match: *");
+        etag = requireEtag(updateOnly, "AccessListUpsert with If-Match: *");
 
         const read = AccessListGet(client, owner, identifier, updateLabel);
 
         AccessListDomainChecks.CheckAccessListInfo(read, updated, "AccessListGet after update");
     });
 
-    group("Add replace and remove members", function () {
-        const all = [...data.companies, data.soleProprietorship];
+    group("Conditional reads with If-None-Match", function () {
+        const unchanged = client.AccessListGet(owner, identifier, null, { "If-None-Match": etag }, readsLabel);
+
+        AccessListDomainChecks.CheckStatus(unchanged, 304, "AccessListGet with matching If-None-Match");
+
+        // The members share the list's version, so the same ETag holds there.
+        const members = client.AccessListGetMembers(owner, identifier, null, { "If-None-Match": etag }, readsLabel);
+
+        AccessListDomainChecks.CheckStatus(members, 304, "AccessListGetMembers with matching If-None-Match");
+    });
+
+    group("Add members", function () {
         const partyUrns = Object.fromEntries(all.map((business) => [business.orgNo, partyUuidUrn(business.partyUuid)]));
 
         const added = AccessListAddMembers(client, owner, identifier, {
@@ -133,71 +211,157 @@ export default function (data) {
         AccessListDomainChecks.CheckMembers(members, all.map((business) => business.orgNo), "AccessListGetMembers");
         AccessListDomainChecks.CheckMembersResolveToParties(members, partyUrns, "AccessListGetMembers");
 
+        // Adding members moved the version on; pick up the current ETag for the
+        // conditional writes that follow.
+        const read = client.AccessListGet(owner, identifier, null, {}, membersLabel);
+
+        AccessListDomainChecks.CheckStatus(read, 200, "AccessListGet after adding members");
+        etagBeforeConnection = requireEtag(read, "AccessListGet after adding members");
+    });
+
+    group("Connect a resource with If-Match", function () {
+        const connection = { actionFilters: ACTION_FILTERS };
+        const expected = [{ resourceIdentifier: resourceId, actionFilters: ACTION_FILTERS }];
+
+        const current = client.AccessListUpsertResourceConnection(owner, identifier, resourceId, connection, { "If-Match": etagBeforeConnection }, connectionLabel);
+
+        AccessListDomainChecks.CheckStatus(current, 200, "AccessListUpsertResourceConnection with current If-Match");
+        etagAfterConnection = requireEtag(current, "AccessListUpsertResourceConnection");
+        AccessListDomainChecks.CheckEtagChanged(etagBeforeConnection, etagAfterConnection, "AccessListUpsertResourceConnection");
+
+        // The same connection written again changes nothing, so the registry
+        // must not record a new version for it.
+        const identical = client.AccessListUpsertResourceConnection(owner, identifier, resourceId, connection, {}, connectionLabel);
+
+        AccessListDomainChecks.CheckStatus(identical, 200, "AccessListUpsertResourceConnection repeated unchanged");
+        AccessListDomainChecks.CheckEtagUnchanged(etagAfterConnection, etagOf(identical), "AccessListUpsertResourceConnection repeated unchanged");
+
+        // A write under the ETag from before the connection is stale and has to
+        // be refused without touching the connection.
+        const stale = expectingStatus(412, () => client.AccessListUpsertResourceConnection(
+            owner,
+            identifier,
+            resourceId,
+            { actionFilters: ["read"] },
+            { "If-Match": etagBeforeConnection },
+            connectionLabel,
+        ));
+
+        AccessListDomainChecks.CheckStatus(stale, 412, "AccessListUpsertResourceConnection with stale If-Match");
+
+        const connections = AccessListsGetResourceConnections(client, owner, identifier, null, connectionLabel);
+
+        AccessListDomainChecks.CheckResourceConnections(connections?.data, expected, "AccessListGetResourceConnections");
+
+        // `resource` does not filter the lists; it narrows the connections the
+        // listing includes on each list to that resource, and the action
+        // filters only come with resource-actions.
+        const listing = AccessListGetByOwner(client, owner, { include: ["resource-actions"], resource: resourceId }, connectionLabel);
+
+        AccessListDomainChecks.CheckContainsList(listing?.data, identifier, "AccessListGetByOwner with resource-actions included");
+        AccessListDomainChecks.CheckResourceConnections(
+            listing?.data.find((list) => list.identifier === identifier)?.resourceConnections,
+            expected,
+            "AccessListGetByOwner with resource-actions included",
+        );
+    });
+
+    group("Look up memberships and lists by member", function () {
+        // Both lookups are reserved for platform components and take the
+        // platform access token; both filters on the memberships query are URNs.
+        const memberships = AccessListMembershipsGetMemberships(
+            getAccessListMembershipsClient(),
+            { party: [memberParty], resource: [resourceUrn(resourceId)] },
+            lookupsLabel,
+        );
+
+        AccessListDomainChecks.CheckMembership(memberships, {
+            party: memberParty,
+            resource: resourceUrn(resourceId),
+            actionFilters: ACTION_FILTERS,
+        }, "AccessListMembershipsGetMemberships");
+
+        const lists = AccessListGetByMember(getAccessListPlatformClient(), memberParty, lookupsLabel);
+
+        AccessListDomainChecks.CheckContainsList(lists, identifier, "AccessListGetByMember");
+    });
+
+    group("Replace and remove members", function () {
         const replaced = AccessListReplaceMembers(client, owner, identifier, {
             data: [organizationUrn(data.soleProprietorship.orgNo)],
-        }, membersLabel);
+        }, replaceLabel);
 
         AccessListDomainChecks.CheckMembers(replaced, [data.soleProprietorship.orgNo], "AccessListReplaceMembers");
 
-        const afterReplace = AccessListGetMembers(client, owner, identifier, null, membersLabel);
+        const afterReplace = AccessListGetMembers(client, owner, identifier, null, replaceLabel);
 
         AccessListDomainChecks.CheckMembers(afterReplace, [data.soleProprietorship.orgNo], "AccessListGetMembers after replace");
 
         const removed = AccessListRemoveMembers(client, owner, identifier, {
             data: [organizationUrn(data.soleProprietorship.orgNo)],
-        }, membersLabel);
+        }, replaceLabel);
 
         AccessListDomainChecks.CheckMembers(removed, [], "AccessListRemoveMembers");
 
-        const afterRemove = AccessListGetMembers(client, owner, identifier, null, membersLabel);
+        const afterRemove = AccessListGetMembers(client, owner, identifier, null, replaceLabel);
 
         AccessListDomainChecks.CheckMembers(afterRemove, [], "AccessListGetMembers after remove");
     });
 
-    group("Connect and disconnect a resource", function () {
-        const expected = [{ resourceIdentifier: resourceId, actionFilters: ACTION_FILTERS }];
-        // `resource` does not filter the lists; it filters the connections the
-        // listing includes on each list down to that resource.
-        const includeConnections = { include: ["resource-actions"], resource: resourceId };
-        const connectionsOf = (/** @type {import("../../../clients/resource-registry/types.js").AccessListInfoDtoPaginated|null} */ listing) =>
-            listing?.data.find((list) => list.identifier === identifier)?.resourceConnections;
+    group("Disconnect the resource", function () {
+        AccessListsDeleteResourceConnection(client, owner, identifier, resourceId, disconnectLabel);
 
-        AccessListsUpsertResourceConnection(client, owner, identifier, resourceId, {
-            actionFilters: ACTION_FILTERS,
-        }, connectionsLabel);
+        const connections = AccessListsGetResourceConnections(client, owner, identifier, null, disconnectLabel);
 
-        const connections = AccessListsGetResourceConnections(client, owner, identifier, null, connectionsLabel);
+        AccessListDomainChecks.CheckResourceConnections(connections?.data, [], "AccessListGetResourceConnections after delete");
 
-        AccessListDomainChecks.CheckResourceConnections(connections?.data, expected, "AccessListGetResourceConnections");
+        const listing = AccessListGetByOwner(client, owner, { include: ["resource-actions"], resource: resourceId }, disconnectLabel);
 
-        const listing = AccessListGetByOwner(client, owner, includeConnections, connectionsLabel);
-
-        AccessListDomainChecks.CheckContainsList(listing?.data, identifier, "AccessListGetByOwner with resources included");
-        AccessListDomainChecks.CheckResourceConnections(connectionsOf(listing), expected, "AccessListGetByOwner with resources included");
-
-        AccessListsDeleteResourceConnection(client, owner, identifier, resourceId, connectionsLabel);
-
-        const afterDelete = AccessListsGetResourceConnections(client, owner, identifier, null, connectionsLabel);
-
-        AccessListDomainChecks.CheckResourceConnections(afterDelete?.data, [], "AccessListGetResourceConnections after delete");
-
-        const listingAfter = AccessListGetByOwner(client, owner, includeConnections, connectionsLabel);
-
-        AccessListDomainChecks.CheckResourceConnections(connectionsOf(listingAfter) ?? [], [], "AccessListGetByOwner with resources included after delete");
+        AccessListDomainChecks.CheckResourceConnections(
+            listing?.data.find((list) => list.identifier === identifier)?.resourceConnections ?? [],
+            [],
+            "AccessListGetByOwner with resource-actions included after delete",
+        );
     });
 
-    group("Delete the access list", function () {
-        AccessListDelete(client, owner, identifier, deleteLabel);
+    group("Read the lists of another owner", function () {
+        // The token is issued for `owner`, and the registry checks it against
+        // the owner in the path, so another owner's lists are off limits.
+        const forbidden = expectingStatus(403, () => client.AccessListGetByOwner(OTHER_OWNER, null, ownerLabel));
 
-        // The building block only accepts 200, so the 404 is checked on the client,
-        // and marked as expected so it does not count as a failed request.
-        const res = expectingStatus(404, () => client.AccessListGet(owner, identifier, null, {}, deleteLabel));
+        AccessListDomainChecks.CheckStatus(forbidden, 403, `AccessListGetByOwner as ${owner} for ${OTHER_OWNER}`);
+    });
 
-        AccessListDomainChecks.CheckStatus(res, 404, "AccessListGet after delete");
+    group("Conditional delete", function () {
+        // Everything since the connection moved the version on, so that ETag is
+        // stale by now.
+        const stale = expectingStatus(412, () => client.AccessListDelete(owner, identifier, { "If-Match": etagAfterConnection }, deleteLabel));
+
+        AccessListDomainChecks.CheckStatus(stale, 412, "AccessListDelete with stale If-Match");
+
+        const stillThere = client.AccessListGet(owner, identifier, null, {}, deleteLabel);
+
+        AccessListDomainChecks.CheckStatus(stillThere, 200, "AccessListGet after rejected delete");
+
+        const deleted = client.AccessListDelete(owner, identifier, { "If-Match": requireEtag(stillThere, "AccessListGet after rejected delete") }, deleteLabel);
+
+        AccessListDomainChecks.CheckStatus(deleted, 200, "AccessListDelete with current If-Match");
+
+        const gone = expectingStatus(404, () => client.AccessListGet(owner, identifier, null, {}, deleteLabel));
+
+        AccessListDomainChecks.CheckStatus(gone, 404, "AccessListGet after delete");
 
         const byOwner = AccessListGetByOwner(client, owner, null, deleteLabel);
 
         AccessListDomainChecks.CheckDoesNotContainList(byOwner?.data, identifier, "AccessListGetByOwner after delete");
+
+        // What this run cost the event log: the delete is the last event, one
+        // past the version the deleted list reported.
+        const lastVersion = versionOf(etagOf(deleted));
+
+        if (firstVersion !== null && lastVersion !== null) {
+            console.log(`access-list-lifecycle - ${identifier} went from version ${firstVersion} to ${lastVersion}: ${lastVersion - firstVersion + 1} events in the registry's log`);
+        }
     });
 }
 

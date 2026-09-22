@@ -297,6 +297,29 @@ function CheckEtagChanged(before, after, operation) {
     return success;
 }
 
+/**
+ * Checks that a write which changed nothing left the ETag where it was. The
+ * registry records every version as an event it never deletes, so a client
+ * that repeats an identical write must not cost a new version each time.
+ *
+ * @param {string|null} before - The ETag before the write.
+ * @param {string|null} after - The ETag after the write.
+ * @param {string} operation - Name of the operation, used in the check name and logs.
+ * @returns {boolean} True if the ETag is unchanged, false otherwise.
+ */
+function CheckEtagUnchanged(before, after, operation) {
+    const success = check(after, {
+        [`CheckEtagUnchanged - ${operation} keeps the ETag`]: (value) =>
+            typeof before === "string" && before.length > 0 && value === before,
+    });
+
+    if (!success) {
+        console.error(`CheckEtagUnchanged - ${operation} ETag before: ${before}, after: ${after}`);
+    }
+
+    return success;
+}
+
 export const AccessListDomainChecks = {
     CheckAccessListInfo,
     CheckContainsList,
@@ -308,4 +331,5 @@ export const AccessListDomainChecks = {
     CheckStatus,
     CheckHasEtag,
     CheckEtagChanged,
+    CheckEtagUnchanged,
 };

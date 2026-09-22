@@ -1,6 +1,4 @@
-import runAccessListEtag, { setup as setupAccessListEtag, teardown as teardownAccessListEtag } from "./access-list-etag.js";
 import runAccessListLifecycle, { setup as setupAccessListLifecycle, teardown as teardownAccessListLifecycle } from "./access-list-lifecycle.js";
-import runAccessListMemberships, { setup as setupAccessListMemberships, teardown as teardownAccessListMemberships } from "./access-list-memberships.js";
 import runGetOrgs, { setup as setupGetOrgs } from "./get-orgs.js";
 import runGetUpdatedResources, { setup as setupGetUpdatedResources } from "./get-updated-resources.js";
 import runResourceV2PolicyRights, { setup as setupResourceV2PolicyRights } from "./resource-v2-policy-rights.js";
@@ -16,8 +14,6 @@ export function setup() {
         getUpdatedResources: setupGetUpdatedResources(),
         getOrgs: setupGetOrgs(),
         accessListLifecycle: setupAccessListLifecycle(),
-        accessListEtag: setupAccessListEtag(),
-        accessListMemberships: setupAccessListMemberships(),
         resourceV2PolicyRights: setupResourceV2PolicyRights(),
     };
 }
@@ -26,9 +22,12 @@ export function setup() {
  * Runs every test in this folder once, in one k6 run, so a change to the
  * shared clients, building blocks or checks can be verified in one go.
  *
- * The two healthchecks are public and run everywhere. The access list and
- * policy rights tests need the token generator and test data, so they run
- * on at22, at23 and tt02 (see functional.yaml).
+ * The two healthchecks and the policy rights test only read. The lifecycle
+ * test is the one test that writes: it takes one access list through its
+ * whole life, conditional headers and platform lookups included, so a run
+ * costs the registry's event log one list's worth of events and no more.
+ * It needs the token generator and test data, so it runs on at22, at23 and
+ * tt02 (see functional.yaml).
  *
  * create-resource-and-policy.js is deliberately left out. Deleting a resource
  * leaves its rows in resourceregistry.resourcesubjects behind with deleted set
@@ -44,19 +43,13 @@ export default function (data) {
     runGetUpdatedResources();
     runGetOrgs();
     runAccessListLifecycle(data.accessListLifecycle);
-    runAccessListEtag();
-    runAccessListMemberships(data.accessListMemberships);
     runResourceV2PolicyRights();
 }
 
 /**
- * k6 teardown stage. Runs the teardown each test brings, so the lists the
- * tests created are gone when the run is over.
- *
- * @param {ReturnType<typeof setup>} data Setup results, keyed per test.
+ * k6 teardown stage. Runs the lifecycle test's teardown, so the list it
+ * created is gone when the run is over.
  */
-export function teardown(data) {
-    teardownAccessListMemberships(data.accessListMemberships);
+export function teardown() {
     teardownAccessListLifecycle();
-    teardownAccessListEtag();
 }

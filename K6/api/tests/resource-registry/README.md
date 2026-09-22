@@ -8,17 +8,28 @@ and runs with [`getStrictOptions`](../../../helpers.js), so a failed check or a 
 
 | Test | Client | Methods | Environments |
 | --- | --- | --- | --- |
-| `access-list-lifecycle.js` | `AccessListClient` | `AccessListUpsert` (create and update), `AccessListGet`, `AccessListGetByOwner` (plain and with `include=resource-actions`), `AccessListAddMembers`, `AccessListGetMembers`, `AccessListReplaceMembers`, `AccessListRemoveMembers`, `AccessListUpsertResourceConnection`, `AccessListGetResourceConnections`, `AccessListDeleteResourceConnection`, `AccessListDelete` | at22, at23, tt02 |
-| `access-list-etag.js` | `AccessListClient` | `AccessListGet` and `AccessListGetMembers` with `If-None-Match` (304), `AccessListUpsertResourceConnection` and `AccessListDelete` with a stale (412) and the current (200) `If-Match` | at22, at23, tt02 |
-| `access-list-memberships.js` | `AccessListMembershipsClient`, `AccessListClient` (platform token) | `AccessListMembershipsGetMemberships`, `AccessListGetByMember` | at22, at23, tt02 |
+| `access-list-lifecycle.js` | `AccessListClient` (enterprise token), `AccessListClient` (platform token), `AccessListMembershipsClient` | `AccessListUpsert` (create, update under `If-Match: *`, create-only refused with `If-None-Match: *`), `AccessListGet` and `AccessListGetMembers` (plain and 304 with `If-None-Match`), `AccessListGetByOwner` (plain, with `include=resource-actions`, and 403 for another owner), `AccessListAddMembers`, `AccessListReplaceMembers`, `AccessListRemoveMembers`, `AccessListUpsertResourceConnection` (200 with the current `If-Match`, unchanged ETag when repeated, 412 with a stale one), `AccessListGetResourceConnections`, `AccessListDeleteResourceConnection`, `AccessListMembershipsGetMemberships`, `AccessListGetByMember`, `AccessListDelete` (412 stale, 200 current, then 404) | at22, at23, tt02 |
 | `resource-v2-policy-rights.js` | `ResourceV2Client` | `ResourceV2GetPolicyRights` | at22, at23, tt02 |
 | `get-orgs.js` | `ResourceOwnerClient` | `ResourceOwnerGetOrgs` | healthcheck, every environment |
 | `get-updated-resources.js` | `ResourceClient` | `ResourceUpdated` | healthcheck, every environment |
 | `create-resource-and-policy.js` | `ResourceClient` | resource and policy writes | on purpose only, see below |
 
-`functional.yaml` runs the first four in at22, at23 and tt02. `healthcheck.yaml` runs the two public reads everywhere,
+`functional.yaml` runs the first two in at22, at23 and tt02. `healthcheck.yaml` runs the two public reads everywhere,
 including yt01 and prod. `run-all.js` runs everything except `create-resource-and-policy.js` once, for a local check
 after a change to something shared.
+
+### Why one list per run
+
+Access lists are event-sourced in the registry. Deleting a list removes its state, members and connections for real,
+but every write the list ever saw stays in `resourceregistry.access_list_events`, and nothing deletes those rows. A
+scheduled test that creates and deletes lists therefore grows that table on every run, whatever it cleans up.
+
+The lifecycle test keeps that to one list per run by doing everything on the same list, in an order where every write
+happens once: create, update, add members, connect, replace, remove, disconnect, delete. That is nine events per run,
+and the test logs the number it measured from the ETag versions. The steps that expect a refusal (412 on a stale or
+create-only header, 403 for another owner) and the repeated identical write add no events; the latter is checked, since
+a client that retries idempotent writes must not cost a version each time. The registry's own Bruno collection makes
+the same trade the other way, with one permanent list it never deletes.
 
 ### Not covered, and why
 
@@ -68,7 +79,8 @@ Besides these, the tests need `BASE_URL`, `ENVIRONMENT`, `TOKEN_GENERATOR_USERNA
 
 The members are synthetic businesses from Tenor, enriched with their Altinn party from Register, in
 `K6/testdata/resource-registry/businesses-<env>.csv` with the columns `orgNo,partyId,partyUuid,orgForm`. The
-lifecycle test adds two `AS` and one `ENK`; the memberships test one `ENK`. How to regenerate the files is described in
+lifecycle test adds two `AS` and one `ENK`, and looks the `ENK` up through the platform-component endpoints. How to
+regenerate the files is described in
 [K6/testdata/resource-registry/README.md](../../../testdata/resource-registry/README.md).
 
 The files are read from `main` over HTTP, so a change to them takes effect when it is merged. To run a test locally

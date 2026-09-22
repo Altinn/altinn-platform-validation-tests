@@ -1,3 +1,4 @@
+import encoding from "k6/encoding";
 import http from "k6/http";
 
 import {
@@ -345,4 +346,33 @@ export function expectingStatus(status, call) {
  */
 export function etagOf(res) {
     return res.headers["Etag"] ?? res.headers["ETag"] ?? null;
+}
+
+/**
+ * The version an access list ETag stands for.
+ *
+ * The registry's ETag is `W/"<base64 of {"version":"N"}>"`, where N is the id
+ * of the last event on the list. The difference between two versions is how
+ * many events the registry recorded in between, which is what a test reports
+ * to show what a run costs the event log.
+ *
+ * @param {string|null} etag The ETag, or null.
+ * @returns {number|null} The version, or null when the ETag is missing or not
+ * in the registry's format.
+ */
+export function versionOf(etag) {
+    if (!etag) {
+        return null;
+    }
+
+    const payload = etag.replace(/^W\//, "").replace(/^"|"$/g, "").replace(/-/g, "+").replace(/_/g, "/");
+
+    try {
+        const decoded = encoding.b64decode(payload, payload.includes("=") ? "std" : "rawstd", "s");
+        const version = Number(JSON.parse(decoded).version);
+
+        return Number.isInteger(version) ? version : null;
+    } catch {
+        return null;
+    }
 }
