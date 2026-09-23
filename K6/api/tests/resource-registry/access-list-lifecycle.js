@@ -23,7 +23,7 @@ import {
     getAccessListMembershipsClient,
     getAccessListPlatformClient,
     getConfiguration,
-    loadBusinesses,
+    loadOrganizations,
     newIdentifier,
     organizationUrn,
     partyUuidUrn,
@@ -65,18 +65,18 @@ const ACTION_FILTERS = ["read", "write"];
 const OTHER_OWNER = "digdir";
 
 /**
- * Picks the businesses this run adds as members: two companies and one sole
+ * Picks the organizations this run adds as members: two companies and one sole
  * proprietorship, so both organization forms go through the members endpoints.
  *
- * @returns {{companies: Array<import("./commons.js").Business>, soleProprietorship: import("./commons.js").Business}} The members.
+ * @returns {{companies: Array<import("./commons.js").Organization>, soleProprietorship: import("./commons.js").Organization}} The members.
  */
 export function setup() {
     requireFamilyEnv();
     getConfiguration();
 
     return {
-        companies: pickUnique(loadBusinesses("AS"), 2),
-        soleProprietorship: pickUnique(loadBusinesses("ENK"), 1)[0],
+        companies: pickUnique(loadOrganizations("AS"), 2),
+        soleProprietorship: pickUnique(loadOrganizations("ENK"), 1)[0],
     };
 }
 
@@ -206,19 +206,19 @@ export default function (data) {
     });
 
     group("Add members", function () {
-        const partyUrns = Object.fromEntries(all.map((business) => [business.orgNo, partyUuidUrn(business.partyUuid)]));
+        const partyUrns = Object.fromEntries(all.map((organization) => [organization.organizationNumber, partyUuidUrn(organization.partyUuid)]));
 
         const added = AccessListAddMembers(client, owner, identifier, {
-            data: all.map((business) => organizationUrn(business.orgNo)),
+            data: all.map((organization) => organizationUrn(organization.organizationNumber)),
         }, membersLabel);
 
-        if (!AccessListDomainChecks.CheckMembers(added, all.map((business) => business.orgNo), "AccessListAddMembers")) {
+        if (!AccessListDomainChecks.CheckMembers(added, all.map((organization) => organization.organizationNumber), "AccessListAddMembers")) {
             fail("cannot continue: the members were not added, so there is nothing to look up, replace or remove");
         }
 
         const members = AccessListGetMembers(client, owner, identifier, null, membersLabel);
 
-        AccessListDomainChecks.CheckMembers(members, all.map((business) => business.orgNo), "AccessListGetMembers");
+        AccessListDomainChecks.CheckMembers(members, all.map((organization) => organization.organizationNumber), "AccessListGetMembers");
         AccessListDomainChecks.CheckMembersResolveToParties(members, partyUrns, "AccessListGetMembers");
 
         // Adding members moved the version on; pick up the current ETag for the
@@ -301,17 +301,17 @@ export default function (data) {
 
     group("Replace and remove members", function () {
         const replaced = AccessListReplaceMembers(client, owner, identifier, {
-            data: [organizationUrn(data.soleProprietorship.orgNo)],
+            data: [organizationUrn(data.soleProprietorship.organizationNumber)],
         }, replaceLabel);
 
-        AccessListDomainChecks.CheckMembers(replaced, [data.soleProprietorship.orgNo], "AccessListReplaceMembers");
+        AccessListDomainChecks.CheckMembers(replaced, [data.soleProprietorship.organizationNumber], "AccessListReplaceMembers");
 
         const afterReplace = AccessListGetMembers(client, owner, identifier, null, replaceLabel);
 
-        AccessListDomainChecks.CheckMembers(afterReplace, [data.soleProprietorship.orgNo], "AccessListGetMembers after replace");
+        AccessListDomainChecks.CheckMembers(afterReplace, [data.soleProprietorship.organizationNumber], "AccessListGetMembers after replace");
 
         const removed = AccessListRemoveMembers(client, owner, identifier, {
-            data: [organizationUrn(data.soleProprietorship.orgNo)],
+            data: [organizationUrn(data.soleProprietorship.organizationNumber)],
         }, replaceLabel);
 
         AccessListDomainChecks.CheckMembers(removed, [], "AccessListRemoveMembers");

@@ -172,44 +172,44 @@ export const getResourceV2Client = lazy(function () {
 });
 
 /**
- * A synthetic business from Tenor, enriched with its Altinn party from
+ * A synthetic organization from Tenor, enriched with its Altinn party from
  * Register in the environment the file is for.
  *
- * @typedef {object} Business
- * @property {string} orgNo Organization number.
+ * @typedef {object} Organization
+ * @property {string} organizationNumber Organization number.
  * @property {string} partyId Altinn party id.
  * @property {string} partyUuid Altinn party uuid.
- * @property {"AS"|"ENK"} orgForm Organization form.
+ * @property {"AS"|"ENK"} organizationForm Organization form.
  */
 
 /**
- * Businesses to add as members, one file per environment.
+ * Organizations to add as members, one file per environment.
  *
- * K6/testdata/resource-registry/businesses-<env>.csv
- * (header: orgNo,partyId,partyUuid,orgForm), regenerated with the Tenor CLI as
+ * K6/testdata/resource-registry/organizations-<env>.csv
+ * (header: organizationNumber,partyId,partyUuid,organizationForm), regenerated with the Tenor CLI as
  * the README in that folder describes. Read from main over HTTP, like every
  * other test data file, so a branch-only edit changes nothing until merged.
  * TESTDATA_BRANCH reads from another branch instead, for running a test
  * locally against data that is still in review.
  *
- * @param {"AS"|"ENK"} [orgForm] Keep only businesses of this form.
- * @returns {Array<Business>} The businesses. Fails the test when the file is
+ * @param {"AS"|"ENK"} [organizationForm] Keep only organizations of this form.
+ * @returns {Array<Organization>} The organizations. Fails the test when the file is
  * missing or empty, or holds none of the requested form.
  */
-export function loadBusinesses(orgForm) {
-    /** @type {Array<Business>} */
+export function loadOrganizations(organizationForm) {
+    /** @type {Array<Organization>} */
     const rows = fetchTestData(
-        `resource-registry/businesses-${__ENV.ENVIRONMENT}.csv`,
+        `resource-registry/organizations-${__ENV.ENVIRONMENT}.csv`,
         true,
         __ENV.TESTDATA_BRANCH || "main",
     );
-    const businesses = orgForm ? rows.filter((row) => row.orgForm === orgForm) : rows;
+    const organizations = organizationForm ? rows.filter((row) => row.organizationForm === organizationForm) : rows;
 
-    if (businesses.length === 0) {
-        throw new Error(`No ${orgForm ?? ""} businesses in resource-registry/businesses-${__ENV.ENVIRONMENT}.csv`);
+    if (organizations.length === 0) {
+        throw new Error(`No ${organizationForm ?? ""} organizations in resource-registry/organizations-${__ENV.ENVIRONMENT}.csv`);
     }
 
-    return businesses;
+    return organizations;
 }
 
 /**
@@ -287,11 +287,11 @@ function nextToken(nextUrl) {
 }
 
 /**
- * @param {string} orgNo Organization number.
+ * @param {string} organizationNumber Organization number.
  * @returns {string} The party URN the members endpoints take for an organization.
  */
-export function organizationUrn(orgNo) {
-    return `urn:altinn:organization:identifier-no:${orgNo}`;
+export function organizationUrn(organizationNumber) {
+    return `urn:altinn:organization:identifier-no:${organizationNumber}`;
 }
 
 /**

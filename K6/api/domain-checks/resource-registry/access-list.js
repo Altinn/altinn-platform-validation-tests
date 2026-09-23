@@ -25,7 +25,7 @@ function sameSet(left, right) {
  * @param {import("../../../clients/resource-registry/types.js").AccessListMembershipDto} member A member.
  * @returns {string} The member's organization number, or "" when it has none.
  */
-function orgNoOf(member) {
+function organizationNumberOf(member) {
     return String(member.identifiers?.[ORGANIZATION_IDENTIFIER] ?? "");
 }
 
@@ -112,21 +112,21 @@ function CheckDoesNotContainList(lists, identifier, operation) {
  * empty expectation checks that the list has no members.
  *
  * @param {AccessListMembershipDtoAggregateVersionVersionedPaginated|null} page - The members page returned by the API.
- * @param {Array<string>} expectedOrgNos - The organization numbers the list has to hold, and no others.
+ * @param {Array<string>} expectedOrganizationNumbers - The organization numbers the list has to hold, and no others.
  * @param {string} operation - Name of the operation, used in the check name and logs.
  * @returns {boolean} True if the members match, false otherwise.
  */
-function CheckMembers(page, expectedOrgNos, operation) {
-    const orgNos = (page?.data ?? []).map(orgNoOf);
+function CheckMembers(page, expectedOrganizationNumbers, operation) {
+    const organizationNumbers = (page?.data ?? []).map(organizationNumberOf);
 
     const success = check(page, {
         [`CheckMembers - ${operation} holds exactly the expected members`]: (response) =>
-            Array.isArray(response?.data) && sameSet(orgNos, expectedOrgNos),
+            Array.isArray(response?.data) && sameSet(organizationNumbers, expectedOrganizationNumbers),
     });
 
     if (!success) {
-        console.error(`CheckMembers - ${operation} expected members ${JSON.stringify(expectedOrgNos)}`);
-        console.error(`CheckMembers - ${operation} returned members ${JSON.stringify(orgNos)}`);
+        console.error(`CheckMembers - ${operation} expected members ${JSON.stringify(expectedOrganizationNumbers)}`);
+        console.error(`CheckMembers - ${operation} returned members ${JSON.stringify(organizationNumbers)}`);
     }
 
     return success;
@@ -138,18 +138,18 @@ function CheckMembers(page, expectedOrgNos, operation) {
  * resolved to the wrong party would still pass CheckMembers.
  *
  * @param {AccessListMembershipDtoAggregateVersionVersionedPaginated|null} page - The members page returned by the API.
- * @param {{[orgNo: string]: string}} expectedPartyUuidUrns - Organization number to the party uuid URN it has to resolve to.
+ * @param {{[organizationNumber: string]: string}} expectedPartyUuidUrns - Organization number to the party uuid URN it has to resolve to.
  * @param {string} operation - Name of the operation, used in the check name and logs.
  * @returns {boolean} True if every member resolved as expected, false otherwise.
  */
 function CheckMembersResolveToParties(page, expectedPartyUuidUrns, operation) {
     const wrong = (page?.data ?? [])
         .filter((member) => {
-            const expected = expectedPartyUuidUrns[orgNoOf(member)];
+            const expected = expectedPartyUuidUrns[organizationNumberOf(member)];
 
             return expected !== undefined && member.id !== expected;
         })
-        .map((member) => `${orgNoOf(member)}: expected ${expectedPartyUuidUrns[orgNoOf(member)]}, got ${member.id}`);
+        .map((member) => `${organizationNumberOf(member)}: expected ${expectedPartyUuidUrns[organizationNumberOf(member)]}, got ${member.id}`);
 
     const success = check(page, {
         [`CheckMembersResolveToParties - ${operation} resolves every member to its party`]: (response) =>
