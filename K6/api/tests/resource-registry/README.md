@@ -107,9 +107,11 @@ so a run that failed halfway leaves nothing behind. After a run, `AccessListGetB
 
 1. Put the client factory and any shared helper in `commons.js`; build clients with `lazy` so a VU builds them once.
 2. Use the building blocks under [K6/api/building-blocks/resource-registry](../../building-blocks/resource-registry).
-   The versioned ones (list, members, resource connections) return `{ value, etag, status }` and take an `options`
-   argument with conditional `headers` and an `expectedStatus`, so a call that should answer 304, 404 or 412 is still
-   a building block call and the strict thresholds do not count it as a failed request.
+   The five the lifecycle test conditions on a version (get, get members, upsert, upsert resource connection, delete)
+   return `{ value, etag, status }` and take an `options` argument with conditional `headers` and an `expectedStatus`,
+   so a call that should answer 304, 404 or 412 is still a building block call and the strict thresholds do not count
+   it as a failed request (`withExpectedStatus` in `building-blocks/common/retry.js`). The rest return the body, as
+   every other building block does.
 3. Check content with the domain checks under
    [K6/api/domain-checks/resource-registry](../../domain-checks/resource-registry); add a check there rather than an
    inline `check` when the assertion says something about the domain.

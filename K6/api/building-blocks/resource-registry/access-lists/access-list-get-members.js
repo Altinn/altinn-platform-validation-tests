@@ -1,9 +1,8 @@
 import { check } from "k6";
-import http from "k6/http";
 
 import { AccessListClient } from "../../../../clients/resource-registry/index.js";
 import { AccessListMembershipDtoAggregateVersionVersionedPaginated, AccessListPagedQuery } from "../../../../clients/resource-registry/types.js";
-import { withRetries } from "../../common/retry.js";
+import { withExpectedStatus, withRetries } from "../../common/retry.js";
 
 /**
  * Gets access list members.
@@ -35,7 +34,7 @@ export function AccessListGetMembers(
     labels = null,
 ) {
     const expectedStatus = options?.expectedStatus ?? 200;
-    const res = expecting(expectedStatus, () => withRetries(
+    const res = withExpectedStatus(expectedStatus, () => withRetries(
         () => accessListClient.AccessListGetMembers(owner, identifier, query, options?.headers ?? {}, labels),
         "AccessListGetMembers",
     ));
@@ -74,28 +73,4 @@ export function AccessListGetMembers(
     }
 
     return { value: members, etag, status: res.status };
-}
-
-/**
- * Runs one call whose expected answer may be an error status, without k6
- * counting that answer as a failed request.
- *
- * k6 counts every 4xx and 5xx towards `http_req_failed`, which the strict
- * options hold at zero, so the one call that is meant to get a 412 has to say
- * so. The default expectation is restored afterwards, so nothing else in the
- * iteration inherits it.
- *
- * @template T
- * @param {number} status The status the call is expected to answer with.
- * @param {() => T} call The call.
- * @returns {T} What the call returned.
- */
-function expecting(status, call) {
-    http.setResponseCallback(http.expectedStatuses(status));
-
-    try {
-        return call();
-    } finally {
-        http.setResponseCallback(http.expectedStatuses({ min: 200, max: 399 }));
-    }
 }

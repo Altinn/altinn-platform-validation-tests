@@ -1,4 +1,5 @@
 import { sleep } from "k6";
+import http from "k6/http";
 import { Counter } from "k6/metrics";
 
 /**
@@ -104,4 +105,28 @@ export function withRetries(sendRequest, label) {
     }
 
     return res;
+}
+
+/**
+ * Runs one call whose expected answer may be an error status, without k6
+ * counting that answer as a failed request.
+ *
+ * k6 counts every 4xx and 5xx towards `http_req_failed`, which the strict
+ * options hold at zero, so the one building block call that is meant to get a
+ * 412 or a 404 has to say so. The default expectation is restored afterwards,
+ * so nothing else in the iteration inherits it.
+ *
+ * @template T
+ * @param {number} status The status the call is expected to answer with.
+ * @param {() => T} call The call, typically a withRetries around a client method.
+ * @returns {T} What the call returned.
+ */
+export function withExpectedStatus(status, call) {
+    http.setResponseCallback(http.expectedStatuses(status));
+
+    try {
+        return call();
+    } finally {
+        http.setResponseCallback(http.expectedStatuses({ min: 200, max: 399 }));
+    }
 }

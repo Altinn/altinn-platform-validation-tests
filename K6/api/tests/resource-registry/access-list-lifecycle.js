@@ -202,9 +202,9 @@ export default function (data) {
 
         const added = AccessListAddMembers(client, owner, identifier, {
             data: all.map((organization) => organizationUrn(organization.orgNo)),
-        }, null, membersLabel);
+        }, membersLabel);
 
-        if (!AccessListDomainChecks.CheckMembers(added.value, all.map((organization) => organization.orgNo), "AccessListAddMembers")) {
+        if (!AccessListDomainChecks.CheckMembers(added, all.map((organization) => organization.orgNo), "AccessListAddMembers")) {
             fail("cannot continue: the members were not added, so there is nothing to look up, replace or remove");
         }
 
@@ -254,9 +254,9 @@ export default function (data) {
             connectionLabel,
         );
 
-        const connections = AccessListsGetResourceConnections(client, owner, identifier, null, null, connectionLabel);
+        const connections = AccessListsGetResourceConnections(client, owner, identifier, null, connectionLabel);
 
-        AccessListDomainChecks.CheckResourceConnections(connections.value?.data, expected, "AccessListsGetResourceConnections");
+        AccessListDomainChecks.CheckResourceConnections(connections?.data, expected, "AccessListsGetResourceConnections");
 
         // `resource` does not filter the lists; it narrows the connections the
         // listing includes on each list to that resource, and the action
@@ -294,9 +294,9 @@ export default function (data) {
     group("Replace and remove members", function () {
         const replaced = AccessListReplaceMembers(client, owner, identifier, {
             data: [organizationUrn(data.soleProprietorship.orgNo)],
-        }, null, replaceLabel);
+        }, replaceLabel);
 
-        AccessListDomainChecks.CheckMembers(replaced.value, [data.soleProprietorship.orgNo], "AccessListReplaceMembers");
+        AccessListDomainChecks.CheckMembers(replaced, [data.soleProprietorship.orgNo], "AccessListReplaceMembers");
 
         const afterReplace = AccessListGetMembers(client, owner, identifier, null, null, replaceLabel);
 
@@ -304,9 +304,9 @@ export default function (data) {
 
         const removed = AccessListRemoveMembers(client, owner, identifier, {
             data: [organizationUrn(data.soleProprietorship.orgNo)],
-        }, null, replaceLabel);
+        }, replaceLabel);
 
-        AccessListDomainChecks.CheckMembers(removed.value, [], "AccessListRemoveMembers");
+        AccessListDomainChecks.CheckMembers(removed, [], "AccessListRemoveMembers");
 
         const afterRemove = AccessListGetMembers(client, owner, identifier, null, null, replaceLabel);
 
@@ -314,11 +314,11 @@ export default function (data) {
     });
 
     group("Disconnect the resource", function () {
-        AccessListsDeleteResourceConnection(client, owner, identifier, resourceId, null, disconnectLabel);
+        AccessListsDeleteResourceConnection(client, owner, identifier, resourceId, disconnectLabel);
 
-        const connections = AccessListsGetResourceConnections(client, owner, identifier, null, null, disconnectLabel);
+        const connections = AccessListsGetResourceConnections(client, owner, identifier, null, disconnectLabel);
 
-        AccessListDomainChecks.CheckResourceConnections(connections.value?.data, [], "AccessListsGetResourceConnections after delete");
+        AccessListDomainChecks.CheckResourceConnections(connections?.data, [], "AccessListsGetResourceConnections after delete");
 
         const listing = AccessListGetByOwner(client, owner, { include: ["resource-actions"], resource: resourceId }, null, disconnectLabel);
 
