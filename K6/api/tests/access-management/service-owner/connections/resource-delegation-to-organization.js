@@ -1,4 +1,4 @@
-import { fail, group } from "k6";
+import { group } from "k6";
 
 import { GetResourceRightsQueryBuilder } from "../../../../../clients/access-management/service-owner/connections/index.js";
 import { getItemFromList, getOptions } from "../../../../../helpers.js";
@@ -59,8 +59,8 @@ export default function (data) {
 
         // Without right keys there is nothing to delegate, so the create below
         // would only report a second failure for the same cause.
-        if (rightKeys.length === 0) {
-            fail(`No rights found for resource ${serviceOwner.resource}`);
+        if (!ConnectionsDomainChecks.CheckDelegableRightsFound(rightKeys, serviceOwner.resource)) {
+            return;
         }
 
         ConnectionsDomainChecks.CheckResourceDelegationCreated(
