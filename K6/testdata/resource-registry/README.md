@@ -8,10 +8,13 @@ party from Register in the environment the file is for. The
 
 | File | Rows | Columns |
 | --- | --- | --- |
+| `configuration-<env>.csv` | 1 | `owner,ownerOrgNo,resourceId` |
 | `organizations-at22.csv` | 20 AS + 20 ENK | `orgNo,partyId,partyUuid,orgForm` |
 | `organizations-at23.csv` | 20 AS + 20 ENK | `orgNo,partyId,partyUuid,orgForm` |
 | `organizations-tt02.csv` | 20 AS + 20 ENK | `orgNo,partyId,partyUuid,orgForm` |
 
+- `configuration-<env>.csv`: the org the tests run as and the resource they connect to; the
+  [test README](../../api/tests/resource-registry/README.md#configuration) says what each value is.
 - `orgNo`: organization number, what the tests send when they add a member.
 - `partyId`, `partyUuid`: the Altinn party Register resolves the organization number to in that environment. The tests
   check that the registry resolves a member to this party.

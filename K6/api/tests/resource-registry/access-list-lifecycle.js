@@ -1,6 +1,6 @@
 import { fail, group } from "k6";
 
-import { getStrictOptions, pickUnique } from "../../../helpers.js";
+import { getStrictOptions, pickUnique, requireEnv } from "../../../helpers.js";
 import {
     AccessListAddMembers,
     AccessListCreateOrUpdate,
@@ -27,9 +27,7 @@ import {
     newIdentifier,
     organizationUrn,
     partyUuidUrn,
-    requireFamilyEnv,
     resourceUrn,
-    versionOf,
 } from "./commons.js";
 
 const createLabel = { step: "Create and read an access list" };
@@ -72,7 +70,7 @@ const OTHER_OWNER = "digdir";
  * @returns {{companies: Array<import("./commons.js").Organization>, soleProprietorship: import("./commons.js").Organization}} The members.
  */
 export function setup() {
-    requireFamilyEnv();
+    requireEnv(["BASE_URL", "ENVIRONMENT"]);
     getConfiguration();
 
     return {
@@ -143,8 +141,6 @@ export default function (data) {
     let etagBeforeConnection = "";
     /** @type {string} */
     let etagAfterConnection = "";
-    /** @type {number|null} */
-    let firstVersion = null;
 
     group("Create and read an access list", function () {
         const created = AccessListCreateOrUpdate(client, owner, identifier, {
@@ -160,7 +156,6 @@ export default function (data) {
 
         AccessListDomainChecks.CheckAccessListInfo(read.value, written, "AccessListGet");
         etag = requireEtag(read, "AccessListGet");
-        firstVersion = versionOf(etag);
 
         const byOwner = AccessListGetByOwner(client, owner, null, null, createLabel);
 
@@ -344,21 +339,13 @@ export default function (data) {
 
         AccessListDomainChecks.CheckAccessListInfo(stillThere.value, updated, "AccessListGet after rejected delete");
 
-        const deleted = AccessListDelete(client, owner, identifier, { headers: { "If-Match": requireEtag(stillThere, "AccessListGet after rejected delete") } }, deleteLabel);
+        AccessListDelete(client, owner, identifier, { headers: { "If-Match": requireEtag(stillThere, "AccessListGet after rejected delete") } }, deleteLabel);
 
         AccessListGet(client, owner, identifier, { expectedStatus: 404 }, deleteLabel);
 
         const byOwner = AccessListGetByOwner(client, owner, null, null, deleteLabel);
 
         AccessListDomainChecks.CheckDoesNotContainList(byOwner?.data, identifier, "AccessListGetByOwner after delete");
-
-        // What this run cost the event log: the delete is the last event, one
-        // past the version the deleted list reported.
-        const lastVersion = versionOf(deleted.etag);
-
-        if (firstVersion !== null && lastVersion !== null) {
-            console.log(`access-list-lifecycle - ${identifier} went from version ${firstVersion} to ${lastVersion}: ${lastVersion - firstVersion + 1} events in the registry's log`);
-        }
     });
 }
 

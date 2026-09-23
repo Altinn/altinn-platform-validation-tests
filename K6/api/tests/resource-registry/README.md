@@ -26,7 +26,8 @@ scheduled test that creates and deletes lists therefore grows that table on ever
 
 The lifecycle test keeps that to one list per run by doing everything on the same list, in an order where every write
 happens once: create, update, add members, connect, replace, remove, disconnect, delete. That is nine events per run,
-and the test logs the number it measured from the ETag versions. The steps that expect a refusal (412 on a stale or
+measured from the ETag versions when the test was written (the ETag is `W/"<base64 of {"version":"N"}>"`, and N is
+the id of the list's last event). The steps that expect a refusal (412 on a stale or
 create-only header, 403 for another owner) and the repeated identical write add no events; the latter is checked, since
 a client that retries idempotent writes must not cost a version each time. The registry's own Bruno collection makes
 the same trade the other way, with one permanent list it never deletes.
@@ -35,7 +36,8 @@ One run instead of three also means one failure could cascade. The steps the res
 the members, the connection, and every ETag the conditional calls need) therefore end the iteration with
 `fail("cannot continue: …")` when they do not hold, the way the authentication and register tests do, so one root
 cause shows up as one failed check and one line in the log rather than a dozen failures downstream. The step labels
-still tell them apart in Grafana, and teardown deletes the list either way.
+still tell them apart in Grafana, and teardown deletes the list either way. Teardown goes to the client rather than the
+building blocks: it is not a test step, so a failed read there is logged, not checked.
 
 ### Not covered, and why
 
@@ -70,10 +72,11 @@ still tell them apart in Grafana, and teardown deletes the list either way.
 
 ## Configuration
 
-`commons.js` holds the defaults per environment and the env var that overrides each of them for an ad-hoc run. A
-run against an environment without defaults has to set all three.
+Per environment, one row in `K6/testdata/resource-registry/configuration-<env>.csv`, read like the other test data.
+Each value can be overridden with an env var for an ad-hoc run, and a run against an environment without a file has to
+set all three.
 
-| Key | Env var | Default (at22, at23, tt02) | What it is |
+| Column | Env var | Value in at22, at23 and tt02 | What it is |
 | --- | --- | --- | --- |
 | `owner` | `RESOURCE_REGISTRY_OWNER` | `ttd` | Org code that owns the lists the tests create, and the org of the enterprise token. |
 | `ownerOrgNo` | `RESOURCE_REGISTRY_OWNER_ORG_NO` | `991825827` | Organization number in the enterprise token. |

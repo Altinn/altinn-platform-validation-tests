@@ -1,5 +1,3 @@
-import encoding from "k6/encoding";
-
 import {
     AccessListClient,
     AccessListMembershipsClient,
@@ -12,90 +10,65 @@ import {
     PlatformTokenGenerator,
     uuidv4,
 } from "../../../common-imports.js";
-import { fetchTestData, getTestConfiguration, lazy, requireEnv } from "../../../helpers.js";
+import { fetchTestData, lazy } from "../../../helpers.js";
 import { AltinnScopes, CreateScopeString } from "../../../scopes.js";
 import { collectNextUrlPages } from "../../building-blocks/common/follow-next-url-pagination.js";
 
 /**
- * Identities the resource-registry functional tests run as, per environment.
+ * Reads `K6/testdata/resource-registry/<name>-<env>.csv` from main, or from
+ * TESTDATA_BRANCH when set.
  *
- * `owner` is the org code that owns the access lists the tests create, and the
- * org the enterprise token is issued for, since the registry only lets a token
- * touch the lists of its own org. `ownerOrgNo` goes into the same token.
- *
- * `resourceId` is the resource the tests connect their lists to. It has to be
- * owned by `owner`, exist in every environment and have access lists disabled,
- * so a connection made by a test grants nobody anything while the test runs.
- * k6-instancedelegation-test is a ttd resource that meets all three, and its
- * policy carries six actions the v2 policy rights test can read back.
- *
- * @typedef {"owner"|"ownerOrgNo"|"resourceId"} ConfigurationKey
- * @type {{[environment: string]: Record<ConfigurationKey, string>}}
+ * @param {string} name File name without the environment suffix, e.g. "organizations".
+ * @returns {Array<any>} The rows. Fails the test when the file is missing or empty.
  */
-const TEST_CONFIGURATION = {
-    at22: {
-        owner: "ttd",
-        ownerOrgNo: "991825827",
-        resourceId: "k6-instancedelegation-test",
-    },
-    at23: {
-        owner: "ttd",
-        ownerOrgNo: "991825827",
-        resourceId: "k6-instancedelegation-test",
-    },
-    tt02: {
-        owner: "ttd",
-        ownerOrgNo: "991825827",
-        resourceId: "k6-instancedelegation-test",
-    },
-};
+function readRows(name) {
+    return fetchTestData(
+        `resource-registry/${name}-${__ENV.ENVIRONMENT}.csv`,
+        true,
+        __ENV.TESTDATA_BRANCH || "main",
+    );
+}
 
 /**
- * The env var that overrides each configuration key for an ad-hoc run.
+ * One row of configuration-<env>.csv. See the README for what each value is.
  *
- * @type {Record<ConfigurationKey, string>}
+ * @typedef {object} Configuration
+ * @property {string} owner Org code that owns the lists the tests create.
+ * @property {string} ownerOrgNo Organization number of the owner.
+ * @property {string} resourceId Resource the tests connect their lists to.
  */
-const CONFIGURATION_ENV_VARS = {
-    owner: "RESOURCE_REGISTRY_OWNER",
-    ownerOrgNo: "RESOURCE_REGISTRY_OWNER_ORG_NO",
-    resourceId: "RESOURCE_REGISTRY_RESOURCE_ID",
-};
 
 /**
- * Every access list a test creates starts with this, so teardown can tell the
- * lists the tests made from the ones people made by hand and delete only ours.
+ * Prefix of every list the tests create, so teardown can tell them apart.
  */
 export const IDENTIFIER_PREFIX = "k6-";
 
 /**
- * Env vars every test in the family needs before it can build a client.
+ * The configuration for the environment the run is against, read once per VU.
+ * RESOURCE_REGISTRY_OWNER, RESOURCE_REGISTRY_OWNER_ORG_NO and
+ * RESOURCE_REGISTRY_RESOURCE_ID override the file for an ad-hoc run.
  *
- * @returns {{[key: string]: string}} The env vars, for a setup that wants them.
- */
-export function requireFamilyEnv() {
-    return requireEnv([
-        "BASE_URL",
-        "ENVIRONMENT",
-        "TOKEN_GENERATOR_USERNAME",
-        "TOKEN_GENERATOR_PASSWORD",
-    ]);
-}
-
-/**
- * The configuration for the environment the run is against. Resolved once per
- * VU, and throws naming the missing key when the environment is not listed
- * and the env var is not set.
+ * @returns {Configuration} The configuration.
  */
 export const getConfiguration = lazy(function () {
-    return getTestConfiguration("resource-registry", TEST_CONFIGURATION, CONFIGURATION_ENV_VARS);
+    /** @type {Partial<Configuration>} */
+    const row = readRows("configuration")[0] ?? {};
+    const configuration = {
+        owner: __ENV.RESOURCE_REGISTRY_OWNER || row.owner,
+        ownerOrgNo: __ENV.RESOURCE_REGISTRY_OWNER_ORG_NO || row.ownerOrgNo,
+        resourceId: __ENV.RESOURCE_REGISTRY_RESOURCE_ID || row.resourceId,
+    };
+
+    if (!configuration.owner || !configuration.ownerOrgNo || !configuration.resourceId) {
+        throw new Error(`resource-registry/configuration-${__ENV.ENVIRONMENT}.csv needs owner, ownerOrgNo and resourceId; got ${JSON.stringify(row)}`);
+    }
+
+    return /** @type {Configuration} */ (configuration);
 });
 
 /**
- * Client for the access lists, their members and their resource connections.
- *
- * Enterprise token for the owner org with both access list scopes. The
- * registry checks the token's org against the owner in the path, so this
- * client can only read and write the lists of `owner`.
+ * Client for the lists, their members and their resource connections, with an
+ * enterprise token for the owner org.
  *
  * @returns {AccessListClient} The client.
  */
@@ -119,12 +92,8 @@ export const getAccessListClient = lazy(function () {
 });
 
 /**
- * Token generator for the two lookups reserved for platform components,
- * memberships and get-by-member.
- *
- * Platform access token issued for the `platform` org. The registry requires
- * that issuer for both endpoints and rejects a bearer token, whatever scopes
- * it carries, so neither lookup can share a token with getAccessListClient.
+ * Platform access token for the two platform-component lookups. See the
+ * README on tokens.
  *
  * @returns {PlatformTokenGenerator} The generator.
  */
@@ -148,13 +117,7 @@ export const getAccessListMembershipsClient = lazy(function () {
 });
 
 /**
- * Access list client for the get-by-member lookup only.
- *
- * get-by-member sits in AccessListClient, since the swagger has it under the
- * Access List tag, but takes the platform access token rather than the
- * enterprise token the rest of that client's methods take. Hence a second
- * instance of the same client, built on the platform token generator, the way
- * the register tests keep one RegisterClient per token flavour.
+ * Second AccessListClient, on the platform token, for get-by-member only.
  *
  * @returns {AccessListClient} The client.
  */
@@ -163,7 +126,7 @@ export const getAccessListPlatformClient = lazy(function () {
 });
 
 /**
- * Client for the v2 resource endpoints. Policy rights are public, so no token.
+ * Client for the v2 resource endpoints, which are public.
  *
  * @returns {ResourceV2Client} The client.
  */
@@ -172,8 +135,7 @@ export const getResourceV2Client = lazy(function () {
 });
 
 /**
- * A synthetic organization from Tenor, enriched with its Altinn party from
- * Register in the environment the file is for.
+ * One row of organizations-<env>.csv: a Tenor organization with its Altinn party.
  *
  * @typedef {object} Organization
  * @property {string} orgNo Organization number.
@@ -183,26 +145,14 @@ export const getResourceV2Client = lazy(function () {
  */
 
 /**
- * Organizations to add as members, one file per environment.
- *
- * K6/testdata/resource-registry/organizations-<env>.csv
- * (header: orgNo,partyId,partyUuid,orgForm), regenerated with the Tenor CLI as
- * the README in that folder describes. Read from main over HTTP, like every
- * other test data file, so a branch-only edit changes nothing until merged.
- * TESTDATA_BRANCH reads from another branch instead, for running a test
- * locally against data that is still in review.
+ * The organizations to add as members, optionally only those of one form.
  *
  * @param {"AS"|"ENK"} [orgForm] Keep only organizations of this form.
- * @returns {Array<Organization>} The organizations. Fails the test when the file is
- * missing or empty, or holds none of the requested form.
+ * @returns {Array<Organization>} The organizations. Fails when there are none.
  */
 export function loadOrganizations(orgForm) {
     /** @type {Array<Organization>} */
-    const rows = fetchTestData(
-        `resource-registry/organizations-${__ENV.ENVIRONMENT}.csv`,
-        true,
-        __ENV.TESTDATA_BRANCH || "main",
-    );
+    const rows = readRows("organizations");
     const organizations = orgForm ? rows.filter((row) => row.orgForm === orgForm) : rows;
 
     if (organizations.length === 0) {
@@ -213,7 +163,7 @@ export function loadOrganizations(orgForm) {
 }
 
 /**
- * A fresh access list identifier, prefixed so teardown can find it.
+ * A fresh, prefixed access list identifier.
  *
  * @returns {string} The identifier.
  */
@@ -289,33 +239,4 @@ export function partyUuidUrn(partyUuid) {
  */
 export function resourceUrn(resourceId) {
     return `urn:altinn:resource:${resourceId}`;
-}
-
-/**
- * The version an access list ETag stands for.
- *
- * The registry's ETag is `W/"<base64 of {"version":"N"}>"`, where N is the id
- * of the last event on the list. The difference between two versions is how
- * many events the registry recorded in between, which is what a test reports
- * to show what a run costs the event log.
- *
- * @param {string|null} etag The ETag, or null.
- * @returns {number|null} The version, or null when the ETag is missing or not
- * in the registry's format.
- */
-export function versionOf(etag) {
-    if (!etag) {
-        return null;
-    }
-
-    const payload = etag.replace(/^W\//, "").replace(/^"|"$/g, "").replace(/-/g, "+").replace(/_/g, "/");
-
-    try {
-        const decoded = encoding.b64decode(payload, payload.includes("=") ? "std" : "rawstd", "s");
-        const version = Number(JSON.parse(decoded).version);
-
-        return Number.isInteger(version) ? version : null;
-    } catch {
-        return null;
-    }
 }

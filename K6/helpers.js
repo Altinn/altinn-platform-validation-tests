@@ -226,52 +226,6 @@ export function getStrictOptions(labels, groups = []) {
 }
 
 /**
- * Resolves a test family's per-environment configuration, with an env var
- * override for every key.
- *
- * A family lists what it needs per environment (owner, org number, a resource
- * to connect to) and the env var that overrides each key for an ad-hoc run.
- * The value is the env var when set, else the default for `__ENV.ENVIRONMENT`.
- * A key with neither fails here, naming the key and the variable that sets
- * it, rather than surfacing later as an undefined in a URL or a body.
- *
- * @template {string} K
- * @param {string} family Family name for the error message, e.g. "resource-registry".
- * @param {{[environment: string]: Partial<Record<K, string>>}} defaultsByEnvironment
- * Defaults per environment. An environment that is missing has no defaults,
- * so every key has to come from its env var.
- * @param {Record<K, string>} envVarByKey The env var that overrides each key.
- * @returns {Record<K, string>} The resolved configuration.
- */
-export function getTestConfiguration(family, defaultsByEnvironment, envVarByKey) {
-    const environment = __ENV.ENVIRONMENT;
-    /** @type {Partial<Record<K, string>>} */
-    const defaults = defaultsByEnvironment[environment] ?? {};
-    /** @type {Partial<Record<K, string>>} */
-    const configuration = {};
-    const missing = [];
-
-    for (const key of /** @type {K[]} */ (Object.keys(envVarByKey))) {
-        const envVar = envVarByKey[key];
-        const value = __ENV[envVar] || defaults[key];
-
-        if (value === undefined || value === "") {
-            missing.push(`${key} (set ${envVar})`);
-        } else {
-            configuration[key] = value;
-        }
-    }
-
-    if (missing.length > 0) {
-        throw new Error(
-            `No ${family} test configuration for environment '${environment}': missing ${missing.join(", ")}`,
-        );
-    }
-
-    return /** @type {Record<K, string>} */ (configuration);
-}
-
-/**
  * @param {string} ip Address to validate.
  * @returns {boolean} True when the address is a valid IPv4 or IPv6 address.
  */
