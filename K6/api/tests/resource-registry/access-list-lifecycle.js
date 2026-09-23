@@ -206,19 +206,19 @@ export default function (data) {
     });
 
     group("Add members", function () {
-        const partyUrns = Object.fromEntries(all.map((organization) => [organization.organizationNumber, partyUuidUrn(organization.partyUuid)]));
+        const partyUrns = Object.fromEntries(all.map((organization) => [organization.orgNo, partyUuidUrn(organization.partyUuid)]));
 
         const added = AccessListAddMembers(client, owner, identifier, {
-            data: all.map((organization) => organizationUrn(organization.organizationNumber)),
+            data: all.map((organization) => organizationUrn(organization.orgNo)),
         }, membersLabel);
 
-        if (!AccessListDomainChecks.CheckMembers(added, all.map((organization) => organization.organizationNumber), "AccessListAddMembers")) {
+        if (!AccessListDomainChecks.CheckMembers(added, all.map((organization) => organization.orgNo), "AccessListAddMembers")) {
             fail("cannot continue: the members were not added, so there is nothing to look up, replace or remove");
         }
 
         const members = AccessListGetMembers(client, owner, identifier, null, membersLabel);
 
-        AccessListDomainChecks.CheckMembers(members, all.map((organization) => organization.organizationNumber), "AccessListGetMembers");
+        AccessListDomainChecks.CheckMembers(members, all.map((organization) => organization.orgNo), "AccessListGetMembers");
         AccessListDomainChecks.CheckMembersResolveToParties(members, partyUrns, "AccessListGetMembers");
 
         // Adding members moved the version on; pick up the current ETag for the
@@ -301,17 +301,17 @@ export default function (data) {
 
     group("Replace and remove members", function () {
         const replaced = AccessListReplaceMembers(client, owner, identifier, {
-            data: [organizationUrn(data.soleProprietorship.organizationNumber)],
+            data: [organizationUrn(data.soleProprietorship.orgNo)],
         }, replaceLabel);
 
-        AccessListDomainChecks.CheckMembers(replaced, [data.soleProprietorship.organizationNumber], "AccessListReplaceMembers");
+        AccessListDomainChecks.CheckMembers(replaced, [data.soleProprietorship.orgNo], "AccessListReplaceMembers");
 
         const afterReplace = AccessListGetMembers(client, owner, identifier, null, replaceLabel);
 
-        AccessListDomainChecks.CheckMembers(afterReplace, [data.soleProprietorship.organizationNumber], "AccessListGetMembers after replace");
+        AccessListDomainChecks.CheckMembers(afterReplace, [data.soleProprietorship.orgNo], "AccessListGetMembers after replace");
 
         const removed = AccessListRemoveMembers(client, owner, identifier, {
-            data: [organizationUrn(data.soleProprietorship.organizationNumber)],
+            data: [organizationUrn(data.soleProprietorship.orgNo)],
         }, replaceLabel);
 
         AccessListDomainChecks.CheckMembers(removed, [], "AccessListRemoveMembers");

@@ -84,7 +84,7 @@ Besides these, the tests need `BASE_URL`, `ENVIRONMENT`, `TOKEN_GENERATOR_USERNA
 ## Test data
 
 The members are synthetic organizations from Tenor, enriched with their Altinn party from Register, in
-`K6/testdata/resource-registry/organizations-<env>.csv` with the columns `organizationNumber,partyId,partyUuid,organizationForm`. The
+`K6/testdata/resource-registry/organizations-<env>.csv` with the columns `orgNo,partyId,partyUuid,orgForm`. The
 lifecycle test adds two `AS` and one `ENK`, and looks the `ENK` up through the platform-component endpoints. How to
 regenerate the files is described in
 [K6/testdata/resource-registry/README.md](../../../testdata/resource-registry/README.md).

@@ -8,14 +8,14 @@ party from Register in the environment the file is for. The
 
 | File | Rows | Columns |
 | --- | --- | --- |
-| `organizations-at22.csv` | 20 AS + 20 ENK | `organizationNumber,partyId,partyUuid,organizationForm` |
-| `organizations-at23.csv` | 20 AS + 20 ENK | `organizationNumber,partyId,partyUuid,organizationForm` |
-| `organizations-tt02.csv` | 20 AS + 20 ENK | `organizationNumber,partyId,partyUuid,organizationForm` |
+| `organizations-at22.csv` | 20 AS + 20 ENK | `orgNo,partyId,partyUuid,orgForm` |
+| `organizations-at23.csv` | 20 AS + 20 ENK | `orgNo,partyId,partyUuid,orgForm` |
+| `organizations-tt02.csv` | 20 AS + 20 ENK | `orgNo,partyId,partyUuid,orgForm` |
 
-- `organizationNumber`: organization number, what the tests send when they add a member.
+- `orgNo`: organization number, what the tests send when they add a member.
 - `partyId`, `partyUuid`: the Altinn party Register resolves the organization number to in that environment. The tests
   check that the registry resolves a member to this party.
-- `organizationForm`: `AS` or `ENK`, as Register reports it (`unitType`). The lifecycle test picks two `AS` and one `ENK`.
+- `orgForm`: `AS` or `ENK`, as Register reports it (`unitType`). The lifecycle test picks two `AS` and one `ENK`.
 
 Party ids and uuids differ between environments, so a file is only valid for the environment in its name. Tenor's
 organizations are the same everywhere, which is why the same organization numbers can show up in more than one file.
@@ -40,10 +40,10 @@ left out.
 
 | CSV column | Tenor row |
 | --- | --- |
-| `organizationNumber` | `organisasjonsnummer` |
+| `orgNo` | `organisasjonsnummer` |
 | `partyId` | `altinn.partyId` |
 | `partyUuid` | `altinn.partyUuid` |
-| `organizationForm` | `altinn.unitType` |
+| `orgForm` | `altinn.unitType` |
 
 At the time of writing, `--register` fails with a 400 because the CLI asks Register for a field it does not accept
 (`organization`; Register wants `org`). The current files were built from the same Tenor output with the Register
