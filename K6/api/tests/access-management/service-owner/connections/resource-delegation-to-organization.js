@@ -1,30 +1,84 @@
-import { getOptions } from "../../../../../helpers.js";
-import { LABELS, revokeDelegations, runResourceDelegation, setup } from "./common.js";
+import { fail, group } from "k6";
+
+import { GetResourceRightsQueryBuilder } from "../../../../../clients/access-management/service-owner/connections/index.js";
+import { getItemFromList, getOptions } from "../../../../../helpers.js";
+import { ConnectionsCreateResource, ConnectionsGetResourceRights } from "../../../../building-blocks/access-management/service-owner/connections/index.js";
+import { ConnectionsDomainChecks } from "../../../../domain-checks/access-management/service-owner/connections.js";
+import { delegationRequest, getClients, getServiceOwnerTokenOpts, recipientsOfType, revokeDelegations, setup } from "./common.js";
 
 export { setup };
 
-export const options = getOptions(LABELS);
+/**
+ * The recipient type this test covers, and so the rows its teardown sweeps.
+ *
+ * functional.yaml lists this test and its person sibling as their own test
+ * definitions, so they run as two k6 processes at the same time. Each one keeps
+ * to its own recipient type, so neither revokes what the other just created.
+ */
+const RECIPIENT_TYPE = "organization";
+
+const getRightsLabel = { step: "1. Get resource rights" };
+const createDelegationLabel = { step: "2. Create resource delegation" };
+const revokeDelegationLabel = { step: "3. Revoke resource delegation" };
+
+export const options = getOptions([
+    getRightsLabel,
+    createDelegationLabel,
+    revokeDelegationLabel,
+]);
 
 /**
  * Test: the service owner delegates the resource to an organization.
  *
- * A sibling of resource-delegation-to-person.js. One test per recipient type
- * rather than one test drawing both, so a functional run covers each case
- * whatever the iteration count is.
+ * One service owner and one recipient per iteration, both drawn by __ITER, so
+ * the test scales the way a smoke or breakpoint run expects. How many iterations
+ * a run gets is set by functional.yaml and smoke.yaml, not here.
  *
  * @param {ReturnType<typeof setup>} data Environment-specific test data.
  * @returns {void}
  */
 export default function (data) {
-    runResourceDelegation(data, "organization");
+    const serviceOwner = getItemFromList(data.serviceOwners);
+    const recipient = getItemFromList(recipientsOfType(data, RECIPIENT_TYPE));
+    const { connections, tokenGenerator } = getClients();
+
+    tokenGenerator.setTokenGeneratorOptions(getServiceOwnerTokenOpts(serviceOwner));
+
+    group(`Resource delegation to ${RECIPIENT_TYPE}`, function () {
+        const rights = ConnectionsGetResourceRights(
+            connections,
+            new GetResourceRightsQueryBuilder()
+                .WithResource(serviceOwner.resource)
+                .Build(),
+            getRightsLabel,
+        );
+
+        const rightKeys = rights
+            .map((right) => right.key)
+            .filter((key) => key !== null);
+
+        // Without right keys there is nothing to delegate, so the create below
+        // would only report a second failure for the same cause.
+        if (rightKeys.length === 0) {
+            fail(`No rights found for resource ${serviceOwner.resource}`);
+        }
+
+        ConnectionsDomainChecks.CheckResourceDelegationCreated(
+            ConnectionsCreateResource(
+                connections,
+                delegationRequest(serviceOwner, recipient, rightKeys),
+                createDelegationLabel,
+            ),
+        );
+    });
 }
 
 /**
- * Removes any organization delegation the run left behind.
+ * Removes any delegation to an organization the run left behind.
  *
  * @param {ReturnType<typeof setup>} data Environment-specific test data.
  * @returns {void}
  */
 export function teardown(data) {
-    revokeDelegations(data, "organization");
+    revokeDelegations(data, RECIPIENT_TYPE, revokeDelegationLabel);
 }

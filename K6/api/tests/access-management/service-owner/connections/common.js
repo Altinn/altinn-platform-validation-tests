@@ -1,11 +1,10 @@
-import { fail, group } from "k6";
+import { fail } from "k6";
 
-import { ConnectionsClient, GetResourceRightsQueryBuilder, ServiceOwnerResourceDelegationBuilder } from "../../../../../clients/access-management/service-owner/connections/index.js";
+import { ConnectionsClient, ServiceOwnerResourceDelegationBuilder } from "../../../../../clients/access-management/service-owner/connections/index.js";
 import { EnterpriseTokenBuilder, EnterpriseTokenGenerator } from "../../../../../common-imports.js";
-import { fetchTestData, getItemFromList, lazy, requireEnv } from "../../../../../helpers.js";
+import { fetchTestData, lazy, requireEnv } from "../../../../../helpers.js";
 import { AltinnScopes, CreateScopeString } from "../../../../../scopes.js";
-import { ConnectionsCreateResource, ConnectionsGetResourceRights, ConnectionsRevokeResource } from "../../../../building-blocks/access-management/service-owner/connections/index.js";
-import { ConnectionsDomainChecks } from "../../../../domain-checks/access-management/service-owner/connections.js";
+import { ConnectionsRevokeResource } from "../../../../building-blocks/access-management/service-owner/connections/index.js";
 
 const SERVICE_OWNER_SCOPES = CreateScopeString([
     AltinnScopes.SERVICEOWNER.DELEGATIONS.RESOURCE.WRITE,
@@ -32,7 +31,7 @@ const SERVICE_OWNER_SCOPES = CreateScopeString([
  */
 
 /**
- * Loads the two fixtures this test runs on.
+ * Loads the two fixtures the tests in this folder run on.
  *
  * Both are read over HTTP rather than off disk: fetchTestData pulls them from
  * raw.githubusercontent.com pinned to main, so a fixture has to be merged before
@@ -102,19 +101,6 @@ export function getServiceOwnerTokenOpts(serviceOwner) {
         .build();
 }
 
-const getRightsLabel = { step: "1. Get resource rights" };
-const createDelegationLabel = { step: "2. Create resource delegation" };
-const revokeDelegationLabel = { step: "3. Revoke resource delegation" };
-
-/**
- * The three steps every recipient type goes through, for getOptions.
- */
-export const LABELS = [
-    getRightsLabel,
-    createDelegationLabel,
-    revokeDelegationLabel,
-];
-
 /**
  * Picks the recipients of one type out of the fixture.
  *
@@ -126,7 +112,7 @@ export const LABELS = [
  * @param {"person"|"organization"} recipientType The type to keep.
  * @returns {Array<RecipientRow>} The matching recipients.
  */
-function recipientsOfType(data, recipientType) {
+export function recipientsOfType(data, recipientType) {
     const recipients = data.recipients.filter(
         (recipient) => recipient.recipientType === recipientType,
     );
@@ -142,7 +128,7 @@ function recipientsOfType(data, recipientType) {
  * Builds the delegation request for one service owner and one recipient.
  *
  * The recipient decides which of the builder's typed party methods is used, so
- * the urn prefix is never spelled out at the call site. Shared with the revoke
+ * the urn prefix is never spelled out at the call site. Shared with the teardown
  * below, which has to rebuild a request it never saw created.
  *
  * @param {ServiceOwnerRow} serviceOwner The service owner.
@@ -151,7 +137,7 @@ function recipientsOfType(data, recipientType) {
  * address the whole delegation, which is what revoking takes.
  * @returns {*} The delegation payload.
  */
-function delegationRequest(serviceOwner, recipient, rightKeys = null) {
+export function delegationRequest(serviceOwner, recipient, rightKeys = null) {
     const builder = new ServiceOwnerResourceDelegationBuilder()
         .WithFromOrganization(serviceOwner.fromOrganizationNumber)
         .WithResource(serviceOwner.resource);
@@ -170,53 +156,6 @@ function delegationRequest(serviceOwner, recipient, rightKeys = null) {
 }
 
 /**
- * Delegates the resource to one recipient of the given type.
- *
- * One service owner and one recipient per iteration, both drawn by __ITER, so
- * the test scales the way a smoke or breakpoint run expects. How many iterations
- * a run gets is set by functional.yaml and smoke.yaml, not here.
- *
- * @param {ResourceDelegationTestData} data Environment-specific test data.
- * @param {"person"|"organization"} recipientType The recipient type under test.
- * @returns {void}
- */
-export function runResourceDelegation(data, recipientType) {
-    const serviceOwner = getItemFromList(data.serviceOwners);
-    const recipient = getItemFromList(recipientsOfType(data, recipientType));
-    const { connections, tokenGenerator } = getClients();
-
-    tokenGenerator.setTokenGeneratorOptions(getServiceOwnerTokenOpts(serviceOwner));
-
-    group(`Resource delegation to ${recipientType}`, function () {
-        const rights = ConnectionsGetResourceRights(
-            connections,
-            new GetResourceRightsQueryBuilder()
-                .WithResource(serviceOwner.resource)
-                .Build(),
-            getRightsLabel,
-        );
-
-        const rightKeys = rights
-            .map((right) => right.key)
-            .filter((key) => key !== null);
-
-        // Without right keys there is nothing to delegate, so the create below
-        // would only report a second failure for the same cause.
-        if (rightKeys.length === 0) {
-            fail(`No rights found for resource ${serviceOwner.resource}`);
-        }
-
-        ConnectionsDomainChecks.CheckResourceDelegationCreated(
-            ConnectionsCreateResource(
-                connections,
-                delegationRequest(serviceOwner, recipient, rightKeys),
-                createDelegationLabel,
-            ),
-        );
-    });
-}
-
-/**
  * Removes every delegation of the given recipient type a run may have left.
  *
  * k6 runs teardown once after all iterations, including when an iteration fails
@@ -225,13 +164,15 @@ export function runResourceDelegation(data, recipientType) {
  *
  * This is the one place the fixture is walked rather than one row per iteration:
  * k6 does not tell teardown which rows the run reached, and revoking a
- * delegation that was never created costs one 204.
+ * delegation that was never created costs one 204. Each test sweeps only its own
+ * recipient type, so the two can run side by side without touching each other.
  *
  * @param {ResourceDelegationTestData} data Environment-specific test data.
  * @param {"person"|"organization"} recipientType The recipient type to sweep.
+ * @param {{[key: string]: string}} label k6 request label for the revoke step.
  * @returns {void}
  */
-export function revokeDelegations(data, recipientType) {
+export function revokeDelegations(data, recipientType, label) {
     const { connections, tokenGenerator } = getClients();
 
     data.serviceOwners.forEach((serviceOwner) => {
@@ -241,7 +182,7 @@ export function revokeDelegations(data, recipientType) {
             ConnectionsRevokeResource(
                 connections,
                 delegationRequest(serviceOwner, recipient),
-                revokeDelegationLabel,
+                label,
             );
         });
     });
