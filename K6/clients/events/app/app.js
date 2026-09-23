@@ -47,9 +47,10 @@ class AppClient {
      * @param {AppCloudEventRequestModel} request Event payload.
      * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
+     * @param {string|null} [idempotencyKey] Optional GUID used to skip duplicate submissions.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
-    AppCreate(request, labels = null) {
+    AppCreate(request, labels = null, idempotencyKey = null) {
         return http.post(
             this.FULL_PATH,
             jsonBody(request),
@@ -59,6 +60,7 @@ class AppClient {
                 labels,
                 token: this.tokenGenerator.getToken(),
                 json: true,
+                headers: { "Idempotency-Key": idempotencyKey },
             }),
         );
     }
