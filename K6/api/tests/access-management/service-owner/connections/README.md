@@ -1,10 +1,22 @@
 # Service owner resource delegation
 
-The functional test calls the service-owner API as Digdir and delegates the
+Two functional tests call the service-owner API as Digdir and delegate the
 dedicated resource `k6-serviceowner-resource-delegation` from a Tenor
-organization to each recipient in the fixture. Digdir is the resource owner and
-the only party authorized to perform the delegation. The `from` and `to` parties
-are ordinary Tenor parties; they do not call the service-owner API themselves.
+organization to a recipient:
+
+| Test | Recipient |
+| --- | --- |
+| `resource-delegation-to-organization.js` | an organization |
+| `resource-delegation-to-person.js` | a person |
+
+One test per recipient type, rather than one test drawing both, because a
+functional run gets a single iteration: a test that drew from the whole
+recipient list would only ever reach the first row. Both share `common.js`,
+which holds the client setup, the fixtures and the delegation flow.
+
+Digdir is the resource owner and the only party authorized to perform the
+delegation. The `from` and `to` parties are ordinary Tenor parties; they do not
+call the service-owner API themselves.
 
 The resource is owned by Digdir (`991825827`), is hidden from the portal, and is
 delegable. Its XACML policy grants `read` and `write` through the `jordbruk`
@@ -46,13 +58,12 @@ K6/testdata/access-management/service-owner/connections/
 because the delegating party has to be one the resource can be delegated from,
 which ties it to the resource, not to the recipient list.
 
-Each iteration draws one service owner and one recipient with
-`getItemFromList`, which walks the rows by `__ITER`. The scenario runs as many
-iterations as `recipients/<env>.csv` has rows, so a functional run covers both
-the organization and the person leg; `ITERATIONS` overrides that for smoke and
-breakpoint runs. Adding a recipient row means raising the default. When this
-grows to more than one VU, split the rows first with
-`segmentData(rows, getNumberOfVUs())`.
+Each test filters the fixture to its own `recipientType`, then draws one
+service owner and one recipient with `getItemFromList`, which walks the rows by
+`__ITER`. VUs and iterations are set by `functional.yaml` and `smoke.yaml`, not
+in the test. Adding a second row of the same type means the extra rows are only
+reached when the run gets more iterations. When this grows to more than one VU,
+split the rows first with `segmentData(rows, getNumberOfVUs())`.
 
 `recipientType` is `person` or `organization`, and decides which typed builder
 method the request is built with:
@@ -90,6 +101,7 @@ Revoking runs in a real `teardown` step rather than at the end of the iteration,
 so a run that fails partway through still cleans up after itself. Revoke removes
 the complete resource delegation, so right keys are left off.
 
-Teardown is the one place the whole fixture is walked rather than one row per
+Teardown is the one place the fixture is walked rather than one row per
 iteration: k6 does not tell teardown which rows the run reached, and revoking a
-delegation that was never created costs one 204.
+delegation that was never created costs one 204. Each test sweeps only its own
+recipient type.

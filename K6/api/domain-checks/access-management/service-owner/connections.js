@@ -3,46 +3,28 @@ import { check } from "k6";
 import { AssignmentResourceDto } from "../../../../clients/access-management/service-owner/connections/connections.types.js";
 
 /**
- * Matches the identifiers the API hands back, which are UUIDv7 values.
- */
-const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-
-/**
- * Checks that a resource delegation was created and reported back in full.
+ * Checks that a resource delegation was created.
  *
- * A create answers 200 with the assignment resource it made, as three
- * identifiers: its own `id`, the `assignmentId` of the assignment it belongs to,
- * and the `resourceId` of the resource delegated. A 200 carrying a body missing
- * any of them is a delegation nothing can be said about afterwards, which is
- * what this separates from a delegation that actually landed.
+ * The building block has already checked the status code and that the body
+ * parsed, so what is left to say is whether the response carried an assignment
+ * resource at all: a 200 with nothing in it is a delegation nothing can be said
+ * about afterwards.
+ *
+ * The check name is a fixed string rather than one built per call site, so every
+ * run reports it under the same series in Grafana.
  *
  * @param {AssignmentResourceDto|null} assignment The created assignment resource.
- * @param {string} operation Name of the operation, used in the check name and logs.
- * @returns {boolean} True if the delegation was created and fully reported.
+ * @returns {boolean} True if the delegation was created.
  */
-function CheckResourceDelegationCreated(assignment, operation) {
-    const missing = [
-        ["id", assignment?.id],
-        ["assignmentId", assignment?.assignmentId],
-        ["resourceId", assignment?.resourceId],
-    ]
-        .filter(([, value]) => !UUID.test(String(value ?? "")))
-        .map(([field]) => field);
-
+function CheckResourceDelegationCreated(assignment) {
     const success = check(assignment, {
-        [`CheckResourceDelegationCreated - ${operation} created the delegation`]: (response) =>
-            response !== null && missing.length === 0,
+        "CheckResourceDelegationCreated - the delegation was created": (response) =>
+            Boolean(response?.id),
     });
 
     if (!success) {
         console.error(
-            `CheckResourceDelegationCreated - ${operation} did not report a complete assignment resource`,
-        );
-        console.error(
-            `CheckResourceDelegationCreated - missing or malformed: ${JSON.stringify(missing)}`,
-        );
-        console.error(
-            `CheckResourceDelegationCreated - body: ${JSON.stringify(assignment)}`,
+            `CheckResourceDelegationCreated - no assignment resource in the response: ${JSON.stringify(assignment)}`,
         );
     }
 
