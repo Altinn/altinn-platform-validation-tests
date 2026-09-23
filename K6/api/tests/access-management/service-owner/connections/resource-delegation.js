@@ -3,6 +3,7 @@ import { fail, group } from "k6";
 import { GetResourceRightsQueryBuilder, ServiceOwnerResourceDelegationBuilder } from "../../../../../clients/access-management/service-owner/connections/index.js";
 import { getItemFromList, getOptions } from "../../../../../helpers.js";
 import { ConnectionsCreateResource, ConnectionsGetResourceRights, ConnectionsRevokeResource } from "../../../../building-blocks/access-management/service-owner/connections/index.js";
+import { ConnectionsDomainChecks } from "../../../../domain-checks/access-management/service-owner/connections.js";
 import { getClients, getServiceOwnerTokenOpts, setup } from "./common.js";
 
 export { setup };
@@ -11,11 +12,26 @@ const getRightsLabel = { step: "1. Get resource rights" };
 const createDelegationLabel = { step: "2. Create resource delegation" };
 const revokeDelegationLabel = { step: "3. Revoke resource delegation" };
 
-export const options = getOptions([
-    getRightsLabel,
-    createDelegationLabel,
-    revokeDelegationLabel,
-]);
+// One iteration per row in recipients/<env>.csv, so a functional run covers the
+// organization leg and the person leg. getItemFromList walks the fixture by
+// __ITER, so fewer iterations than rows silently leaves the later rows untested.
+// Smoke and breakpoint runs set their own count through ITERATIONS.
+const ITERATIONS = __ENV.ITERATIONS ? parseInt(__ENV.ITERATIONS) : 2;
+
+export const options = {
+    ...getOptions([
+        getRightsLabel,
+        createDelegationLabel,
+        revokeDelegationLabel,
+    ]),
+    scenarios: {
+        default: {
+            executor: "shared-iterations",
+            vus: 1,
+            iterations: ITERATIONS,
+        },
+    },
+};
 
 /**
  * Builds the delegation request for one service owner and one recipient.
@@ -51,50 +67,48 @@ function delegationRequest(serviceOwner, recipient, rightKeys = null) {
 /**
  * Tests the service owner resource delegation lifecycle.
  *
- * Every recipient in the fixture is exercised in the same iteration rather than
- * one per iteration, so a run covers both the organization and the person leg
- * even at the one iteration a functional test defaults to.
+ * One service owner and one recipient per iteration, both drawn by __ITER, so
+ * the test scales the way a smoke or breakpoint run expects and a functional run
+ * covers every recipient across its iterations.
  *
  * @param {ReturnType<typeof setup>} data Environment-specific test data.
  */
 export default function (data) {
-    const serviceOwner = getItemFromList(data.serviceOwners, true);
+    const serviceOwner = getItemFromList(data.serviceOwners);
+    const recipient = getItemFromList(data.recipients);
     const { connections, tokenGenerator } = getClients();
 
     tokenGenerator.setTokenGeneratorOptions(getServiceOwnerTokenOpts(serviceOwner));
 
-    const rights = group("1. Get resource rights", function () {
-        return ConnectionsGetResourceRights(
+    group(`Resource delegation to a ${recipient.recipientType}`, function () {
+        const rights = ConnectionsGetResourceRights(
             connections,
             new GetResourceRightsQueryBuilder()
                 .WithResource(serviceOwner.resource)
                 .Build(),
             getRightsLabel,
         );
-    });
 
-    const rightKeys = rights
-        .map((right) => right.key)
-        .filter((key) => key !== null);
+        const rightKeys = rights
+            .map((right) => right.key)
+            .filter((key) => key !== null);
 
-    if (rightKeys.length === 0) {
-        fail(`No rights found for resource ${serviceOwner.resource}`);
-    }
+        // Without right keys there is nothing to delegate, so the create below
+        // would only report a second failure for the same cause.
+        if (rightKeys.length === 0) {
+            fail(`No rights found for resource ${serviceOwner.resource}`);
+        }
 
-    data.recipients.forEach((recipient) => {
-        group(`Resource delegation to a ${recipient.recipientType}`, function () {
-            const assignment = ConnectionsCreateResource(
-                connections,
-                delegationRequest(serviceOwner, recipient, rightKeys),
-                createDelegationLabel,
-            );
+        const assignment = ConnectionsCreateResource(
+            connections,
+            delegationRequest(serviceOwner, recipient, rightKeys),
+            createDelegationLabel,
+        );
 
-            if (assignment === null) {
-                fail(
-                    `Resource delegation to ${recipient.recipientType} ${recipient.recipientIdentifier} was not created`,
-                );
-            }
-        });
+        ConnectionsDomainChecks.CheckResourceDelegationCreated(
+            assignment,
+            "ConnectionsCreateResource",
+        );
     });
 }
 
@@ -105,9 +119,9 @@ export default function (data) {
  * partway through, which is the case the ordinary path cannot clean up after.
  * Revoke removes the complete resource delegation, so right keys are left off.
  *
- * The fixture is small enough that sweeping all of it is the same set an
- * iteration could have reached, so this sweeps every service owner and recipient
- * pair rather than tracking which ones were used.
+ * This is the one place the whole fixture is walked rather than one row per
+ * iteration: teardown does not know which rows the run reached, and a row that
+ * has nothing to remove costs one 204.
  *
  * @param {ReturnType<typeof setup>} data Environment-specific test data.
  */

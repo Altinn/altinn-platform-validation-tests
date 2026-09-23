@@ -46,6 +46,14 @@ K6/testdata/access-management/service-owner/connections/
 because the delegating party has to be one the resource can be delegated from,
 which ties it to the resource, not to the recipient list.
 
+Each iteration draws one service owner and one recipient with
+`getItemFromList`, which walks the rows by `__ITER`. The scenario runs as many
+iterations as `recipients/<env>.csv` has rows, so a functional run covers both
+the organization and the person leg; `ITERATIONS` overrides that for smoke and
+breakpoint runs. Adding a recipient row means raising the default. When this
+grows to more than one VU, split the rows first with
+`segmentData(rows, getNumberOfVUs())`.
+
 `recipientType` is `person` or `organization`, and decides which typed builder
 method the request is built with:
 
@@ -80,6 +88,8 @@ dedicated method; pass the complete urn to `WithTo` or `WithFrom`.
 
 Revoking runs in a real `teardown` step rather than at the end of the iteration,
 so a run that fails partway through still cleans up after itself. Revoke removes
-the complete resource delegation, so right keys are left off. Teardown sweeps
-every service owner and recipient pair in the fixture; removing a delegation
-that was never created is the normal case for a run that failed early.
+the complete resource delegation, so right keys are left off.
+
+Teardown is the one place the whole fixture is walked rather than one row per
+iteration: k6 does not tell teardown which rows the run reached, and revoking a
+delegation that was never created costs one 204.
