@@ -106,7 +106,7 @@ k6 run K6/api/tests/resource-registry/access-list-lifecycle.js
 Every list a test creates has an identifier starting with `k6-`, and every teardown deletes the owner's `k6-` lists,
 so a run that failed halfway leaves nothing behind. After a run, `AccessListGetByOwner(ttd)` holds no `k6-` lists.
 
-## Adding a test to this family
+## Adding a test to this folder
 
 1. Put the client factory and any shared helper in `commons.js`; build clients with `lazy` so a VU builds them once.
 2. Use the building blocks under [K6/api/building-blocks/resource-registry](../../building-blocks/resource-registry).
