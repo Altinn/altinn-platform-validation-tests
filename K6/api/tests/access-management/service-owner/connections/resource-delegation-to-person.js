@@ -53,20 +53,16 @@ export default function (data) {
             getRightsLabel,
         );
 
-        const rightKeys = rights
-            .map((right) => right.key)
-            .filter((key) => key !== null);
-
-        // Without right keys there is nothing to delegate, so the create below
-        // would only report a second failure for the same cause.
-        if (!ConnectionsDomainChecks.CheckDelegableRightsFound(rightKeys, serviceOwner.resource)) {
+        // Without a delegable right there is nothing to put on the delegation, so
+        // the create below would only report a second failure for the same cause.
+        if (!ConnectionsDomainChecks.CheckDelegableRightsFound(rights, serviceOwner.resource)) {
             return;
         }
 
         ConnectionsDomainChecks.CheckResourceDelegationCreated(
             ConnectionsCreateResource(
                 connections,
-                delegationRequest(serviceOwner, recipient, rightKeys),
+                delegationRequest(serviceOwner, recipient, rights),
                 createDelegationLabel,
             ),
         );

@@ -1,6 +1,6 @@
 import { check } from "k6";
 
-import { AssignmentResourceDto } from "../../../../clients/access-management/service-owner/connections/connections.types.js";
+import { AssignmentResourceDto, RightDto } from "../../../../clients/access-management/service-owner/connections/connections.types.js";
 
 /**
  * Checks that the resource reported at least one delegable right.
@@ -10,14 +10,17 @@ import { AssignmentResourceDto } from "../../../../clients/access-management/ser
  * nothing to put on a delegation, so this is what separates "the resource is not
  * set up" from "the delegation failed", which the create on its own cannot say.
  *
- * @param {Array<string>} rightKeys The right keys taken off the rights response.
+ * Takes the rights response as it arrives, so no caller has to know that a
+ * delegable right is one carrying a non-null key.
+ *
+ * @param {Array<RightDto>} rights The rights response for the resource.
  * @param {string} resource The resource the rights were asked for.
  * @returns {boolean} True if the resource has at least one delegable right.
  */
-function CheckDelegableRightsFound(rightKeys, resource) {
-    const success = check(rightKeys, {
-        "CheckDelegableRightsFound - the resource has delegable rights": (keys) =>
-            keys.length > 0,
+function CheckDelegableRightsFound(rights, resource) {
+    const success = check(rights, {
+        "CheckDelegableRightsFound - the resource has delegable rights": (response) =>
+            (response ?? []).some((right) => right.key !== null),
     });
 
     if (!success) {

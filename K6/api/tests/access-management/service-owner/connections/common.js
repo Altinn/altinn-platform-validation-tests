@@ -131,13 +131,16 @@ export function recipientsOfType(data, recipientType) {
  * the urn prefix is never spelled out at the call site. Shared with the teardown
  * below, which has to rebuild a request it never saw created.
  *
+ * Takes the rights response as it arrives and picks the keys off it, so no test
+ * has to know how a right carries its key.
+ *
  * @param {ServiceOwnerRow} serviceOwner The service owner.
  * @param {RecipientRow} recipient The receiving party.
- * @param {Array<string>|null} [rightKeys] Right keys to delegate, or null to
- * address the whole delegation, which is what revoking takes.
+ * @param {Array<*>|null} [rights] The rights response for the resource, or null
+ * to address the whole delegation, which is what revoking takes.
  * @returns {*} The delegation payload.
  */
-export function delegationRequest(serviceOwner, recipient, rightKeys = null) {
+export function delegationRequest(serviceOwner, recipient, rights = null) {
     const builder = new ServiceOwnerResourceDelegationBuilder()
         .WithFromOrganization(serviceOwner.fromOrganizationNumber)
         .WithResource(serviceOwner.resource);
@@ -148,8 +151,12 @@ export function delegationRequest(serviceOwner, recipient, rightKeys = null) {
         builder.WithToOrganization(recipient.recipientIdentifier);
     }
 
-    if (rightKeys !== null) {
-        builder.WithRightKeys({ directRightKeys: rightKeys });
+    if (rights !== null) {
+        builder.WithRightKeys({
+            directRightKeys: rights
+                .map((right) => right.key)
+                .filter((key) => key !== null),
+        });
     }
 
     return builder.Build();
