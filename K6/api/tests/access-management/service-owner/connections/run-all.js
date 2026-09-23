@@ -1,6 +1,6 @@
-import runResourceDelegation, { setup } from "./resource-delegation.js";
+import runResourceDelegation, { setup, teardown } from "./resource-delegation.js";
 
-export { setup };
+export { setup, teardown };
 
 /**
  * Runs the service owner resource delegation tests.
