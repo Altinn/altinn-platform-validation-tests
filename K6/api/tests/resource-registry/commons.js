@@ -14,6 +14,7 @@ import {
 } from "../../../common-imports.js";
 import { fetchTestData, getTestConfiguration, lazy, requireEnv } from "../../../helpers.js";
 import { AltinnScopes, CreateScopeString } from "../../../scopes.js";
+import { collectNextUrlPages } from "../../building-blocks/common/follow-next-url-pagination.js";
 
 /**
  * Identities the resource-registry functional tests run as, per environment.
@@ -221,68 +222,49 @@ export function newIdentifier() {
 }
 
 /**
- * Deletes every access list of the owner that a test created, for teardown.
- *
- * Pages through the owner's lists and deletes the ones carrying
- * IDENTIFIER_PREFIX, so a run that failed halfway leaves nothing behind and
- * the lists people made by hand in the environment are left alone. Deleting a
- * list takes its members and resource connections with it.
+ * Deletes the owner's k6- lists, for teardown, so a run that failed halfway
+ * leaves nothing behind. Lists people made by hand are left alone.
  *
  * @returns {number} How many lists were deleted.
  */
 export function deleteTestLists() {
     const client = getAccessListClient();
     const { owner } = getConfiguration();
-    const maxPages = 20;
+    const first = client.AccessListGetByOwner(owner);
+
+    if (first.status !== 200) {
+        console.error(`deleteTestLists - listing the lists of ${owner} answered ${first.status}: ${first.body}`);
+
+        return 0;
+    }
+
+    /** @type {import("../../../clients/resource-registry/types.js").AccessListInfoDtoPaginated} */
+    const firstPage = JSON.parse(String(first.body));
+    const rest = collectNextUrlPages(client.tokenGenerator.getToken(), firstPage.links?.next ?? null, 20);
+
+    if (rest.failedUrl !== null) {
+        console.error(`deleteTestLists - a page of the lists of ${owner} answered ${rest.failedStatus}: ${rest.failedUrl}`);
+    }
+
+    if (rest.repeatedUrl !== null) {
+        console.error(`deleteTestLists - the lists of ${owner} handed out the same next link twice: ${rest.repeatedUrl}`);
+    }
+
+    /** @type {Array<import("../../../clients/resource-registry/types.js").AccessListInfoDto>} */
+    const lists = [firstPage, ...rest.pages].flatMap((page) => /** @type {Array<any>} */ (page.data ?? []));
     let deleted = 0;
-    /** @type {string|undefined} */
-    let token = undefined;
 
-    for (let page = 0; page < maxPages; page++) {
-        const res = client.AccessListGetByOwner(owner, token ? { token } : null);
+    for (const list of lists.filter((item) => item.identifier.startsWith(IDENTIFIER_PREFIX))) {
+        const deletion = client.AccessListDelete(owner, list.identifier);
 
-        if (res.status !== 200) {
-            console.error(`deleteTestLists - listing the lists of ${owner} answered ${res.status}: ${res.body}`);
-            break;
-        }
-
-        /** @type {import("../../../clients/resource-registry/types.js").AccessListInfoDtoPaginated} */
-        const listing = JSON.parse(String(res.body));
-
-        for (const list of listing.data.filter((item) => item.identifier.startsWith(IDENTIFIER_PREFIX))) {
-            const deletion = client.AccessListDelete(owner, list.identifier);
-
-            if (deletion.status === 200) {
-                deleted++;
-            } else {
-                console.error(`deleteTestLists - deleting ${list.identifier} answered ${deletion.status}: ${deletion.body}`);
-            }
-        }
-
-        token = nextToken(listing.links?.next);
-
-        if (!token) {
-            break;
+        if (deletion.status === 200) {
+            deleted++;
+        } else {
+            console.error(`deleteTestLists - deleting ${list.identifier} answered ${deletion.status}: ${deletion.body}`);
         }
     }
 
     return deleted;
-}
-
-/**
- * The continuation token in a next link, for the `token` query parameter.
- *
- * @param {string|null|undefined} nextUrl The next link, if any.
- * @returns {string|undefined} The token, or undefined when there is no next page.
- */
-function nextToken(nextUrl) {
-    if (!nextUrl) {
-        return undefined;
-    }
-
-    const match = /[?&]token=([^&]+)/.exec(nextUrl);
-
-    return match ? decodeURIComponent(match[1]) : undefined;
 }
 
 /**
