@@ -1,5 +1,4 @@
 import encoding from "k6/encoding";
-import http from "k6/http";
 
 import {
     AccessListClient,
@@ -308,44 +307,6 @@ export function partyUuidUrn(partyUuid) {
  */
 export function resourceUrn(resourceId) {
     return `urn:altinn:resource:${resourceId}`;
-}
-
-/**
- * Runs one call whose expected answer is an error status, without it counting
- * as a failed request.
- *
- * k6 counts every 4xx and 5xx towards `http_req_failed`, which the strict
- * options hold at zero. A test that expects a 404 after a delete or a 412 on a
- * stale ETag therefore has to mark that status as expected for the one call
- * that is meant to get it. The default expectation is restored afterwards,
- * so nothing else in the iteration inherits it.
- *
- * @template T
- * @param {number} status The status the call is expected to answer with.
- * @param {() => T} call The call.
- * @returns {T} What the call returned.
- */
-export function expectingStatus(status, call) {
-    http.setResponseCallback(http.expectedStatuses(status));
-
-    try {
-        return call();
-    } finally {
-        http.setResponseCallback(http.expectedStatuses({ min: 200, max: 399 }));
-    }
-}
-
-/**
- * The ETag a response carries, for the If-Match and If-None-Match headers.
- *
- * The registry answers with weak ETags (`W/"..."`) and compares them as such,
- * so the value is passed on unchanged.
- *
- * @param {import("k6/http").RefinedResponse<any>} res The response.
- * @returns {string|null} The ETag, or null when the response has none.
- */
-export function etagOf(res) {
-    return res.headers["Etag"] ?? res.headers["ETag"] ?? null;
 }
 
 /**

@@ -1,64 +1,101 @@
 import { check } from "k6";
+import http from "k6/http";
 
 import { AccessListClient } from "../../../../clients/resource-registry/index.js";
 import { AccessListResourceConnectionWithVersionDto } from "../../../../clients/resource-registry/types.js";
 import { withRetries } from "../../common/retry.js";
 
 /**
- * Removes a resource connection from an access list.
+ * Deletes a resource connection from an access list.
+ *
+ * A versioned operation: the response carries the list's version as an ETag,
+ * and `options` can condition the call on one (`If-Match`, `If-None-Match`,
+ * as declared on this operation in the swagger) and say what status that
+ * should produce, 304 when nothing changed or 412 when the precondition
+ * failed. Without options this is a plain call that expects 200. The expected
+ * status is marked as expected for this one call, so a 412 a test asks for
+ * does not count as a failed request.
  *
  * @param {AccessListClient} accessListClient Client for the Access List API.
  * @param {string} owner Resource owner.
  * @param {string} identifier Access list identifier.
  * @param {string} resourceIdentifier Resource identifier.
+ * @param {{headers?: {[key: string]: string}|null, expectedStatus?: number}|null} [options]
+ * Conditional request headers and the status the call has to answer with. Defaults to no headers and 200.
  * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
- * @returns {AccessListResourceConnectionWithVersionDto|null} Parsed response body, or null when the call failed.
+ * @returns {{value: AccessListResourceConnectionWithVersionDto|null, etag: string|null, status: number}} The deleted resource connection as `value`
+ * when the response had a body, the ETag header of the response, and the status it answered with.
  */
 export function AccessListsDeleteResourceConnection(
     accessListClient,
     owner,
     identifier,
     resourceIdentifier,
+    options = null,
     labels = null,
 ) {
-    const res = withRetries(
-        () => accessListClient.AccessListDeleteResourceConnection(
-            owner,
-            identifier,
-            resourceIdentifier,
-            labels,
-        ),
+    const expectedStatus = options?.expectedStatus ?? 200;
+    const res = expecting(expectedStatus, () => withRetries(
+        () => accessListClient.AccessListDeleteResourceConnection(owner, identifier, resourceIdentifier, options?.headers ?? {}, labels),
         "AccessListsDeleteResourceConnection",
-    );
+    ));
 
     /** @type {AccessListResourceConnectionWithVersionDto|null} */
-    let resourceConnection = null;
+    let connection = null;
+    const etag = res.headers["Etag"] ?? res.headers["ETag"] ?? null;
 
     const succeed = check(res, {
-        "AccessListsDeleteResourceConnection - status code is 200": (r) =>
-            r.status === 200,
+        [`AccessListsDeleteResourceConnection - status code is ${expectedStatus}`]: (r) =>
+            r.status === expectedStatus,
     });
 
     if (!succeed) {
         console.log(res.status);
         console.log(res.body);
-        return resourceConnection;
+        return { value: connection, etag, status: res.status };
     }
 
-    check(res, {
-        "AccessListsDeleteResourceConnection - body is valid": (r) => {
-            try {
-                resourceConnection = JSON.parse(r.body);
+    // 304 and 412 carry no body; only a 200 has something to parse.
+    if (res.status === 200) {
+        check(res, {
+            "AccessListsDeleteResourceConnection - body is valid": (r) => {
+                try {
+                    connection = JSON.parse(r.body);
 
-                return true;
-            } catch (err) {
-                console.log("Unable to parse response body");
-                console.log(r.body);
+                    return true;
+                } catch (err) {
+                    console.log("Unable to parse response body");
+                    console.log(r.body);
 
-                return false;
-            }
-        },
-    });
+                    return false;
+                }
+            },
+        });
+    }
 
-    return resourceConnection;
+    return { value: connection, etag, status: res.status };
+}
+
+/**
+ * Runs one call whose expected answer may be an error status, without k6
+ * counting that answer as a failed request.
+ *
+ * k6 counts every 4xx and 5xx towards `http_req_failed`, which the strict
+ * options hold at zero, so the one call that is meant to get a 412 has to say
+ * so. The default expectation is restored afterwards, so nothing else in the
+ * iteration inherits it.
+ *
+ * @template T
+ * @param {number} status The status the call is expected to answer with.
+ * @param {() => T} call The call.
+ * @returns {T} What the call returned.
+ */
+function expecting(status, call) {
+    http.setResponseCallback(http.expectedStatuses(status));
+
+    try {
+        return call();
+    } finally {
+        http.setResponseCallback(http.expectedStatuses({ min: 200, max: 399 }));
+    }
 }

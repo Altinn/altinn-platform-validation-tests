@@ -231,30 +231,6 @@ function CheckMembership(memberships, expected, operation) {
 }
 
 /**
- * Checks the status of a call made straight on the client, for the responses
- * the building blocks do not accept: a 404 after a delete, a 304 on a matching
- * If-None-Match, a 412 on a stale If-Match.
- *
- * @param {import("k6/http").RefinedResponse<any>} res - The response.
- * @param {number} expectedStatus - The status the call has to answer with.
- * @param {string} operation - Name of the operation, used in the check name and logs.
- * @returns {boolean} True if the status matches, false otherwise.
- */
-function CheckStatus(res, expectedStatus, operation) {
-    const success = check(res, {
-        [`CheckStatus - ${operation} answers ${expectedStatus}`]: (response) =>
-            response.status === expectedStatus,
-    });
-
-    if (!success) {
-        console.error(`CheckStatus - ${operation} answered ${res.status}, expected ${expectedStatus}`);
-        console.error(`CheckStatus - ${operation} body: ${res.body}`);
-    }
-
-    return success;
-}
-
-/**
  * Checks that a response carries an ETag, which the write endpoints need for
  * If-Match and the read endpoints for If-None-Match.
  *
@@ -328,7 +304,6 @@ export const AccessListDomainChecks = {
     CheckMembersResolveToParties,
     CheckResourceConnections,
     CheckMembership,
-    CheckStatus,
     CheckHasEtag,
     CheckEtagChanged,
     CheckEtagUnchanged,
