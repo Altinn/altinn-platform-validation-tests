@@ -9,16 +9,23 @@
         "test:tt02": "ENVIRONMENT=tt02 playwright test",
         "test:prod": "ENVIRONMENT=prod playwright test",
         "report": "playwright show-report",
-        "typecheck": "tsc --noEmit"
+        "typecheck": "tsc --noEmit",
+        "lint": "eslint .",
+        "validate": "npm run lint && npm run typecheck"
     },
     "keywords": [],
     "author": "",
     "license": "ISC",
     "devDependencies": {
+        "@eslint/js": "10.0.1",
         "@playwright/test": "1.63.0",
         "@types/node": "24.13.5",
-        "dotenv": "^17.4.2",
-        "typescript": "^7.0.2"
+        "dotenv": "17.4.2",
+        "eslint": "10.11.0",
+        "eslint-plugin-playwright": "2.12.0",
+        "jiti": "2.7.0",
+        "typescript": "6.0.3",
+        "typescript-eslint": "8.70.1"
     },
     "directories": {
         "test": "tests"
