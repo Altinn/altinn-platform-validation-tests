@@ -1,54 +1,31 @@
 # Resource Registry test data
 
-Synthetic organizations from [Tenor](https://skatteetaten.github.io/testnorge-dokumentasjon/), enriched with their Altinn
-party from Register in the environment the file is for. The
-[resource-registry functional tests](../../api/tests/resource-registry/README.md) add them as access list members.
+Read by the [resource-registry tests](../../api/tests/resource-registry/README.md). The conventions shared by every
+folder here are in [the test data README](../README.md).
 
 ## Files
 
-| File | Rows | Columns |
-| --- | --- | --- |
-| `resources-<env>.csv` | 2 | `owner,ownerOrgNo,resourceId,actions` |
-| `organizations-at22.csv` | 20 AS + 20 ENK | `orgNo,partyId,partyUuid,unitType` |
-| `organizations-at23.csv` | 20 AS + 20 ENK | `orgNo,partyId,partyUuid,unitType` |
-| `organizations-tt02.csv` | 20 AS + 20 ENK | `orgNo,partyId,partyUuid,unitType` |
+| File | Rows | Columns | Used for |
+| --- | --- | --- | --- |
+| `resources-<env>.csv` | 2 | `owner,ownerOrgNo,resourceId,actions` | The resources the tests connect lists to, with the org that owns them and the actions of their policy; each iteration picks one row. See [Resources](../../api/tests/resource-registry/README.md#resources). |
+| `organizations-<env>.csv` | 20 AS + 20 ENK | `orgNo,partyId,partyUuid,unitType` | Members of the access lists. `orgNo` is what the tests send; `partyId` and `partyUuid` are the Altinn party Register resolves it to, which the tests check; `unitType` is `AS` or `ENK`, the field as Register and Profile name it. |
 
-- `resources-<env>.csv`: the resources the tests connect their lists to, with their owner and the actions of their
-  policy; the [test README](../../api/tests/resource-registry/README.md#resources) says what each column is.
-- `orgNo`: organization number, what the tests send when they add a member.
-- `partyId`, `partyUuid`: the Altinn party Register resolves the organization number to in that environment. The tests
-  check that the registry resolves a member to this party.
-- `unitType`: `AS` or `ENK`, the field as Register and Profile name it. The lifecycle test picks two `AS` and one `ENK`.
+The organizations are synthetic ones from Tenor, so the same organization numbers can show up in more than one
+environment's file; only the party ids and uuids differ.
 
-Party ids and uuids differ between environments, so a file is only valid for the environment in its name. Tenor's
-organizations are the same everywhere, which is why the same organization numbers can show up in more than one file.
+## Regenerating the organizations
 
-## Regenerating
-
-The organizations come from the Tenor CLI in `altinn-access-management-frontend/playwright`, with `--register` so each
-row carries its Altinn party from Register. Tenor needs a Maskinporten client with the scope
-`skatteetaten:testnorge/testdata.read`; the frontend team has one, and its `MASKINPORTEN_CLIENT_ID` and
-`MASKINPORTEN_JWK` go in the frontend repository's gitignored `playwright/config/.env`, next to the
-`<ENV>_REGISTER_SUBSCRIPTION_KEY` the enrichment uses.
-
-Per environment:
+From `altinn-access-management-frontend/playwright`, per environment:
 
 ```sh
 yarn tenor virksomheter -n 20 --env at23 --register --json > tenor-AS-at23.json
 yarn tenor virksomheter -n 20 --kql "organisasjonsform.kode:ENK" --env at23 --register --json > tenor-ENK-at23.json
 ```
 
-Each row in the output maps onto the CSV like this. Rows with `altinn: null` (Register does not know the organization) are
+Each row maps onto the CSV as `organisasjonsnummer` → `orgNo`, `altinn.partyId` → `partyId`, `altinn.partyUuid` →
+`partyUuid`, `altinn.unitType` → `unitType`. Rows with `altinn: null` (Register does not know the organization) are
 left out.
-
-| CSV column | Tenor row |
-| --- | --- |
-| `orgNo` | `organisasjonsnummer` |
-| `partyId` | `altinn.partyId` |
-| `partyUuid` | `altinn.partyUuid` |
-| `unitType` | `altinn.unitType` |
 
 At the time of writing, `--register` fails with a 400 because the CLI asks Register for a field it does not accept
 (`organization`; Register wants `org`). The current files were built from the same Tenor output with the Register
-lookup done separately, using `fields=party,org`. Once the CLI is fixed, the mapping above is all that is needed; a
-CSV export command in the CLI, like its existing `be-om-tilgang`, would remove the manual step.
+lookup done separately.
