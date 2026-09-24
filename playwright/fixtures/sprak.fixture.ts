@@ -1,5 +1,6 @@
-import { test as base } from '@playwright/test';
-import { Sprak } from '../config/sprak';
+import { test as base } from "@playwright/test";
+
+import { Sprak } from "../config/sprak";
 
 /**
  * Spraket er en option-fixture, så en test eller et helt describe-blokk kan sette

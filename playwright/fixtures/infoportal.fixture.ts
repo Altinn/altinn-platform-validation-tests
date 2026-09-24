@@ -1,5 +1,6 @@
-import { test as base } from '@playwright/test';
-import { InfoportalForside } from '../pages/infoportal/forside';
+import { test as base } from "@playwright/test";
+
+import { InfoportalForside } from "../pages/infoportal/forside";
 
 export type Infoportal = {
     forside: InfoportalForside;

@@ -1,5 +1,5 @@
-import { test as sprakTest } from './sprak.fixture';
-import { TilgangsstyringForside } from '../pages/tilgangsstyring/forside';
+import { TilgangsstyringForside } from "../pages/tilgangsstyring/forside";
+import { test as sprakTest } from "./sprak.fixture";
 
 /**
  * Hovedområdet tilgangsstyring med sine undersider. Nye undersider legges til som

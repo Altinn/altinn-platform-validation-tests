@@ -1,4 +1,5 @@
 import { expect, Page } from "@playwright/test";
+
 import { baseUrls, TestUser } from "../../config/environment";
 import { Meny } from "../felles/meny";
 import { gaaTil } from "../felles/navigasjon";
@@ -26,8 +27,8 @@ export class ArbeidsflateForside implements Side {
         // Utkast-lenken i sidemenyen finnes bare på innboksen, og href-en er den
         // samme uansett språk.
         await expect(
-            this.page.getByRole('complementary').locator('a[href="/drafts"]'),
-            'Innboksens sidemeny vises'
+            this.page.getByRole("complementary").locator("a[href=\"/drafts\"]"),
+            "Innboksens sidemeny vises"
         ).toBeVisible();
     }
 }

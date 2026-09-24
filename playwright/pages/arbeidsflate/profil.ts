@@ -1,4 +1,5 @@
 import { expect, Page } from "@playwright/test";
+
 import { baseUrls, TestUser } from "../../config/environment";
 import { Meny } from "../felles/meny";
 import { gaaTil } from "../felles/navigasjon";
@@ -25,8 +26,8 @@ export class ArbeidsflateProfil implements Side {
 
         // Lagrede søk ligger bare under profilen, og href-en er språkuavhengig.
         await expect(
-            this.page.getByRole('complementary').locator('a[href="/profile/saved-searches"]'),
-            'Profilens sidemeny vises'
+            this.page.getByRole("complementary").locator("a[href=\"/profile/saved-searches\"]"),
+            "Profilens sidemeny vises"
         ).toBeVisible();
     }
 }

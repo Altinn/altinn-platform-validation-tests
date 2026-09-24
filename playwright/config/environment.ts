@@ -22,17 +22,17 @@ export function requireEnv(name: string): string {
 
 export const baseUrls = {
     get arbeidsflate() {
-        return requireEnv('AF_UI_BASE_URL');
+        return requireEnv("AF_UI_BASE_URL");
     },
     get tilgangsstyring() {
-        return requireEnv('AM_UI_BASE_URL');
+        return requireEnv("AM_UI_BASE_URL");
     },
     get infoportal() {
-        return requireEnv('INFO_CLOUD_URL');
+        return requireEnv("INFO_CLOUD_URL");
     },
     // BASE_URL er platform-URLen i k6-oppsettet, se K6/example_env/at23.sh.
     get platform() {
-        return requireEnv('BASE_URL');
+        return requireEnv("BASE_URL");
     },
 };
 
@@ -43,9 +43,9 @@ export const baseUrls = {
  */
 export function getTestUser(): TestUser {
     return {
-        pid: requireEnv('TEST_USER_PID'),
+        pid: requireEnv("TEST_USER_PID"),
         get name() {
-            return requireEnv('TEST_USER_NAME');
+            return requireEnv("TEST_USER_NAME");
         },
     };
 }

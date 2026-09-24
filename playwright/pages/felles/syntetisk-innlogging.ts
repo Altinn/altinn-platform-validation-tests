@@ -1,4 +1,5 @@
 import { expect, Page } from "@playwright/test";
+
 import { baseUrls, requireEnv, TestUser } from "../../config/environment";
 
 /**
@@ -20,10 +21,10 @@ export class SyntetiskInnlogging {
     async login(targetUrl: string, user: TestUser) {
         await this.page.goto(loginUrl(targetUrl));
 
-        await expect(this.pidField(), 'Er på innloggingsskjemaet').toBeVisible();
+        await expect(this.pidField(), "Er på innloggingsskjemaet").toBeVisible();
         await this.passwordField().fill(sharedPassword());
         await this.pidField().fill(user.pid);
-        await this.page.getByRole('button', { name: /log in as test user/i }).click();
+        await this.page.getByRole("button", { name: /log in as test user/i }).click();
     }
 
     private passwordField() {
@@ -45,5 +46,5 @@ function loginUrl(targetUrl: string): string {
  * så testen skal feile umiddelbart framfor å prøve seg fram.
  */
 function sharedPassword(): string {
-    return requireEnv('TEST_IDP_PASSWORD');
+    return requireEnv("TEST_IDP_PASSWORD");
 }

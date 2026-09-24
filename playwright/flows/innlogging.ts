@@ -1,12 +1,13 @@
 import { expect, Page } from "@playwright/test";
-import { Sprak } from "../config/sprak";
+
 import { TestUser } from "../config/environment";
+import { Sprak } from "../config/sprak";
+import { gjeldendeMiljo } from "../miljo";
 import { IdportenInnlogging } from "../pages/felles/idporten-innlogging";
 import { Meny } from "../pages/felles/meny";
-import { SyntetiskInnlogging } from "../pages/felles/syntetisk-innlogging";
 import { REDIRECT_TIMEOUT } from "../pages/felles/navigasjon";
+import { SyntetiskInnlogging } from "../pages/felles/syntetisk-innlogging";
 import { Side } from "../pages/side";
-import { gjeldendeMiljo } from "../miljo";
 
 /**
  * Cookiene sesjonen faktisk ligger i. `AltinnStudioRuntime` er Altinn-tokenet og
@@ -15,7 +16,7 @@ import { gjeldendeMiljo } from "../miljo";
  * utlogging, mens `AltinnPartyId`, `AltinnPartyUuid` og `altinnPersistentContext`
  * blir liggende.
  */
-const SESJONSCOOKIES = ['AltinnStudioRuntime', 'altinnsession'];
+const SESJONSCOOKIES = ["AltinnStudioRuntime", "altinnsession"];
 
 /**
  * Innlogging går på tvers av alle flatene, og ligger derfor her framfor i et av
@@ -45,7 +46,7 @@ export class Innlogging {
      * innloggingsflyten er det som testes.
      */
     async viaIdporten(user: TestUser) {
-        if (!this.page.url().includes('idporten')) {
+        if (!this.page.url().includes("idporten")) {
             await this.meny.clickLoginButton();
         }
         await this.idporten.login(user);
@@ -56,7 +57,7 @@ export class Innlogging {
      * går det gjennom ID-porten-skjermbildene.
      */
     async viaInnloggingsflyten(landing: Side, user: TestUser) {
-        if (gjeldendeMiljo() === 'prod') {
+        if (gjeldendeMiljo() === "prod") {
             await this.syntetisk.login(landing.url, user);
             return;
         }
@@ -87,9 +88,9 @@ export class Innlogging {
     async assertLoggedOut() {
         await expect
             .poll(async () => (await this.page.context().cookies())
-                .filter((cookie) => SESJONSCOOKIES.includes(cookie.name) && cookie.value !== '')
+                .filter((cookie) => SESJONSCOOKIES.includes(cookie.name) && cookie.value !== "")
                 .map((cookie) => cookie.name), {
-                message: 'Sesjonscookiene er borte etter utlogging',
+                message: "Sesjonscookiene er borte etter utlogging",
                 timeout: REDIRECT_TIMEOUT,
             })
             .toEqual([]);

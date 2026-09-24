@@ -1,10 +1,11 @@
-import { mergeTests } from '@playwright/test';
-import { test as arbeidsflate } from './arbeidsflate.fixture';
-import { test as infoportal } from './infoportal.fixture';
-import { test as innlogging } from './innlogging.fixture';
-import { test as sprak } from './sprak.fixture';
-import { test as tilgangsstyring } from './tilgangsstyring.fixture';
-import { Side } from '../pages/side';
+import { mergeTests } from "@playwright/test";
+
+import { Side } from "../pages/side";
+import { test as arbeidsflate } from "./arbeidsflate.fixture";
+import { test as infoportal } from "./infoportal.fixture";
+import { test as innlogging } from "./innlogging.fixture";
+import { test as sprak } from "./sprak.fixture";
+import { test as tilgangsstyring } from "./tilgangsstyring.fixture";
 
 /**
  * Testene importerer `test` herfra. Hvert hovedområde har sin egen fixture-fil,
@@ -13,10 +14,10 @@ import { Side } from '../pages/side';
 const test = mergeTests(innlogging, sprak, arbeidsflate, tilgangsstyring, infoportal);
 
 export type Flate =
-    | 'arbeidsflate'
-    | 'arbeidsflate-profil'
-    | 'tilgangsstyring'
-    | 'infoportalen';
+    | "arbeidsflate"
+    | "arbeidsflate-profil"
+    | "tilgangsstyring"
+    | "infoportalen";
 
 /**
  * Oppslag fra flatenavn til side, for testene som går på tvers av flatene.
@@ -25,13 +26,13 @@ export type Flate =
 export const testMedFlater = test.extend<{ flater: Record<Flate, Side> }>({
     flater: async ({ arbeidsflate, tilgangsstyring, infoportal }, use) => {
         await use({
-            'arbeidsflate': arbeidsflate.forside,
-            'arbeidsflate-profil': arbeidsflate.profil,
-            'tilgangsstyring': tilgangsstyring.forside,
-            'infoportalen': infoportal.forside,
+            "arbeidsflate": arbeidsflate.forside,
+            "arbeidsflate-profil": arbeidsflate.profil,
+            "tilgangsstyring": tilgangsstyring.forside,
+            "infoportalen": infoportal.forside,
         });
     },
 });
 
 export { test };
-export { expect } from '@playwright/test';
+export { expect } from "@playwright/test";
