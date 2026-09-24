@@ -9,9 +9,10 @@ import { Testbruker } from "../testdata";
  */
 export const test = base.extend<
   { urler: Urler },
-  { miljo: Miljo; testdataFinnes: void }
+  { miljo: Miljo; mockporten: boolean; testdataFinnes: void }
 >({
   miljo: [undefined as unknown as Miljo, { option: true, scope: "worker" }],
+  mockporten: [false, { option: true, scope: "worker" }],
 
   // Manglende testdata for en brukergruppe stopper workeren før første test.
   testdataFinnes: [

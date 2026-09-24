@@ -27,7 +27,7 @@ les(".env.local");
 les(".env");
 
 // Flagg som ikke kommer etter `--` ser Playwright aldri; npm gjør dem om til
-// npm_config_*. Disse tre plukkes opp her, slik at både `npm run test:at23 --headed`
+// npm_config_*. Disse plukkes opp her, slik at både `npm run test:at23 --headed`
 // og `npm run test:at23 -- --headed` virker. Resten, som --grep, går etter `--`.
 function npmFlag(name: string): string | undefined {
   const value = process.env[`npm_config_${name}`];
@@ -37,8 +37,11 @@ function npmFlag(name: string): string | undefined {
 const headed = npmFlag("headed") !== undefined;
 const workers = npmFlag("workers");
 const retries = npmFlag("retries");
+// Mockporten i stedet for TestID i alle miljøer, for når ID-porten er nede.
+// `npm run test:at23 --mockporten`, eller MOCKPORTEN=true med npx.
+const mockporten = npmFlag("mockporten") !== undefined || process.env.MOCKPORTEN === "true";
 
-export default defineConfig<{ sprak: Sprak; testbrukerPath: Testbruker }, { miljo: Miljo }>({
+export default defineConfig<{ sprak: Sprak; testbrukerPath: Testbruker }, { miljo: Miljo; mockporten: boolean }>({
   // Sjekker at hver spec sier hvilke miljøer den er satt opp for, før noe kjøres.
   globalSetup: "./global-setup.ts",
   testDir: "./tests",
@@ -75,6 +78,6 @@ export default defineConfig<{ sprak: Sprak; testbrukerPath: Testbruker }, { milj
   projects: MILJOER.map((miljo) => ({
     name: miljo,
     grep: new RegExp(`${miljotag(miljo)}\\b`),
-    use: { miljo },
+    use: { miljo, mockporten },
   })),
 });

@@ -6,7 +6,6 @@ import { Meny } from "../pages/felles/meny";
 import { SyntetiskInnlogging } from "../pages/felles/syntetisk-innlogging";
 import { REDIRECT_TIMEOUT } from "../pages/felles/navigasjon";
 import { Side } from "../pages/side";
-import { Miljo } from "../miljo";
 
 // Sesjonscookiene skal være tømt når utloggingen er fullført.
 const SESJONSCOOKIES = ["AltinnStudioRuntime", "altinnsession"];
@@ -22,7 +21,7 @@ export class Innlogging {
 
   constructor(
     private page: Page,
-    private miljo: Miljo,
+    private brukMockporten: boolean,
     platform: string,
   ) {
     this.meny = new Meny(page);
@@ -31,12 +30,13 @@ export class Innlogging {
   }
 
   /**
-   * Standardinnlogging: ID-porten med TestID i testmiljøene, Mockporten i prod.
+   * Standardinnlogging: ID-porten med TestID i testmiljøene, Mockporten i prod
+   * og når kjøringen er startet med --mockporten.
    * Navigerer tilbake til ønsket side etter innlogging, også når infoportalen
    * sender brukeren til arbeidsflaten.
    */
   async logIn(side: Side, user: TestUser) {
-    if (this.miljo === "prod") {
+    if (this.brukMockporten) {
       await this.viaMockporten(side, user);
       return;
     }
@@ -47,7 +47,7 @@ export class Innlogging {
   }
 
   /**
-   * Mockporten-innlogging for prod.
+   * Mockporten-innlogging, for prod og --mockporten.
    */
   async viaMockporten(side: Side, user: TestUser) {
     await test.step("Innlogging med Mockporten", async () => {
@@ -56,8 +56,8 @@ export class Innlogging {
   }
 
   async viaIdporten(user: TestUser) {
-    if (this.miljo === "prod") {
-      throw new Error("TestID er ikke tilgjengelig i prod. Bruk logIn().");
+    if (this.brukMockporten) {
+      throw new Error("TestID brukes ikke i prod eller med --mockporten. Bruk logIn().");
     }
 
     await test.step("Innlogging med TestID", async () => {
@@ -77,10 +77,10 @@ export class Innlogging {
 
   /**
    * Logger inn fra flaten brukeren står på, og lander på `landing`. I testmiljøene
-   * går det gjennom ID-porten med TestID; i prod brukes Mockporten.
+   * går det gjennom ID-porten med TestID; i prod og med --mockporten brukes Mockporten.
    */
   async viaInnloggingsflyten(landing: Side, user: TestUser) {
-    if (this.miljo === "prod") {
+    if (this.brukMockporten) {
       await this.viaMockporten(landing, user);
       return;
     }
