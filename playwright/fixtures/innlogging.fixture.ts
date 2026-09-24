@@ -7,7 +7,7 @@ export const test = base.extend<{ innlogging: Innlogging; user: TestUser }>({
         await use(new Innlogging(page));
     },
 
-    user: async ({ }, use) => {
+    user: async (_, use) => {
         await use(getTestUser());
     },
 });
