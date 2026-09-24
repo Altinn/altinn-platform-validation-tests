@@ -1,4 +1,5 @@
 import { expect, Page } from "@playwright/test";
+
 import { TestUser } from "../../config/environment";
 import { REDIRECT_TIMEOUT } from "./navigasjon";
 
@@ -24,14 +25,14 @@ import { REDIRECT_TIMEOUT } from "./navigasjon";
  */
 export async function assertFlateUtlogget(page: Page, user: TestUser) {
     await expect(
-        page.getByRole('banner'),
-        'Siden har rendret en hovednavigasjon'
+        page.getByRole("banner"),
+        "Siden har rendret en hovednavigasjon"
     ).toBeVisible({ timeout: REDIRECT_TIMEOUT });
 
     // Med romslig tid: appen rendrer av og til det innloggede skjermbildet fra
     // cache noen sekunder etter utloggingen, før den tar den inn over seg.
     await expect(
         page.getByText(user.name).first(),
-        'Brukerens navn vises ikke'
+        "Brukerens navn vises ikke"
     ).toBeHidden({ timeout: REDIRECT_TIMEOUT });
 }

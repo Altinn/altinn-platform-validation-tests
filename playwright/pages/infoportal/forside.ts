@@ -1,4 +1,5 @@
 import { expect, Page } from "@playwright/test";
+
 import { baseUrls, TestUser } from "../../config/environment";
 import { gaaTil, REDIRECT_TIMEOUT } from "../felles/navigasjon";
 import { Side } from "../side";
@@ -19,7 +20,7 @@ export class InfoportalForside implements Side {
         await this.assertOnPage();
         await expect(
             this.page.getByText(user.name).first(),
-            'Brukeren er innlogget på infoportalen'
+            "Brukeren er innlogget på infoportalen"
         ).toBeVisible();
     }
 
@@ -32,13 +33,13 @@ export class InfoportalForside implements Side {
         await this.assertOnPage();
 
         await expect(
-            this.page.getByRole('button', { name: /logg inn|login/i }).first(),
-            'Innloggingsknappen vises på infoportalen'
+            this.page.getByRole("button", { name: /logg inn|login/i }).first(),
+            "Innloggingsknappen vises på infoportalen"
         ).toBeVisible({ timeout: REDIRECT_TIMEOUT });
 
         await expect(
             this.page.getByText(user.name).first(),
-            'Brukeren er ikke innlogget på infoportalen'
+            "Brukeren er ikke innlogget på infoportalen"
         ).toBeHidden();
     }
 

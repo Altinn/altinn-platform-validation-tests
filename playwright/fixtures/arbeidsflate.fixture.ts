@@ -1,6 +1,7 @@
-import { test as base } from '@playwright/test';
-import { ArbeidsflateForside } from '../pages/arbeidsflate/forside';
-import { ArbeidsflateProfil } from '../pages/arbeidsflate/profil';
+import { test as base } from "@playwright/test";
+
+import { ArbeidsflateForside } from "../pages/arbeidsflate/forside";
+import { ArbeidsflateProfil } from "../pages/arbeidsflate/profil";
 
 /**
  * Hovedområdet arbeidsflate med sine undersider. Nye undersider legges til som
