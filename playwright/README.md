@@ -40,6 +40,7 @@ npm run test:at23 -- tests/innlogging --debug   # steppe gjennom tester
 `innlogging.logIn(side, user)` bruker ID-porten med TestID i at22, at23 og tt02,
 og Mockporten i prod. Miljøet bestemmer mekanismen; det trengs ikke noe eget valg.
 TestID-feil i testmiljøene feiler testen, uten fallback til Mockporten.
+Mockporten testes også for seg i at23, tt02 og prod, i `tests/innlogging/innlogging-mockporten.spec.ts`.
 
 Tester som kontrollerer innlogging fra en bestemt flate bruker
 `viaInnloggingsflyten(landing, user)` etter at de har navigert til startflaten.
