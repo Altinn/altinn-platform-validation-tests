@@ -1,4 +1,4 @@
-import { test as base } from "@playwright/test";
+import { test as miljoTest } from "./miljo.fixture";
 import { getTestUser, TestUser } from "../config/testdata";
 import { Testbruker } from "../testdata";
 
@@ -11,11 +11,11 @@ import { Testbruker } from "../testdata";
  * CSV-brukere fordeles med parallelIndex innenfor én kjøring.
  * Separate kjøringer deler brukerpool.
  */
-export const test = base.extend<{ testbrukerPath: Testbruker; user: TestUser }>({
+export const test = miljoTest.extend<{ testbrukerPath: Testbruker; user: TestUser }>({
   testbrukerPath: [Testbruker.PrivatPersonUtenVirksomhet, { option: true }],
 
-  user: async ({ testbrukerPath }, use, testInfo) => {
-    const bruker = getTestUser(testbrukerPath, testInfo.parallelIndex);
+  user: async ({ testbrukerPath, miljo }, use, testInfo) => {
+    const bruker = getTestUser(testbrukerPath, miljo, testInfo.parallelIndex);
 
     testInfo.annotations.push({
       type: "testperson",

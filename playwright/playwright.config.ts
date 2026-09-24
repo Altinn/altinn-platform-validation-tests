@@ -3,23 +3,13 @@ import dotenv from "dotenv";
 import fs from "fs";
 import path from "path";
 
-import { stopp } from "./feil";
-import { MILJOER, Miljo } from "./miljo";
+import { Sprak } from "./config/sprak";
+import { MILJOER, Miljo, miljotag } from "./miljo";
+import { Testbruker } from "./testdata";
 
-const environment = process.env.ENVIRONMENT;
-
-// Sjekker verdien og ikke bare at den finnes: et ukjent miljønavn matcher ingen
-// runInEnvironment-deklarasjon, så en skrivefeil ville gitt en helgrønn kjøring
-// der hver eneste test skippet seg selv.
-if (!environment || !MILJOER.includes(environment as Miljo)) {
-  stopp(
-    `ENVIRONMENT må være ett av ${MILJOER.join(", ")}, ikke ${environment ? `"${environment}"` : "tom"}. Bruk npm run test:<miljø>.`
-  );
-}
-
-// Verdiene kan komme fra shellet eller fra gitignorerte .env-filer. Miljøfila
-// overstyrer shellet, tomme verdier hoppes over.
-function les(fil: string, overstyr: boolean) {
+// Hemmelighetene kan komme fra shellet eller fra gitignorerte .env-filer. Shellet
+// vinner, tomme verdier hoppes over.
+function les(fil: string) {
   const sti = path.join(__dirname, fil);
 
   if (!fs.existsSync(sti)) {
@@ -27,19 +17,18 @@ function les(fil: string, overstyr: boolean) {
   }
 
   for (const [navn, verdi] of Object.entries(dotenv.parse(fs.readFileSync(sti)))) {
-    if (verdi && (overstyr || !process.env[navn])) {
+    if (verdi && !process.env[navn]) {
       process.env[navn] = verdi;
     }
   }
 }
 
-les(`.env.${environment}.local`, true);
-les(".env.local", false);
-les(".env", false);
+les(".env.local");
+les(".env");
 
 // Flagg som ikke kommer etter `--` ser Playwright aldri; npm gjør dem om til
-// npm_config_*. Disse tre plukkes opp her, slik at både `npm run test:prod --headed`
-// og `npm run test:prod -- --headed` virker. Resten, som --grep, går etter `--`.
+// npm_config_*. Disse tre plukkes opp her, slik at både `npm run test:at23 --headed`
+// og `npm run test:at23 -- --headed` virker. Resten, som --grep, går etter `--`.
 function npmFlag(name: string): string | undefined {
   const value = process.env[`npm_config_${name}`];
   return value && value !== "false" ? value : undefined;
@@ -49,7 +38,7 @@ const headed = npmFlag("headed") !== undefined;
 const workers = npmFlag("workers");
 const retries = npmFlag("retries");
 
-export default defineConfig({
+export default defineConfig<{ sprak: Sprak; testbrukerPath: Testbruker }, { miljo: Miljo }>({
   // Sjekker at hver spec sier hvilke miljøer den er satt opp for, før noe kjøres.
   globalSetup: "./global-setup.ts",
   testDir: "./tests",
@@ -81,4 +70,11 @@ export default defineConfig({
     trace: "on-first-retry",
     video: "retain-on-failure",
   },
+  // Ett project per miljø. Projectet velger testene som er tagget med miljøet,
+  // se miljoer() i miljo.ts, og gir fixturene miljøet og URLene som følger av det.
+  projects: MILJOER.map((miljo) => ({
+    name: miljo,
+    grep: new RegExp(`${miljotag(miljo)}\\b`),
+    use: { miljo },
+  })),
 });

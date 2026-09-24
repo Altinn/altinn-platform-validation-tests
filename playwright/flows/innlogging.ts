@@ -6,7 +6,7 @@ import { Meny } from "../pages/felles/meny";
 import { SyntetiskInnlogging } from "../pages/felles/syntetisk-innlogging";
 import { REDIRECT_TIMEOUT } from "../pages/felles/navigasjon";
 import { Side } from "../pages/side";
-import { gjeldendeMiljo } from "../miljo";
+import { Miljo } from "../miljo";
 
 // Sesjonscookiene skal være tømt når utloggingen er fullført.
 const SESJONSCOOKIES = ["AltinnStudioRuntime", "altinnsession"];
@@ -20,10 +20,14 @@ export class Innlogging {
   private idporten: IdportenInnlogging;
   private syntetisk: SyntetiskInnlogging;
 
-  constructor(private page: Page) {
+  constructor(
+    private page: Page,
+    private miljo: Miljo,
+    platform: string,
+  ) {
     this.meny = new Meny(page);
     this.idporten = new IdportenInnlogging(page);
-    this.syntetisk = new SyntetiskInnlogging(page);
+    this.syntetisk = new SyntetiskInnlogging(page, platform);
   }
 
   /**
@@ -32,7 +36,7 @@ export class Innlogging {
    * sender brukeren til arbeidsflaten.
    */
   async logIn(side: Side, user: TestUser) {
-    if (gjeldendeMiljo() === "prod") {
+    if (this.miljo === "prod") {
       await this.viaMockporten(side, user);
       return;
     }
@@ -52,7 +56,7 @@ export class Innlogging {
   }
 
   async viaIdporten(user: TestUser) {
-    if (gjeldendeMiljo() === "prod") {
+    if (this.miljo === "prod") {
       throw new Error("TestID er ikke tilgjengelig i prod. Bruk logIn().");
     }
 
@@ -76,7 +80,7 @@ export class Innlogging {
    * går det gjennom ID-porten med TestID; i prod brukes Mockporten.
    */
   async viaInnloggingsflyten(landing: Side, user: TestUser) {
-    if (gjeldendeMiljo() === "prod") {
+    if (this.miljo === "prod") {
       await this.viaMockporten(landing, user);
       return;
     }

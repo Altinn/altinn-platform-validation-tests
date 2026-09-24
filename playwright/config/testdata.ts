@@ -2,24 +2,23 @@ import { parse } from "csv-parse/sync";
 import fs from "fs";
 import { join } from "path";
 
+import { Miljo } from "../miljo";
 import { Testbruker } from "../testdata";
-
-import { requireEnv } from "./environment";
 
 export type TestUser = {
   pid: string;
   name: string;
 };
 
-function testbrukerfil(path: Testbruker): string {
-  return join(__dirname, "..", path, `${requireEnv("ENVIRONMENT")}.csv`);
+function testbrukerfil(path: Testbruker, miljo: Miljo): string {
+  return join(__dirname, "..", path, `${miljo}.csv`);
 }
 
-function lesTestbrukere(path: Testbruker): TestUser[] | null {
+function lesTestbrukere(path: Testbruker, miljo: Miljo): TestUser[] | null {
   let innhold: string;
 
   try {
-    innhold = fs.readFileSync(testbrukerfil(path), "utf8");
+    innhold = fs.readFileSync(testbrukerfil(path, miljo), "utf8");
   } catch (feil) {
     if ((feil as NodeJS.ErrnoException).code !== "ENOENT") {
       throw feil;
@@ -31,23 +30,23 @@ function lesTestbrukere(path: Testbruker): TestUser[] | null {
   return parse(innhold, { columns: true, skip_empty_lines: true, trim: true });
 }
 
-export function getTestUsers(path: Testbruker): TestUser[] {
-  const brukere = lesTestbrukere(path);
+export function getTestUsers(path: Testbruker, miljo: Miljo): TestUser[] {
+  const brukere = lesTestbrukere(path, miljo);
 
   if (!brukere?.length) {
-    throw new Error(`Fant ingen testbrukere i ${testbrukerfil(path)}`);
+    throw new Error(`Fant ingen testbrukere i ${testbrukerfil(path, miljo)}`);
   }
 
   return brukere;
 }
 
 /** Leser testpersoner fra CSV i alle miljøer. Manglende testdata gir feil. */
-export function getTestUser(path: Testbruker, indeks = 0): TestUser {
-  const brukere = getTestUsers(path);
+export function getTestUser(path: Testbruker, miljo: Miljo, indeks = 0): TestUser {
+  const brukere = getTestUsers(path, miljo);
 
   if (!Number.isInteger(indeks) || indeks < 0 || indeks >= brukere.length) {
     throw new Error(
-      `${testbrukerfil(path)} har ${brukere.length} rader, men worker nummer ${indeks + 1} ba om en bruker. Kjør med færre workere, eller legg til flere testpersoner.`,
+      `${testbrukerfil(path, miljo)} har ${brukere.length} rader, men worker nummer ${indeks + 1} ba om en bruker. Kjør med færre workere, eller legg til flere testpersoner.`,
     );
   }
 

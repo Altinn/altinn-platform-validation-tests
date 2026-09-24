@@ -1,14 +1,14 @@
 import { expect, Page } from "@playwright/test";
-import { baseUrls } from "../../config/environment";
 import { TestUser } from "../../config/testdata";
 import { Sprak } from "../../config/sprak";
 import { gaaTil, REDIRECT_TIMEOUT } from "../felles/navigasjon";
 import { Side } from "../side";
 
 export class InfoportalForside implements Side {
-  readonly url = baseUrls.infoportal;
-
-  constructor(private page: Page) {}
+  constructor(
+    private page: Page,
+    readonly url: string,
+  ) {}
 
   // Litt lenger timeout fordi infoportalen laster mye innhold
   async navigateTo() {

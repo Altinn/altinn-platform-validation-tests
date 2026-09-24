@@ -1,8 +1,6 @@
 import { Testbruker } from "../../testdata";
 import { test, Flate } from "../../fixtures/test";
-import { runInEnvironment } from "../../miljo";
-
-runInEnvironment("at23", "tt02", "prod");
+import { miljoer } from "../../miljo";
 
 test.use({ testbrukerPath: Testbruker.PrivatPersonUtenVirksomhet });
 
@@ -14,12 +12,12 @@ const flater: Flate[] = [
 ];
 
 for (const flate of flater) {
-  test(`Bruker logger inn med Mockporten og lander innlogget på ${flate}`, async ({
-    innlogging,
-    user,
-    sider,
-  }) => {
-    await innlogging.viaMockporten(sider[flate], user);
-    await sider[flate].assertLoggedIn(user);
-  });
+  test(
+    `Bruker logger inn med Mockporten og lander innlogget på ${flate}`,
+    miljoer("at23", "tt02", "prod"),
+    async ({ innlogging, user, sider }) => {
+      await innlogging.viaMockporten(sider[flate], user);
+      await sider[flate].assertLoggedIn(user);
+    },
+  );
 }

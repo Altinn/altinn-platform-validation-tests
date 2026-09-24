@@ -1,52 +1,69 @@
-import { test } from "@playwright/test";
+import { TestDetails } from "@playwright/test";
 
 /**
- * Miljøene en Playwright-test kan settes opp for. Én liste, slik at en skrivefeil
- * i et `runInEnvironment`-kall gir feil i stedet for stilltiende å skru av testen.
+ * Miljøene en Playwright-test kan settes opp for. Hvert miljø er et project i
+ * playwright.config.ts, og én liste gjør at en skrivefeil i et `miljoer`-kall gir
+ * typefeil i stedet for stilltiende å skru av testen.
  */
 export const MILJOER = ["at22", "at23", "tt02", "prod"] as const;
 
 export type Miljo = (typeof MILJOER)[number];
 
-/**
- * Miljøet kjøringen går mot. For koden som må gjøre noe annet i prod, som
- * innloggingen: ID-porten-skjermbildene finnes ikke for en syntetisk bruker der.
- */
-export function gjeldendeMiljo(): Miljo {
-  // playwright.config.ts har allerede feilet hvis ENVIRONMENT mangler.
-  return process.env.ENVIRONMENT as Miljo;
+export type Urler = {
+  arbeidsflate: string;
+  tilgangsstyring: string;
+  infoportal: string;
+  platform: string;
+};
+
+export const urler: Record<Miljo, Urler> = {
+  at22: {
+    arbeidsflate: "https://af.at22.altinn.cloud",
+    tilgangsstyring: "https://am.ui.at22.altinn.cloud",
+    infoportal: "https://info.at22.altinn.cloud",
+    platform: "https://platform.at22.altinn.cloud",
+  },
+  at23: {
+    arbeidsflate: "https://af.at23.altinn.cloud",
+    tilgangsstyring: "https://am.ui.at23.altinn.cloud",
+    infoportal: "https://info.at23.altinn.cloud",
+    platform: "https://platform.at23.altinn.cloud",
+  },
+  tt02: {
+    arbeidsflate: "https://af.tt02.altinn.no",
+    tilgangsstyring: "https://am.ui.tt02.altinn.no",
+    infoportal: "https://info.tt02.altinn.no",
+    platform: "https://platform.tt02.altinn.no",
+  },
+  prod: {
+    arbeidsflate: "https://af.altinn.no",
+    tilgangsstyring: "https://am.ui.altinn.no",
+    infoportal: "https://info.altinn.no",
+    platform: "https://platform.altinn.no",
+  },
+};
+
+/** Taggen et miljø-project velger testene sine med. */
+export function miljotag(miljo: Miljo): string {
+  return `@${miljo}`;
 }
 
 /**
- * Sier hvilke miljøer testene i fila er satt opp for, og skipper dem i alle andre.
+ * Sier hvilke miljøer en test eller describe-blokk er satt opp for, som tags
+ * projectene i playwright.config.ts velger på:
  *
- * Kalles øverst i spec-fila, over describe og test. Deklarasjonen er et opt-in:
- * et miljø som ikke er listet kjører ikke testen, så en test skrevet mot at23
- * kan ikke havne i prod ved en forglemmelse.
+ *   test("...", miljoer("at23", "tt02"), async ({ ... }) => { ... });
  *
- * En fil som aldri kaller denne kjører ingen steder. Det er meningen, og det
- * fanges av global-setup.ts og ikke her, siden en test ingen starter aldri får
- * sagt fra om seg selv.
+ * Et miljø som ikke er listet kjører ikke testen, så en test skrevet mot at23
+ * kan ikke havne i prod ved en forglemmelse. En spec-fil som aldri kaller denne
+ * kjører ingen steder, og det fanges av global-setup.ts.
  */
-export function runInEnvironment(...miljoer: Miljo[]) {
+export function miljoer(...miljoer: Miljo[]): TestDetails {
   if (miljoer.length === 0) {
     throw new Error(
-      "runInEnvironment() trenger minst ett miljø, ellers kjører testen ingen steder"
+      "miljoer() trenger minst ett miljø, ellers kjører testen ingen steder",
     );
   }
 
-  const ukjente = miljoer.filter((miljo) => !MILJOER.includes(miljo));
-
-  if (ukjente.length > 0) {
-    throw new Error(
-      `Ukjent miljø ${ukjente.join(", ")}. Kjente miljøer er ${MILJOER.join(", ")}`
-    );
-  }
-
-  const miljo = gjeldendeMiljo();
-
-  test.skip(
-    !miljoer.includes(miljo),
-    `Testen er satt opp for ${miljoer.join(", ")}, ikke ${miljo}`
-  );
+  return { tag: miljoer.map(miljotag) };
 }

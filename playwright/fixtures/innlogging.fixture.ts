@@ -1,8 +1,8 @@
-import { test as base } from '@playwright/test';
+import { test as miljoTest } from './miljo.fixture';
 import { Innlogging } from '../flows/innlogging';
 
-export const test = base.extend<{ innlogging: Innlogging }>({
-    innlogging: async ({ page }, use) => {
-        await use(new Innlogging(page));
+export const test = miljoTest.extend<{ innlogging: Innlogging }>({
+    innlogging: async ({ page, miljo, urler }, use) => {
+        await use(new Innlogging(page, miljo, urler.platform));
     },
 });

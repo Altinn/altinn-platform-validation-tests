@@ -10,15 +10,14 @@ cd playwright
 npm install
 npx playwright install
 cp example_env/.env.example .env
-cp example_env/.env.at23.local.example .env.at23.local
 ```
 
-Sett `TEST_IDP_PASSWORD` i `.env` for innlogging i prod. Tilgangsverdien hentes fra
-teamets hemmelighetsforvaltning. For et annet miljø kopierer du den tilsvarende
-miljøfilen fra `example_env/`. Lokale `.env`-filer er gitignorert.
+Sett `TEST_IDP_PASSWORD` i `.env` for innlogging med Mockporten. Tilgangsverdien hentes fra
+teamets hemmelighetsforvaltning. Lokale `.env`-filer er gitignorert. URLene til flatene
+ligger per miljø i [miljo.ts](miljo.ts).
 
 Testpersoner leses fra `<testbrukerPath>/<miljø>.csv`, relativt til `playwright/`, i alle miljøer.
-Manglende eller tom fil for en brukergruppe stopper kjøringen før workerne starter.
+Manglende eller tom fil for en brukergruppe feiler testene i miljøet før noen av dem starter.
 at23 og tt02 har filer i repoet. For øvrige miljøer må CSV-filer leveres på samme sti, for eksempel
 som monterte Kubernetes Secrets. Filene skal ha kolonnene `pid,name`.
 Det er ingen fallback til en miljøkonfigurert testperson.
@@ -27,13 +26,17 @@ deler fortsatt brukerpool.
 
 ## Kjør
 
-Ett script per miljø, område oppgis som sti:
+Hvert miljø er et Playwright-[project](https://playwright.dev/docs/test-projects), og
+scriptene velger ett av dem. Område oppgis som sti:
 
 ```bash
 npm run test:at23                          # alt, mot at23 (og at22 / tt02 / prod)
 npm run test:at23 -- tests/tilgangsstyring # ett område, én fil eller én :linje
 npm run test:at23 -- tests/innlogging --debug   # steppe gjennom tester
+npx playwright test --project=at23 --project=tt02   # flere miljøer i samme kjøring
 ```
+
+I VS Code-utvidelsen velger du miljø under Projects.
 
 ## Innlogging
 
@@ -53,21 +56,26 @@ Prod-suiten dekker derfor ikke utlogging.
 
 ## Hva kreves på selve spec-filen
 
-Hver spec-fil (testfil) sier selv hvilke miljøer den kan kjøres i, og hvilken
-fil den henter testdata fra øverst i fila
+Hver test sier selv hvilke miljøer den kan kjøres i, med `miljoer(...)` som gir
+testen en tag per miljø. Projectene i `playwright.config.ts` velger testene på
+taggen. Hvilken fil testdata hentes fra settes øverst i fila:
 
 ```ts
 import { Testbruker } from "../../testdata";
+import { miljoer } from "../../miljo";
 
-runInEnvironment("at22", "at23", "tt02");
 test.use({ testbrukerPath: Testbruker.PrivatPersonUtenVirksomhet }); // eller Testbruker.DagligLeder
+
+test("...", miljoer("at23", "tt02"), async ({ innlogging, user }) => { ... });
 ```
+
+`miljoer(...)` kan også stå på en `test.describe`, og gjelder da alle testene i blokken.
 
 Nye tester bør minst være kjørt i `at23` og `tt02` og merget og verifisert ok etter merge til main før man legger til prod.
 
 Enumen `Testbruker` i [testdata/index.ts](testdata/index.ts) inneholder mappestiene
 relativt til `playwright/`, for eksempel `testdata/privatPersonUtenVirksomhet`.
-`ENVIRONMENT=at23` gir da filen [testdata/privatPersonUtenVirksomhet/at23.csv](testdata/privatPersonUtenVirksomhet/at23.csv).
+Projectet `at23` gir da filen [testdata/privatPersonUtenVirksomhet/at23.csv](testdata/privatPersonUtenVirksomhet/at23.csv).
 Bruk «Gå til definisjon» på enum-medlemmet for å åpne `testdata/index.ts`,
 rett ved siden av mappene med CSV-filer. Hvert medlem har
 også dokumentasjonslenker til CSV-filene for at23 og tt02.
@@ -75,8 +83,8 @@ Standarden er `Testbruker.PrivatPersonUtenVirksomhet`. Nye brukergrupper legges 
 i enumen med mappestien som verdi. Feilstavede enum-navn og fritekstverdier
 gir feil i editoren og ved `npm run typecheck`. Playwright typesjekker ikke selv ved kjøring.
 Hvem hver test faktisk kjørte som står i rapporten, som `testperson`.
-Et miljø som ikke er listet i `runInEnvironment`, skipper testene. Manglende
-miljødeklarasjon stopper kjøringen. Prod skal bare legges til for tester som
+Et miljø som ikke er listet i `miljoer`, kjører ikke testen. En spec-fil uten
+`miljoer` stopper kjøringen i `global-setup.ts`. Prod skal bare legges til for tester som
 ikke endrer data.
 
 `npm run typecheck` typesjekker. `npm run report` åpner siste testrapport.
