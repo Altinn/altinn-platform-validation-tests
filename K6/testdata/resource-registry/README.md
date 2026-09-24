@@ -8,17 +8,17 @@ party from Register in the environment the file is for. The
 
 | File | Rows | Columns |
 | --- | --- | --- |
-| `configuration-<env>.csv` | 1 | `owner,ownerOrgNo,resourceId` |
-| `organizations-at22.csv` | 20 AS + 20 ENK | `orgNo,partyId,partyUuid,orgForm` |
-| `organizations-at23.csv` | 20 AS + 20 ENK | `orgNo,partyId,partyUuid,orgForm` |
-| `organizations-tt02.csv` | 20 AS + 20 ENK | `orgNo,partyId,partyUuid,orgForm` |
+| `resources-<env>.csv` | 2 | `owner,ownerOrgNo,resourceId,actions` |
+| `organizations-at22.csv` | 20 AS + 20 ENK | `orgNo,partyId,partyUuid,unitType` |
+| `organizations-at23.csv` | 20 AS + 20 ENK | `orgNo,partyId,partyUuid,unitType` |
+| `organizations-tt02.csv` | 20 AS + 20 ENK | `orgNo,partyId,partyUuid,unitType` |
 
-- `configuration-<env>.csv`: the org the tests run as and the resource they connect to; the
-  [test README](../../api/tests/resource-registry/README.md#configuration) says what each value is.
+- `resources-<env>.csv`: the resources the tests connect their lists to, with their owner and the actions of their
+  policy; the [test README](../../api/tests/resource-registry/README.md#resources) says what each column is.
 - `orgNo`: organization number, what the tests send when they add a member.
 - `partyId`, `partyUuid`: the Altinn party Register resolves the organization number to in that environment. The tests
   check that the registry resolves a member to this party.
-- `orgForm`: `AS` or `ENK`, as Register reports it (`unitType`). The lifecycle test picks two `AS` and one `ENK`.
+- `unitType`: `AS` or `ENK`, the field as Register and Profile name it. The lifecycle test picks two `AS` and one `ENK`.
 
 Party ids and uuids differ between environments, so a file is only valid for the environment in its name. Tenor's
 organizations are the same everywhere, which is why the same organization numbers can show up in more than one file.
@@ -46,7 +46,7 @@ left out.
 | `orgNo` | `organisasjonsnummer` |
 | `partyId` | `altinn.partyId` |
 | `partyUuid` | `altinn.partyUuid` |
-| `orgForm` | `altinn.unitType` |
+| `unitType` | `altinn.unitType` |
 
 At the time of writing, `--register` fails with a 400 because the CLI asks Register for a field it does not accept
 (`organization`; Register wants `org`). The current files were built from the same Tenor output with the Register

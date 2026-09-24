@@ -15,8 +15,13 @@ import { AltinnScopes, CreateScopeString } from "../../../scopes.js";
 import { collectNextUrlPages } from "../../building-blocks/common/follow-next-url-pagination.js";
 
 /**
+ * Prefix of every list the tests create, so teardown can tell them apart.
+ */
+export const IDENTIFIER_PREFIX = "k6-";
+
+/**
  * Reads `K6/testdata/resource-registry/<name>-<env>.csv` from main, or from
- * TESTDATA_BRANCH when set.
+ * TESTDATA_BRANCH when set. For setup only.
  *
  * @param {string} name File name without the environment suffix, e.g. "organizations".
  * @returns {Array<any>} The rows. Fails the test when the file is missing or empty.
@@ -30,66 +35,93 @@ function readRows(name) {
 }
 
 /**
- * One row of configuration-<env>.csv. See the README for what each value is.
+ * One row of resources-<env>.csv: a resource the tests connect lists to, its
+ * owner, and the actions its policy grants. See the README for what each is.
  *
- * @typedef {object} Configuration
- * @property {string} owner Org code that owns the lists the tests create.
+ * @typedef {object} Resource
+ * @property {string} owner Org code that owns the resource and the lists the tests create.
  * @property {string} ownerOrgNo Organization number of the owner.
- * @property {string} resourceId Resource the tests connect their lists to.
+ * @property {string} resourceId Resource identifier.
+ * @property {Array<string>} actions The actions the resource's policy grants.
  */
 
 /**
- * Prefix of every list the tests create, so teardown can tell them apart.
- */
-export const IDENTIFIER_PREFIX = "k6-";
-
-/**
- * The configuration for the environment the run is against, read once per VU.
- * RESOURCE_REGISTRY_OWNER, RESOURCE_REGISTRY_OWNER_ORG_NO and
- * RESOURCE_REGISTRY_RESOURCE_ID override the file for an ad-hoc run.
+ * The resources to connect lists to. For setup.
  *
- * @returns {Configuration} The configuration.
+ * @returns {Array<Resource>} The resources.
  */
-export const getConfiguration = lazy(function () {
-    /** @type {Partial<Configuration>} */
-    const row = readRows("configuration")[0] ?? {};
-    const configuration = {
-        owner: __ENV.RESOURCE_REGISTRY_OWNER || row.owner,
-        ownerOrgNo: __ENV.RESOURCE_REGISTRY_OWNER_ORG_NO || row.ownerOrgNo,
-        resourceId: __ENV.RESOURCE_REGISTRY_RESOURCE_ID || row.resourceId,
-    };
+export function getResources() {
+    /** @type {Array<{owner: string, ownerOrgNo: string, resourceId: string, actions: string}>} */
+    const rows = readRows("resources");
 
-    if (!configuration.owner || !configuration.ownerOrgNo || !configuration.resourceId) {
-        throw new Error(`resource-registry/configuration-${__ENV.ENVIRONMENT}.csv needs owner, ownerOrgNo and resourceId; got ${JSON.stringify(row)}`);
+    return rows.map((row) => ({
+        ...row,
+        actions: String(row.actions).split(";").filter((action) => action !== ""),
+    }));
+}
+
+/**
+ * One row of organizations-<env>.csv: a Tenor organization with its Altinn party.
+ *
+ * @typedef {object} Organization
+ * @property {string} orgNo Organization number.
+ * @property {string} partyId Altinn party id.
+ * @property {string} partyUuid Altinn party uuid.
+ * @property {"AS"|"ENK"} unitType Organization form, named as Register and Profile report it.
+ */
+
+/**
+ * The organizations to add as members, optionally only those of one form. For setup.
+ *
+ * @param {"AS"|"ENK"} [unitType] Keep only organizations of this form.
+ * @returns {Array<Organization>} The organizations. Fails when there are none.
+ */
+export function getOrganizations(unitType) {
+    /** @type {Array<Organization>} */
+    const rows = readRows("organizations");
+    const organizations = unitType ? rows.filter((row) => row.unitType === unitType) : rows;
+
+    if (organizations.length === 0) {
+        throw new Error(`No ${unitType ?? ""} organizations in resource-registry/organizations-${__ENV.ENVIRONMENT}.csv`);
     }
 
-    return /** @type {Configuration} */ (configuration);
-});
+    return organizations;
+}
+
+/** @type {Map<string, AccessListClient>} */
+const accessListClients = new Map();
 
 /**
- * Client for the lists, their members and their resource connections, with an
- * enterprise token for the owner org.
+ * Client for the lists, their members and their resource connections of one
+ * owner, with an enterprise token for that org. Built once per owner per VU.
  *
+ * @param {string} owner Org code of the owner.
+ * @param {string} ownerOrgNo Organization number of the owner.
  * @returns {AccessListClient} The client.
  */
-export const getAccessListClient = lazy(function () {
-    const { owner, ownerOrgNo } = getConfiguration();
+export function getAccessListClient(owner, ownerOrgNo) {
+    let client = accessListClients.get(owner);
 
-    const tokenGenerator = new EnterpriseTokenGenerator(
-        new EnterpriseTokenBuilder()
-            .withEnvironment(__ENV.ENVIRONMENT)
-            .withTtl(3600)
-            .withOrganization(owner)
-            .withOrganizationNumber(ownerOrgNo)
-            .withScopes(CreateScopeString([
-                AltinnScopes.RESOURCEREGISTRY.ACCESSLIST.READ,
-                AltinnScopes.RESOURCEREGISTRY.ACCESSLIST.WRITE,
-            ]))
-            .build(),
-    );
+    if (client === undefined) {
+        const tokenGenerator = new EnterpriseTokenGenerator(
+            new EnterpriseTokenBuilder()
+                .withEnvironment(__ENV.ENVIRONMENT)
+                .withTtl(3600)
+                .withOrganization(owner)
+                .withOrganizationNumber(ownerOrgNo)
+                .withScopes(CreateScopeString([
+                    AltinnScopes.RESOURCEREGISTRY.ACCESSLIST.READ,
+                    AltinnScopes.RESOURCEREGISTRY.ACCESSLIST.WRITE,
+                ]))
+                .build(),
+        );
 
-    return new AccessListClient(__ENV.BASE_URL, tokenGenerator);
-});
+        client = new AccessListClient(__ENV.BASE_URL, tokenGenerator);
+        accessListClients.set(owner, client);
+    }
+
+    return client;
+}
 
 /**
  * Platform access token for the two platform-component lookups. See the
@@ -135,34 +167,6 @@ export const getResourceV2Client = lazy(function () {
 });
 
 /**
- * One row of organizations-<env>.csv: a Tenor organization with its Altinn party.
- *
- * @typedef {object} Organization
- * @property {string} orgNo Organization number.
- * @property {string} partyId Altinn party id.
- * @property {string} partyUuid Altinn party uuid.
- * @property {"AS"|"ENK"} orgForm Organization form.
- */
-
-/**
- * The organizations to add as members, optionally only those of one form.
- *
- * @param {"AS"|"ENK"} [orgForm] Keep only organizations of this form.
- * @returns {Array<Organization>} The organizations. Fails when there are none.
- */
-export function loadOrganizations(orgForm) {
-    /** @type {Array<Organization>} */
-    const rows = readRows("organizations");
-    const organizations = orgForm ? rows.filter((row) => row.orgForm === orgForm) : rows;
-
-    if (organizations.length === 0) {
-        throw new Error(`No ${orgForm ?? ""} organizations in resource-registry/organizations-${__ENV.ENVIRONMENT}.csv`);
-    }
-
-    return organizations;
-}
-
-/**
  * A fresh, prefixed access list identifier.
  *
  * @returns {string} The identifier.
@@ -172,14 +176,15 @@ export function newIdentifier() {
 }
 
 /**
- * Deletes the owner's k6- lists, for teardown, so a run that failed halfway
+ * Deletes an owner's k6- lists, for teardown, so a run that failed halfway
  * leaves nothing behind. Lists people made by hand are left alone.
  *
+ * @param {string} owner Org code of the owner.
+ * @param {string} ownerOrgNo Organization number of the owner.
  * @returns {number} How many lists were deleted.
  */
-export function deleteTestLists() {
-    const client = getAccessListClient();
-    const { owner } = getConfiguration();
+export function deleteTestLists(owner, ownerOrgNo) {
+    const client = getAccessListClient(owner, ownerOrgNo);
     const first = client.AccessListGetByOwner(owner);
 
     if (first.status !== 200) {
@@ -218,25 +223,20 @@ export function deleteTestLists() {
 }
 
 /**
- * @param {string} orgNo Organization number.
- * @returns {string} The party URN the members endpoints take for an organization.
+ * Deletes the k6- lists of every owner in the resources, for a teardown that
+ * gets the setup data.
+ *
+ * @param {Array<Resource>} resources The resources the run picked from.
+ * @returns {number} How many lists were deleted.
  */
-export function organizationUrn(orgNo) {
-    return `urn:altinn:organization:identifier-no:${orgNo}`;
-}
+export function deleteTestListsOf(resources) {
+    /** @type {Map<string, string>} */
+    const owners = new Map(resources.map((resource) => [resource.owner, resource.ownerOrgNo]));
+    let deleted = 0;
 
-/**
- * @param {string} partyUuid Party uuid.
- * @returns {string} The party URN the registry reports members and memberships by.
- */
-export function partyUuidUrn(partyUuid) {
-    return `urn:altinn:party:uuid:${partyUuid}`;
-}
+    for (const [owner, ownerOrgNo] of owners) {
+        deleted += deleteTestLists(owner, ownerOrgNo);
+    }
 
-/**
- * @param {string} resourceId Resource identifier.
- * @returns {string} The resource URN memberships are reported by.
- */
-export function resourceUrn(resourceId) {
-    return `urn:altinn:resource:${resourceId}`;
+    return deleted;
 }

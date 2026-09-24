@@ -200,9 +200,14 @@ export const AltinnScopes = {
 
     RESOURCEREGISTRY: {
         ACCESSLIST: {
-            PDP: "altinn:resourceregistry/pdp:accesslist.read",
             READ: "altinn:resourceregistry/accesslist.read",
             WRITE: "altinn:resourceregistry/accesslist.write"
+        },
+
+        PDP: {
+            ACCESSLIST: {
+                READ: "altinn:resourceregistry/pdp:accesslist.read"
+            }
         },
 
         RESOURCE: {

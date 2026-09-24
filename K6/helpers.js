@@ -199,33 +199,6 @@ export function getOptions(labels, groups = []) {
 }
 
 /**
- * Options for a functional test, where every check and every request has to
- * succeed for the run to pass.
- *
- * getOptions creates tagged metrics for reporting, but its empty thresholds
- * let a run with failed checks or failed requests exit 0. A functional test
- * only sends requests it expects to succeed, so this adds the two thresholds
- * that make k6 exit non-zero, and CI fail, when any check or request fails.
- * A test that expects an error status (a 404 after a delete, a 412 on a stale
- * ETag) has to call the client directly and check the status itself, since
- * those responses count towards `http_req_failed` unless the request marks
- * them as expected.
- *
- * @param {{ [key: string]: string }[]} labels Request labels, as for getOptions.
- * @param {string[]} groups Group names, as for getOptions.
- * @returns {ReturnType<typeof getOptions>} Options that fail the run on any
- * failed check or request.
- */
-export function getStrictOptions(labels, groups = []) {
-    const options = getOptions(labels, groups);
-
-    options.thresholds.checks = ["rate>=1.0"];
-    options.thresholds.http_req_failed = ["rate<=0.0"];
-
-    return options;
-}
-
-/**
  * @param {string} ip Address to validate.
  * @returns {boolean} True when the address is a valid IPv4 or IPv6 address.
  */

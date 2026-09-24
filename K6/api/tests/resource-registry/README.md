@@ -1,8 +1,9 @@
 # Resource Registry tests
 
 Functional tests for the [Resource Registry](https://docs.altinn.studio/nb/api/resourceregistry/) clients under
-[K6/clients/resource-registry](../../../clients/resource-registry). Every test reads content back and checks it,
-and runs with [`getStrictOptions`](../../../helpers.js), so a failed check or a failed request fails the run.
+[K6/clients/resource-registry](../../../clients/resource-registry). Every test reads content back and checks it.
+A failed check shows up in Grafana like for every other test here; the steps the rest of a run depends on also end the
+run with `fail()`, so one root cause is one failure.
 
 ## What is covered
 
@@ -70,24 +71,24 @@ building blocks: it is not a test step, so a failed read there is logged, not ch
   the way the register tests keep one `RegisterClient` per token flavour.
 - `ResourceV2Client` takes no token; policy rights are public.
 
-## Configuration
+## Resources
 
-Per environment, one row in `K6/testdata/resource-registry/configuration-<env>.csv`, read like the other test data.
-Each value can be overridden with an env var for an ad-hoc run, and a run against an environment without a file has to
-set all three.
+The resources the tests connect their lists to, one row per resource in `K6/testdata/resource-registry/resources-<env>.csv`,
+read in `setup` like the other test data. Each iteration picks one row with `getItemFromList`.
 
-| Column | Env var | Value in at22, at23 and tt02 | What it is |
-| --- | --- | --- | --- |
-| `owner` | `RESOURCE_REGISTRY_OWNER` | `ttd` | Org code that owns the lists the tests create, and the org of the enterprise token. |
-| `ownerOrgNo` | `RESOURCE_REGISTRY_OWNER_ORG_NO` | `991825827` | Organization number in the enterprise token. |
-| `resourceId` | `RESOURCE_REGISTRY_RESOURCE_ID` | `k6-instancedelegation-test` | Resource the tests connect their lists to. Owned by `owner`, present in all three environments, access lists disabled so a connection grants nobody anything, and a policy with six actions the v2 test reads back. |
+| Column | What it is |
+| --- | --- |
+| `owner` | Org code that owns the resource and the lists the tests create; the enterprise token is issued for it. |
+| `ownerOrgNo` | Organization number in the enterprise token. |
+| `resourceId` | The resource. It has to be owned by `owner`, exist in the environment and have access lists disabled, so a connection made by a test grants nobody anything. |
+| `actions` | The actions its policy grants, separated by `;`. The lifecycle test uses them as action filters and the v2 policy rights test checks the decomposed policy against them. |
 
-Besides these, the tests need `BASE_URL`, `ENVIRONMENT`, `TOKEN_GENERATOR_USERNAME` and `TOKEN_GENERATOR_PASSWORD`.
+Besides the files, the tests need `BASE_URL`, `ENVIRONMENT`, `TOKEN_GENERATOR_USERNAME` and `TOKEN_GENERATOR_PASSWORD`.
 
 ## Test data
 
 The members are synthetic organizations from Tenor, enriched with their Altinn party from Register, in
-`K6/testdata/resource-registry/organizations-<env>.csv` with the columns `orgNo,partyId,partyUuid,orgForm`. The
+`K6/testdata/resource-registry/organizations-<env>.csv` with the columns `orgNo,partyId,partyUuid,unitType`. The
 lifecycle test adds two `AS` and one `ENK`, and looks the `ENK` up through the platform-component endpoints. How to
 regenerate the files is described in
 [K6/testdata/resource-registry/README.md](../../../testdata/resource-registry/README.md).
@@ -108,15 +109,17 @@ so a run that failed halfway leaves nothing behind. After a run, `AccessListGetB
 
 ## Adding a test to this folder
 
-1. Put the client factory and any shared helper in `commons.js`; build clients with `lazy` so a VU builds them once.
+1. Put the client factory and any shared helper in `commons.js`; build clients with `lazy` (or cached per owner, as
+   `getAccessListClient(owner, ownerOrgNo)` is) so a VU builds them once. Read test data in `setup` and pass it on
+   through the data object; nothing should read a file per iteration.
 2. Use the building blocks under [K6/api/building-blocks/resource-registry](../../building-blocks/resource-registry).
    The five the lifecycle test conditions on a version (get, get members, upsert, upsert resource connection, delete)
    return `{ value, etag, status }` and take an `options` argument with conditional `headers` and an `expectedStatus`,
-   so a call that should answer 304, 404 or 412 is still a building block call and the strict thresholds do not count
-   it as a failed request (`withExpectedStatus` in `building-blocks/common/retry.js`). The rest return the body, as
-   every other building block does.
+   so a call that should answer 304, 404 or 412 is still a building block call and does not count as a failed request
+   in the metrics (`withExpectedStatus` in `building-blocks/common/retry.js`). The rest return the body, as every other
+   building block does.
 3. Check content with the domain checks under
    [K6/api/domain-checks/resource-registry](../../domain-checks/resource-registry); add a check there rather than an
    inline `check` when the assertion says something about the domain.
-4. Create lists with `newIdentifier()` and end with a `teardown` that calls `deleteTestLists()`.
+4. Create lists with `newIdentifier()` and end with a `teardown(data)` that calls `deleteTestListsOf(data.resources)`.
 5. Wire the test into `run-all.js` and `functional.yaml`, and add a row to the table above.

@@ -1,6 +1,13 @@
 import { fail, group } from "k6";
 
-import { getStrictOptions, pickUnique, requireEnv } from "../../../helpers.js";
+import {
+    AccessListMembersBuilder,
+    AccessListResourceConnectionBuilder,
+    CreateAccessListBuilder,
+    PartyUrn,
+    ResourceUrn,
+} from "../../../clients/resource-registry/index.js";
+import { getItemFromList, getOptions, pickUnique, requireEnv } from "../../../helpers.js";
 import {
     AccessListAddMembers,
     AccessListCreateOrUpdate,
@@ -18,16 +25,13 @@ import {
 import { AccessListMembershipsGetMemberships } from "../../building-blocks/resource-registry/index.js";
 import { AccessListDomainChecks } from "../../domain-checks/resource-registry/access-list.js";
 import {
-    deleteTestLists,
+    deleteTestListsOf,
     getAccessListClient,
     getAccessListMembershipsClient,
     getAccessListPlatformClient,
-    getConfiguration,
-    loadOrganizations,
+    getOrganizations,
+    getResources,
     newIdentifier,
-    organizationUrn,
-    partyUuidUrn,
-    resourceUrn,
 } from "./commons.js";
 
 const createLabel = { step: "Create and read an access list" };
@@ -41,7 +45,7 @@ const disconnectLabel = { step: "Disconnect the resource" };
 const ownerLabel = { step: "Read the lists of another owner" };
 const deleteLabel = { step: "Conditional delete" };
 
-export const options = getStrictOptions([
+export const options = getOptions([
     createLabel,
     updateLabel,
     readsLabel,
@@ -54,8 +58,6 @@ export const options = getStrictOptions([
     deleteLabel,
 ]);
 
-const ACTION_FILTERS = ["read", "write"];
-
 /**
  * An owner the test's token is not issued for, so reading its lists has to be
  * refused. digdir is a real service owner in every environment.
@@ -63,19 +65,19 @@ const ACTION_FILTERS = ["read", "write"];
 const OTHER_OWNER = "digdir";
 
 /**
- * Picks the organizations this run adds as members: two companies and one
- * sole proprietorship, so both organization forms go through the members
- * endpoints.
+ * Reads the test data once: the resources the iterations pick from, and the
+ * organizations this run adds as members, two companies and one sole
+ * proprietorship, so both organization forms go through the members endpoints.
  *
- * @returns {{companies: Array<import("./commons.js").Organization>, soleProprietorship: import("./commons.js").Organization}} The members.
+ * @returns {{resources: Array<import("./commons.js").Resource>, companies: Array<import("./commons.js").Organization>, soleProprietorship: import("./commons.js").Organization}} The test data.
  */
 export function setup() {
     requireEnv(["BASE_URL", "ENVIRONMENT"]);
-    getConfiguration();
 
     return {
-        companies: pickUnique(loadOrganizations("AS"), 2),
-        soleProprietorship: pickUnique(loadOrganizations("ENK"), 1)[0],
+        resources: getResources(),
+        companies: pickUnique(getOrganizations("AS"), 2),
+        soleProprietorship: pickUnique(getOrganizations("ENK"), 1)[0],
     };
 }
 
@@ -120,11 +122,12 @@ function requireEtag(result, operation) {
  * check and a "cannot continue" line rather than a dozen failures downstream.
  * Teardown deletes the list either way.
  *
- * @param {ReturnType<typeof setup>} data The members picked in setup.
+ * @param {ReturnType<typeof setup>} data The test data read in setup.
  */
 export default function (data) {
-    const client = getAccessListClient();
-    const { owner, resourceId } = getConfiguration();
+    // One resource per iteration, and the list is owned by whoever owns it.
+    const { owner, ownerOrgNo, resourceId, actions } = getItemFromList(data.resources);
+    const client = getAccessListClient(owner, ownerOrgNo);
     const identifier = newIdentifier();
     const written = {
         owner,
@@ -134,7 +137,8 @@ export default function (data) {
     };
     const updated = { ...written, description: "Updated by the resource-registry lifecycle test" };
     const all = [...data.companies, data.soleProprietorship];
-    const memberParty = partyUuidUrn(data.soleProprietorship.partyUuid);
+    const memberParty = PartyUrn.partyUuid(data.soleProprietorship.partyUuid);
+    const resource = ResourceUrn.resourceId(resourceId);
     /** @type {string} */
     let etag = "";
     /** @type {string} */
@@ -143,10 +147,10 @@ export default function (data) {
     let etagAfterConnection = "";
 
     group("Create and read an access list", function () {
-        const created = AccessListCreateOrUpdate(client, owner, identifier, {
-            name: written.name,
-            description: written.description,
-        }, null, createLabel);
+        const created = AccessListCreateOrUpdate(client, owner, identifier, new CreateAccessListBuilder()
+            .withName(written.name)
+            .withDescription(written.description)
+            .build(), null, createLabel);
 
         if (!AccessListDomainChecks.CheckAccessListInfo(created.value, written, "AccessListCreateOrUpdate")) {
             fail("cannot continue: the access list was not created as written, and every later step builds on it");
@@ -166,7 +170,7 @@ export default function (data) {
         // PATCH is not implemented in the registry (it answers 501 and its
         // remarks say to use PUT), so the update goes through the same upsert
         // that created the list.
-        const body = { name: updated.name, description: updated.description };
+        const body = new CreateAccessListBuilder().withName(updated.name).withDescription(updated.description).build();
 
         // If-None-Match: * asks for a create and nothing else, so it has to be
         // refused now that the list exists, and the description stays as it was.
@@ -193,11 +197,11 @@ export default function (data) {
     });
 
     group("Add members", function () {
-        const partyUrns = Object.fromEntries(all.map((organization) => [organization.orgNo, partyUuidUrn(organization.partyUuid)]));
+        const partyUrns = Object.fromEntries(all.map((organization) => [organization.orgNo, PartyUrn.partyUuid(organization.partyUuid)]));
 
-        const added = AccessListAddMembers(client, owner, identifier, {
-            data: all.map((organization) => organizationUrn(organization.orgNo)),
-        }, membersLabel);
+        const added = AccessListAddMembers(client, owner, identifier, new AccessListMembersBuilder()
+            .withOrganizations(all.map((organization) => organization.orgNo))
+            .build(), membersLabel);
 
         if (!AccessListDomainChecks.CheckMembers(added, all.map((organization) => organization.orgNo), "AccessListAddMembers")) {
             fail("cannot continue: the members were not added, so there is nothing to look up, replace or remove");
@@ -214,8 +218,8 @@ export default function (data) {
     });
 
     group("Connect a resource with If-Match", function () {
-        const connection = { actionFilters: ACTION_FILTERS };
-        const expected = [{ resourceIdentifier: resourceId, actionFilters: ACTION_FILTERS }];
+        const connection = new AccessListResourceConnectionBuilder().withActionFilters(actions).build();
+        const expected = [{ resourceIdentifier: resourceId, actionFilters: actions }];
 
         // The connection is written under If-Match on purpose: this is the
         // conditional write of the registry's optimistic concurrency, and the
@@ -244,7 +248,7 @@ export default function (data) {
             owner,
             identifier,
             resourceId,
-            { actionFilters: ["read"] },
+            new AccessListResourceConnectionBuilder().withActionFilters(actions.slice(0, 1)).build(),
             { headers: { "If-Match": etagBeforeConnection }, expectedStatus: 412 },
             connectionLabel,
         );
@@ -271,14 +275,14 @@ export default function (data) {
         // platform access token; both filters on the memberships query are URNs.
         const memberships = AccessListMembershipsGetMemberships(
             getAccessListMembershipsClient(),
-            { party: [memberParty], resource: [resourceUrn(resourceId)] },
+            { party: [memberParty], resource: [resource] },
             lookupsLabel,
         );
 
         AccessListDomainChecks.CheckMembership(memberships, {
             party: memberParty,
-            resource: resourceUrn(resourceId),
-            actionFilters: ACTION_FILTERS,
+            resource,
+            actionFilters: actions,
         }, "AccessListMembershipsGetMemberships");
 
         const lists = AccessListGetByMember(getAccessListPlatformClient(), memberParty, lookupsLabel);
@@ -287,9 +291,9 @@ export default function (data) {
     });
 
     group("Replace and remove members", function () {
-        const replaced = AccessListReplaceMembers(client, owner, identifier, {
-            data: [organizationUrn(data.soleProprietorship.orgNo)],
-        }, replaceLabel);
+        const soleProprietorshipOnly = new AccessListMembersBuilder().withOrganization(data.soleProprietorship.orgNo).build();
+
+        const replaced = AccessListReplaceMembers(client, owner, identifier, soleProprietorshipOnly, replaceLabel);
 
         AccessListDomainChecks.CheckMembers(replaced, [data.soleProprietorship.orgNo], "AccessListReplaceMembers");
 
@@ -297,9 +301,7 @@ export default function (data) {
 
         AccessListDomainChecks.CheckMembers(afterReplace.value, [data.soleProprietorship.orgNo], "AccessListGetMembers after replace");
 
-        const removed = AccessListRemoveMembers(client, owner, identifier, {
-            data: [organizationUrn(data.soleProprietorship.orgNo)],
-        }, replaceLabel);
+        const removed = AccessListRemoveMembers(client, owner, identifier, soleProprietorshipOnly, replaceLabel);
 
         AccessListDomainChecks.CheckMembers(removed, [], "AccessListRemoveMembers");
 
@@ -350,11 +352,13 @@ export default function (data) {
 }
 
 /**
- * Deletes whatever lists the run left behind, so a failure halfway does not
- * pile up lists in the environment.
+ * Deletes whatever lists the run left behind, for every owner in the test
+ * data, so a failure halfway does not pile up lists in the environment.
+ *
+ * @param {ReturnType<typeof setup>} data The test data read in setup.
  */
-export function teardown() {
-    const deleted = deleteTestLists();
+export function teardown(data) {
+    const deleted = deleteTestListsOf(data.resources);
 
     if (deleted > 0) {
         console.warn(`teardown - deleted ${deleted} access list(s) the test left behind`);

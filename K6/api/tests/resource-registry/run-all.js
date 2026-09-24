@@ -43,13 +43,15 @@ export default function (data) {
     runGetUpdatedResources();
     runGetOrgs();
     runAccessListLifecycle(data.accessListLifecycle);
-    runResourceV2PolicyRights();
+    runResourceV2PolicyRights(data.resourceV2PolicyRights);
 }
 
 /**
  * k6 teardown stage. Runs the lifecycle test's teardown, so the list it
  * created is gone when the run is over.
+ *
+ * @param {ReturnType<typeof setup>} data Setup results, keyed per test.
  */
-export function teardown() {
-    teardownAccessListLifecycle();
+export function teardown(data) {
+    teardownAccessListLifecycle(data.accessListLifecycle);
 }
