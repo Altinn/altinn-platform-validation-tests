@@ -1,6 +1,6 @@
-import { test as miljoTest } from './miljo.fixture';
-import { ArbeidsflateForside } from '../pages/arbeidsflate/forside';
-import { ArbeidsflateProfil } from '../pages/arbeidsflate/profil';
+import { ArbeidsflateForside } from "../pages/arbeidsflate/forside";
+import { ArbeidsflateProfil } from "../pages/arbeidsflate/profil";
+import { test as miljoTest } from "./miljo.fixture";
 
 /**
  * Hovedområdet arbeidsflate med sine undersider. Nye undersider legges til som

@@ -1,0 +1,9 @@
+namespace: access-management
+base_dir: K6/api/tests/access-management/service-owner/connections
+test_definitions:
+  - test_file: resource-delegation-to-organization.js
+    contexts:
+      - environment: at22
+  - test_file: resource-delegation-to-person.js
+    contexts:
+      - environment: at22

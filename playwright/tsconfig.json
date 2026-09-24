@@ -1,7 +1,20 @@
 {
     "compilerOptions": {
+        "module": "NodeNext",
+        "moduleResolution": "NodeNext",
+        "strict": true,
+        "noEmit": true,
         "types": [
-            "node"
+            "node",
+            "@playwright/test"
         ]
-    }
+    },
+    "include": [
+        "config/**/*.ts",
+        "fixtures/**/*.ts",
+        "flows/**/*.ts",
+        "pages/**/*.ts",
+        "tests/**/*.ts",
+        "playwright.config.ts"
+    ]
 }

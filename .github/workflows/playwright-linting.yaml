@@ -1,0 +1,30 @@
+name: "Playwright Linting Tests"
+on:
+  pull_request:
+    branches:
+      - "main"
+    paths:
+      - "playwright/**"
+
+run-name: "linting"
+permissions:
+  contents: "read"
+jobs:
+  checks:
+    runs-on: "ubuntu-latest"
+    steps:
+      - name: "Checkout code"
+        uses: "actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1"
+
+      - name: "Use Node.js"
+        uses: "actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f"
+        with:
+          node-version: "24.x"
+
+      - name: "Dependencies"
+        working-directory: "playwright"
+        run: "npm install"
+
+      - name: "Lint Code"
+        working-directory: "playwright"
+        run: "npm run validate"

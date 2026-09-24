@@ -7,14 +7,14 @@ export class Cookiebanner {
     async assertVisible() {
         await expect(
             this.banner(),
-            'Cookiebanneret vises'
+            "Cookiebanneret vises"
         ).toBeVisible();
     }
 
     async assertHidden() {
         await expect(
             this.banner(),
-            'Cookiebanneret vises ikke'
+            "Cookiebanneret vises ikke"
         ).toBeHidden();
     }
 
@@ -35,10 +35,10 @@ export class Cookiebanner {
     }
 
     private jaKnapp() {
-        return this.page.getByRole('button', { name: /^(ja|yes)$/i });
+        return this.page.getByRole("button", { name: /^(ja|yes)$/i });
     }
 
     private neiKnapp() {
-        return this.page.getByRole('button', { name: /^(nei|no)$/i });
+        return this.page.getByRole("button", { name: /^(nei|no)$/i });
     }
 }

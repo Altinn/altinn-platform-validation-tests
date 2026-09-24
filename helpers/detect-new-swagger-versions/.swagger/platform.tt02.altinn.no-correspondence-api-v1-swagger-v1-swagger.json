@@ -1734,6 +1734,9 @@
             "type": "string",
             "nullable": true
           },
+          "source": {
+            "$ref": "#/components/schemas/AltinnProblemDetails"
+          },
           "errorCode": {
             "type": "string",
             "description": "Altinn error code (e.g. CORR-00001).",
@@ -1802,6 +1805,9 @@
           "statusDescription": {
             "type": "string",
             "nullable": true
+          },
+          "source": {
+            "$ref": "#/components/schemas/AltinnProblemDetails"
           },
           "validationErrors": {
             "type": "array",

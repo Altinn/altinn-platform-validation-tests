@@ -1,4 +1,5 @@
 import { test as base } from "@playwright/test";
+
 import { getTestUsers } from "../config/testdata";
 import { Miljo, Urler, urler } from "../miljo";
 import { Testbruker } from "../testdata";
@@ -8,24 +9,24 @@ import { Testbruker } from "../testdata";
  * følger av det. Resten av fixturene og page objectene får dem herfra.
  */
 export const test = base.extend<
-  { urler: Urler },
-  { miljo: Miljo; mockporten: boolean; testdataFinnes: void }
+    { urler: Urler },
+    { miljo: Miljo; mockporten: boolean; testdataFinnes: void }
 >({
-  miljo: [undefined as unknown as Miljo, { option: true, scope: "worker" }],
-  mockporten: [false, { option: true, scope: "worker" }],
+    miljo: [undefined as unknown as Miljo, { option: true, scope: "worker" }],
+    mockporten: [false, { option: true, scope: "worker" }],
 
-  // Manglende testdata for en brukergruppe stopper workeren før første test.
-  testdataFinnes: [
-    async ({ miljo }, use) => {
-      for (const gruppe of Object.values(Testbruker)) {
-        getTestUsers(gruppe, miljo);
-      }
-      await use();
+    // Manglende testdata for en brukergruppe stopper workeren før første test.
+    testdataFinnes: [
+        async ({ miljo }, use) => {
+            for (const gruppe of Object.values(Testbruker)) {
+                getTestUsers(gruppe, miljo);
+            }
+            await use();
+        },
+        { scope: "worker", auto: true },
+    ],
+
+    urler: async ({ miljo }, use) => {
+        await use(urler[miljo]);
     },
-    { scope: "worker", auto: true },
-  ],
-
-  urler: async ({ miljo }, use) => {
-    await use(urler[miljo]);
-  },
 });

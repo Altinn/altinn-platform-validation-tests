@@ -1,6 +1,6 @@
-import { test as miljoTest } from "./miljo.fixture";
 import { getTestUser, TestUser } from "../config/testdata";
 import { Testbruker } from "../testdata";
+import { test as miljoTest } from "./miljo.fixture";
 
 /**
  * Hvilken testperson en test kjører som. `testbrukerPath` velges fra Testbruker, som peker på mappen under testdata/,
@@ -12,16 +12,16 @@ import { Testbruker } from "../testdata";
  * Separate kjøringer deler brukerpool.
  */
 export const test = miljoTest.extend<{ testbrukerPath: Testbruker; user: TestUser }>({
-  testbrukerPath: [Testbruker.PrivatPersonUtenVirksomhet, { option: true }],
+    testbrukerPath: [Testbruker.PrivatPersonUtenVirksomhet, { option: true }],
 
-  user: async ({ testbrukerPath, miljo }, use, testInfo) => {
-    const bruker = getTestUser(testbrukerPath, miljo, testInfo.parallelIndex);
+    user: async ({ testbrukerPath, miljo }, use, testInfo) => {
+        const bruker = getTestUser(testbrukerPath, miljo, testInfo.parallelIndex);
 
-    testInfo.annotations.push({
-      type: "testperson",
-      description: `${testbrukerPath} nummer ${testInfo.parallelIndex}: ${bruker.pid}`,
-    });
+        testInfo.annotations.push({
+            type: "testperson",
+            description: `${testbrukerPath} nummer ${testInfo.parallelIndex}: ${bruker.pid}`,
+        });
 
-    await use(bruker);
-  },
+        await use(bruker);
+    },
 });

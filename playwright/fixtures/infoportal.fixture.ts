@@ -1,5 +1,5 @@
-import { test as miljoTest } from './miljo.fixture';
-import { InfoportalForside } from '../pages/infoportal/forside';
+import { InfoportalForside } from "../pages/infoportal/forside";
+import { test as miljoTest } from "./miljo.fixture";
 
 export type Infoportal = {
     forside: InfoportalForside;

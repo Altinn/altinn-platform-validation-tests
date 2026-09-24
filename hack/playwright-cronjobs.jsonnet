@@ -15,7 +15,7 @@ local jobs = [
     environment: 'at23',
     reportUrl:
       'https://jolly-plant-033965703-at23.westeurope.7.azurestaticapps.net',
-    slackWebhookEnabled: true,
+    slackWebhookEnabled: false,
   },
   {
     name: 'playwright-tt02',
@@ -23,7 +23,7 @@ local jobs = [
     environment: 'tt02',
     reportUrl:
       'https://jolly-plant-033965703-tt02.westeurope.7.azurestaticapps.net',
-    slackWebhookEnabled: true,
+    slackWebhookEnabled: false,
   },
   {
     name: 'playwright-prod',
@@ -31,7 +31,7 @@ local jobs = [
     environment: 'prod',
     reportUrl:
       'https://jolly-plant-033965703.7.azurestaticapps.net',
-    slackWebhookEnabled: true,
+    slackWebhookEnabled: false,
   },
 ];
 
@@ -76,8 +76,8 @@ local cronJob(
 
             resources: {
               requests: {
-                cpu: 2,
-                memory: '2000Mi',
+                cpu: 4,
+                memory: '8000Mi',
               },
             },
 
@@ -94,6 +94,7 @@ local cronJob(
               {
                 name: 'playwright',
                 image: 'altinnplatformvalidationtests.azurecr.io/custom-playwright-runner:' + playwrightVersion,
+                // imagePullPolicy: "Always",
 
                 args: [environment],  // TODO: true for now, but might need to think about how we will support different test frequencies within the same env.
                 volumeMounts: [

@@ -1,5 +1,6 @@
-import { test as base } from '@playwright/test';
-import { Cookiebanner } from '../pages/felles/cookiebanner';
+import { test as base } from "@playwright/test";
+
+import { Cookiebanner } from "../pages/felles/cookiebanner";
 
 /**
  * Cookiebanneret hører ikke til én flate, det er det samme banneret overalt.

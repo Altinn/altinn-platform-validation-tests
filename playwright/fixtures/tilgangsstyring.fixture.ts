@@ -1,7 +1,8 @@
-import { mergeTests } from '@playwright/test';
-import { test as miljoTest } from './miljo.fixture';
-import { test as sprakTest } from './sprak.fixture';
-import { TilgangsstyringForside } from '../pages/tilgangsstyring/forside';
+import { mergeTests } from "@playwright/test";
+
+import { TilgangsstyringForside } from "../pages/tilgangsstyring/forside";
+import { test as miljoTest } from "./miljo.fixture";
+import { test as sprakTest } from "./sprak.fixture";
 
 /**
  * Hovedområdet tilgangsstyring med sine undersider. Nye undersider legges til som
