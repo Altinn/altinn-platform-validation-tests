@@ -73,8 +73,6 @@ export default defineConfig<
         },
         {
             name: "prod",
-            // Bare tester som er verifisert i at23 og tt02, og som ikke endrer data.
-            // Utlogging er ikke med, siden Mockportens utloggingsside svarer 404.
             testMatch: [
                 "innlogging/innlogging-alle-flater.spec.ts",
                 "innlogging/innlogging-refresh-alle-flater.spec.ts",
