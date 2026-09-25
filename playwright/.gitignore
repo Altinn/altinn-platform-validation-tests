@@ -1,0 +1,2 @@
+# Prod-testbrukerne er hemmelige, se TESTDATA_ROOT i README.
+testdata/*/prod.csv
