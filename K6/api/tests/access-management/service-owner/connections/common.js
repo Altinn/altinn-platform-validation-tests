@@ -1,9 +1,8 @@
 import { fail } from "k6";
-import exec from "k6/execution";
 
 import { ConnectionsClient, ServiceOwnerResourceDelegationBuilder } from "../../../../../clients/access-management/service-owner/connections/index.js";
 import { EnterpriseTokenBuilder, EnterpriseTokenGenerator } from "../../../../../common-imports.js";
-import { fetchTestData, getNumberOfVUs, lazy, requireEnv, segmentData } from "../../../../../helpers.js";
+import { fetchTestData, lazy, requireEnv } from "../../../../../helpers.js";
 import { AltinnScopes, CreateScopeString } from "../../../../../scopes.js";
 import { ConnectionsRevokeResource } from "../../../../building-blocks/access-management/service-owner/connections/index.js";
 
@@ -28,9 +27,7 @@ const SERVICE_OWNER_SCOPES = CreateScopeString([
 /**
  * @typedef {object} ResourceDelegationTestData
  * @property {Array<ServiceOwnerRow>} serviceOwners Service owners and the resource each one owns.
- * @property {{[recipientType: string]: Array<Array<RecipientRow>>}} recipients
- * Parties a delegation is created to, grouped by recipient type and split into
- * one slice per VU.
+ * @property {Array<RecipientRow>} recipients Parties a delegation is created to.
  */
 
 /**
@@ -45,17 +42,6 @@ const SERVICE_OWNER_SCOPES = CreateScopeString([
  * a service owner does not touch the recipient list, and adding a recipient
  * applies to every service owner.
  *
- * The recipients are grouped by type and each group split into one slice per VU.
- * __ITER counts per VU, so every VU drawing from the same list would pick the
- * same recipient on the same iteration: a run with several VUs would write one
- * delegation many times over instead of many delegations, and report timings for
- * a load it never applied. Grouping before splitting matters just as much, since
- * the fixture lists all the organizations before all the persons and slicing it
- * by position alone leaves the later VUs holding no row of their own type.
- *
- * Service owners are deliberately left whole, since several VUs working the same
- * resource at once is the thing a smoke run is there to measure.
- *
  * @returns {ResourceDelegationTestData} Environment-specific test data.
  */
 export function setup() {
@@ -64,39 +50,10 @@ export function setup() {
     const base = __ENV.TEST_DATA_BASE_URL
         ?? "access-management/service-owner/connections";
 
-    const rows = fetchTestData(`${base}/recipients/${__ENV.ENVIRONMENT}.csv`);
-    const vus = getNumberOfVUs();
-
     return {
         serviceOwners: fetchTestData(`${base}/service-owners/${__ENV.ENVIRONMENT}.csv`),
-        recipients: {
-            organization: sliceRecipients(rows, "organization", vus),
-            person: sliceRecipients(rows, "person", vus),
-        },
+        recipients: fetchTestData(`${base}/recipients/${__ENV.ENVIRONMENT}.csv`),
     };
-}
-
-/**
- * Keeps the recipients of one type and hands each VU its own slice of them.
- *
- * @param {Array<RecipientRow>} rows Every recipient in the fixture.
- * @param {"person"|"organization"} recipientType The type to keep.
- * @param {number} vus How many slices to cut.
- * @returns {Array<Array<RecipientRow>>} One slice per VU.
- */
-function sliceRecipients(rows, recipientType, vus) {
-    const recipients = rows.filter(
-        (recipient) => recipient.recipientType === recipientType,
-    );
-
-    if (recipients.length < vus) {
-        fail(
-            `recipients/${__ENV.ENVIRONMENT}.csv has ${recipients.length} ${recipientType} rows,`
-            + ` which is fewer than the ${vus} VUs asking for one each`,
-        );
-    }
-
-    return segmentData(recipients, vus);
 }
 
 /**
@@ -145,28 +102,26 @@ export function getServiceOwnerTokenOpts(serviceOwner) {
 }
 
 /**
- * The recipients this VU delegates to.
+ * Picks the recipients of one type out of the fixture.
+ *
+ * A functional run gets one iteration, so a test that drew from the whole
+ * recipient list would only ever reach the first row. One test per type means
+ * each one covers its own case whatever the iteration count is.
  *
  * @param {ResourceDelegationTestData} data Environment-specific test data.
- * @param {"person"|"organization"} recipientType The recipient type under test.
- * @returns {Array<RecipientRow>} This VU's slice.
+ * @param {"person"|"organization"} recipientType The type to keep.
+ * @returns {Array<RecipientRow>} The matching recipients.
  */
-export function recipientsForVu(data, recipientType) {
-    return data.recipients[recipientType][exec.vu.idInTest - 1];
-}
+export function recipientsOfType(data, recipientType) {
+    const recipients = data.recipients.filter(
+        (recipient) => recipient.recipientType === recipientType,
+    );
 
-/**
- * Every recipient of one type, across all VUs.
- *
- * Teardown takes this rather than a single slice: it has to sweep what any VU
- * may have written, and it is not told which ones the run reached.
- *
- * @param {ResourceDelegationTestData} data Environment-specific test data.
- * @param {"person"|"organization"} recipientType The recipient type to sweep.
- * @returns {Array<RecipientRow>} Every matching recipient.
- */
-export function allRecipients(data, recipientType) {
-    return data.recipients[recipientType].flat();
+    if (recipients.length === 0) {
+        fail(`No ${recipientType} recipient in recipients/${__ENV.ENVIRONMENT}.csv`);
+    }
+
+    return recipients;
 }
 
 /**
@@ -214,14 +169,10 @@ export function delegationRequest(serviceOwner, recipient, rights = null) {
  * partway through, which is the case the ordinary path cannot clean up after.
  * Revoke removes the complete resource delegation, so right keys are left off.
  *
- * k6 does not say which rows the run reached, so this sweeps the rows it could
- * have reached: a VU takes rows from the front of its slice, one per iteration,
- * so that prefix is the reach of the run. Sweeping the whole fixture instead
- * would mean 500 revokes after a functional run that created one delegation, and
- * would have a scheduled run tearing down what a manual one is still using.
- *
- * Each test sweeps only its own recipient type, so the two can run side by side
- * without touching each other.
+ * This is the one place the fixture is walked rather than one row per iteration:
+ * k6 does not tell teardown which rows the run reached, and revoking a
+ * delegation that was never created costs one 204. Each test sweeps only its own
+ * recipient type, so the two can run side by side without touching each other.
  *
  * @param {ResourceDelegationTestData} data Environment-specific test data.
  * @param {"person"|"organization"} recipientType The recipient type to sweep.
@@ -231,22 +182,10 @@ export function delegationRequest(serviceOwner, recipient, rights = null) {
 export function revokeDelegations(data, recipientType, label) {
     const { connections, tokenGenerator } = getClients();
 
-    // Cast for the same reason getNumberOfVUs does it: Scenario is a union and
-    // only some of its members carry vus and iterations.
-    const scenario = /** @type {*} */ (exec.test.options.scenarios?.default);
-    const vus = scenario?.vus ?? 1;
-    const iterations = scenario?.iterations ?? 1;
-    const perVu = scenario?.executor === "shared-iterations"
-        ? Math.ceil(iterations / vus)
-        : iterations;
-
-    const touched = data.recipients[recipientType]
-        .flatMap((slice) => slice.slice(0, perVu));
-
     data.serviceOwners.forEach((serviceOwner) => {
         tokenGenerator.setTokenGeneratorOptions(getServiceOwnerTokenOpts(serviceOwner));
 
-        touched.forEach((recipient) => {
+        recipientsOfType(data, recipientType).forEach((recipient) => {
             ConnectionsRevokeResource(
                 connections,
                 delegationRequest(serviceOwner, recipient),

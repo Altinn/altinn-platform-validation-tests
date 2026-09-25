@@ -8,7 +8,7 @@ import {
     XacmlPolicyBuilder,
 } from "../../../clients/resource-registry/index.js";
 import { EnterpriseTokenBuilder, EnterpriseTokenGenerator } from "../../../common-imports.js";
-import { lazy, requireEnv } from "../../../helpers.js";
+import { requireEnv } from "../../../helpers.js";
 import { AltinnScopes, CreateScopeString } from "../../../scopes.js";
 import {
     ResourceCreatePolicy,
@@ -16,13 +16,15 @@ import {
 } from "../../building-blocks/resource-registry/resource/index.js";
 
 /**
- * Publishes the extra resources the service-owner delegation smoke test spreads
- * its load over.
+ * Publishes one resource per service owner in the service-owner delegation
+ * fixture.
  *
- * `k6-serviceowner-resource-delegation` already exists and is row one of
+ * `k6-serviceowner-resource-delegation` already exists and is digdir's row in
  * testdata/access-management/service-owner/connections/service-owners/<env>.csv.
- * This adds four more just like it, so that fixture can hold five rows and a run
- * is not hammering a single resource unless it means to.
+ * This adds one for each of the other service owners in that fixture, since a
+ * service owner can only delegate a resource it owns: the API checks the caller
+ * against the resource owner, so sharing one resource across five service owners
+ * would leave four of the rows failing.
  *
  * Every resource here is a plain delegable one. The variants that deliberately
  * refuse a delegation belong in a negative test, not in a fixture the smoke test
@@ -37,8 +39,22 @@ import {
  * rerun reports failures for the resources that already exist. That is expected.
  */
 
-const DIGDIR_ORG = "digdir";
-const DIGDIR_ORGNO = "991825827";
+// One service owner per row in service-owners/<env>.csv, minus digdir, which
+// already owns k6-serviceowner-resource-delegation. Organization numbers are the
+// ones the Altinn org list publishes, and the registry validates them against
+// the consumer claim on the token, so they have to match exactly.
+//
+// Being in that list is not enough on its own: the delegation endpoint answers
+// AM-00023 for a service owner that is not also a party in the environment, and
+// most of the 107 published orgs are not. These four are, in at22. Check a
+// replacement before adding it, by delegating from its organization number and
+// seeing whether the create is accepted.
+const SERVICE_OWNERS = [
+    { orgcode: "skd", orgno: "974761076", name: "Skatteetaten" },
+    { orgcode: "brg", orgno: "974760673", name: "Brønnøysundregistrene" },
+    { orgcode: "nb", orgno: "937884117", name: "Norges Bank" },
+    { orgcode: "fd", orgno: "971203420", name: "Fiskeridirektoratet" },
+];
 
 const CONTACT_POINT = {
     category: "Support",
@@ -65,13 +81,6 @@ const AVAILABLE_FOR_TYPE = [
     ResourcePartyType.BankruptcyEstate,
 ];
 
-const IDENTIFIERS = [
-    "k6-serviceowner-resource-delegation-2",
-    "k6-serviceowner-resource-delegation-3",
-    "k6-serviceowner-resource-delegation-4",
-    "k6-serviceowner-resource-delegation-5",
-];
-
 export function setup() {
     requireEnv([
         "BASE_URL",
@@ -84,20 +93,21 @@ export function setup() {
 }
 
 /**
- * Creates and caches the client this script writes with.
+ * A resource-registry client acting as one service owner.
  *
- * The registry compares the resource owner organization number against the
- * consumer claim on the token, so this has to be digdir to write a digdir
- * resource.
+ * Built per service owner rather than cached: the registry compares the resource
+ * owner organization number against the consumer claim on the token, so each
+ * resource has to be written with its own owner's token.
  *
+ * @param {{orgcode: string, orgno: string}} serviceOwner The owner to act as.
  * @returns {ResourceClient} The client.
  */
-const getResourceClient = lazy(function () {
+function resourceClientFor(serviceOwner) {
     const tokenGenerator = new EnterpriseTokenGenerator(
         new EnterpriseTokenBuilder()
             .withEnvironment(__ENV.ENVIRONMENT)
-            .withOrganization(DIGDIR_ORG)
-            .withOrganizationNumber(DIGDIR_ORGNO)
+            .withOrganization(serviceOwner.orgcode)
+            .withOrganizationNumber(serviceOwner.orgno)
             .withScopes(CreateScopeString([
                 AltinnScopes.RESOURCEREGISTRY.RESOURCE.WRITE,
             ]))
@@ -105,23 +115,23 @@ const getResourceClient = lazy(function () {
     );
 
     return new ResourceClient(__ENV.BASE_URL, tokenGenerator);
-});
+}
 
 export default function () {
-    const resourceClient = getResourceClient();
-
-    IDENTIFIERS.forEach((identifier, index) => {
+    SERVICE_OWNERS.forEach((serviceOwner, index) => {
         const step = index + 1;
+        const identifier = `k6-serviceowner-resource-delegation-${serviceOwner.orgcode}`;
 
         group(`Resource ${step}: ${identifier}`, () => {
-            const text = `K6 service owner resource delegation ${step + 1}`;
+            const resourceClient = resourceClientFor(serviceOwner);
+            const text = `K6 service owner resource delegation, ${serviceOwner.name}`;
 
             const resource = new ServiceResourceBuilder(identifier)
                 .withTitle(text)
                 .withDescription(text)
                 .withRightDescription(text)
                 .withResourceType(ResourceType.GenericAccessResource)
-                .withCompetentAuthority(DIGDIR_ORG, DIGDIR_ORGNO, "Digitaliseringsdirektoratet")
+                .withCompetentAuthority(serviceOwner.orgcode, serviceOwner.orgno, serviceOwner.name)
                 .withContactPoint(CONTACT_POINT)
                 .withStatus("Completed")
                 .withDelegable(true)
