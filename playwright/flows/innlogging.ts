@@ -32,7 +32,7 @@ export class Innlogging {
 
     /**
    * Standardinnlogging: ID-porten med TestID i testmiljøene, Mockporten i prod
-   * og når kjøringen er startet med --mockporten.
+   * og når kjøringen er startet med MOCKPORTEN=true.
    * Navigerer tilbake til ønsket side etter innlogging, også når infoportalen
    * sender brukeren til arbeidsflaten.
    */
@@ -48,7 +48,7 @@ export class Innlogging {
     }
 
     /**
-   * Mockporten-innlogging, for prod og --mockporten.
+   * Mockporten-innlogging, for prod og MOCKPORTEN=true.
    */
     async viaMockporten(side: Side, user: TestUser) {
         await test.step("Innlogging med Mockporten", async () => {
@@ -58,7 +58,7 @@ export class Innlogging {
 
     async viaIdporten(user: TestUser) {
         if (this.brukMockporten) {
-            throw new Error("TestID brukes ikke i prod eller med --mockporten. Bruk logIn().");
+            throw new Error("TestID brukes ikke i prod eller med MOCKPORTEN=true. Bruk logIn().");
         }
 
         await test.step("Innlogging med TestID", async () => {
@@ -78,7 +78,7 @@ export class Innlogging {
 
     /**
    * Logger inn fra flaten brukeren står på, og lander på `landing`. I testmiljøene
-   * går det gjennom ID-porten med TestID; i prod og med --mockporten brukes Mockporten.
+   * går det gjennom ID-porten med TestID; i prod og med MOCKPORTEN=true brukes Mockporten.
    */
     async viaInnloggingsflyten(landing: Side, user: TestUser) {
         if (this.brukMockporten) {

@@ -18,7 +18,7 @@ for (const { start, landing } of flater) {
         async ({ innlogging, user, sider, mockporten }) => {
             test.skip(
                 mockporten && start !== "infoportalen",
-                "Testen starter med redirecten til ID-porten, som --mockporten skal klare seg uten",
+                "Testen starter med redirecten til ID-porten, som MOCKPORTEN=true skal klare seg uten",
             );
 
             await test.step(`Bruker går til ${start} uten å være logget inn`, async () => {

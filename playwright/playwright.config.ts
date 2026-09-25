@@ -38,8 +38,8 @@ const headed = npmFlag("headed") !== undefined;
 const workers = npmFlag("workers");
 const retries = npmFlag("retries");
 // Mockporten i stedet for TestID i alle miljøer, for når ID-porten er nede.
-// `npm run test:at23 --mockporten`, eller MOCKPORTEN=true med npx.
-const mockporten = npmFlag("mockporten") !== undefined || process.env.MOCKPORTEN === "true";
+// `MOCKPORTEN=true npm run test:at23`.
+const mockporten = process.env.MOCKPORTEN === "true";
 
 // Et miljø-project kjører bare testene som er tagget med miljøet, se miljoer() i miljo.ts.
 function taggetMed(miljo: Miljo): RegExp {
