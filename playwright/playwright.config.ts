@@ -38,8 +38,8 @@ function npmFlag(name: string): string | undefined {
 const headed = npmFlag("headed") !== undefined;
 const workers = npmFlag("workers");
 const retries = npmFlag("retries");
-// Mockporten i stedet for TestID i alle miljøer, for når ID-porten er nede.
-// `MOCKPORTEN=true npm run test:at23`.
+// Mockporten i stedet for TestID, for når ID-porten er nede i et testmiljø.
+// `MOCKPORTEN=true npm run test:at23`. Prod-projectet angir det selv.
 const mockporten = process.env.MOCKPORTEN === "true";
 // Specene som tester innloggingsflyten gjennom ID-porten gir ikke mening uten den.
 const krevIdporten = mockporten ? ["innlogging/innlogging-alle-flater.spec.ts"] : [];
@@ -115,6 +115,8 @@ export default defineConfig<
             ],
             use: {
                 ...felles,
+                // TestID finnes ikke i prod, så innloggingen går alltid via Mockporten.
+                mockporten: true,
                 miljo: "prod",
                 urler: {
                     arbeidsflate: "https://af.altinn.no",

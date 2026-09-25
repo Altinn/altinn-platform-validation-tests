@@ -41,10 +41,10 @@ I VS Code-utvidelsen velger du miljø under Projects.
 
 ## Innlogging
 
-`innlogging.logIn(side, user)` bruker ID-porten med TestID i at23 og tt02,
-og Mockporten i prod. Miljøet bestemmer mekanismen; det trengs ikke noe eget valg.
-TestID-feil i testmiljøene feiler testen, uten fallback til Mockporten.
-Er ID-porten nede, kan du bruke Mockporten i alle miljøer med `MOCKPORTEN=true npm run test:at23`.
+`innlogging.logIn(side, user)` bruker ID-porten med TestID, og Mockporten bare når
+det er angitt. Prod-projectet angir `mockporten: true` i `playwright.config.ts`, siden
+TestID ikke finnes der. TestID-feil feiler testen, uten fallback til Mockporten.
+Er ID-porten nede, kan du angi Mockporten for en kjøring med `MOCKPORTEN=true npm run test:at23`.
 `innlogging-alle-flater.spec.ts`, som tester innloggingen gjennom ID-porten, kjøres da ikke.
 Mockporten testes også for seg i at23, tt02 og prod, i `tests/innlogging/innlogging-mockporten.spec.ts`.
 

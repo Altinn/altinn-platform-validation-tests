@@ -31,8 +31,8 @@ export class Innlogging {
     }
 
     /**
-   * Standardinnlogging: ID-porten med TestID i testmiljøene, Mockporten i prod
-   * og når kjøringen er startet med MOCKPORTEN=true.
+   * Standardinnlogging: ID-porten med TestID, eller Mockporten når projectet eller
+   * kjøringen har angitt det, se `mockporten` i playwright.config.ts.
    * Navigerer tilbake til ønsket side etter innlogging, også når infoportalen
    * sender brukeren til arbeidsflaten.
    */
@@ -48,7 +48,7 @@ export class Innlogging {
     }
 
     /**
-   * Mockporten-innlogging, for prod og MOCKPORTEN=true.
+   * Mockporten-innlogging, når det er angitt.
    */
     async viaMockporten(side: Side, user: TestUser) {
         await test.step("Innlogging med Mockporten", async () => {
@@ -58,7 +58,7 @@ export class Innlogging {
 
     async viaIdporten(user: TestUser) {
         if (this.brukMockporten) {
-            throw new Error("TestID brukes ikke i prod eller med MOCKPORTEN=true. Bruk logIn().");
+            throw new Error("Kjøringen bruker Mockporten, ikke TestID. Bruk logIn().");
         }
 
         await test.step("Innlogging med TestID", async () => {
@@ -77,8 +77,8 @@ export class Innlogging {
     }
 
     /**
-   * Logger inn fra flaten brukeren står på, og lander på `landing`. I testmiljøene
-   * går det gjennom ID-porten med TestID; i prod og med MOCKPORTEN=true brukes Mockporten.
+   * Logger inn fra flaten brukeren står på, og lander på `landing`. Går gjennom
+   * ID-porten med TestID, eller Mockporten når det er angitt.
    */
     async viaInnloggingsflyten(landing: Side, user: TestUser) {
         if (this.brukMockporten) {
