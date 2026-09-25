@@ -13,7 +13,7 @@ const environment = process.env.ENVIRONMENT;
 // der hver eneste test skippet seg selv.
 if (!environment || !MILJOER.includes(environment as Miljo)) {
     stopp(
-        `ENVIRONMENT må være ett av ${MILJOER.join(", ")}, ikke ${environment ? `"${environment}"` : "tom"}. Bruk npm run test:<miljø>.`,
+        `ENVIRONMENT må være ett av ${MILJOER.join(", ")}, ikke ${environment ? `"${environment}"` : "tom"}. Bruk npm run test:<miljø>.`
     );
 }
 
@@ -26,9 +26,7 @@ function les(fil: string, overstyr: boolean) {
         return;
     }
 
-    for (const [navn, verdi] of Object.entries(
-        dotenv.parse(fs.readFileSync(sti)),
-    )) {
+    for (const [navn, verdi] of Object.entries(dotenv.parse(fs.readFileSync(sti)))) {
         if (verdi && (overstyr || !process.env[navn])) {
             process.env[navn] = verdi;
         }
@@ -101,5 +99,5 @@ export default defineConfig({
       use: devices['Desktop Safari']
     },
     */
-    ],
+    ]
 });
