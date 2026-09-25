@@ -1,11 +1,9 @@
 import { Flate, testMedFlater as test } from "../../fixtures/test";
-import { runInEnvironment } from "../../miljo";
 
 // Endrer ingen data. Utloggingen går gjennom authentication /logout, som sender
 // brukeren videre til /logout/handleloggedout, og det er de to endepunktene testen
 // er her for. I prod går innloggingen via mockporten, siden TestID-skjermbildene
 // bare finnes i testmiljøene.
-runInEnvironment("at23", "tt02", "prod");
 
 /**
  * Flatene som skal være utlogget etterpå. Infoportalen er med her, men ikke som

@@ -1,6 +1,6 @@
 import { expect, Page } from "@playwright/test";
 
-import { baseUrls, requireEnv, TestUser } from "../../config/environment";
+import { requireEnv, TestUser } from "../../config/environment";
 
 /**
  * Innlogging som syntetisk testbruker, uten å gå gjennom ID-porten.
@@ -11,7 +11,10 @@ import { baseUrls, requireEnv, TestUser } from "../../config/environment";
  * Resten av kodebasen skal ikke trenge å kjenne til det.
  */
 export class SyntetiskInnlogging {
-    constructor(private page: Page) { }
+    constructor(
+        private page: Page,
+        private platform: string,
+    ) { }
 
     /**
      * Logger inn og lander på URLen som ble sendt inn. Flyten må starte på Altinns
@@ -19,7 +22,7 @@ export class SyntetiskInnlogging {
      * ikke bygges her eller gjenbrukes.
      */
     async login(targetUrl: string, user: TestUser) {
-        await this.page.goto(loginUrl(targetUrl));
+        await this.page.goto(loginUrl(this.platform, targetUrl));
 
         await expect(this.pidField(), "Er på innloggingsskjemaet").toBeVisible();
         await this.passwordField().fill(sharedPassword());
@@ -36,9 +39,9 @@ export class SyntetiskInnlogging {
     }
 }
 
-function loginUrl(targetUrl: string): string {
+function loginUrl(platform: string, targetUrl: string): string {
     const goto = encodeURIComponent(targetUrl);
-    return `${baseUrls.platform}/authentication/api/v1/authentication?goto=${goto}&iss=mockporten`;
+    return `${platform}/authentication/api/v1/authentication?goto=${goto}&iss=mockporten`;
 }
 
 /**

@@ -1,9 +1,4 @@
 import { Flate, testMedFlater as test } from "../../fixtures/test";
-import { runInEnvironment } from "../../miljo";
-
-// Endrer ingen data. I prod går innloggingen via mockporten, siden
-// TestID-skjermbildene bare finnes i testmiljøene.
-runInEnvironment("at23", "tt02", "prod");
 
 const flater: { start: Flate; landing: Flate }[] = [
     { start: "arbeidsflate", landing: "arbeidsflate" },

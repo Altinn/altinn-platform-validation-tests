@@ -1,9 +1,7 @@
 import { Flate, testMedFlater as test } from "../../fixtures/test";
-import { runInEnvironment } from "../../miljo";
 
 // Verifisert i prod, og endrer ingen data. Innloggingen skjer med logIn, altså uten
 // ID-porten-skjermbildene, som ikke finnes i prod.
-runInEnvironment("at23", "tt02", "prod");
 
 const flater: Flate[] = [
     "arbeidsflate",

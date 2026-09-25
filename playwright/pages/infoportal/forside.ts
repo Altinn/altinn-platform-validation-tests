@@ -1,13 +1,14 @@
 import { expect, Page } from "@playwright/test";
 
-import { baseUrls, TestUser } from "../../config/environment";
+import { TestUser } from "../../config/environment";
 import { gaaTil, REDIRECT_TIMEOUT } from "../felles/navigasjon";
 import { Side } from "../side";
 
 export class InfoportalForside implements Side {
-    readonly url = baseUrls.infoportal;
-
-    constructor(private page: Page) { }
+    constructor(
+        private page: Page,
+        readonly url: string,
+    ) { }
 
     // Infoportalen har alltid navigert med et strammere tak enn de andre flatene.
     async navigateTo() {
