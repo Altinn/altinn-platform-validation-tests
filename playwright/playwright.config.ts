@@ -1,103 +1,85 @@
 import { defineConfig, devices } from "@playwright/test";
 import dotenv from "dotenv";
-import fs from "fs";
 import path from "path";
 
-import { stopp } from "./feil";
-import { Miljo, MILJOER } from "./miljo";
+import { Sprak } from "./config/sprak";
+import { Options } from "./fixtures/options.fixture";
 
-const environment = process.env.ENVIRONMENT;
+// Hemmelighetene kan komme fra shellet eller fra gitignorerte .env-filer. Shellet vinner.
+dotenv.config({
+    path: [".env.local", ".env"].map((fil) => path.join(__dirname, fil)),
+    quiet: true,
+});
 
-// Sjekker verdien og ikke bare at den finnes: et ukjent miljønavn matcher ingen
-// runInEnvironment-deklarasjon, så en skrivefeil ville gitt en helgrønn kjøring
-// der hver eneste test skippet seg selv.
-if (!environment || !MILJOER.includes(environment as Miljo)) {
-    stopp(
-        `ENVIRONMENT må være ett av ${MILJOER.join(", ")}, ikke ${environment ? `"${environment}"` : "tom"}. Bruk npm run test:<miljø>.`
-    );
-}
+// Alt som skiller miljøene. Et miljø kjører bare testene som er tagget med det,
+// for eksempel { tag: ["@at23", "@tt02"] }.
+const miljoer = {
+    at23: {
+        mockporten: false,
+        urler: {
+            arbeidsflate: "https://af.at23.altinn.cloud",
+            tilgangsstyring: "https://am.ui.at23.altinn.cloud",
+            infoportal: "https://info.at23.altinn.cloud",
+            platform: "https://platform.at23.altinn.cloud",
+        },
+    },
+    tt02: {
+        mockporten: false,
+        urler: {
+            arbeidsflate: "https://af.tt02.altinn.no",
+            tilgangsstyring: "https://am.ui.tt02.altinn.no",
+            infoportal: "https://info.tt02.altinn.no",
+            platform: "https://platform.tt02.altinn.no",
+        },
+    },
+    prod: {
+        // TestID finnes ikke i prod, så innloggingen går via Mockporten.
+        mockporten: true,
+        urler: {
+            arbeidsflate: "https://af.altinn.no",
+            tilgangsstyring: "https://am.ui.altinn.no",
+            infoportal: "https://info.altinn.no",
+            platform: "https://platform.altinn.no",
+        },
+    },
+} satisfies Record<string, Options>;
 
-// Verdiene kan komme fra shellet eller fra gitignorerte .env-filer. Miljøfila
-// overstyrer shellet, tomme verdier hoppes over.
-function les(fil: string, overstyr: boolean) {
-    const sti = path.join(__dirname, fil);
+// Bare Chrome inntil videre; Firefox, Edge og Safari er skrudd av, se #619.
+const nettlesere = {
+    chromium: devices["Desktop Chrome"],
+    // firefox: devices["Desktop Firefox"],
+    // edge: devices["Desktop Edge"],
+    // webkit: devices["Desktop Safari"],
+};
 
-    if (!fs.existsSync(sti)) {
-        return;
-    }
-
-    for (const [navn, verdi] of Object.entries(dotenv.parse(fs.readFileSync(sti)))) {
-        if (verdi && (overstyr || !process.env[navn])) {
-            process.env[navn] = verdi;
-        }
-    }
-}
-
-les(`.env.${environment}.local`, true);
-les(".env.local", false);
-les(".env", false);
-
-// Flagg som ikke kommer etter `--` ser Playwright aldri; npm gjør dem om til
-// npm_config_*. Disse tre plukkes opp her, slik at både `npm run test:prod --headed`
-// og `npm run test:prod -- --headed` virker. Resten, som --grep, går etter `--`.
-function npmFlag(name: string): string | undefined {
-    const value = process.env[`npm_config_${name}`];
-    return value && value !== "false" ? value : undefined;
-}
-
-const headed = npmFlag("headed") !== undefined;
-const workers = npmFlag("workers");
-const retries = npmFlag("retries");
-
-export default defineConfig({
-    // Sjekker at hver spec sier hvilke miljøer den er satt opp for, før noe kjøres.
-    globalSetup: "./global-setup.ts",
+export default defineConfig<{ sprak: Sprak } & Options>({
     testDir: "./tests",
-    testMatch: "**/*.spec.ts",
     fullyParallel: true,
     // Minst én retry, slik at en flaky kjøring ikke rapporteres som feil.
-    // Traces skrives ved første retry
-    retries: retries ? Number(retries) : process.env.CI ? 2 : 1,
-    workers: workers ? Number(workers) : undefined,
+    // Traces skrives ved første retry. --retries overstyrer.
+    retries: process.env.CI ? 2 : 1,
     reporter: [
         ["html", { open: "never" }],
         ["junit", { outputFile: "test-results.xml" }],
         ["json", { outputFile: "test-results.json" }],
     ],
     timeout: 60000,
-    // Playwrights standard er fem sekunder, og det er for stramt her: en assertion
-    // venter typisk på at flaten har hentet parter og rettigheter etter innlogging,
-    // og en hel test bruker 2-7 sekunder når alt går bra. Standarden står her, slik
-    // at page objectene bare sier fra når de trenger noe annet enn den.
-    //
-    // At taket er romslig gjør oss ikke blinde for en flate som blir tregere, for det
-    // er ikke timeouten som skal fange den. Hvor lang tid testene bruker eksporteres
-    // som playwright_test_duration_seconds fra junit-rapporten, se helpers/junitparser,
-    // og en jevn økning der sier fra lenge før en test tilfeldigvis bikker over taket.
-    // Timeouten er sikkerhetsnettet for kjøringen, tallene over tid er målingen.
     expect: { timeout: 10_000 },
     use: {
-        headless: !headed,
+    // Bare Chrome inntil videre; Firefox, Edge og Safari er skrudd av, se #619.
+        ...devices["Desktop Chrome"],
         trace: "on-first-retry",
         video: "retain-on-failure",
     },
 
-    projects: [
-        {
-            name: "chromium",
-            use: devices["Desktop Chrome"],
-        },
-    /* {
-      name: 'firefox',
-      use: devices['Desktop Firefox']
-    },
-    {
-      name: 'edge',
-      use: devices['Desktop Edge']
-    }, {
-      name: 'safari',
-      use: devices['Desktop Safari']
-    },
-    */
-    ]
+    // Ett project per miljø og nettleser, for eksempel at23-chromium. Scriptene kjører
+    // alle nettleserne for ett miljø med --project=<miljø>-*.
+    projects: Object.entries(miljoer).flatMap(([miljo, options]) =>
+        Object.entries(nettlesere).map(([nettleser, device]) => ({
+            name: `${miljo}-${nettleser}`,
+            grep: new RegExp(`@${miljo}`),
+            use: { ...device, ...options },
+            metadata: { miljo, nettleser },
+        })),
+    ),
 });

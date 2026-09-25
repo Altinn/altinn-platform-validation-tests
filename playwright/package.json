@@ -4,10 +4,9 @@
     "main": "index.js",
     "scripts": {
         "test": "playwright test",
-        "test:at22": "ENVIRONMENT=at22 playwright test",
-        "test:at23": "ENVIRONMENT=at23 playwright test",
-        "test:tt02": "ENVIRONMENT=tt02 playwright test",
-        "test:prod": "ENVIRONMENT=prod playwright test",
+        "test:at23": "playwright test --project='at23-*'",
+        "test:tt02": "playwright test --project='tt02-*'",
+        "test:prod": "playwright test --project='prod-*'",
         "report": "playwright show-report",
         "typecheck": "tsc --noEmit",
         "lint": "eslint .",

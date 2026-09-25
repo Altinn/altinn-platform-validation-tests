@@ -1,15 +1,17 @@
 import { expect, Page } from "@playwright/test";
 
-import { baseUrls, TestUser } from "../../config/environment";
+import { TestUser } from "../../config/environment";
 import { Meny } from "../felles/meny";
 import { gaaTil } from "../felles/navigasjon";
 import { assertFlateUtlogget } from "../felles/utlogget";
 import { Side } from "../side";
 
 export class ArbeidsflateForside implements Side {
-    readonly url = baseUrls.arbeidsflate;
-
-    constructor(private page: Page, private meny = new Meny(page)) { }
+    constructor(
+        private page: Page,
+        readonly url: string,
+        private meny = new Meny(page),
+    ) { }
 
     async navigateTo() {
         await gaaTil(this.page, this.url);

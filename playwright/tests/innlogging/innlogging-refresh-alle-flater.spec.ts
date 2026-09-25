@@ -1,9 +1,7 @@
 import { Flate, testMedFlater as test } from "../../fixtures/test";
-import { runInEnvironment } from "../../miljo";
 
 // Verifisert i prod, og endrer ingen data. Innloggingen skjer med logIn, altså uten
 // ID-porten-skjermbildene, som ikke finnes i prod.
-runInEnvironment("at23", "tt02", "prod");
 
 const flater: Flate[] = [
     "arbeidsflate",
@@ -14,7 +12,7 @@ const flater: Flate[] = [
 
 for (const start of flater) {
     // Det testen verifiserer er at sesjonen gjelder på tvers av flatene og tåler refresh.
-    test(`Bruker forblir innlogget på alle flater etter innlogging fra ${start}`, async ({
+    test(`Bruker forblir innlogget på alle flater etter innlogging fra ${start}`, { tag: ["@at23", "@tt02", "@prod"] }, async ({
         innlogging,
         user,
         flater: sider,

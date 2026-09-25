@@ -8,51 +8,42 @@ infoportalen.
 ```bash
 npm install
 npx playwright install
-cp example_env/at23.env .env.at23.local    # og at22 / tt02 / prod ved behov
+cp .env.example .env
 ```
 
-Fyll inn `TEST_IDP_PASSWORD`, og `TEST_USER_PID` for tt02 og prod, der testbrukeren
-ikke er sjekket inn. Fødselsnummeret må være syntetisk, altså Tenor-nummer med måned
-81-92. `.env.*.local` er gitignorert.
+Fyll inn `TEST_IDP_PASSWORD`, og `TEST_USER_PID` og `TEST_USER_NAME` for miljøet du
+kjører mot. Fødselsnummeret må være syntetisk, altså Tenor-nummer med måned 81-92.
+`.env` og `.env.local` er gitignorert.
 
 ## Kjør
 
-Ett script per miljø, område oppgis som sti:
+Scriptene kjører ett miljø, og område oppgis som sti:
 
 ```bash
-npm run test:at23                          # alt, mot at23 (og at22 / tt02 / prod)
-npm run test:prod tests/tilgangsstyring    # ett område, én fil eller én :linje
-npm run test:at23 --headed --grep=bokmål   # flagg med verdi trenger likhetstegn
-npm run test:at23 -- tests/innlogging --debug   # øvrige flagg etter --
+npm run test:at23                              # alt, mot at23 (og tt02 / prod)
+npm run test:prod -- tests/tilgangsstyring     # ett område, én fil eller én :linje
+npm run test:at23 -- tests/innlogging --debug  # Playwright-flagg etter --
 ```
-
-Scriptet setter `ENVIRONMENT`, som bestemmer hvilken `.env.<miljø>.local` som leses.
-Den må være satt, det finnes ingen default, slik at ingen kjører mot et annet miljø
-enn de tror. Verdiene kan også ligge i shellet, slik k6-testene gjør det:
-`set -a && . example_env/prod.env && set +a`.
 
 `npm run typecheck` typesjekker, og `npm run report` åpner rapporten fra forrige
 kjøring. Den skrives til `playwright-report/` hver gang, men åpner seg ikke selv.
+I VS Code-utvidelsen velger du miljø under Projects.
 
-Playwright-utvidelsen i VS Code får `ENVIRONMENT` fra `.vscode/settings.json` på
-repo-rota, satt til at23. Endre den der for å kjøre mot et annet miljø fra IDE-en.
+## Miljøer
 
-## Miljø er opt-in
+Alt som skiller miljøene, står i `miljoer` i `playwright.config.ts`: URLene og om
+innloggingen går via Mockporten. Hvert miljø blir ett project per nettleser, for
+eksempel `at23-chromium`, og foreløpig er bare Chrome med.
 
-Hver spec sier selv hvilke miljøer den er satt opp for, øverst i fila:
+En test sier selv hvilke miljøer den er klar for, med en tag per miljø:
 
 ```ts
-runInEnvironment('at22', 'at23', 'tt02');
+test("...", { tag: ["@at23", "@tt02"] }, async ({ innlogging }) => { ... });
 ```
 
-Er miljøet ikke listet, skippes testene i fila, med begrunnelsen i rapporten. Mangler
-kallet helt, kjører fila ingen steder. Det er meningen: en test som aldri har sagt hvor
-den hører hjemme skal ikke plukkes opp av et miljø ved en forglemmelse. En spec uten
-kallet stopper hele kjøringen i `global-setup.ts`, slik at den glemte deklarasjonen
-oppdages med én gang og ikke ved at testen stille aldri kjører.
-
-Legg til `prod` først når testen er verifisert der, og bare hvis den ikke endrer data.
-Nye tester bør minst være kjørt i `at23` og `tt02` før prod føres opp.
+Et project kjører bare testene som har taggen for miljøet sitt. En test uten tag kjører
+ingen steder, så en ny test må forfremmes bevisst. Prod skal bare ha testen når den er
+verifisert i at23 og tt02, og ikke endrer data.
 
 ## Struktur
 
@@ -64,7 +55,7 @@ pages/tilgangsstyring/forside.ts     page objects, en fil per underside
 fixtures/tilgangsstyring.fixture.ts  samler undersidene til én fixture
 pages/felles/                        meny og innlogging, brukt av alle
 flows/innlogging.ts                  innlogging, på tvers av flatene
-config/                              miljøvariabler, miljøliste og språk
+config/                              miljøvariabler og språk
 ```
 
 En test tar områdene den trenger som fixtures, og en ny underside er en page object

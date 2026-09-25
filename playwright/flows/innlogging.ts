@@ -2,7 +2,6 @@ import { expect, Page } from "@playwright/test";
 
 import { TestUser } from "../config/environment";
 import { Sprak } from "../config/sprak";
-import { gjeldendeMiljo } from "../miljo";
 import { IdportenInnlogging } from "../pages/felles/idporten-innlogging";
 import { Meny } from "../pages/felles/meny";
 import { REDIRECT_TIMEOUT } from "../pages/felles/navigasjon";
@@ -27,10 +26,14 @@ export class Innlogging {
     private idporten: IdportenInnlogging;
     private syntetisk: SyntetiskInnlogging;
 
-    constructor(private page: Page) {
+    constructor(
+        private page: Page,
+        private mockporten: boolean,
+        platform: string,
+    ) {
         this.meny = new Meny(page);
         this.idporten = new IdportenInnlogging(page);
-        this.syntetisk = new SyntetiskInnlogging(page);
+        this.syntetisk = new SyntetiskInnlogging(page, platform);
     }
 
     /**
@@ -53,11 +56,11 @@ export class Innlogging {
     }
 
     /**
-     * Logger inn fra flaten brukeren står på, og lander på `landing`. I testmiljøene
-     * går det gjennom ID-porten-skjermbildene.
+     * Logger inn fra flaten brukeren står på, og lander på `landing`. Går gjennom
+     * ID-porten-skjermbildene, eller Mockporten når projectet har `mockporten: true`.
      */
     async viaInnloggingsflyten(landing: Side, user: TestUser) {
-        if (gjeldendeMiljo() === "prod") {
+        if (this.mockporten) {
             await this.syntetisk.login(landing.url, user);
             return;
         }
