@@ -3,7 +3,7 @@ import dotenv from "dotenv";
 import path from "path";
 
 import { Sprak } from "./config/sprak";
-import { Urler } from "./fixtures/miljo.fixture";
+import { Options } from "./fixtures/options.fixture";
 
 // Hemmelighetene kan komme fra shellet eller fra gitignorerte .env-filer. Shellet vinner.
 dotenv.config({
@@ -11,10 +11,7 @@ dotenv.config({
     quiet: true,
 });
 
-export default defineConfig<
-    { sprak: Sprak },
-    { urler: Urler; mockporten: boolean }
->({
+export default defineConfig<{ sprak: Sprak } & Options>({
     testDir: "./tests",
     fullyParallel: true,
     // Minst én retry, slik at en flaky kjøring ikke rapporteres som feil.

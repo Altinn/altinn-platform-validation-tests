@@ -1,7 +1,7 @@
 import { mergeTests } from "@playwright/test";
 
 import { TilgangsstyringForside } from "../pages/tilgangsstyring/forside";
-import { test as miljoTest } from "./miljo.fixture";
+import { test as options } from "./options.fixture";
 import { test as sprakTest } from "./sprak.fixture";
 
 /**
@@ -12,7 +12,7 @@ export type Tilgangsstyring = {
     forside: TilgangsstyringForside;
 };
 
-export const test = mergeTests(miljoTest, sprakTest).extend<{ tilgangsstyring: Tilgangsstyring }>({
+export const test = mergeTests(options, sprakTest).extend<{ tilgangsstyring: Tilgangsstyring }>({
     tilgangsstyring: async ({ page, sprak, urler }, use) => {
         await use({
             forside: new TilgangsstyringForside(page, urler.tilgangsstyring, sprak),
