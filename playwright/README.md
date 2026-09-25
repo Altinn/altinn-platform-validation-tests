@@ -9,7 +9,7 @@ infoportalen.
 cd playwright
 npm install
 npx playwright install
-cp example_env/.env.example .env
+cp .env.example .env
 ```
 
 Sett `TEST_IDP_PASSWORD` i `.env` for innlogging med Mockporten. Tilgangsverdien hentes fra

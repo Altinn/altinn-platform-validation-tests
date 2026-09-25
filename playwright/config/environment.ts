@@ -7,7 +7,7 @@ export function requireEnv(name: string): string {
 
     if (!value) {
         throw new Error(
-            `${name} må settes som miljøvariabel, se example_env/.env.example.`,
+            `${name} må settes som miljøvariabel, se .env.example.`,
         );
     }
 
