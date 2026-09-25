@@ -14,12 +14,13 @@ cp example_env/.env.example .env
 
 Sett `TEST_IDP_PASSWORD` i `.env` for innlogging med Mockporten. Tilgangsverdien hentes fra
 teamets hemmelighetsforvaltning. Lokale `.env`-filer er gitignorert. URLene til flatene
-ligger per miljø i [miljo.ts](miljo.ts).
+ligger i miljøets project i [playwright.config.ts](playwright.config.ts).
 
 Testpersoner leses fra `<testbrukerPath>/<miljø>.csv`, relativt til `playwright/`, i alle miljøer.
 Manglende eller tom fil for en brukergruppe feiler testene i miljøet før noen av dem starter.
-at23 og tt02 har filer i repoet. For øvrige miljøer må CSV-filer leveres på samme sti, for eksempel
-som monterte Kubernetes Secrets. Filene skal ha kolonnene `pid,name`.
+at23 og tt02 har filer i repoet. Prod-brukerne kan ikke sjekkes inn, og monteres fra secreten
+`playwright-testdata-prod` med én nøkkel per brukergruppe, for eksempel `dagligLeder.csv`.
+`TESTDATA_ROOT` sier hvor de ligger, se `hack/playwright-cronjobs.jsonnet`. Filene skal ha kolonnene `pid,name`.
 Det er ingen fallback til en miljøkonfigurert testperson.
 CSV-brukere fordeles mellom workerne innenfor én kjøring; separate kjøringer
 deler fortsatt brukerpool.
@@ -30,7 +31,7 @@ Hvert miljø er et Playwright-[project](https://playwright.dev/docs/test-project
 scriptene velger ett av dem. Område oppgis som sti:
 
 ```bash
-npm run test:at23                          # alt, mot at23 (og at22 / tt02 / prod)
+npm run test:at23                          # alt, mot at23 (og tt02 / prod)
 npm run test:at23 -- tests/tilgangsstyring # ett område, én fil eller én :linje
 npm run test:at23 -- tests/innlogging --debug   # steppe gjennom tester
 npx playwright test --project=at23 --project=tt02   # flere miljøer i samme kjøring
@@ -40,11 +41,12 @@ I VS Code-utvidelsen velger du miljø under Projects.
 
 ## Innlogging
 
-`innlogging.logIn(side, user)` bruker ID-porten med TestID i at22, at23 og tt02,
+`innlogging.logIn(side, user)` bruker ID-porten med TestID i at23 og tt02,
 og Mockporten i prod. Miljøet bestemmer mekanismen; det trengs ikke noe eget valg.
 TestID-feil i testmiljøene feiler testen, uten fallback til Mockporten.
 Er ID-porten nede, kan du bruke Mockporten i alle miljøer med `npm run test:at23 --mockporten`,
 eller `MOCKPORTEN=true` foran `npx playwright test`.
+Testene som starter med redirecten til ID-porten hoppes da over.
 Mockporten testes også for seg i at23, tt02 og prod, i `tests/innlogging/innlogging-mockporten.spec.ts`.
 
 Tester som kontrollerer innlogging fra en bestemt flate bruker

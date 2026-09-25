@@ -15,7 +15,12 @@ for (const { start, landing } of flater) {
     test(
         `Innlogget sesjon gjelder på tvers av flatene etter besøk på ${start}`,
         miljoer("at23", "tt02", "prod"),
-        async ({ innlogging, user, sider }) => {
+        async ({ innlogging, user, sider, mockporten }) => {
+            test.skip(
+                mockporten && start !== "infoportalen",
+                "Testen starter med redirecten til ID-porten, som --mockporten skal klare seg uten",
+            );
+
             await test.step(`Bruker går til ${start} uten å være logget inn`, async () => {
                 await sider[start].navigateTo();
                 if (start !== "infoportalen") {

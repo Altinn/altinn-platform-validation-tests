@@ -10,8 +10,12 @@ export type TestUser = {
     name: string;
 };
 
+// Stiene i Testbruker er relative til playwright/. TESTDATA_ROOT peker et annet
+// sted, for testdata som ikke kan sjekkes inn, som prod-brukerne fra en secret.
 function testbrukerfil(path: Testbruker, miljo: Miljo): string {
-    return join(__dirname, "..", path, `${miljo}.csv`);
+    const rot = process.env.TESTDATA_ROOT ?? join(__dirname, "..");
+
+    return join(rot, path, `${miljo}.csv`);
 }
 
 function lesTestbrukere(path: Testbruker, miljo: Miljo): TestUser[] | null {

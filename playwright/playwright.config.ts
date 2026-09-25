@@ -4,7 +4,7 @@ import fs from "fs";
 import path from "path";
 
 import { Sprak } from "./config/sprak";
-import { Miljo, MILJOER, miljotag } from "./miljo";
+import { Miljo, miljotag, Urler } from "./miljo";
 import { Testbruker } from "./testdata";
 
 // Hemmelighetene kan komme fra shellet eller fra gitignorerte .env-filer. Shellet
@@ -41,7 +41,15 @@ const retries = npmFlag("retries");
 // `npm run test:at23 --mockporten`, eller MOCKPORTEN=true med npx.
 const mockporten = npmFlag("mockporten") !== undefined || process.env.MOCKPORTEN === "true";
 
-export default defineConfig<{ sprak: Sprak; testbrukerPath: Testbruker }, { miljo: Miljo; mockporten: boolean }>({
+// Et miljø-project kjører bare testene som er tagget med miljøet, se miljoer() i miljo.ts.
+function taggetMed(miljo: Miljo): RegExp {
+    return new RegExp(`${miljotag(miljo)}\\b`);
+}
+
+// Bare Chrome inntil videre; Firefox, Edge og Safari er skrudd av, se #619.
+const felles = { ...devices["Desktop Chrome"], mockporten };
+
+export default defineConfig<{ sprak: Sprak; testbrukerPath: Testbruker }, { miljo: Miljo; urler: Urler; mockporten: boolean }>({
     // Sjekker at hver spec sier hvilke miljøer den er satt opp for, før noe kjøres.
     globalSetup: "./global-setup.ts",
     testDir: "./tests",
@@ -73,12 +81,49 @@ export default defineConfig<{ sprak: Sprak; testbrukerPath: Testbruker }, { milj
         trace: "on-first-retry",
         video: "retain-on-failure",
     },
-    // Ett project per miljø. Projectet velger testene som er tagget med miljøet,
-    // se miljoer() i miljo.ts, og gir fixturene miljøet og URLene som følger av det.
-    // Bare Chrome inntil videre; Firefox, Edge og Safari er skrudd av, se #619.
-    projects: MILJOER.map((miljo) => ({
-        name: miljo,
-        grep: new RegExp(`${miljotag(miljo)}\\b`),
-        use: { ...devices["Desktop Chrome"], miljo, mockporten },
-    })),
+    // Ett project per miljø, valgt med --project=<miljø>.
+    projects: [
+        {
+            name: "at23",
+            grep: taggetMed("at23"),
+            use: {
+                ...felles,
+                miljo: "at23",
+                urler: {
+                    arbeidsflate: "https://af.at23.altinn.cloud",
+                    tilgangsstyring: "https://am.ui.at23.altinn.cloud",
+                    infoportal: "https://info.at23.altinn.cloud",
+                    platform: "https://platform.at23.altinn.cloud",
+                },
+            },
+        },
+        {
+            name: "tt02",
+            grep: taggetMed("tt02"),
+            use: {
+                ...felles,
+                miljo: "tt02",
+                urler: {
+                    arbeidsflate: "https://af.tt02.altinn.no",
+                    tilgangsstyring: "https://am.ui.tt02.altinn.no",
+                    infoportal: "https://info.tt02.altinn.no",
+                    platform: "https://platform.tt02.altinn.no",
+                },
+            },
+        },
+        {
+            name: "prod",
+            grep: taggetMed("prod"),
+            use: {
+                ...felles,
+                miljo: "prod",
+                urler: {
+                    arbeidsflate: "https://af.altinn.no",
+                    tilgangsstyring: "https://am.ui.altinn.no",
+                    infoportal: "https://info.altinn.no",
+                    platform: "https://platform.altinn.no",
+                },
+            },
+        },
+    ],
 });

@@ -2,10 +2,10 @@ import { TestDetails } from "@playwright/test";
 
 /**
  * Miljøene en Playwright-test kan settes opp for. Hvert miljø er et project i
- * playwright.config.ts, og én liste gjør at en skrivefeil i et `miljoer`-kall gir
- * typefeil i stedet for stilltiende å skru av testen.
+ * playwright.config.ts, med URLene sine der. Én liste gjør at en skrivefeil i et
+ * `miljoer`-kall gir typefeil i stedet for stilltiende å skru av testen.
  */
-export const MILJOER = ["at22", "at23", "tt02", "prod"] as const;
+export const MILJOER = ["at23", "tt02", "prod"] as const;
 
 export type Miljo = (typeof MILJOER)[number];
 
@@ -14,33 +14,6 @@ export type Urler = {
   tilgangsstyring: string;
   infoportal: string;
   platform: string;
-};
-
-export const urler: Record<Miljo, Urler> = {
-  at22: {
-    arbeidsflate: "https://af.at22.altinn.cloud",
-    tilgangsstyring: "https://am.ui.at22.altinn.cloud",
-    infoportal: "https://info.at22.altinn.cloud",
-    platform: "https://platform.at22.altinn.cloud",
-  },
-  at23: {
-    arbeidsflate: "https://af.at23.altinn.cloud",
-    tilgangsstyring: "https://am.ui.at23.altinn.cloud",
-    infoportal: "https://info.at23.altinn.cloud",
-    platform: "https://platform.at23.altinn.cloud",
-  },
-  tt02: {
-    arbeidsflate: "https://af.tt02.altinn.no",
-    tilgangsstyring: "https://am.ui.tt02.altinn.no",
-    infoportal: "https://info.tt02.altinn.no",
-    platform: "https://platform.tt02.altinn.no",
-  },
-  prod: {
-    arbeidsflate: "https://af.altinn.no",
-    tilgangsstyring: "https://am.ui.altinn.no",
-    infoportal: "https://info.altinn.no",
-    platform: "https://platform.altinn.no",
-  },
 };
 
 /** Taggen et miljø-project velger testene sine med. */
