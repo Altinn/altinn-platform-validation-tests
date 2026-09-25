@@ -76,7 +76,6 @@ export default defineConfig<
         {
             name: "prod",
             testMatch: [
-                "innlogging/innlogging-alle-flater.spec.ts",
                 "innlogging/innlogging-refresh-alle-flater.spec.ts",
                 "innlogging/innlogging-mockporten.spec.ts",
                 "tilgangsstyring/tilgjengelige-seksjoner.spec.ts",

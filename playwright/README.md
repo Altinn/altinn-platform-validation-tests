@@ -49,9 +49,8 @@ TestID ikke finnes der. TestID-feil feiler testen, uten fallback til Mockporten.
 Er ID-porten nede, kan du angi Mockporten for en kjøring med `MOCKPORTEN=true npm run test:at23`.
 Mockporten testes også for seg i at23, tt02 og prod, i `tests/innlogging/innlogging-mockporten.spec.ts`.
 
-Tester som kontrollerer innlogging fra en bestemt flate bruker
-`viaInnloggingsflyten(start, landing, user)` etter at de har navigert til startflaten.
-Den bruker samme miljøfordeling, og lar testen kontrollere landingen direkte.
+Testene som tester selve innloggingsflyten gjennom ID-porten bruker
+`viaIdporten(start, user)`, og kjører ikke i prod, der TestID ikke finnes.
 Produksjonstestene dekker innlogget sesjon og funksjonalitet med syntetiske
 testpersoner, ikke ordinær eID-innlogging.
 

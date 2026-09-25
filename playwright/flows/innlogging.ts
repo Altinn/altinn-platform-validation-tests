@@ -31,51 +31,37 @@ export class Innlogging {
     }
 
     /**
-   * Standardinnlogging: ID-porten med TestID, eller Mockporten når projectet eller
-   * kjøringen har angitt det, se `mockporten` i playwright.config.ts.
-   * Navigerer tilbake til ønsket side etter innlogging, også når infoportalen
-   * sender brukeren til arbeidsflaten.
-   */
+     * Logger inn og lander på `side`. Dette er det eneste stedet det velges mellom
+     * Mockporten og ID-porten, ut fra `mockporten` i playwright.config.ts.
+     */
     async logIn(side: Side, user: TestUser) {
         if (this.brukMockporten) {
             await this.viaMockporten(side, user);
-            return;
+        } else {
+            await side.navigateTo();
+            await this.viaIdporten(side, user);
+            // Infoportalen sender brukeren til arbeidsflaten etter innlogging.
+            await side.navigateTo();
         }
-
-        await side.navigateTo();
-        await this.viaIdporten(side, user);
-        await side.navigateTo();
     }
 
-    /**
-   * Mockporten-innlogging, når det er angitt.
-   */
+    /** Bare for testene der Mockporten er det som testes. Ellers logIn(). */
     async viaMockporten(side: Side, user: TestUser) {
         await test.step("Innlogging med Mockporten", async () => {
             await this.syntetisk.login(side.url, user);
         });
     }
 
-    /** Logger inn gjennom ID-porten fra `side`, som brukeren står på. */
-    private async viaIdporten(side: Side, user: TestUser) {
+    /**
+     * Logger inn gjennom ID-porten fra `side`, som brukeren står på, uten å navigere
+     * etterpå. Bare for testene der ID-porten-flyten er det som testes. Ellers logIn().
+     */
+    async viaIdporten(side: Side, user: TestUser) {
         await test.step("Innlogging med TestID", async () => {
             await side.startInnlogging();
             await this.idporten.login(user);
             await this.meny.lukkAktorvelger(user);
         });
-    }
-
-    /**
-   * Logger inn fra `start`, som brukeren står på, og lander på `landing`. Går
-   * gjennom ID-porten med TestID, eller Mockporten når det er angitt.
-   */
-    async viaInnloggingsflyten(start: Side, landing: Side, user: TestUser) {
-        if (this.brukMockporten) {
-            await this.viaMockporten(landing, user);
-            return;
-        }
-
-        await this.viaIdporten(start, user);
     }
 
     /**
