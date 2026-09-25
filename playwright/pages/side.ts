@@ -1,4 +1,4 @@
-import { TestUser } from "../config/environment";
+import { TestUser } from "../config/testdata";
 
 /**
  * Fellesnevneren for en side som kan nås direkte og som viser om brukeren er
@@ -9,6 +9,12 @@ export interface Side {
     readonly url: string;
     navigateTo(): Promise<void>;
     assertLoggedIn(user: TestUser): Promise<void>;
+
+    /**
+     * Tar en utlogget bruker fra flaten til ID-porten. Flatene bak innlogging gjør
+     * det av seg selv, mens de åpne har en innloggingsknapp.
+     */
+    startInnlogging(): Promise<void>;
 
     /**
      * Hva flaten viser en utlogget bruker. Flatene bak innlogging sender henne til

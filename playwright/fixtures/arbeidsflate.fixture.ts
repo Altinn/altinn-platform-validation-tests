@@ -1,7 +1,6 @@
-import { test as base } from "@playwright/test";
-
 import { ArbeidsflateForside } from "../pages/arbeidsflate/forside";
 import { ArbeidsflateProfil } from "../pages/arbeidsflate/profil";
+import { test as miljoTest } from "./miljo.fixture";
 
 /**
  * Hovedområdet arbeidsflate med sine undersider. Nye undersider legges til som
@@ -12,11 +11,11 @@ export type Arbeidsflate = {
     profil: ArbeidsflateProfil;
 };
 
-export const test = base.extend<{ arbeidsflate: Arbeidsflate }>({
-    arbeidsflate: async ({ page }, use) => {
+export const test = miljoTest.extend<{ arbeidsflate: Arbeidsflate }>({
+    arbeidsflate: async ({ page, urler }, use) => {
         await use({
-            forside: new ArbeidsflateForside(page),
-            profil: new ArbeidsflateProfil(page),
+            forside: new ArbeidsflateForside(page, urler.arbeidsflate),
+            profil: new ArbeidsflateProfil(page, urler.arbeidsflate),
         });
     },
 });

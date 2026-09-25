@@ -1,11 +1,10 @@
 import { alleSprak } from "../../config/sprak";
 import { test } from "../../fixtures/test";
-import { runInEnvironment } from "../../miljo";
 import { Seksjon } from "../../pages/tilgangsstyring/seksjoner";
 
-runInEnvironment("prod", "at23", "tt02");
-// Hva denne brukeren skal se. En bruker med færre tilganger får sin egen liste,
-// ikke en conditional i page objectet.
+/**
+ * Regelen for hva som vises ligger i useSidebarItems.tsx i altinn-access-management-frontend.
+ */
 const forventedeSeksjoner = [
     Seksjon.Foresporsler,
     Seksjon.Brukere,
@@ -15,26 +14,29 @@ const forventedeSeksjoner = [
 ];
 
 for (const valgtSprak of alleSprak) {
-    test.describe(`Tilgangsstyring på ${valgtSprak}`, () => {
-        test.use({ sprak: valgtSprak });
+    test.describe(
+        `Tilgangsstyring på ${valgtSprak}`,
+        () => {
+            test.use({ sprak: valgtSprak });
 
-        test("Bruker ser oversikt over navigasjonsvalg", async ({
-            innlogging,
-            user,
-            tilgangsstyring,
-        }) => {
-            await test.step("Innlogget bruker åpner tilgangsstyring", async () => {
-                await innlogging.logIn(tilgangsstyring.forside, user);
-                await tilgangsstyring.forside.assertLoggedIn();
-            });
+            test("Daglig leder som representerer seg selv ser sine navigasjonsvalg", async ({
+                innlogging,
+                dagligLeder,
+                tilgangsstyring,
+            }) => {
+                await test.step("Daglig leder logger inn og representerer seg selv", async () => {
+                    await innlogging.logIn(tilgangsstyring.forside, dagligLeder);
+                    await tilgangsstyring.forside.assertLoggedIn();
+                });
 
-            await test.step(`Setter språk til ${valgtSprak}`, async () => {
-                await innlogging.setLanguage(valgtSprak);
-            });
+                await test.step(`Setter språk til ${valgtSprak}`, async () => {
+                    await innlogging.setLanguage(valgtSprak);
+                });
 
-            await test.step("Verifiser tilgjengelige seksjoner", async () => {
-                await tilgangsstyring.forside.assertSections(forventedeSeksjoner);
+                await test.step("Daglig leder ser seksjonene som gjelder ved representasjon av seg selv", async () => {
+                    await tilgangsstyring.forside.assertSections(forventedeSeksjoner);
+                });
             });
-        });
-    });
+        },
+    );
 }

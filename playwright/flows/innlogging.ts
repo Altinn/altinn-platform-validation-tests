@@ -1,21 +1,14 @@
-import { expect, Page } from "@playwright/test";
+import { expect, Page, test } from "@playwright/test";
 
-import { TestUser } from "../config/environment";
 import { Sprak } from "../config/sprak";
-import { gjeldendeMiljo } from "../miljo";
+import { TestUser } from "../config/testdata";
 import { IdportenInnlogging } from "../pages/felles/idporten-innlogging";
 import { Meny } from "../pages/felles/meny";
 import { REDIRECT_TIMEOUT } from "../pages/felles/navigasjon";
 import { SyntetiskInnlogging } from "../pages/felles/syntetisk-innlogging";
 import { Side } from "../pages/side";
 
-/**
- * Cookiene sesjonen faktisk ligger i. `AltinnStudioRuntime` er Altinn-tokenet og
- * `altinnsession` sesjonen bak det, og begge settes på domenet flatene deler.
- * Verifisert i at23, tt02 og prod: de to er nøyaktig de som forsvinner ved
- * utlogging, mens `AltinnPartyId`, `AltinnPartyUuid` og `altinnPersistentContext`
- * blir liggende.
- */
+// Sesjonscookiene skal være tømt når utloggingen er fullført.
 const SESJONSCOOKIES = ["AltinnStudioRuntime", "altinnsession"];
 
 /**
@@ -27,73 +20,92 @@ export class Innlogging {
     private idporten: IdportenInnlogging;
     private syntetisk: SyntetiskInnlogging;
 
-    constructor(private page: Page) {
+    constructor(
+        private page: Page,
+        private brukMockporten: boolean,
+        platform: string,
+    ) {
         this.meny = new Meny(page);
         this.idporten = new IdportenInnlogging(page);
-        this.syntetisk = new SyntetiskInnlogging(page);
+        this.syntetisk = new SyntetiskInnlogging(page, platform);
     }
 
     /**
-     * Logger inn og lander på siden som ble sendt inn. Dette er veien testene skal
-     * bruke når innloggingen er et middel og ikke det som testes.
-     */
+   * Standardinnlogging: ID-porten med TestID, eller Mockporten når projectet eller
+   * kjøringen har angitt det, se `mockporten` i playwright.config.ts.
+   * Navigerer tilbake til ønsket side etter innlogging, også når infoportalen
+   * sender brukeren til arbeidsflaten.
+   */
     async logIn(side: Side, user: TestUser) {
-        await this.syntetisk.login(side.url, user);
-    }
-
-    /**
-     * Logger inn gjennom ID-porten-skjermbildene. Bare for testene der selve
-     * innloggingsflyten er det som testes.
-     */
-    async viaIdporten(user: TestUser) {
-        if (!this.page.url().includes("idporten")) {
-            await this.meny.clickLoginButton();
-        }
-        await this.idporten.login(user);
-    }
-
-    /**
-     * Logger inn fra flaten brukeren står på, og lander på `landing`. I testmiljøene
-     * går det gjennom ID-porten-skjermbildene.
-     */
-    async viaInnloggingsflyten(landing: Side, user: TestUser) {
-        if (gjeldendeMiljo() === "prod") {
-            await this.syntetisk.login(landing.url, user);
+        if (this.brukMockporten) {
+            await this.viaMockporten(side, user);
             return;
         }
 
-        await this.viaIdporten(user);
+        await side.navigateTo();
+        await this.viaIdporten(side, user);
+        await side.navigateTo();
     }
 
     /**
-     * Logger ut fra flaten brukeren står på. Utloggingen er felles for flatene, på
-     * samme måte som innloggingen.
-     */
+   * Mockporten-innlogging, når det er angitt.
+   */
+    async viaMockporten(side: Side, user: TestUser) {
+        await test.step("Innlogging med Mockporten", async () => {
+            await this.syntetisk.login(side.url, user);
+        });
+    }
+
+    /** Logger inn gjennom ID-porten fra `side`, som brukeren står på. */
+    async viaIdporten(side: Side, user: TestUser) {
+        if (this.brukMockporten) {
+            throw new Error("Kjøringen bruker Mockporten, ikke TestID. Bruk logIn().");
+        }
+
+        await test.step("Innlogging med TestID", async () => {
+            await side.startInnlogging();
+            await this.idporten.login(user);
+            await this.meny.lukkAktorvelger(user);
+        });
+    }
+
+    /**
+   * Logger inn fra `start`, som brukeren står på, og lander på `landing`. Går
+   * gjennom ID-porten med TestID, eller Mockporten når det er angitt.
+   */
+    async viaInnloggingsflyten(start: Side, landing: Side, user: TestUser) {
+        if (this.brukMockporten) {
+            await this.viaMockporten(landing, user);
+            return;
+        }
+
+        await this.viaIdporten(start, user);
+    }
+
+    /**
+   * Logger ut fra flaten brukeren står på. Utloggingen er felles for flatene, på
+   * samme måte som innloggingen.
+   */
     async logOut() {
-        await this.meny.clickLogoutButton();
+        const startUrl = this.page.url();
+        // Fullfør navigasjonen til innloggingsleverandøren før testen åpner en flate igjen.
+        await Promise.all([
+            this.page.waitForURL((url) => url.href !== startUrl, {
+                waitUntil: "load",
+                timeout: REDIRECT_TIMEOUT,
+            }),
+            this.meny.clickLogoutButton(),
+        ]);
     }
 
-    /**
-     * At sesjonen er borte, og ikke bare at det innloggede ikke vises.
-     *
-     * Cookiene er det utloggingen kan holdes til: en flate som er nede ser utlogget
-     * ut uansett, mens en sesjonscookie som ligger igjen betyr at `/logout` ikke
-     * gjorde jobben sin selv om skjermbildet skulle si noe annet.
-     *
-     * Ventingen hører hit og ikke i testen: utloggingen går via ID-porten og tilbake
-     * til `/logout/handleloggedout`, og cookiene ryddes først når den kjeden er
-     * ferdig. Den som venter på dette venter samtidig på at utloggingen er fullført,
-     * som er nettopp det en test vil før den ser på flatene.
-     */
+    /** Venter på at sesjonen er ryddet, også om flatene skulle være utilgjengelige. */
     async assertLoggedOut() {
-        await expect
-            .poll(async () => (await this.page.context().cookies())
+        await expect.poll(
+            async () => (await this.page.context().cookies())
                 .filter((cookie) => SESJONSCOOKIES.includes(cookie.name) && cookie.value !== "")
-                .map((cookie) => cookie.name), {
-                message: "Sesjonscookiene er borte etter utlogging",
-                timeout: REDIRECT_TIMEOUT,
-            })
-            .toEqual([]);
+                .map((cookie) => cookie.name),
+            { message: "Sesjonscookiene er borte etter utlogging", timeout: REDIRECT_TIMEOUT },
+        ).toEqual([]);
     }
 
     async assertOnIdportenLogin() {

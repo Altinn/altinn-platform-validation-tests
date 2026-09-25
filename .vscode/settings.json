@@ -1,5 +1,10 @@
 {
-  "playwright.env": {
-    "ENVIRONMENT": "at23"
-  }
+  // Playwright-koden formateres av eslint-reglene i playwright/eslint.config.ts,
+  // ikke av Prettier, så lagring gir det samme som `npm run fix`.
+  "[typescript]": {
+    "editor.defaultFormatter": "dbaeumer.vscode-eslint"
+  },
+  "eslint.format.enable": true,
+  // Repoet har én eslint-config på rota (K6) og én i playwright/.
+  "eslint.workingDirectories": [{ "mode": "auto" }]
 }
