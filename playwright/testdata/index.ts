@@ -1,4 +1,4 @@
-/** Stier relativt til playwright/. Projectet bestemmer hvilken CSV-fil som leses. */
+/** Stier relativt til playwright/. Miljøet bestemmer hvilken CSV-fil som leses. */
 export enum Testbruker {
   /**
    * CSV: `testdata/privatPersonUtenVirksomhet/<miljø>.csv`.
