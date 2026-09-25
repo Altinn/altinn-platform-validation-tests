@@ -17,9 +17,7 @@ kjører mot. Fødselsnummeret må være syntetisk, altså Tenor-nummer med måne
 
 ## Kjør
 
-Hvert miljø er et Playwright-[project](https://playwright.dev/docs/test-projects) i
-`playwright.config.ts`, med URLene til flatene. Scriptene velger ett av dem, og
-område oppgis som sti:
+Scriptene kjører ett miljø, og område oppgis som sti:
 
 ```bash
 npm run test:at23                              # alt, mot at23 (og tt02 / prod)
@@ -33,10 +31,19 @@ I VS Code-utvidelsen velger du miljø under Projects.
 
 ## Miljøer
 
-Alt som skiller miljøene, står i miljøets project i `playwright.config.ts`: URLene,
-om innloggingen går via Mockporten, og hvilke specer som kjøres. Et project kjører
-alle specene, med mindre det har en `testMatch` som sier noe annet. Prod skal bare
-kjøre tester som er verifisert i at23 og tt02, og som ikke endrer data.
+Alt som skiller miljøene, står i `miljoer` i `playwright.config.ts`: URLene og om
+innloggingen går via Mockporten. Hvert miljø blir ett project per nettleser, for
+eksempel `at23-chromium`, og foreløpig er bare Chrome med.
+
+En test sier selv hvilke miljøer den er klar for, med en tag per miljø:
+
+```ts
+test("...", { tag: ["@at23", "@tt02"] }, async ({ innlogging }) => { ... });
+```
+
+Et project kjører bare testene som har taggen for miljøet sitt. En test uten tag kjører
+ingen steder, så en ny test må forfremmes bevisst. Prod skal bare ha testen når den er
+verifisert i at23 og tt02, og ikke endrer data.
 
 ## Struktur
 

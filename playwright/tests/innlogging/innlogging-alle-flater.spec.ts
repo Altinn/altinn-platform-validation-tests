@@ -8,7 +8,7 @@ const flater: { start: Flate; landing: Flate }[] = [
 ];
 
 for (const { start, landing } of flater) {
-    test(`Bruker er innlogget på alle flater etter innlogging fra ${start}`, async ({
+    test(`Bruker er innlogget på alle flater etter innlogging fra ${start}`, { tag: ["@at23", "@tt02", "@prod"] }, async ({
         innlogging,
         user,
         flater: sider,

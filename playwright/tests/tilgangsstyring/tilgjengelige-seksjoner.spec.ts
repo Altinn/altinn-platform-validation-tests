@@ -16,7 +16,7 @@ for (const valgtSprak of alleSprak) {
     test.describe(`Tilgangsstyring på ${valgtSprak}`, () => {
         test.use({ sprak: valgtSprak });
 
-        test("Bruker ser oversikt over navigasjonsvalg", async ({
+        test("Bruker ser oversikt over navigasjonsvalg", { tag: ["@at23", "@tt02", "@prod"] }, async ({
             innlogging,
             user,
             tilgangsstyring,

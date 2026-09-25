@@ -11,6 +11,47 @@ dotenv.config({
     quiet: true,
 });
 
+// Alt som skiller miljøene. Et miljø kjører bare testene som er tagget med det,
+// for eksempel { tag: ["@at23", "@tt02"] }.
+const miljoer = {
+    at23: {
+        mockporten: false,
+        urler: {
+            arbeidsflate: "https://af.at23.altinn.cloud",
+            tilgangsstyring: "https://am.ui.at23.altinn.cloud",
+            infoportal: "https://info.at23.altinn.cloud",
+            platform: "https://platform.at23.altinn.cloud",
+        },
+    },
+    tt02: {
+        mockporten: false,
+        urler: {
+            arbeidsflate: "https://af.tt02.altinn.no",
+            tilgangsstyring: "https://am.ui.tt02.altinn.no",
+            infoportal: "https://info.tt02.altinn.no",
+            platform: "https://platform.tt02.altinn.no",
+        },
+    },
+    prod: {
+        // TestID finnes ikke i prod, så innloggingen går via Mockporten.
+        mockporten: true,
+        urler: {
+            arbeidsflate: "https://af.altinn.no",
+            tilgangsstyring: "https://am.ui.altinn.no",
+            infoportal: "https://info.altinn.no",
+            platform: "https://platform.altinn.no",
+        },
+    },
+} satisfies Record<string, Options>;
+
+// Bare Chrome inntil videre; Firefox, Edge og Safari er skrudd av, se #619.
+const nettlesere = {
+    chromium: devices["Desktop Chrome"],
+    // firefox: devices["Desktop Firefox"],
+    // edge: devices["Desktop Edge"],
+    // webkit: devices["Desktop Safari"],
+};
+
 export default defineConfig<{ sprak: Sprak } & Options>({
     testDir: "./tests",
     fullyParallel: true,
@@ -31,42 +72,14 @@ export default defineConfig<{ sprak: Sprak } & Options>({
         video: "retain-on-failure",
     },
 
-    // Ett project per miljø, valgt med --project=<miljø>. Et project kjører alle
-    // specene, eller bare dem i testMatch når miljøet skal ha færre.
-    projects: [
-        {
-            name: "at23",
-            use: {
-                urler: {
-                    arbeidsflate: "https://af.at23.altinn.cloud",
-                    tilgangsstyring: "https://am.ui.at23.altinn.cloud",
-                    infoportal: "https://info.at23.altinn.cloud",
-                    platform: "https://platform.at23.altinn.cloud",
-                },
-            },
-        },
-        {
-            name: "tt02",
-            use: {
-                urler: {
-                    arbeidsflate: "https://af.tt02.altinn.no",
-                    tilgangsstyring: "https://am.ui.tt02.altinn.no",
-                    infoportal: "https://info.tt02.altinn.no",
-                    platform: "https://platform.tt02.altinn.no",
-                },
-            },
-        },
-        {
-            name: "prod",
-            use: {
-                mockporten: true,
-                urler: {
-                    arbeidsflate: "https://af.altinn.no",
-                    tilgangsstyring: "https://am.ui.altinn.no",
-                    infoportal: "https://info.altinn.no",
-                    platform: "https://platform.altinn.no",
-                },
-            },
-        },
-    ],
+    // Ett project per miljø og nettleser, for eksempel at23-chromium. Scriptene kjører
+    // alle nettleserne for ett miljø med --project=<miljø>-*.
+    projects: Object.entries(miljoer).flatMap(([miljo, options]) =>
+        Object.entries(nettlesere).map(([nettleser, device]) => ({
+            name: `${miljo}-${nettleser}`,
+            grep: new RegExp(`@${miljo}`),
+            use: { ...device, ...options },
+            metadata: { miljo, nettleser },
+        })),
+    ),
 });
