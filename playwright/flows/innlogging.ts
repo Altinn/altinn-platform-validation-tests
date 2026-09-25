@@ -57,11 +57,7 @@ export class Innlogging {
     }
 
     /** Logger inn gjennom ID-porten fra `side`, som brukeren står på. */
-    async viaIdporten(side: Side, user: TestUser) {
-        if (this.brukMockporten) {
-            throw new Error("Kjøringen bruker Mockporten, ikke TestID. Bruk logIn().");
-        }
-
+    private async viaIdporten(side: Side, user: TestUser) {
         await test.step("Innlogging med TestID", async () => {
             await side.startInnlogging();
             await this.idporten.login(user);

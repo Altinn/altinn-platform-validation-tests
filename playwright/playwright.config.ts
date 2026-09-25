@@ -1,31 +1,15 @@
 import { defineConfig, devices } from "@playwright/test";
 import dotenv from "dotenv";
-import fs from "fs";
 import path from "path";
 
 import { Sprak } from "./config/sprak";
 import { Miljo, Urler } from "./miljo";
 
-// Hemmelighetene kan komme fra shellet eller fra gitignorerte .env-filer. Shellet
-// vinner, tomme verdier hoppes over.
-function les(fil: string) {
-    const sti = path.join(__dirname, fil);
-
-    if (!fs.existsSync(sti)) {
-        return;
-    }
-
-    for (const [navn, verdi] of Object.entries(
-        dotenv.parse(fs.readFileSync(sti)),
-    )) {
-        if (verdi && !process.env[navn]) {
-            process.env[navn] = verdi;
-        }
-    }
-}
-
-les(".env.local");
-les(".env");
+// Hemmelighetene kan komme fra shellet eller fra gitignorerte .env-filer. Shellet vinner.
+dotenv.config({
+    path: [".env.local", ".env"].map((fil) => path.join(__dirname, fil)),
+    quiet: true,
+});
 
 // Mockporten i stedet for TestID, for når ID-porten er nede i et testmiljø.
 // `MOCKPORTEN=true npm run test:at23`. Prod-projectet angir det selv.
@@ -99,7 +83,6 @@ export default defineConfig<
             ],
             use: {
                 ...felles,
-                // TestID finnes ikke i prod, så innloggingen går alltid via Mockporten.
                 mockporten: true,
                 miljo: "prod",
                 urler: {

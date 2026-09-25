@@ -18,39 +18,20 @@ function testbrukerfil(path: Testbruker, miljo: Miljo): string {
     return join(rot, path, `${miljo}.csv`);
 }
 
-function lesTestbrukere(path: Testbruker, miljo: Miljo): TestUser[] | null {
-    let innhold: string;
+/** Testpersonen for workeren, fra gruppens CSV-fil for miljøet. */
+export function getTestUser(path: Testbruker, miljo: Miljo, indeks: number): TestUser {
+    const fil = testbrukerfil(path, miljo);
+    const brukere: TestUser[] = fs.existsSync(fil)
+        ? parse(fs.readFileSync(fil, "utf8"), { columns: true, skip_empty_lines: true, trim: true })
+        : [];
 
-    try {
-        innhold = fs.readFileSync(testbrukerfil(path, miljo), "utf8");
-    } catch (feil) {
-        if ((feil as NodeJS.ErrnoException).code !== "ENOENT") {
-            throw feil;
-        }
-
-        return null;
+    if (brukere.length === 0) {
+        throw new Error(`Fant ingen testbrukere i ${fil}`);
     }
 
-    return parse(innhold, { columns: true, skip_empty_lines: true, trim: true });
-}
-
-function getTestUsers(path: Testbruker, miljo: Miljo): TestUser[] {
-    const brukere = lesTestbrukere(path, miljo);
-
-    if (!brukere?.length) {
-        throw new Error(`Fant ingen testbrukere i ${testbrukerfil(path, miljo)}`);
-    }
-
-    return brukere;
-}
-
-/** Leser testpersoner fra CSV i alle miljøer. Manglende testdata gir feil. */
-export function getTestUser(path: Testbruker, miljo: Miljo, indeks = 0): TestUser {
-    const brukere = getTestUsers(path, miljo);
-
-    if (!Number.isInteger(indeks) || indeks < 0 || indeks >= brukere.length) {
+    if (indeks >= brukere.length) {
         throw new Error(
-            `${testbrukerfil(path, miljo)} har ${brukere.length} rader, men worker nummer ${indeks + 1} ba om en bruker. Kjør med færre workere, eller legg til flere testpersoner.`,
+            `${fil} har ${brukere.length} rader, men worker nummer ${indeks + 1} ba om en bruker. Kjør med færre workere, eller legg til flere testpersoner.`,
         );
     }
 
