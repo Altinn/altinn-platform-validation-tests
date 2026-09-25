@@ -15,14 +15,13 @@ Fyll inn `TEST_IDP_PASSWORD`. `.env.*.local` er gitignorert.
 
 ## Testpersoner
 
-En test ber om testpersonen den trenger ved navn, `privatPerson` eller
-`dagligLeder`, se `fixtures/testbruker.fixture.ts`. Personene leses fra
-`testdata/<brukergruppe>/<miljø>.csv`, med kolonnene `pid,name`, og hver worker får
-sin egen rad. Fødselsnumrene må være syntetiske, altså Tenor-nummer med måned 81-92.
+Hver spec leser testpersonene sine rett fra en CSV-fil, og stien står øverst i
+spec-fila, for eksempel `testdata/dagligLeder/<miljø>.csv`. Filene har kolonnene
+`pid,name`, og hver worker bruker sin egen rad. Fødselsnumrene må være syntetiske,
+altså Tenor-nummer med måned 81-92.
 
-at23 og tt02 har filer i repoet. Prod-brukerne kan ikke sjekkes inn. Lokalt kan de
-ligge i `testdata/<brukergruppe>/prod.csv`, som er gitignorert, eller et annet sted
-som `TESTDATA_ROOT` peker på, med samme mappestruktur under.
+at23 og tt02 har filer i repoet. Prod-brukerne kan ikke sjekkes inn, og legges lokalt
+i `testdata/<brukergruppe>/prod.csv`, som er gitignorert.
 
 ## Kjør
 
@@ -80,7 +79,7 @@ En test tar områdene den trenger som fixtures, og en ny underside er en page ob
 pluss ett felt i fixturen:
 
 ```ts
-test('...', async ({ innlogging, dagligLeder, tilgangsstyring }) => {
+test('...', async ({ innlogging, tilgangsstyring }) => {
     await innlogging.logIn(tilgangsstyring.forside, dagligLeder);
     await tilgangsstyring.forside.assertSections(forventedeSeksjoner);
 });

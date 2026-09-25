@@ -1,9 +1,17 @@
+import { parse } from "csv-parse/sync";
+import fs from "fs";
+import path from "path";
+
+import type { TestUser } from "../../config/environment";
 import { Flate, testMedFlater as test } from "../../fixtures/test";
-import { runInEnvironment } from "../../miljo";
+import { gjeldendeMiljo, runInEnvironment } from "../../miljo";
 
 // Endrer ingen data. I prod går innloggingen via mockporten, siden
 // TestID-skjermbildene bare finnes i testmiljøene.
 runInEnvironment("at23", "tt02", "prod");
+
+// Testpersonene, én rad per worker.
+const testdata = path.join(__dirname, "../../testdata/privatPersonUtenVirksomhet", `${gjeldendeMiljo()}.csv`);
 
 const flater: { start: Flate; landing: Flate }[] = [
     { start: "arbeidsflate", landing: "arbeidsflate" },
@@ -15,9 +23,11 @@ const flater: { start: Flate; landing: Flate }[] = [
 for (const { start, landing } of flater) {
     test(`Bruker er innlogget på alle flater etter innlogging fra ${start}`, async ({
         innlogging,
-        privatPerson,
         flater: sider,
-    }) => {
+    }, testInfo) => {
+        const brukere = parse(fs.readFileSync(testdata), { columns: true, skip_empty_lines: true }) as TestUser[];
+        const privatPerson = brukere[testInfo.parallelIndex];
+
         await test.step(`Bruker går til ${start} uten å være logget inn`, async () => {
             await sider[start].navigateTo();
             if (start !== "infoportalen") {
