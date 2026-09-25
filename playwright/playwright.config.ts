@@ -27,17 +27,6 @@ function les(fil: string) {
 les(".env.local");
 les(".env");
 
-// Flagg som ikke kommer etter `--` ser Playwright aldri; npm gjør dem om til
-// npm_config_*. Disse plukkes opp her, slik at både `npm run test:at23 --headed`
-// og `npm run test:at23 -- --headed` virker. Resten, som --grep, går etter `--`.
-function npmFlag(name: string): string | undefined {
-    const value = process.env[`npm_config_${name}`];
-    return value && value !== "false" ? value : undefined;
-}
-
-const headed = npmFlag("headed") !== undefined;
-const workers = npmFlag("workers");
-const retries = npmFlag("retries");
 // Mockporten i stedet for TestID, for når ID-porten er nede i et testmiljø.
 // `MOCKPORTEN=true npm run test:at23`. Prod-projectet angir det selv.
 const mockporten = process.env.MOCKPORTEN === "true";
@@ -55,9 +44,8 @@ export default defineConfig<
     testMatch: "**/*.spec.ts",
     fullyParallel: true,
     // Minst én retry, slik at en flaky kjøring ikke rapporteres som feil.
-    // Traces skrives ved første retry
-    retries: retries ? Number(retries) : process.env.CI ? 2 : 1,
-    workers: workers ? Number(workers) : undefined,
+    // Traces skrives ved første retry. --retries overstyrer.
+    retries: process.env.CI ? 2 : 1,
     reporter: [
         ["html", { open: "never" }],
         ["junit", { outputFile: "test-results.xml" }],
@@ -67,7 +55,6 @@ export default defineConfig<
     // Playwrights standard er fem sekunder, og det er for "tight" - vi laster ofte mange elementer på de ulike
     expect: { timeout: 10_000 },
     use: {
-        headless: !headed,
         trace: "on-first-retry",
         video: "retain-on-failure",
     },

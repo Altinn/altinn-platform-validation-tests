@@ -37,6 +37,8 @@ npm run test:at23 -- tests/innlogging --debug   # steppe gjennom tester
 npx playwright test --project=at23 --project=tt02   # flere miljøer i samme kjøring
 ```
 
+Flagg til Playwright, som `--headed`, `--debug`, `--workers` og `--retries`, skrives etter `--`.
+
 I VS Code-utvidelsen velger du miljø under Projects.
 
 ## Innlogging
@@ -49,7 +51,7 @@ Er ID-porten nede, kan du angi Mockporten for en kjøring med `MOCKPORTEN=true n
 Mockporten testes også for seg i at23, tt02 og prod, i `tests/innlogging/innlogging-mockporten.spec.ts`.
 
 Tester som kontrollerer innlogging fra en bestemt flate bruker
-`viaInnloggingsflyten(landing, user)` etter at de har navigert til startflaten.
+`viaInnloggingsflyten(start, landing, user)` etter at de har navigert til startflaten.
 Den bruker samme miljøfordeling, og lar testen kontrollere landingen direkte.
 Produksjonstestene dekker innlogget sesjon og funksjonalitet med syntetiske
 testpersoner, ikke ordinær eID-innlogging.
