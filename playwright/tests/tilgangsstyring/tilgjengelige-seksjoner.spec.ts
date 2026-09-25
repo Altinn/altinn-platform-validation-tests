@@ -1,10 +1,7 @@
 import { alleSprak } from "../../config/sprak";
 import { test } from "../../fixtures/test";
-import { runInEnvironment } from "../../miljo";
 import { Seksjon } from "../../pages/tilgangsstyring/seksjoner";
 import { Testbruker } from "../../testdata";
-
-runInEnvironment("prod", "at23", "tt02");
 
 /**
  * Regelen for hva som vises ligger i useSidebarItems.tsx i altinn-access-management-frontend.

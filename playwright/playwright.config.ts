@@ -16,7 +16,9 @@ function les(fil: string) {
         return;
     }
 
-    for (const [navn, verdi] of Object.entries(dotenv.parse(fs.readFileSync(sti)))) {
+    for (const [navn, verdi] of Object.entries(
+        dotenv.parse(fs.readFileSync(sti)),
+    )) {
         if (verdi && !process.env[navn]) {
             process.env[navn] = verdi;
         }
@@ -44,9 +46,10 @@ const mockporten = process.env.MOCKPORTEN === "true";
 // Bare Chrome inntil videre; Firefox, Edge og Safari er skrudd av, se #619.
 const felles = { ...devices["Desktop Chrome"], mockporten };
 
-export default defineConfig<{ sprak: Sprak; testbrukerPath: Testbruker }, { miljo: Miljo; urler: Urler; mockporten: boolean }>({
-    // Sjekker at hver spec sier hvilke miljøer den er satt opp for, før noe kjøres.
-    globalSetup: "./global-setup.ts",
+export default defineConfig<
+    { sprak: Sprak; testbrukerPath: Testbruker },
+    { miljo: Miljo; urler: Urler; mockporten: boolean }
+>({
     testDir: "./tests",
     testMatch: "**/*.spec.ts",
     fullyParallel: true,
@@ -60,24 +63,15 @@ export default defineConfig<{ sprak: Sprak; testbrukerPath: Testbruker }, { milj
         ["json", { outputFile: "test-results.json" }],
     ],
     timeout: 60000,
-    // Playwrights standard er fem sekunder, og det er for stramt her: en assertion
-    // venter typisk på at flaten har hentet parter og rettigheter etter innlogging,
-    // og en hel test bruker 2-7 sekunder når alt går bra. Standarden står her, slik
-    // at page objectene bare sier fra når de trenger noe annet enn den.
-    //
-    // At taket er romslig gjør oss ikke blinde for en flate som blir tregere, for det
-    // er ikke timeouten som skal fange den. Hvor lang tid testene bruker eksporteres
-    // som playwright_test_duration_seconds fra junit-rapporten, se helpers/junitparser,
-    // og en jevn økning der sier fra lenge før en test tilfeldigvis bikker over taket.
-    // Timeouten er sikkerhetsnettet for kjøringen, tallene over tid er målingen.
+    // Playwrights standard er fem sekunder, og det er for "tight" - vi laster ofte mange elementer på de ulike
     expect: { timeout: 10_000 },
     use: {
         headless: !headed,
         trace: "on-first-retry",
         video: "retain-on-failure",
     },
-    // Ett project per miljø, valgt med --project=<miljø>. Specene sier selv hvilke
-    // miljøer de hører til, se runInEnvironment() i miljo.ts.
+    // Ett project per miljø, valgt med --project=<miljø>. En ny spec kjører i at23
+    // og tt02 med en gang, og i prod først når den er verifisert der og føres opp.
     projects: [
         {
             name: "at23",
@@ -94,6 +88,8 @@ export default defineConfig<{ sprak: Sprak; testbrukerPath: Testbruker }, { milj
         },
         {
             name: "tt02",
+            // Cookiebanneret er ikke kjørt ut i tt02 ennå.
+            testIgnore: ["infoportal/cookiebanner-*.spec.ts"],
             use: {
                 ...felles,
                 miljo: "tt02",
@@ -107,6 +103,14 @@ export default defineConfig<{ sprak: Sprak; testbrukerPath: Testbruker }, { milj
         },
         {
             name: "prod",
+            // Bare tester som er verifisert i at23 og tt02, og som ikke endrer data.
+            // Utlogging er ikke med, siden Mockportens utloggingsside svarer 404.
+            testMatch: [
+                "innlogging/innlogging-alle-flater.spec.ts",
+                "innlogging/innlogging-refresh-alle-flater.spec.ts",
+                "innlogging/innlogging-mockporten.spec.ts",
+                "tilgangsstyring/tilgjengelige-seksjoner.spec.ts",
+            ],
             use: {
                 ...felles,
                 miljo: "prod",

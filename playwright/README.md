@@ -59,20 +59,20 @@ Prod-suiten dekker derfor ikke utlogging.
 
 ## Hva kreves på selve spec-filen
 
-Hver spec-fil (testfil) sier selv hvilke miljøer den kan kjøres i, og hvilken
-fil den henter testdata fra, øverst i fila:
+Hvilke miljøer en spec kjører i står i miljøets project i `playwright.config.ts`.
+En ny spec kjører i at23 og tt02 uten videre. tt02 hopper over det som ikke er
+kjørt ut der ennå med `testIgnore`, og prod kjører bare filene som er ført opp i
+`testMatch`.
+
+Hvilken fil testdata hentes fra settes øverst i spec-fila:
 
 ```ts
-import { runInEnvironment } from "../../miljo";
 import { Testbruker } from "../../testdata";
 
-runInEnvironment("at23", "tt02");
 test.use({ testbrukerPath: Testbruker.PrivatPersonUtenVirksomhet }); // eller Testbruker.DagligLeder
 ```
 
-I et miljø som ikke er listet, skippes testene i fila. Miljøet kommer fra projectet.
-
-Nye tester bør minst være kjørt i `at23` og `tt02` og merget og verifisert ok etter merge til main før man legger til prod.
+Nye tester bør minst være kjørt i `at23` og `tt02` og merget og verifisert ok etter merge til main før de føres opp i prod-projectet.
 
 Enumen `Testbruker` i [testdata/index.ts](testdata/index.ts) inneholder mappestiene
 relativt til `playwright/`, for eksempel `testdata/privatPersonUtenVirksomhet`.
@@ -84,7 +84,7 @@ Standarden er `Testbruker.PrivatPersonUtenVirksomhet`. Nye brukergrupper legges 
 i enumen med mappestien som verdi. Feilstavede enum-navn og fritekstverdier
 gir feil i editoren og ved `npm run typecheck`. Playwright typesjekker ikke selv ved kjøring.
 Hvem hver test faktisk kjørte som står i rapporten, som `testperson`.
-En spec-fil uten `runInEnvironment` stopper kjøringen i `global-setup.ts`. Prod skal bare legges til for tester som
+Prod skal bare legges til for tester som
 ikke endrer data.
 
 `npm run typecheck` typesjekker. `npm run report` åpner siste testrapport.

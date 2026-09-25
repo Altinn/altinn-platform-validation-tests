@@ -1,8 +1,5 @@
 import { Flate, test } from "../../fixtures/test";
-import { runInEnvironment } from "../../miljo";
 import { Testbruker } from "../../testdata";
-
-runInEnvironment("at23", "tt02");
 
 // Mockporten brukes til innlogging i prod, men har ikke en fungerende utloggingsside.
 test.use({ testbrukerPath: Testbruker.PrivatPersonUtenVirksomhet });

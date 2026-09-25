@@ -1,8 +1,5 @@
 import { Flate, test } from "../../fixtures/test";
-import { runInEnvironment } from "../../miljo";
 import { Testbruker } from "../../testdata";
-
-runInEnvironment("at23", "tt02", "prod");
 
 test.use({ testbrukerPath: Testbruker.PrivatPersonUtenVirksomhet });
 

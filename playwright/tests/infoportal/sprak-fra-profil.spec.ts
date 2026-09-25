@@ -1,9 +1,6 @@
 import { alleSprak } from "../../config/sprak";
 import { test } from "../../fixtures/test";
-import { runInEnvironment } from "../../miljo";
 import { Testbruker } from "../../testdata";
-
-runInEnvironment("at23", "tt02");
 
 test.use({ testbrukerPath: Testbruker.PrivatPersonUtenVirksomhet });
 

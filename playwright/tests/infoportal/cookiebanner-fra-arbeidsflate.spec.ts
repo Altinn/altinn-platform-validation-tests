@@ -1,8 +1,5 @@
 import { test } from "../../fixtures/test";
-import { runInEnvironment } from "../../miljo";
 import { Testbruker } from "../../testdata";
-
-runInEnvironment("at23");
 
 test.use({ testbrukerPath: Testbruker.PrivatPersonUtenVirksomhet });
 
