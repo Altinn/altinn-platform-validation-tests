@@ -2,7 +2,7 @@ import { parse } from "csv-parse/sync";
 import fs from "fs";
 import { join } from "path";
 
-import { Miljo } from "../miljo";
+import type { Miljo } from "../miljo";
 import { Testbruker } from "../testdata";
 
 export type TestUser = {

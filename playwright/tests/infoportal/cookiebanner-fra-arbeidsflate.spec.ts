@@ -1,12 +1,13 @@
 import { test } from "../../fixtures/test";
-import { miljoer } from "../../miljo";
+import { runInEnvironment } from "../../miljo";
 import { Testbruker } from "../../testdata";
+
+runInEnvironment("at23");
 
 test.use({ testbrukerPath: Testbruker.PrivatPersonUtenVirksomhet });
 
 test(
     "Cookievalg fra arbeidsflate tas hensyn til i infoportalen",
-    miljoer("at23"),
     async ({ innlogging, user, arbeidsflate, infoportal, cookiebanner }) => {
         await test.step("Bruker godtar informasjonskapsler på arbeidsflate", async () => {
             await innlogging.logIn(arbeidsflate.forside, user);

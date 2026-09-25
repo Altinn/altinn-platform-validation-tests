@@ -21,7 +21,7 @@ function specFiler(katalog: string): string[] {
 }
 
 /**
- * Om fila kaller `miljoer` på ordentlig.
+ * Om fila kaller `runInEnvironment` på ordentlig.
  *
  * Et utkommentert kall er like lite en deklarasjon som et manglende ett, så linjer
  * som starter med `//` eller `*` teller ikke. Vi ser bare på linjestarten og prøver
@@ -36,14 +36,14 @@ function harDeklarasjon(innhold: string): boolean {
       return false;
     }
 
-    return /\bmiljoer\s*\(/.test(kode);
+    return /\brunInEnvironment\s*\(/.test(kode);
   });
 }
 
 /**
  * Krever at hver spec-fil sier hvilke miljøer den er satt opp for.
  *
- * En fil uten `miljoer` kjører ingen steder, og det er ikke noe testen
+ * En fil uten `runInEnvironment` kjører ingen steder, og det er ikke noe testen
  * selv kan si fra om: en test ingen starter rekker aldri å klage. Derfor sjekkes
  * det her, før noen tester kjører, slik at en glemt deklarasjon oppdages i PR og
  * ikke tre måneder senere.
@@ -62,9 +62,9 @@ export default function globalSetup() {
     // og test-results.json, slik at en CI-kjøring får en rapport og ikke bare en
     // exit-kode.
     throw oppsettsfeil(
-      `Disse spec-filene mangler miljoer(), og kjører derfor ingen steder:\n${liste}\n\n` +
-        "Gi testene miljøene de er satt opp for, for eksempel " +
-        "test('...', miljoer('at23', 'tt02'), async () => { ... })."
+      `Disse spec-filene mangler runInEnvironment(), og kjører derfor ingen steder:\n${liste}\n\n` +
+        "Legg kallet øverst i fila med miljøene testene er satt opp for, for eksempel " +
+        "runInEnvironment('at23', 'tt02')."
     );
   }
 }

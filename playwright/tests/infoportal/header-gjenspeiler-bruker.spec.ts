@@ -1,12 +1,13 @@
 import { test } from "../../fixtures/test";
-import { miljoer } from "../../miljo";
+import { runInEnvironment } from "../../miljo";
 import { Testbruker } from "../../testdata";
+
+runInEnvironment("at23", "tt02");
 
 test.use({ testbrukerPath: Testbruker.PrivatPersonUtenVirksomhet });
 
 test(
     "Infoportalens header gjenspeiler pålogget bruker og valgt aktør etter navigering ut fra arbeidsflate",
-    miljoer("at23", "tt02"),
     async ({ innlogging, user, arbeidsflate, infoportal }) => {
         await test.step("Bruker logger inn på arbeidsflate", async () => {
             await innlogging.logIn(arbeidsflate.forside, user);

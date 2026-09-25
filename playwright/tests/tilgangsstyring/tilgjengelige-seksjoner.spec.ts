@@ -1,8 +1,10 @@
 import { alleSprak } from "../../config/sprak";
 import { test } from "../../fixtures/test";
-import { miljoer } from "../../miljo";
+import { runInEnvironment } from "../../miljo";
 import { Seksjon } from "../../pages/tilgangsstyring/seksjoner";
 import { Testbruker } from "../../testdata";
+
+runInEnvironment("prod", "at23", "tt02");
 
 /**
  * Regelen for hva som vises ligger i useSidebarItems.tsx i altinn-access-management-frontend.
@@ -18,7 +20,6 @@ const forventedeSeksjoner = [
 for (const valgtSprak of alleSprak) {
     test.describe(
         `Tilgangsstyring på ${valgtSprak}`,
-        miljoer("prod", "at23", "tt02"),
         () => {
             test.use({ sprak: valgtSprak, testbrukerPath: Testbruker.DagligLeder });
 

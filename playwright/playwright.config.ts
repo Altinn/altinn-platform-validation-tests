@@ -4,7 +4,7 @@ import fs from "fs";
 import path from "path";
 
 import { Sprak } from "./config/sprak";
-import { Miljo, miljotag, Urler } from "./miljo";
+import { Miljo, Urler } from "./miljo";
 import { Testbruker } from "./testdata";
 
 // Hemmelighetene kan komme fra shellet eller fra gitignorerte .env-filer. Shellet
@@ -41,11 +41,6 @@ const retries = npmFlag("retries");
 // `MOCKPORTEN=true npm run test:at23`.
 const mockporten = process.env.MOCKPORTEN === "true";
 
-// Et miljø-project kjører bare testene som er tagget med miljøet, se miljoer() i miljo.ts.
-function taggetMed(miljo: Miljo): RegExp {
-    return new RegExp(`${miljotag(miljo)}\\b`);
-}
-
 // Bare Chrome inntil videre; Firefox, Edge og Safari er skrudd av, se #619.
 const felles = { ...devices["Desktop Chrome"], mockporten };
 
@@ -81,11 +76,11 @@ export default defineConfig<{ sprak: Sprak; testbrukerPath: Testbruker }, { milj
         trace: "on-first-retry",
         video: "retain-on-failure",
     },
-    // Ett project per miljø, valgt med --project=<miljø>.
+    // Ett project per miljø, valgt med --project=<miljø>. Specene sier selv hvilke
+    // miljøer de hører til, se runInEnvironment() i miljo.ts.
     projects: [
         {
             name: "at23",
-            grep: taggetMed("at23"),
             use: {
                 ...felles,
                 miljo: "at23",
@@ -99,7 +94,6 @@ export default defineConfig<{ sprak: Sprak; testbrukerPath: Testbruker }, { milj
         },
         {
             name: "tt02",
-            grep: taggetMed("tt02"),
             use: {
                 ...felles,
                 miljo: "tt02",
@@ -113,7 +107,6 @@ export default defineConfig<{ sprak: Sprak; testbrukerPath: Testbruker }, { milj
         },
         {
             name: "prod",
-            grep: taggetMed("prod"),
             use: {
                 ...felles,
                 miljo: "prod",

@@ -1,13 +1,14 @@
 import { alleSprak } from "../../config/sprak";
 import { test } from "../../fixtures/test";
-import { miljoer } from "../../miljo";
+import { runInEnvironment } from "../../miljo";
 import { Testbruker } from "../../testdata";
+
+runInEnvironment("at23", "tt02");
 
 test.use({ testbrukerPath: Testbruker.PrivatPersonUtenVirksomhet });
 
 test.describe(
     "Språkvalg fra profilen i infoportalen",
-    miljoer("at23", "tt02"),
     () => {
         for (const sprak of alleSprak) {
             test(`Brukerens språkvalg fra profilen vises i infoportalen på ${sprak}`, async ({

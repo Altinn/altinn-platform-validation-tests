@@ -1,7 +1,7 @@
 import { test as base } from "@playwright/test";
 
 import { getTestUsers } from "../config/testdata";
-import { Miljo, Urler } from "../miljo";
+import type { Miljo, Urler } from "../miljo";
 import { Testbruker } from "../testdata";
 
 /**

@@ -1,6 +1,8 @@
 import { Flate, test } from "../../fixtures/test";
-import { miljoer } from "../../miljo";
+import { runInEnvironment } from "../../miljo";
 import { Testbruker } from "../../testdata";
+
+runInEnvironment("at23", "tt02", "prod");
 
 test.use({ testbrukerPath: Testbruker.PrivatPersonUtenVirksomhet });
 
@@ -14,7 +16,6 @@ const flater: { start: Flate; landing: Flate }[] = [
 for (const { start, landing } of flater) {
     test(
         `Innlogget sesjon gjelder på tvers av flatene etter besøk på ${start}`,
-        miljoer("at23", "tt02", "prod"),
         async ({ innlogging, user, sider, mockporten }) => {
             test.skip(
                 mockporten && start !== "infoportalen",

@@ -1,6 +1,8 @@
 import { Flate, test } from "../../fixtures/test";
-import { miljoer } from "../../miljo";
+import { runInEnvironment } from "../../miljo";
 import { Testbruker } from "../../testdata";
+
+runInEnvironment("at23", "tt02", "prod");
 
 test.use({ testbrukerPath: Testbruker.PrivatPersonUtenVirksomhet });
 
@@ -15,7 +17,6 @@ for (const start of flater) {
     // Det testen verifiserer er at sesjonen gjelder på tvers av flatene og tåler refresh.
     test(
         `Bruker forblir innlogget på alle flater etter innlogging fra ${start}`,
-        miljoer("at23", "tt02", "prod"),
         async ({ innlogging, user, sider }) => {
             await test.step(`Bruker logger inn og lander på ${start}`, async () => {
                 await innlogging.logIn(sider[start], user);

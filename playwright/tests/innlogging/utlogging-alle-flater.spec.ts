@@ -1,6 +1,8 @@
 import { Flate, test } from "../../fixtures/test";
-import { miljoer } from "../../miljo";
+import { runInEnvironment } from "../../miljo";
 import { Testbruker } from "../../testdata";
+
+runInEnvironment("at23", "tt02");
 
 // Mockporten brukes til innlogging i prod, men har ikke en fungerende utloggingsside.
 test.use({ testbrukerPath: Testbruker.PrivatPersonUtenVirksomhet });
@@ -24,7 +26,6 @@ for (const start of utloggingsflater) {
     // brukeren ut av alle.
     test(
         `Bruker er utlogget på alle flater etter utlogging fra ${start}`,
-        miljoer("at23", "tt02"),
         async ({ innlogging, user, sider }) => {
             await test.step(`Bruker logger inn og lander på ${start}`, async () => {
                 await innlogging.logIn(sider[start], user);
