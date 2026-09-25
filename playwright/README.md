@@ -61,9 +61,8 @@ Prod-suiten dekker derfor ikke utlogging.
 ## Hva kreves på selve spec-filen
 
 Hvilke miljøer en spec kjører i står i miljøets project i `playwright.config.ts`.
-En ny spec kjører i at23 og tt02 uten videre. tt02 hopper over det som ikke er
-kjørt ut der ennå med `testIgnore`, og prod kjører bare filene som er ført opp i
-`testMatch`.
+En ny spec kjører i at23 uten videre. tt02 og prod kjører bare filene som er
+ført opp i projectets `testMatch`.
 
 En test ber om testpersonen den trenger ved navn, så det står i testen selv
 hvilke testdata den bruker:

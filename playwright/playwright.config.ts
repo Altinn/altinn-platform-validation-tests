@@ -41,7 +41,7 @@ export default defineConfig<
         video: "retain-on-failure",
     },
     // Ett project per miljø, valgt med --project=<miljø>. En ny spec kjører i at23
-    // og tt02 med en gang, og i prod først når den er verifisert der og føres opp.
+    // med en gang, og i tt02 og prod først når den føres opp i testMatch.
     projects: [
         {
             name: "at23",
@@ -58,8 +58,15 @@ export default defineConfig<
         },
         {
             name: "tt02",
-            // Cookiebanneret er ikke kjørt ut i tt02 ennå.
-            testIgnore: ["infoportal/cookiebanner-*.spec.ts"],
+            testMatch: [
+                "infoportal/header-gjenspeiler-bruker.spec.ts",
+                "infoportal/sprak-fra-profil.spec.ts",
+                "innlogging/innlogging-alle-flater.spec.ts",
+                "innlogging/innlogging-mockporten.spec.ts",
+                "innlogging/innlogging-refresh-alle-flater.spec.ts",
+                "innlogging/utlogging-alle-flater.spec.ts",
+                "tilgangsstyring/tilgjengelige-seksjoner.spec.ts",
+            ],
             use: {
                 ...felles,
                 miljo: "tt02",
