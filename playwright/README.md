@@ -11,9 +11,18 @@ npx playwright install
 cp example_env/at23.env .env.at23.local    # og at22 / tt02 / prod ved behov
 ```
 
-Fyll inn `TEST_IDP_PASSWORD`, og `TEST_USER_PID` for tt02 og prod, der testbrukeren
-ikke er sjekket inn. Fødselsnummeret må være syntetisk, altså Tenor-nummer med måned
-81-92. `.env.*.local` er gitignorert.
+Fyll inn `TEST_IDP_PASSWORD`. `.env.*.local` er gitignorert.
+
+## Testpersoner
+
+En test ber om testpersonen den trenger ved navn, `privatPerson` eller
+`dagligLeder`, se `fixtures/testbruker.fixture.ts`. Personene leses fra
+`testdata/<brukergruppe>/<miljø>.csv`, med kolonnene `pid,name`, og hver worker får
+sin egen rad. Fødselsnumrene må være syntetiske, altså Tenor-nummer med måned 81-92.
+
+at23 og tt02 har filer i repoet. Prod-brukerne kan ikke sjekkes inn. Lokalt kan de
+ligge i `testdata/<brukergruppe>/prod.csv`, som er gitignorert, eller et annet sted
+som `TESTDATA_ROOT` peker på, med samme mappestruktur under.
 
 ## Kjør
 
@@ -64,15 +73,15 @@ pages/tilgangsstyring/forside.ts     page objects, en fil per underside
 fixtures/tilgangsstyring.fixture.ts  samler undersidene til én fixture
 pages/felles/                        meny og innlogging, brukt av alle
 flows/innlogging.ts                  innlogging, på tvers av flatene
-config/                              miljøvariabler, miljøliste og språk
+config/                              miljøvariabler, testdata og språk
 ```
 
 En test tar områdene den trenger som fixtures, og en ny underside er en page object
 pluss ett felt i fixturen:
 
 ```ts
-test('...', async ({ innlogging, user, tilgangsstyring }) => {
-    await innlogging.logIn(tilgangsstyring.forside, user);
+test('...', async ({ innlogging, dagligLeder, tilgangsstyring }) => {
+    await innlogging.logIn(tilgangsstyring.forside, dagligLeder);
     await tilgangsstyring.forside.assertSections(forventedeSeksjoner);
 });
 ```
@@ -83,7 +92,7 @@ får språket injisert, så `assertSections` slår opp riktige navn selv.
 
 ## Innlogging
 
-`innlogging.logIn(side, user)` lander innlogget på siden du sender inn. Mekanismen
+`innlogging.logIn(side, testperson)` lander innlogget på siden du sender inn. Mekanismen
 ligger i `pages/felles/syntetisk-innlogging.ts` og skal ikke lekke ut i testene.
 Flyten må starte på Altinns login-endepunkt, siden `state` opprettes serverside; en
 authorize-URL kan ikke skrives for hånd eller gjenbrukes.

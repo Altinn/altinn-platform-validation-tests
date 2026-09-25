@@ -5,13 +5,14 @@ import { test as arbeidsflate } from "./arbeidsflate.fixture";
 import { test as infoportal } from "./infoportal.fixture";
 import { test as innlogging } from "./innlogging.fixture";
 import { test as sprak } from "./sprak.fixture";
+import { test as testbruker } from "./testbruker.fixture";
 import { test as tilgangsstyring } from "./tilgangsstyring.fixture";
 
 /**
  * Testene importerer `test` herfra. Hvert hovedområde har sin egen fixture-fil,
  * og nye områder legges til i mergeTests under.
  */
-const test = mergeTests(innlogging, sprak, arbeidsflate, tilgangsstyring, infoportal);
+const test = mergeTests(innlogging, testbruker, sprak, arbeidsflate, tilgangsstyring, infoportal);
 
 export type Flate =
     | "arbeidsflate"

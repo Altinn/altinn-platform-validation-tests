@@ -26,12 +26,12 @@ for (const start of utloggingsflater) {
     // brukeren ut av alle.
     test(`Bruker er utlogget på alle flater etter utlogging fra ${start}`, async ({
         innlogging,
-        user,
+        privatPerson,
         flater: sider,
     }) => {
         await test.step(`Bruker logger inn og lander på ${start}`, async () => {
-            await innlogging.logIn(sider[start], user);
-            await sider[start].assertLoggedIn(user);
+            await innlogging.logIn(sider[start], privatPerson);
+            await sider[start].assertLoggedIn(privatPerson);
         });
 
         await test.step("Bruker logger ut", async () => {
@@ -42,7 +42,7 @@ for (const start of utloggingsflater) {
         await test.step("Ingen av flatene viser brukeren som innlogget", async () => {
             for (const flate of flater) {
                 await sider[flate].navigateTo();
-                await sider[flate].assertLoggedOut(user);
+                await sider[flate].assertLoggedOut(privatPerson);
             }
         });
     });

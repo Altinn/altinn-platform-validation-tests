@@ -35,17 +35,3 @@ export const baseUrls = {
         return requireEnv("BASE_URL");
     },
 };
-
-/**
- * Den syntetiske testbrukeren for miljøet. Fødselsnummeret må være et Tenor-nummer,
- * altså måned 81-92. TEST_USER_NAME leses late, siden bare testene som slår opp
- * navnet på skjermen trenger det.
- */
-export function getTestUser(): TestUser {
-    return {
-        pid: requireEnv("TEST_USER_PID"),
-        get name() {
-            return requireEnv("TEST_USER_NAME");
-        },
-    };
-}

@@ -15,7 +15,7 @@ const flater: { start: Flate; landing: Flate }[] = [
 for (const { start, landing } of flater) {
     test(`Bruker er innlogget på alle flater etter innlogging fra ${start}`, async ({
         innlogging,
-        user,
+        privatPerson,
         flater: sider,
     }) => {
         await test.step(`Bruker går til ${start} uten å være logget inn`, async () => {
@@ -26,11 +26,11 @@ for (const { start, landing } of flater) {
         });
 
         await test.step("Bruker logger inn", async () => {
-            await innlogging.viaInnloggingsflyten(sider[landing], user);
+            await innlogging.viaInnloggingsflyten(sider[landing], privatPerson);
         });
 
         await test.step(`Bruker skal være innlogget på ${landing}`, async () => {
-            await sider[landing].assertLoggedIn(user);
+            await sider[landing].assertLoggedIn(privatPerson);
         });
 
         await test.step("Bruker skal fortsatt være innlogget på de andre flatene", async () => {
@@ -38,7 +38,7 @@ for (const { start, landing } of flater) {
                 .map((f) => f.start)
                 .filter((f) => f !== start)) {
                 await sider[flate].navigateTo();
-                await sider[flate].assertLoggedIn(user);
+                await sider[flate].assertLoggedIn(privatPerson);
             }
         });
     });
