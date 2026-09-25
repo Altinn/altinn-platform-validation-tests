@@ -17,7 +17,7 @@ teamets hemmelighetsforvaltning. Lokale `.env`-filer er gitignorert. URLene til 
 ligger i miljøets project i [playwright.config.ts](playwright.config.ts).
 
 Testpersoner leses fra `testdata/<brukergruppe>/<miljø>.csv`, relativt til `playwright/`, i alle miljøer.
-Manglende eller tom fil for en brukergruppe feiler testene i miljøet før noen av dem starter.
+Mangler fila, eller er den tom, feiler testen som ber om brukeren med en gang.
 at23 og tt02 har filer i repoet. Prod-brukerne kan ikke sjekkes inn, og monteres fra secreten
 `playwright-testdata-prod` med én nøkkel per brukergruppe, for eksempel `dagligLeder.csv`.
 `TESTDATA_ROOT` sier hvor de ligger, se `hack/playwright-cronjobs.jsonnet`. Filene skal ha kolonnene `pid,name`.

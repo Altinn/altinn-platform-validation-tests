@@ -34,7 +34,7 @@ function lesTestbrukere(path: Testbruker, miljo: Miljo): TestUser[] | null {
     return parse(innhold, { columns: true, skip_empty_lines: true, trim: true });
 }
 
-export function getTestUsers(path: Testbruker, miljo: Miljo): TestUser[] {
+function getTestUsers(path: Testbruker, miljo: Miljo): TestUser[] {
     const brukere = lesTestbrukere(path, miljo);
 
     if (!brukere?.length) {
