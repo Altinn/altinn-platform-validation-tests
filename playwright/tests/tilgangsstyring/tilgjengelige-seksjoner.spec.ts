@@ -1,7 +1,6 @@
 import { alleSprak } from "../../config/sprak";
 import { test } from "../../fixtures/test";
 import { Seksjon } from "../../pages/tilgangsstyring/seksjoner";
-import { Testbruker } from "../../testdata";
 
 /**
  * Regelen for hva som vises ligger i useSidebarItems.tsx i altinn-access-management-frontend.
@@ -18,15 +17,15 @@ for (const valgtSprak of alleSprak) {
     test.describe(
         `Tilgangsstyring på ${valgtSprak}`,
         () => {
-            test.use({ sprak: valgtSprak, testbrukerPath: Testbruker.DagligLeder });
+            test.use({ sprak: valgtSprak });
 
             test("Daglig leder som representerer seg selv ser sine navigasjonsvalg", async ({
                 innlogging,
-                user,
+                dagligLeder,
                 tilgangsstyring,
             }) => {
                 await test.step("Daglig leder logger inn og representerer seg selv", async () => {
-                    await innlogging.logIn(tilgangsstyring.forside, user);
+                    await innlogging.logIn(tilgangsstyring.forside, dagligLeder);
                     await tilgangsstyring.forside.assertLoggedIn();
                 });
 

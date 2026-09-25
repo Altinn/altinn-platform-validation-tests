@@ -16,7 +16,7 @@ Sett `TEST_IDP_PASSWORD` i `.env` for innlogging med Mockporten. Tilgangsverdien
 teamets hemmelighetsforvaltning. Lokale `.env`-filer er gitignorert. URLene til flatene
 ligger i miljøets project i [playwright.config.ts](playwright.config.ts).
 
-Testpersoner leses fra `<testbrukerPath>/<miljø>.csv`, relativt til `playwright/`, i alle miljøer.
+Testpersoner leses fra `testdata/<brukergruppe>/<miljø>.csv`, relativt til `playwright/`, i alle miljøer.
 Manglende eller tom fil for en brukergruppe feiler testene i miljøet før noen av dem starter.
 at23 og tt02 har filer i repoet. Prod-brukerne kan ikke sjekkes inn, og monteres fra secreten
 `playwright-testdata-prod` med én nøkkel per brukergruppe, for eksempel `dagligLeder.csv`.
@@ -64,25 +64,25 @@ En ny spec kjører i at23 og tt02 uten videre. tt02 hopper over det som ikke er
 kjørt ut der ennå med `testIgnore`, og prod kjører bare filene som er ført opp i
 `testMatch`.
 
-Hvilken fil testdata hentes fra settes øverst i spec-fila:
+En test ber om testpersonen den trenger ved navn, så det står i testen selv
+hvilke testdata den bruker:
 
 ```ts
-import { Testbruker } from "../../testdata";
-
-test.use({ testbrukerPath: Testbruker.PrivatPersonUtenVirksomhet }); // eller Testbruker.DagligLeder
+test("...", async ({ innlogging, dagligLeder, tilgangsstyring }) => {
+    await innlogging.logIn(tilgangsstyring.forside, dagligLeder);
+});
 ```
+
+Fixturene er `privatPerson` og `dagligLeder`, se `fixtures/testbruker.fixture.ts`.
 
 Nye tester bør minst være kjørt i `at23` og `tt02` og merget og verifisert ok etter merge til main før de føres opp i prod-projectet.
 
-Enumen `Testbruker` i [testdata/index.ts](testdata/index.ts) inneholder mappestiene
-relativt til `playwright/`, for eksempel `testdata/privatPersonUtenVirksomhet`.
-Projectet `at23` gir da filen [testdata/privatPersonUtenVirksomhet/at23.csv](testdata/privatPersonUtenVirksomhet/at23.csv).
-Bruk «Gå til definisjon» på enum-medlemmet for å åpne `testdata/index.ts`,
-rett ved siden av mappene med CSV-filer. Hvert medlem har
-også dokumentasjonslenker til CSV-filene for at23 og tt02.
-Standarden er `Testbruker.PrivatPersonUtenVirksomhet`. Nye brukergrupper legges til
-i enumen med mappestien som verdi. Feilstavede enum-navn og fritekstverdier
-gir feil i editoren og ved `npm run typecheck`. Playwright typesjekker ikke selv ved kjøring.
+Brukergruppene står i enumen `Testbruker` i [testdata/index.ts](testdata/index.ts),
+med mappestien som verdi, for eksempel `testdata/dagligLeder`. Projectet `at23`
+gir da filen [testdata/dagligLeder/at23.csv](testdata/dagligLeder/at23.csv).
+En ny brukergruppe trenger en mappe med CSV-filer, et medlem i enumen og en
+fixture i `fixtures/testbruker.fixture.ts`, og i prod en nøkkel i secreten og i
+`hack/playwright-cronjobs.jsonnet`.
 Hvem hver test faktisk kjørte som står i rapporten, som `testperson`.
 Prod skal bare legges til for tester som
 ikke endrer data.

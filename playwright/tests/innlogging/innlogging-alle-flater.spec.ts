@@ -1,7 +1,4 @@
 import { Flate, test } from "../../fixtures/test";
-import { Testbruker } from "../../testdata";
-
-test.use({ testbrukerPath: Testbruker.PrivatPersonUtenVirksomhet });
 
 const flater: { start: Flate; landing: Flate }[] = [
     { start: "arbeidsflate", landing: "arbeidsflate" },
@@ -13,7 +10,7 @@ const flater: { start: Flate; landing: Flate }[] = [
 for (const { start, landing } of flater) {
     test(
         `Innlogget sesjon gjelder på tvers av flatene etter besøk på ${start}`,
-        async ({ innlogging, user, sider }) => {
+        async ({ innlogging, privatPerson, sider }) => {
             await test.step(`Bruker går til ${start} uten å være logget inn`, async () => {
                 await sider[start].navigateTo();
                 if (start !== "infoportalen") {
@@ -22,11 +19,11 @@ for (const { start, landing } of flater) {
             });
 
             await test.step("Bruker logger inn", async () => {
-                await innlogging.viaInnloggingsflyten(sider[landing], user);
+                await innlogging.viaInnloggingsflyten(sider[landing], privatPerson);
             });
 
             await test.step(`Bruker skal være innlogget på ${landing}`, async () => {
-                await sider[landing].assertLoggedIn(user);
+                await sider[landing].assertLoggedIn(privatPerson);
             });
 
             await test.step("Bruker skal fortsatt være innlogget på de andre flatene", async () => {
@@ -34,7 +31,7 @@ for (const { start, landing } of flater) {
                     .map((f) => f.start)
                     .filter((f) => f !== start)) {
                     await sider[flate].navigateTo();
-                    await sider[flate].assertLoggedIn(user);
+                    await sider[flate].assertLoggedIn(privatPerson);
                 }
             });
         },

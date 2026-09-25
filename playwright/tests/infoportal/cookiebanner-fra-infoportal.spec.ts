@@ -1,13 +1,10 @@
 import { test } from "../../fixtures/test";
-import { Testbruker } from "../../testdata";
-
-test.use({ testbrukerPath: Testbruker.PrivatPersonUtenVirksomhet });
 
 test(
     "Cookievalg fra infoportalen tas hensyn til i arbeidsflate, profil og tilgangsstyring",
     async ({
         innlogging,
-        user,
+        privatPerson,
         arbeidsflate,
         tilgangsstyring,
         infoportal,
@@ -19,7 +16,7 @@ test(
         });
 
         await test.step("Banneret vises ikke igjen på arbeidsflate", async () => {
-            await innlogging.logIn(arbeidsflate.forside, user);
+            await innlogging.logIn(arbeidsflate.forside, privatPerson);
             // Flaten må være kommet opp først. Banneret rendres tidlig, så "vises ikke"
             // er sant også på en tom side.
             await arbeidsflate.forside.assertLoggedIn();

@@ -1,13 +1,10 @@
 import { test } from "../../fixtures/test";
-import { Testbruker } from "../../testdata";
-
-test.use({ testbrukerPath: Testbruker.PrivatPersonUtenVirksomhet });
 
 test(
     "Infoportalens header gjenspeiler pålogget bruker og valgt aktør etter navigering ut fra arbeidsflate",
-    async ({ innlogging, user, arbeidsflate, infoportal }) => {
+    async ({ innlogging, privatPerson, arbeidsflate, infoportal }) => {
         await test.step("Bruker logger inn på arbeidsflate", async () => {
-            await innlogging.logIn(arbeidsflate.forside, user);
+            await innlogging.logIn(arbeidsflate.forside, privatPerson);
             await arbeidsflate.forside.assertLoggedIn();
         });
 
@@ -16,7 +13,7 @@ test(
         });
 
         await test.step("Infoportalens header viser pålogget bruker som valgt aktør", async () => {
-            await infoportal.forside.assertLoggedIn(user);
+            await infoportal.forside.assertLoggedIn(privatPerson);
         });
     },
 );

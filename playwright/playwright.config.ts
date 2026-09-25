@@ -5,7 +5,6 @@ import path from "path";
 
 import { Sprak } from "./config/sprak";
 import { Miljo, Urler } from "./miljo";
-import { Testbruker } from "./testdata";
 
 // Hemmelighetene kan komme fra shellet eller fra gitignorerte .env-filer. Shellet
 // vinner, tomme verdier hoppes over.
@@ -49,7 +48,7 @@ const krevIdporten = mockporten ? ["innlogging/innlogging-alle-flater.spec.ts"] 
 const felles = { ...devices["Desktop Chrome"], mockporten };
 
 export default defineConfig<
-    { sprak: Sprak; testbrukerPath: Testbruker },
+    { sprak: Sprak },
     { miljo: Miljo; urler: Urler; mockporten: boolean }
 >({
     testDir: "./tests",

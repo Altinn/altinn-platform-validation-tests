@@ -1,7 +1,4 @@
 import { Flate, test } from "../../fixtures/test";
-import { Testbruker } from "../../testdata";
-
-test.use({ testbrukerPath: Testbruker.PrivatPersonUtenVirksomhet });
 
 const flater: Flate[] = [
     "arbeidsflate",
@@ -13,9 +10,9 @@ const flater: Flate[] = [
 for (const flate of flater) {
     test(
         `Bruker logger inn med Mockporten og lander innlogget på ${flate}`,
-        async ({ innlogging, user, sider }) => {
-            await innlogging.viaMockporten(sider[flate], user);
-            await sider[flate].assertLoggedIn(user);
+        async ({ innlogging, privatPerson, sider }) => {
+            await innlogging.viaMockporten(sider[flate], privatPerson);
+            await sider[flate].assertLoggedIn(privatPerson);
         },
     );
 }
