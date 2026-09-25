@@ -1,3 +1,10 @@
+export {
+    AccessListMembersBuilder,
+    AccessListResourceConnectionBuilder,
+    CreateAccessListBuilder,
+    PartyUrn,
+    ResourceUrn,
+} from "./access-list.builders.js";
 export { AccessListClient } from "./access-list.js";
 export { AccessListMembershipsClient } from "./access-list-memberships.js";
 export {
