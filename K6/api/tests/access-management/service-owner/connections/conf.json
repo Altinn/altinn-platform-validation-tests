@@ -1,0 +1,11 @@
+{
+    "vus": 5,
+    "iterations": 100,
+    "summaryTrendStats": [
+        "min",
+        "med",
+        "max",
+        "p(95)",
+        "p(99)"
+    ]
+}

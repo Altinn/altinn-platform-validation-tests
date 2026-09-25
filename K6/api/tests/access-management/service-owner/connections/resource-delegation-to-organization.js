@@ -4,7 +4,7 @@ import { GetResourceRightsQueryBuilder } from "../../../../../clients/access-man
 import { getItemFromList, getOptions } from "../../../../../helpers.js";
 import { ConnectionsCreateResource, ConnectionsGetResourceRights } from "../../../../building-blocks/access-management/service-owner/connections/index.js";
 import { ConnectionsDomainChecks } from "../../../../domain-checks/access-management/service-owner/connections.js";
-import { delegationRequest, getClients, getServiceOwnerTokenOpts, recipientsOfType, revokeDelegations, setup } from "./common.js";
+import { delegationRequest, getClients, getServiceOwnerTokenOpts, recipientsForVu, revokeDelegations, setup } from "./common.js";
 
 export { setup };
 
@@ -39,7 +39,9 @@ export const options = getOptions([
  */
 export default function (data) {
     const serviceOwner = getItemFromList(data.serviceOwners);
-    const recipient = getItemFromList(recipientsOfType(data, RECIPIENT_TYPE));
+    // This VU's own slice, so two VUs never draw the same recipient on the same
+    // iteration and write the one delegation twice.
+    const recipient = getItemFromList(recipientsForVu(data, RECIPIENT_TYPE));
     const { connections, tokenGenerator } = getClients();
 
     tokenGenerator.setTokenGeneratorOptions(getServiceOwnerTokenOpts(serviceOwner));
