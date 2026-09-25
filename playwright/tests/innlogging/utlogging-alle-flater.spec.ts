@@ -1,8 +1,5 @@
-import { parse } from "csv-parse/sync";
-import fs from "fs";
-import path from "path";
-
 import type { TestUser } from "../../config/environment";
+import { readCsv } from "../../config/testdata";
 import { Flate, testMedFlater as test } from "../../fixtures/test";
 import { gjeldendeMiljo, runInEnvironment } from "../../miljo";
 
@@ -13,7 +10,11 @@ import { gjeldendeMiljo, runInEnvironment } from "../../miljo";
 runInEnvironment("at23", "tt02", "prod");
 
 // Testpersonene, én rad per worker.
-const testdata = path.join(__dirname, "../../testdata/privatPersonUtenVirksomhet", `${gjeldendeMiljo()}.csv`);
+let privatPerson: TestUser;
+
+test.beforeAll(({}, testInfo) => {
+    privatPerson = readCsv<TestUser>(`privatPersonUtenVirksomhet/${gjeldendeMiljo()}.csv`)[testInfo.parallelIndex];
+});
 
 /**
  * Flatene som skal være utlogget etterpå. Infoportalen er med her, men ikke som
@@ -35,9 +36,7 @@ for (const start of utloggingsflater) {
     test(`Bruker er utlogget på alle flater etter utlogging fra ${start}`, async ({
         innlogging,
         flater: sider,
-    }, testInfo) => {
-        const brukere = parse(fs.readFileSync(testdata), { columns: true, skip_empty_lines: true }) as TestUser[];
-        const privatPerson = brukere[testInfo.parallelIndex];
+    }) => {
 
         await test.step(`Bruker logger inn og lander på ${start}`, async () => {
             await innlogging.logIn(sider[start], privatPerson);
