@@ -3,7 +3,7 @@ import dotenv from "dotenv";
 import path from "path";
 
 import { Sprak } from "./config/sprak";
-import { Miljo, Urler } from "./miljo";
+import { Urler } from "./miljo";
 
 // Hemmelighetene kan komme fra shellet eller fra gitignorerte .env-filer. Shellet vinner.
 dotenv.config({
@@ -15,15 +15,11 @@ dotenv.config({
 // `MOCKPORTEN=true npm run test:at23`. Prod-projectet angir det selv.
 const mockporten = process.env.MOCKPORTEN === "true";
 
-// Bare Chrome inntil videre; Firefox, Edge og Safari er skrudd av, se #619.
-const felles = { ...devices["Desktop Chrome"], mockporten };
-
 export default defineConfig<
     { sprak: Sprak },
-    { miljo: Miljo; urler: Urler; mockporten: boolean }
+    { urler: Urler; mockporten: boolean }
 >({
     testDir: "./tests",
-    testMatch: "**/*.spec.ts",
     fullyParallel: true,
     // Minst én retry, slik at en flaky kjøring ikke rapporteres som feil.
     // Traces skrives ved første retry. --retries overstyrer.
@@ -37,8 +33,11 @@ export default defineConfig<
     // Playwrights standard er fem sekunder, og det er for "tight" - vi laster ofte mange elementer på de ulike
     expect: { timeout: 10_000 },
     use: {
+        // Bare Chrome inntil videre; Firefox, Edge og Safari er skrudd av, se #619.
+        ...devices["Desktop Chrome"],
         trace: "on-first-retry",
         video: "retain-on-failure",
+        mockporten,
     },
     // Ett project per miljø, valgt med --project=<miljø>. En ny spec kjører i at23
     // med en gang, og i tt02 og prod først når den føres opp i testMatch.
@@ -46,8 +45,6 @@ export default defineConfig<
         {
             name: "at23",
             use: {
-                ...felles,
-                miljo: "at23",
                 urler: {
                     arbeidsflate: "https://af.at23.altinn.cloud",
                     tilgangsstyring: "https://am.ui.at23.altinn.cloud",
@@ -68,8 +65,6 @@ export default defineConfig<
                 "tilgangsstyring/tilgjengelige-seksjoner.spec.ts",
             ],
             use: {
-                ...felles,
-                miljo: "tt02",
                 urler: {
                     arbeidsflate: "https://af.tt02.altinn.no",
                     tilgangsstyring: "https://am.ui.tt02.altinn.no",
@@ -87,9 +82,7 @@ export default defineConfig<
                 "tilgangsstyring/tilgjengelige-seksjoner.spec.ts",
             ],
             use: {
-                ...felles,
                 mockporten: true,
-                miljo: "prod",
                 urler: {
                     arbeidsflate: "https://af.altinn.no",
                     tilgangsstyring: "https://am.ui.altinn.no",

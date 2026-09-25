@@ -17,10 +17,14 @@ import { test as miljoTest } from "./miljo.fixture";
  */
 function testperson(gruppe: Testbruker) {
     return async (
-        { miljo }: { miljo: Miljo },
+        // Playwright krever destrukturering her, selv når fixturen ikke trenger andre.
+
+        {},
         use: (bruker: TestUser) => Promise<void>,
         testInfo: TestInfo,
     ) => {
+        // Projectet heter det samme som miljøet, se playwright.config.ts.
+        const miljo = testInfo.project.name as Miljo;
         const bruker = getTestUser(gruppe, miljo, testInfo.parallelIndex);
 
         testInfo.annotations.push({
