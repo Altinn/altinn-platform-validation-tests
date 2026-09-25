@@ -11,6 +11,12 @@ export interface Side {
     assertLoggedIn(user: TestUser): Promise<void>;
 
     /**
+     * Tar en utlogget bruker fra flaten til ID-porten. Flatene bak innlogging gjør
+     * det av seg selv, mens de åpne har en innloggingsknapp.
+     */
+    startInnlogging(): Promise<void>;
+
+    /**
      * Hva flaten viser en utlogget bruker. Flatene bak innlogging sender henne til
      * ID-porten, mens de åpne bare slutter å vise hvem hun er, så hver flate svarer
      * for sin egen del.

@@ -76,10 +76,6 @@ export class Meny {
         return this.page.getByRole("button", { name: /logg inn|login/i });
     }
 
-    async isLoginButtonVisible() {
-        return this.loginButton().isVisible();
-    }
-
     async clickLoginButton() {
         await this.loginButton().click();
     }

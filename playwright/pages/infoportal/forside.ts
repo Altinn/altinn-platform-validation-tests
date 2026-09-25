@@ -2,18 +2,26 @@ import { expect, Page } from "@playwright/test";
 
 import { Sprak } from "../../config/sprak";
 import { TestUser } from "../../config/testdata";
-import { gaaTil, REDIRECT_TIMEOUT } from "../felles/navigasjon";
+import { Meny } from "../felles/meny";
+import { gaaTil, REDIRECT_TIMEOUT, ventPaaIdporten } from "../felles/navigasjon";
 import { Side } from "../side";
 
 export class InfoportalForside implements Side {
     constructor(
         private page: Page,
         readonly url: string,
+        private meny = new Meny(page),
     ) {}
 
     // Litt lenger timeout fordi infoportalen laster mye innhold
     async navigateTo() {
         await gaaTil(this.page, this.url, 15_000);
+    }
+
+    // Infoportalen er åpen, så innloggingen starter med knappen i headeren.
+    async startInnlogging() {
+        await this.meny.clickLoginButton();
+        await ventPaaIdporten(this.page);
     }
 
     // Infoportalen har ingen egen innloggingsindikator, så navnet på brukeren er

@@ -19,7 +19,7 @@ for (const { start, landing } of flater) {
             });
 
             await test.step("Bruker logger inn", async () => {
-                await innlogging.viaInnloggingsflyten(sider[landing], privatPerson);
+                await innlogging.viaInnloggingsflyten(sider[start], sider[landing], privatPerson);
             });
 
             await test.step(`Bruker skal være innlogget på ${landing}`, async () => {

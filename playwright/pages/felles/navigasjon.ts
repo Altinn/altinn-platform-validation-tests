@@ -1,4 +1,4 @@
-import { Page } from "@playwright/test";
+import { expect, Page } from "@playwright/test";
 
 /**
  * Hvor lenge en flate får på å komme til rette etter en utlogging. Playwrights
@@ -42,4 +42,12 @@ export async function gaaTil(page: Page, url: string, timeout = 20_000, maxAttem
             console.warn(`Navigering avbrutt (${attempt}/${maxAttempts}): ${url}`);
         }
     }
+}
+
+/**
+ * Flatene bak innlogging sender en utlogget bruker til ID-porten av seg selv.
+ * Navigeringen kan fortsatt være på vei gjennom Altinns authorize-endepunkt.
+ */
+export async function ventPaaIdporten(page: Page) {
+    await expect(page, "Er sendt til ID-porten").toHaveURL(/idporten/, { timeout: REDIRECT_TIMEOUT });
 }

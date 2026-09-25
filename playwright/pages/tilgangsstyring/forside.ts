@@ -3,7 +3,7 @@ import { expect, Page } from "@playwright/test";
 import { Sprak } from "../../config/sprak";
 import { TestUser } from "../../config/testdata";
 import { Meny } from "../felles/meny";
-import { gaaTil } from "../felles/navigasjon";
+import { gaaTil, ventPaaIdporten } from "../felles/navigasjon";
 import { assertFlateUtlogget } from "../felles/utlogget";
 import { Side } from "../side";
 import { Seksjon, seksjonsnavn } from "./seksjoner";
@@ -23,6 +23,10 @@ export class TilgangsstyringForside implements Side {
 
     async navigateTo() {
         await gaaTil(this.page, this.url);
+    }
+
+    async startInnlogging() {
+        await ventPaaIdporten(this.page);
     }
 
     // Flatene bak innlogging svarer likt for en utlogget bruker, så påstanden

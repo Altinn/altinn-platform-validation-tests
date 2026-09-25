@@ -2,7 +2,7 @@ import { expect, Page } from "@playwright/test";
 
 import { TestUser } from "../../config/testdata";
 import { Meny } from "../felles/meny";
-import { gaaTil } from "../felles/navigasjon";
+import { gaaTil, ventPaaIdporten } from "../felles/navigasjon";
 import { assertFlateUtlogget } from "../felles/utlogget";
 import { Side } from "../side";
 
@@ -15,6 +15,10 @@ export class ArbeidsflateForside implements Side {
 
     async navigateTo() {
         await gaaTil(this.page, this.url);
+    }
+
+    async startInnlogging() {
+        await ventPaaIdporten(this.page);
     }
 
     async assertLoggedOut(user: TestUser) {

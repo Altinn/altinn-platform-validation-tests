@@ -43,7 +43,7 @@ export class Innlogging {
         }
 
         await side.navigateTo();
-        await this.viaIdporten(user);
+        await this.viaIdporten(side, user);
         await side.navigateTo();
     }
 
@@ -56,37 +56,30 @@ export class Innlogging {
         });
     }
 
-    async viaIdporten(user: TestUser) {
+    /** Logger inn gjennom ID-porten fra `side`, som brukeren står på. */
+    async viaIdporten(side: Side, user: TestUser) {
         if (this.brukMockporten) {
             throw new Error("Kjøringen bruker Mockporten, ikke TestID. Bruk logIn().");
         }
 
         await test.step("Innlogging med TestID", async () => {
-            // Navigeringen kan fortsatt være på vei gjennom Altinns authorize-endepunkt.
-            await expect.poll(
-                async () => this.page.url().includes("idporten") || await this.meny.isLoginButtonVisible(),
-                { message: "ID-porten eller innloggingsknappen er klar", timeout: REDIRECT_TIMEOUT },
-            ).toBe(true);
-
-            if (!this.page.url().includes("idporten")) {
-                await this.meny.clickLoginButton();
-            }
+            await side.startInnlogging();
             await this.idporten.login(user);
             await this.meny.lukkAktorvelger(user);
         });
     }
 
     /**
-   * Logger inn fra flaten brukeren står på, og lander på `landing`. Går gjennom
-   * ID-porten med TestID, eller Mockporten når det er angitt.
+   * Logger inn fra `start`, som brukeren står på, og lander på `landing`. Går
+   * gjennom ID-porten med TestID, eller Mockporten når det er angitt.
    */
-    async viaInnloggingsflyten(landing: Side, user: TestUser) {
+    async viaInnloggingsflyten(start: Side, landing: Side, user: TestUser) {
         if (this.brukMockporten) {
             await this.viaMockporten(landing, user);
             return;
         }
 
-        await this.viaIdporten(user);
+        await this.viaIdporten(start, user);
     }
 
     /**
