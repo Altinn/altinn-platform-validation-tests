@@ -30,8 +30,6 @@ les(".env");
 // Mockporten i stedet for TestID, for når ID-porten er nede i et testmiljø.
 // `MOCKPORTEN=true npm run test:at23`. Prod-projectet angir det selv.
 const mockporten = process.env.MOCKPORTEN === "true";
-// Specene som tester innloggingsflyten gjennom ID-porten gir ikke mening uten den.
-const krevIdporten = mockporten ? ["innlogging/innlogging-alle-flater.spec.ts"] : [];
 
 // Bare Chrome inntil videre; Firefox, Edge og Safari er skrudd av, se #619.
 const felles = { ...devices["Desktop Chrome"], mockporten };
@@ -63,7 +61,6 @@ export default defineConfig<
     projects: [
         {
             name: "at23",
-            testIgnore: krevIdporten,
             use: {
                 ...felles,
                 miljo: "at23",
@@ -78,7 +75,7 @@ export default defineConfig<
         {
             name: "tt02",
             // Cookiebanneret er ikke kjørt ut i tt02 ennå.
-            testIgnore: ["infoportal/cookiebanner-*.spec.ts", ...krevIdporten],
+            testIgnore: ["infoportal/cookiebanner-*.spec.ts"],
             use: {
                 ...felles,
                 miljo: "tt02",

@@ -47,7 +47,6 @@ I VS Code-utvidelsen velger du miljø under Projects.
 det er angitt. Prod-projectet angir `mockporten: true` i `playwright.config.ts`, siden
 TestID ikke finnes der. TestID-feil feiler testen, uten fallback til Mockporten.
 Er ID-porten nede, kan du angi Mockporten for en kjøring med `MOCKPORTEN=true npm run test:at23`.
-`innlogging-alle-flater.spec.ts`, som tester innloggingen gjennom ID-porten, kjøres da ikke.
 Mockporten testes også for seg i at23, tt02 og prod, i `tests/innlogging/innlogging-mockporten.spec.ts`.
 
 Tester som kontrollerer innlogging fra en bestemt flate bruker
