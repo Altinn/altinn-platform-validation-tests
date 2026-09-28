@@ -2,9 +2,8 @@ import { expect, Page } from "@playwright/test";
 
 import { TestUser } from "../../config/environment";
 import { gaaTil, REDIRECT_TIMEOUT } from "../felles/navigasjon";
-import { Side } from "../side";
 
-export class InfoportalForside implements Side {
+export class InfoportalForside {
     constructor(
         private page: Page,
         readonly url: string,

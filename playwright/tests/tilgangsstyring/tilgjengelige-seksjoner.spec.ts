@@ -1,4 +1,3 @@
-import { alleSprak } from "../../config/sprak";
 import { test } from "../../fixtures/test";
 import { Seksjon } from "../../pages/tilgangsstyring/seksjoner";
 
@@ -12,27 +11,23 @@ const forventedeSeksjoner = [
     Seksjon.SamtykkeOgFullmaktsavtaler,
 ];
 
-for (const valgtSprak of alleSprak) {
-    test.describe(`Tilgangsstyring på ${valgtSprak}`, () => {
-        test.use({ sprak: valgtSprak });
-
-        test("Bruker ser oversikt over navigasjonsvalg", { tag: ["@at23", "@tt02", "@prod"] }, async ({
-            innlogging,
-            user,
-            tilgangsstyring,
-        }) => {
-            await test.step("Innlogget bruker åpner tilgangsstyring", async () => {
-                await innlogging.logIn(tilgangsstyring.forside, user);
-                await tilgangsstyring.forside.assertLoggedIn();
-            });
-
-            await test.step(`Setter språk til ${valgtSprak}`, async () => {
-                await innlogging.setLanguage(valgtSprak);
-            });
-
-            await test.step("Verifiser tilgjengelige seksjoner", async () => {
-                await tilgangsstyring.forside.assertSections(forventedeSeksjoner);
-            });
-        });
+// Står i spraktester i playwright.config.ts, så den kjører én gang per språk.
+test("Bruker ser oversikt over navigasjonsvalg", { tag: ["@at23", "@tt02", "@prod"] }, async ({
+    innlogging,
+    user,
+    sprak,
+    tilgangsstyring,
+}) => {
+    await test.step("Innlogget bruker åpner tilgangsstyring", async () => {
+        await innlogging.logIn(tilgangsstyring, user);
+        await tilgangsstyring.assertLoggedIn();
     });
-}
+
+    await test.step(`Setter språk til ${sprak}`, async () => {
+        await tilgangsstyring.meny.setLanguage(sprak);
+    });
+
+    await test.step("Verifiser tilgjengelige seksjoner", async () => {
+        await tilgangsstyring.assertSections(forventedeSeksjoner);
+    });
+});

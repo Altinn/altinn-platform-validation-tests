@@ -1,37 +1,40 @@
-import { Flate, testMedFlater as test } from "../../fixtures/test";
+import { test } from "../../fixtures/test";
 
-const flater: { start: Flate; landing: Flate }[] = [
-    { start: "arbeidsflate", landing: "arbeidsflate" },
-    { start: "tilgangsstyring", landing: "tilgangsstyring" },
-    { start: "infoportalen", landing: "arbeidsflate" },
-    { start: "arbeidsflate-profil", landing: "arbeidsflate-profil" },
-];
+const flater = [
+    "arbeidsflate",
+    "arbeidsflateProfil",
+    "tilgangsstyring",
+    "infoportal",
+] as const;
 
-for (const { start, landing } of flater) {
+for (const start of flater) {
     test(`Bruker er innlogget på alle flater etter innlogging fra ${start}`, { tag: ["@at23", "@tt02", "@prod"] }, async ({
         innlogging,
         user,
-        flater: sider,
+        arbeidsflate,
+        arbeidsflateProfil,
+        tilgangsstyring,
+        infoportal,
     }) => {
+        const sider = { arbeidsflate, arbeidsflateProfil, tilgangsstyring, infoportal };
+
         await test.step(`Bruker går til ${start} uten å være logget inn`, async () => {
             await sider[start].navigateTo();
-            if (start !== "infoportalen") {
-                await innlogging.assertOnIdportenLogin();
+            if (start !== "infoportal") {
+                await innlogging.assertOnIdporten();
             }
         });
 
         await test.step("Bruker logger inn", async () => {
-            await innlogging.viaInnloggingsflyten(sider[landing], user);
+            await innlogging.logIn(sider[start], user);
         });
 
-        await test.step(`Bruker skal være innlogget på ${landing}`, async () => {
-            await sider[landing].assertLoggedIn(user);
+        await test.step(`Bruker skal være innlogget på ${start}`, async () => {
+            await sider[start].assertLoggedIn(user);
         });
 
         await test.step("Bruker skal fortsatt være innlogget på de andre flatene", async () => {
-            for (const flate of flater
-                .map((f) => f.start)
-                .filter((f) => f !== start)) {
+            for (const flate of flater.filter((f) => f !== start)) {
                 await sider[flate].navigateTo();
                 await sider[flate].assertLoggedIn(user);
             }

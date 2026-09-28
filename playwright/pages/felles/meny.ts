@@ -39,28 +39,6 @@ export class Meny {
         });
     }
 
-    async clickLoginButton() {
-        await this.page.getByRole("button", {
-            name: /logg inn|login/i,
-        }).click();
-    }
-
-    /**
-     * Utloggingen ligger i menyen, så den må åpnes først. Navnet er forankret, slik
-     * menyknappens er: uforankret ville et framtidig "Logg ut av alle enheter" også
-     * truffet.
-     */
-    async clickLogoutButton() {
-        await this.clickMenuButton();
-
-        const logoutButton = this.page.getByRole("button", {
-            name: /^(logg ut|log out)$/i,
-        }).first();
-
-        await expect(logoutButton, "Logg ut ligger i menyen").toBeEnabled();
-        await logoutButton.click();
-    }
-
     async setLanguage(language: Sprak) {
         await this.clickMenuButton();
         await this.page

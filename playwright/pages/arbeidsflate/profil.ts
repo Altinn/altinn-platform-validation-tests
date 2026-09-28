@@ -4,15 +4,14 @@ import { TestUser } from "../../config/environment";
 import { Meny } from "../felles/meny";
 import { gaaTil } from "../felles/navigasjon";
 import { assertFlateUtlogget } from "../felles/utlogget";
-import { Side } from "../side";
 
-export class ArbeidsflateProfil implements Side {
+export class ArbeidsflateProfil {
     readonly url: string;
 
     constructor(
         private page: Page,
         arbeidsflate: string,
-        private meny = new Meny(page),
+        readonly meny = new Meny(page),
     ) {
         this.url = `${arbeidsflate}/profile`;
     }

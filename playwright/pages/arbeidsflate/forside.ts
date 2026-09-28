@@ -4,13 +4,12 @@ import { TestUser } from "../../config/environment";
 import { Meny } from "../felles/meny";
 import { gaaTil } from "../felles/navigasjon";
 import { assertFlateUtlogget } from "../felles/utlogget";
-import { Side } from "../side";
 
-export class ArbeidsflateForside implements Side {
+export class ArbeidsflateForside {
     constructor(
         private page: Page,
         readonly url: string,
-        private meny = new Meny(page),
+        readonly meny = new Meny(page),
     ) { }
 
     async navigateTo() {

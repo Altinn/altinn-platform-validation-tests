@@ -1,5 +1,6 @@
 import eslint from "@eslint/js";
 import { defineConfig } from "eslint/config";
+import jsdoc from "eslint-plugin-jsdoc";
 import playwright from "eslint-plugin-playwright";
 import simpleImportSort from "eslint-plugin-simple-import-sort";
 import stylistic from "@stylistic/eslint-plugin";
@@ -25,13 +26,13 @@ export default defineConfig(
         files: [
             "tests/**/*.ts",
             "fixtures/**/*.ts",
-            "flows/**/*.ts",
             "pages/**/*.ts",
             "config/**/*.ts",
             "playwright.config.ts",
         ],
 
         plugins: {
+            jsdoc,
             playwright,
             "@stylistic": stylistic,
             "simple-import-sort": simpleImportSort,
@@ -69,6 +70,7 @@ export default defineConfig(
             "@stylistic/linebreak-style": ["error", "unix"],
             "@stylistic/quotes": ["error", "double"],
             "@stylistic/semi": ["error", "always"],
+            "jsdoc/check-alignment": "error",
 
             // Spacing around blocks/statements
             "padding-line-between-statements": [

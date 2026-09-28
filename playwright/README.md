@@ -11,9 +11,10 @@ npx playwright install
 cp .env.example .env
 ```
 
-Fyll inn `TEST_IDP_PASSWORD`, og `TEST_USER_PID` og `TEST_USER_NAME` for miljøet du
-kjører mot. Fødselsnummeret må være syntetisk, altså Tenor-nummer med måned 81-92.
-`.env` og `.env.local` er gitignorert.
+Fyll inn `TEST_IDP_PASSWORD`. `.env` og `.env.local` er gitignorert.
+
+Testbrukerne leses fra `testdata/<gruppe>/<miljø>.csv`, og hver worker får sin egen
+bruker. `prod.csv` er gitignorert, siden prod-brukerne ikke kan sjekkes inn.
 
 ## Kjør
 
@@ -33,7 +34,8 @@ I VS Code-utvidelsen velger du miljø under Projects.
 
 Alt som skiller miljøene, står i `miljoer` i `playwright.config.ts`: URLene og om
 innloggingen går via Mockporten. Hvert miljø blir ett project per nettleser, for
-eksempel `at23-chromium`, og foreløpig er bare Chrome med.
+eksempel `at23-chromium`, og ett per ekstra språk for språktestene, for eksempel
+`at23-chromium-nynorsk`. Foreløpig er bare Chrome med.
 
 En test sier selv hvilke miljøer den er klar for, med en tag per miljø:
 
@@ -47,37 +49,46 @@ verifisert i at23 og tt02, og ikke endrer data.
 
 ## Struktur
 
-Ett hovedområde per mappe, med en fil per underside og en fixture som samler dem:
+Ett hovedområde per mappe, med en page object per underside:
 
 ```
 tests/tilgangsstyring/               testene for området
 pages/tilgangsstyring/forside.ts     page objects, en fil per underside
-fixtures/tilgangsstyring.fixture.ts  samler undersidene til én fixture
-pages/felles/                        meny og innlogging, brukt av alle
-flows/innlogging.ts                  innlogging, på tvers av flatene
+pages/felles/                        meny og innlogging, brukt av alle flatene
 config/                              miljøvariabler og språk
+fixtures/arbeidsflate.fixture.ts     én fixture per område: arbeidsflate,
+fixtures/tilgangsstyring.fixture.ts  tilgangsstyring, infoportal og innlogging
+fixtures/infoportal.fixture.ts
+fixtures/innlogging.fixture.ts
+fixtures/testbrukere.fixture.ts      testbrukerne fra testdata/
+fixtures/test.ts                     slår dem sammen med mergeTests
 ```
 
-En test tar områdene den trenger som fixtures, og en ny underside er en page object
-pluss ett felt i fixturen:
+Hver fixture-fil har ett ansvar og extender `base` fra Playwright, aldri en annen
+fixture-fil. Testene importerer `test` fra `fixtures/test.ts` og ingen andre steder.
+Et nytt ansvar, for eksempel API-klienter, er en ny fil og én linje i `mergeTests`.
+
+En test tar sidene den trenger som fixtures, og en ny side er en page object pluss
+ett felt i områdets fixture:
 
 ```ts
 test('...', async ({ innlogging, user, tilgangsstyring }) => {
-    await innlogging.logIn(tilgangsstyring.forside, user);
-    await tilgangsstyring.forside.assertSections(forventedeSeksjoner);
+    await innlogging.logIn(tilgangsstyring, user);
+    await tilgangsstyring.assertSections(forventedeSeksjoner);
 });
 ```
 
-Språk er en option-fixture med bokmål som default, satt med
-`test.use({ sprak: Sprak.Nynorsk })` per test eller describe-blokk. Områdefixturene
-får språket injisert, så `assertSections` slår opp riktige navn selv.
+Språket er en del av projectet. Alle testene kjører på bokmål, og testene i
+`spraktester` i `playwright.config.ts` kjører i tillegg på nynorsk og engelsk. Sidene får språket injisert,
+så `assertSections` slår opp riktige navn selv.
 
 ## Innlogging
 
-`innlogging.logIn(side, user)` lander innlogget på siden du sender inn. Mekanismen
-ligger i `pages/felles/syntetisk-innlogging.ts` og skal ikke lekke ut i testene.
-Flyten må starte på Altinns login-endepunkt, siden `state` opprettes serverside; en
-authorize-URL kan ikke skrives for hånd eller gjenbrukes.
+`innlogging.logIn(side, user)` logger inn og lander på siden du sender inn. Om det
+skjer via ID-porten med TestID eller via Mockporten styres bare av `mockporten` i
+miljøets project, siden TestID ikke finnes i prod. Testene vet ikke hvilken.
+Begge veiene starter på Altinns login-endepunkt, siden `state` opprettes serverside.
 
-Testene i `tests/innlogging/` bruker `innlogging.viaIdporten`, siden det er
-innloggingsflyten gjennom ID-porten de tester.
+`innlogging.logOut()` logger ut via menyen. Språket settes med
+`tilgangsstyring.meny.setLanguage(sprak)`, på menyen til siden du står på.
+
