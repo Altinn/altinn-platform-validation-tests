@@ -11,10 +11,13 @@ npx playwright install
 cp .env.example .env
 ```
 
-Fyll inn `TEST_IDP_PASSWORD`. `.env` og `.env.local` er gitignorert.
+`TEST_IDP_PASSWORD` trengs bare når projectet har `mockporten: true`, altså i
+praksis prod. `.env` og `.env.local` er gitignorert.
 
 Testbrukerne leses fra `testdata/<gruppe>/<miljø>.csv`, og hver worker får sin egen
 bruker. `prod.csv` er gitignorert, siden prod-brukerne ikke kan sjekkes inn.
+`TEST_DATA_PATH` peker på en annen testdata-mappe med samme oppbygning, for eksempel
+en som er montert inn i poden.
 
 ## Kjør
 

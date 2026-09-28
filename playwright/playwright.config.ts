@@ -64,7 +64,7 @@ export default defineConfig<{
     // Traces skrives ved første retry. --retries overstyrer.
     retries: process.env.CI ? 2 : 1,
     reporter: [
-        ["html", { open: "never" }],
+        ["html", { open: "never", port: 6060 }],
         ["junit", { outputFile: "test-results.xml" }],
         ["json", { outputFile: "test-results.json" }],
     ],
