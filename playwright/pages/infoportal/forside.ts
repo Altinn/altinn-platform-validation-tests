@@ -2,12 +2,14 @@ import { expect, Page } from "@playwright/test";
 
 import { TestUser } from "../../config/environment";
 import { Sprak } from "../../config/sprak";
+import { Cookiebanner } from "../felles/cookiebanner";
 import { gaaTil, REDIRECT_TIMEOUT } from "../felles/navigasjon";
 
 export class InfoportalForside {
     constructor(
         private page: Page,
         readonly url: string,
+        readonly cookiebanner = new Cookiebanner(page),
     ) { }
 
     // Infoportalen har alltid navigert med et strammere tak enn de andre flatene.

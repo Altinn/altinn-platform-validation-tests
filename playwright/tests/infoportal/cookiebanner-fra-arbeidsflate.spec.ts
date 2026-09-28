@@ -6,11 +6,10 @@ test("Cookievalg fra arbeidsflate tas hensyn til i infoportalen", { tag: ["@at23
     user,
     arbeidsflate,
     infoportal,
-    cookiebanner,
 }) => {
     await test.step("Bruker godtar informasjonskapsler på arbeidsflate", async () => {
         await innlogging.logIn(arbeidsflate, user);
-        await cookiebanner.godta();
+        await arbeidsflate.cookiebanner.godta();
     });
 
     await test.step("Banneret vises ikke igjen i infoportalen", async () => {
@@ -18,6 +17,6 @@ test("Cookievalg fra arbeidsflate tas hensyn til i infoportalen", { tag: ["@at23
         // Flaten må være kommet opp først. Banneret rendres tidlig, så "vises ikke"
         // er sant også på en tom side.
         await infoportal.assertLoggedIn(user);
-        await cookiebanner.assertHidden();
+        await infoportal.cookiebanner.assertHidden();
     });
 });

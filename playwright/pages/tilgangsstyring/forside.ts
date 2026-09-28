@@ -2,6 +2,7 @@ import { expect, Page } from "@playwright/test";
 
 import { TestUser } from "../../config/environment";
 import { Sprak } from "../../config/sprak";
+import { Cookiebanner } from "../felles/cookiebanner";
 import { Meny } from "../felles/meny";
 import { gaaTil } from "../felles/navigasjon";
 import { assertFlateUtlogget } from "../felles/utlogget";
@@ -16,6 +17,7 @@ export class TilgangsstyringForside {
         tilgangsstyring: string,
         private sprak: Sprak,
         readonly meny = new Meny(page),
+        readonly cookiebanner = new Cookiebanner(page),
     ) {
         this.url = `${tilgangsstyring}/accessmanagement/ui`;
     }

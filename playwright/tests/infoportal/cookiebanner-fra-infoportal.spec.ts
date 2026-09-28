@@ -8,11 +8,10 @@ test("Cookievalg fra infoportalen tas hensyn til i arbeidsflate, profil og tilga
     arbeidsflateProfil,
     tilgangsstyring,
     infoportal,
-    cookiebanner,
 }) => {
     await test.step("Bruker avslår informasjonskapsler i infoportalen", async () => {
         await infoportal.navigateTo();
-        await cookiebanner.avsla();
+        await infoportal.cookiebanner.avsla();
     });
 
     await test.step("Banneret vises ikke igjen på arbeidsflate", async () => {
@@ -20,18 +19,18 @@ test("Cookievalg fra infoportalen tas hensyn til i arbeidsflate, profil og tilga
         // Flaten må være kommet opp først. Banneret rendres tidlig, så "vises ikke"
         // er sant også på en tom side.
         await arbeidsflate.assertLoggedIn();
-        await cookiebanner.assertHidden();
+        await arbeidsflate.cookiebanner.assertHidden();
     });
 
     await test.step("Banneret vises ikke igjen på profilen", async () => {
         await arbeidsflateProfil.navigateTo();
         await arbeidsflateProfil.assertLoggedIn();
-        await cookiebanner.assertHidden();
+        await arbeidsflateProfil.cookiebanner.assertHidden();
     });
 
     await test.step("Banneret vises ikke igjen på tilgangsstyring", async () => {
         await tilgangsstyring.navigateTo();
         await tilgangsstyring.assertLoggedIn();
-        await cookiebanner.assertHidden();
+        await tilgangsstyring.cookiebanner.assertHidden();
     });
 });

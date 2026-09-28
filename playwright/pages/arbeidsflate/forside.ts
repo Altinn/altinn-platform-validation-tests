@@ -1,6 +1,7 @@
 import { expect, Page } from "@playwright/test";
 
 import { TestUser } from "../../config/environment";
+import { Cookiebanner } from "../felles/cookiebanner";
 import { Meny } from "../felles/meny";
 import { gaaTil } from "../felles/navigasjon";
 import { assertFlateUtlogget } from "../felles/utlogget";
@@ -10,6 +11,7 @@ export class ArbeidsflateForside {
         private page: Page,
         readonly url: string,
         readonly meny = new Meny(page),
+        readonly cookiebanner = new Cookiebanner(page),
     ) { }
 
     async navigateTo() {

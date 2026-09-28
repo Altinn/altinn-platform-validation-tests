@@ -1,7 +1,6 @@
 import { mergeTests } from "@playwright/test";
 
 import { arbeidsflateFixture } from "./arbeidsflate.fixture";
-import { cookiebannerFixture } from "./cookiebanner.fixture";
 import { infoportalFixture } from "./infoportal.fixture";
 import { innloggingFixture } from "./innlogging.fixture";
 import { testbrukereFixture } from "./testbrukere.fixture";
@@ -15,7 +14,6 @@ export const test = mergeTests(
     infoportalFixture,
     innloggingFixture,
     testbrukereFixture,
-    cookiebannerFixture,
 );
 
 export { expect } from "@playwright/test";
