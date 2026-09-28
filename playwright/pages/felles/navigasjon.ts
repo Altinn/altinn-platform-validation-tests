@@ -35,7 +35,7 @@ export async function gaaTil(page: Page, url: string, timeout = 20_000, maxAttem
         } catch (error) {
             const message = error instanceof Error ? error.message : String(error);
 
-            if (!message.includes('net::ERR_ABORTED') || attempt === maxAttempts) {
+            if (!message.includes("net::ERR_ABORTED") || attempt === maxAttempts) {
                 throw error;
             }
 

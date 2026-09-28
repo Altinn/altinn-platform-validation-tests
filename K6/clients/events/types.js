@@ -120,6 +120,7 @@
  * @property {string|null} resourceFilter Filter on resource.
  * @property {string|null} alternativeSubjectFilter Filter on alternative subject.
  * @property {string|null} typeFilter Filter for event type.
+ * @property {boolean} [includeSubunits] Whether to include events for sub-units of the subject.
  */
 
 /**
@@ -137,6 +138,7 @@
  * @property {string|null} createdBy User or organisation that created the subscription.
  * @property {string} created When the subscription was created.
  * @property {boolean} validated Whether the subscription has been validated.
+ * @property {boolean} includeSubunits Whether to include events for sub-units of the subject.
  */
 
 /**

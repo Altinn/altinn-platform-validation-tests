@@ -9,10 +9,27 @@ const TAGS = {
     },
 };
 
+/**
+ * Client for the memberships query, which is reserved for platform
+ * components.
+ *
+ * The endpoint authenticates with a platform access token sent in the
+ * `PlatformAccessToken` header, not as a bearer token, and the token has to be
+ * issued for the `platform` organization (AccessTokenRequirement("platform") in
+ * the registry). A bearer token gets 401 here, whatever scopes it carries, so
+ * the token generator handed to the constructor has to be a
+ * PlatformTokenGenerator built with `withOrganization("platform")`. The
+ * registry also accepts a bearer token with the
+ * `altinn:resourceregistry/resource.admin` scope on this endpoint, but the
+ * client sticks to the platform access token.
+ *
+ * The get-by-member lookup takes the same token but sits under the Access List
+ * tag in the swagger, so it lives in AccessListClient.
+ */
 class AccessListMembershipsClient {
     /**
      * @param {string} baseUrl Base URL, e.g. https://platform.tt02.altinn.no
-     * @param {*} tokenGenerator Generates bearer tokens.
+     * @param {*} tokenGenerator Generates platform access tokens.
      */
     constructor(baseUrl, tokenGenerator) {
         /**
@@ -50,7 +67,8 @@ class AccessListMembershipsClient {
                 endpoint: this.FULL_PATH,
                 action: TAGS.AccessListMembershipsGetMemberships.action,
                 labels,
-                token: this.tokenGenerator.getToken(),
+                token: null,
+                headers: { PlatformAccessToken: this.tokenGenerator.getToken() },
             }),
         );
     }
