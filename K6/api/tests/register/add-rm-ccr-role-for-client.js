@@ -91,7 +91,7 @@ function addRemoveRoleForClient(
     ccrRole,
     organization,
 ) {
-    const targetOrg = drawCustomerToMove(
+    const { organizationIdentifier: targetOrg, unitType: targetOrgForm } = drawCustomerToMove(
         registerClient,
         ccrRole,
         organization,
@@ -105,6 +105,7 @@ function addRemoveRoleForClient(
         ccrRole,
         organization,
         targetOrg,
+        targetOrgForm,
     );
 
     addRoleBackAndWait(
@@ -113,6 +114,7 @@ function addRemoveRoleForClient(
         ccrRole,
         organization,
         targetOrg,
+        targetOrgForm,
     );
 }
 
@@ -124,6 +126,7 @@ function addRemoveRoleForClient(
  * @param {string} ccrRole The role under test, e.g. "revisor".
  * @param {{organizationUuid: string, organizationId: string}} organization The organization holding the role.
  * @param {string} targetOrg Organization number of the customer to remove.
+ * @param {string} targetOrgForm Its organisasjonsform, sent back to ER unchanged.
  */
 function removeRoleAndWait(
     registerClient,
@@ -131,6 +134,7 @@ function removeRoleAndWait(
     ccrRole,
     organization,
     targetOrg,
+    targetOrgForm,
 ) {
     // The role is in the group name, and it is one of the three rather than all of
     // them, so a summary cannot be read as covering roles this iteration never drew.
@@ -141,6 +145,7 @@ function removeRoleAndWait(
             __ENV.SOAP_ER_PASSWORD,
             ccrRole,
             targetOrg,
+            targetOrgForm,
             organization.organizationId,
             label,
         );
@@ -174,6 +179,7 @@ function removeRoleAndWait(
  * @param {string} ccrRole The role under test, e.g. "revisor".
  * @param {{organizationUuid: string, organizationId: string}} organization The organization holding the role.
  * @param {string} targetOrg Organization number of the customer to add back.
+ * @param {string} targetOrgForm Its organisasjonsform, sent back to ER unchanged.
  */
 function addRoleBackAndWait(
     registerClient,
@@ -181,6 +187,7 @@ function addRoleBackAndWait(
     ccrRole,
     organization,
     targetOrg,
+    targetOrgForm,
 ) {
     group(`Put the drawn role ${ccrRole} back in ER and make sure Register has it again`, () => {
         const addedBack = EnhetsregisteretBuildingBlocks.AddCcrRoleToEr(
@@ -189,6 +196,7 @@ function addRoleBackAndWait(
             __ENV.SOAP_ER_PASSWORD,
             ccrRole,
             targetOrg,
+            targetOrgForm,
             organization.organizationId,
             label,
         );

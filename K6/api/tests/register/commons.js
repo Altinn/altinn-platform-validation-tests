@@ -160,6 +160,14 @@ export function getCustomerOrganizationNumbers(
 }
 
 /**
+ * A customer drawn to move, with the organisasjonsform ER has to be sent back.
+ *
+ * @typedef {object} CustomerToMove
+ * @property {string} organizationIdentifier Organization number of the customer.
+ * @property {string} unitType Its organisasjonsform as Register has it, e.g. "ENK".
+ */
+
+/**
  * Picks a customer to move in and out of an organization's customer list.
  *
  * @param {RegisterClient} registerClient Client for the Register API.
@@ -167,7 +175,7 @@ export function getCustomerOrganizationNumbers(
  * @param {{organizationUuid: string, organizationId: string}} organization The organization holding the role.
  * @param {boolean} randomize Whether to draw at random rather than take the first.
  * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
- * @returns {string} Organization number of the customer to move.
+ * @returns {CustomerToMove} The customer to move.
  */
 export function drawCustomerToMove(
     registerClient,
@@ -176,12 +184,13 @@ export function drawCustomerToMove(
     randomize,
     labels = null,
 ) {
-    // The customers are organizations, so the organization number is what ER takes
-    // and what the assertions compare on.
-    const currentOrgs = getCustomerOrganizationNumbers(
+    // The organisasjonsform comes along because ER writes whatever the batch says onto
+    // the unit, so sending the wrong one turns an ENK into an AS for good.
+    const currentOrgs = RegisterBuildingBlocks.GetCustomers(
         registerClient,
         organization.organizationUuid,
         ccrRole,
+        ["org-id", "org.type"],
         labels,
     );
 
@@ -202,10 +211,14 @@ export function drawCustomerToMove(
     // Drawn the same way as the organization, rather than always the first one. Two
     // VUs that draw the same organization would otherwise target the same customer,
     // and each would see the other's removal and add-back as its own.
-    const targetOrg = getItemFromList(currentOrgs, randomize);
-    console.log(`Picked target client organizationIdentifier: ${targetOrg}`);
+    const target = getItemFromList(currentOrgs, randomize);
+    console.log(`Picked target client organizationIdentifier: ${target.organizationIdentifier} (${target.unitType})`);
 
-    return targetOrg;
+    if (target.organizationIdentifier === undefined || target.unitType === undefined) {
+        fail(`cannot continue: Register gave no organization number or organisasjonsform for the drawn ${ccrRole} customer`);
+    }
+
+    return { organizationIdentifier: target.organizationIdentifier, unitType: target.unitType };
 }
 
 /**
