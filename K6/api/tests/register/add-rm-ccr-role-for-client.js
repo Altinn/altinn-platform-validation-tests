@@ -1,13 +1,13 @@
 import { fail, group } from "k6";
 
 import { EnhetsregisteretClient, RegisterClient } from "../../../clients/register/index.js";
-import { getItemFromList, getOptions, requireEnv } from "../../../helpers.js";
+import { getOptions, requireEnv } from "../../../helpers.js";
 import { EnhetsregisteretBuildingBlocks } from "../../building-blocks/register/index.js";
 import { CcrRoleDomainChecks } from "../../domain-checks/register/ccr-role.js";
 import {
+    getCcrRoleClient,
     getCustomerOrganizationNumbers,
     getEnhetsregisteretClient,
-    getOrganizations,
     getPartyLookupAdminClient,
     waitForRegister,
 } from "./commons.js";
@@ -31,14 +31,11 @@ import {
  * and after ER's English name, the Central Coordinating Register: "revisor",
  * "regnskapsforer" or "forretningsforer".
  *
- * All three roles are covered by this one file. Every row of the test data carries
- * the role its organization holds in a `type` column, so an iteration takes the
- * role of the organization it drew and the roles spread across iterations and VUs
- * by themselves. The requests carry the role in a `ccrRole` tag, so they stay apart
- * in the metrics.
+ * The test data is one organization and one of its customers per environment, with
+ * the role in a `type` column. The requests carry the role in a `ccrRole` tag, so
+ * they stay apart in the metrics.
  */
 
-const randomize = (__ENV.RANDOMIZE ?? "true") === "true";
 const label = { step: "test-add-rm-ccr-role" };
 
 export const options = getOptions([label]);
@@ -52,16 +49,14 @@ export function setup() {
         "SOAP_ER_USERNAME",
     ]);
 
-    return getOrganizations(__ENV.ENVIRONMENT).filter((organization) => organization.clientOrganizationId !== "");
+    return getCcrRoleClient(__ENV.ENVIRONMENT);
 }
 
 /**
- * @param {ReturnType<typeof setup>} organizations The organizations from setup.
+ * @param {ReturnType<typeof setup>} organization The organization and customer from setup.
  * @returns {void} Nothing. The checks record what the calls returned.
  */
-export default function (organizations) {
-    const organization = getItemFromList(organizations, randomize);
-
+export default function (organization) {
     addRemoveRoleForClient(
         getPartyLookupAdminClient(),
         getEnhetsregisteretClient(),
