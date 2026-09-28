@@ -1,6 +1,7 @@
 local playwrightVersion = std.extVar('playwrightVersion');
 
 local jobs = [
+  /*
   {
     name: 'playwright-at22',
     schedule: '0 * * * *',
@@ -9,6 +10,7 @@ local jobs = [
       'https://jolly-plant-033965703-at22.westeurope.7.azurestaticapps.net',
     slackWebhookEnabled: false,
   },
+  */
   {
     name: 'playwright-at23',
     schedule: '*/15 * * * *',
