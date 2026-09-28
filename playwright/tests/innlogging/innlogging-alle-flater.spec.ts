@@ -1,42 +1,40 @@
-import { Flate, testMedFlater as test } from "../../fixtures/test";
-import { runInEnvironment } from "../../miljo";
+import { test } from "../../fixtures/test";
 
-// Endrer ingen data. I prod går innloggingen via mockporten, siden
-// TestID-skjermbildene bare finnes i testmiljøene.
-runInEnvironment("at23", "tt02", "prod");
+const flater = [
+    "arbeidsflate",
+    "arbeidsflateProfil",
+    "tilgangsstyring",
+    "infoportal",
+] as const;
 
-const flater: { start: Flate; landing: Flate }[] = [
-    { start: "arbeidsflate", landing: "arbeidsflate" },
-    { start: "tilgangsstyring", landing: "tilgangsstyring" },
-    { start: "infoportalen", landing: "arbeidsflate" },
-    { start: "arbeidsflate-profil", landing: "arbeidsflate-profil" },
-];
-
-for (const { start, landing } of flater) {
-    test(`Bruker er innlogget på alle flater etter innlogging fra ${start}`, async ({
+for (const start of flater) {
+    test(`Bruker er innlogget på alle flater etter innlogging fra ${start}`, { tag: ["@at23", "@tt02", "@prod"] }, async ({
         innlogging,
         user,
-        flater: sider,
+        arbeidsflate,
+        arbeidsflateProfil,
+        tilgangsstyring,
+        infoportal,
     }) => {
+        const sider = { arbeidsflate, arbeidsflateProfil, tilgangsstyring, infoportal };
+
         await test.step(`Bruker går til ${start} uten å være logget inn`, async () => {
             await sider[start].navigateTo();
-            if (start !== "infoportalen") {
-                await innlogging.assertOnIdportenLogin();
+            if (start !== "infoportal") {
+                await innlogging.assertOnIdporten();
             }
         });
 
         await test.step("Bruker logger inn", async () => {
-            await innlogging.viaInnloggingsflyten(sider[landing], user);
+            await innlogging.logIn(sider[start], user);
         });
 
-        await test.step(`Bruker skal være innlogget på ${landing}`, async () => {
-            await sider[landing].assertLoggedIn(user);
+        await test.step(`Bruker skal være innlogget på ${start}`, async () => {
+            await sider[start].assertLoggedIn(user);
         });
 
         await test.step("Bruker skal fortsatt være innlogget på de andre flatene", async () => {
-            for (const flate of flater
-                .map((f) => f.start)
-                .filter((f) => f !== start)) {
+            for (const flate of flater.filter((f) => f !== start)) {
                 await sider[flate].navigateTo();
                 await sider[flate].assertLoggedIn(user);
             }

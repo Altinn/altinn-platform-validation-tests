@@ -1,22 +1,24 @@
 import { expect, Page } from "@playwright/test";
 
-import { baseUrls, TestUser } from "../../config/environment";
+import { TestUser } from "../../config/environment";
 import { Sprak } from "../../config/sprak";
 import { Meny } from "../felles/meny";
 import { gaaTil } from "../felles/navigasjon";
 import { assertFlateUtlogget } from "../felles/utlogget";
-import { Side } from "../side";
 import { Seksjon, seksjonsnavn } from "./seksjoner";
 
-export class TilgangsstyringForside implements Side {
-    readonly url = `${baseUrls.tilgangsstyring}/accessmanagement/ui`;
+export class TilgangsstyringForside {
+    readonly url: string;
 
     // Språket kommer fra fixturen, så assertions slipper å ta det som argument.
     constructor(
         private page: Page,
+        tilgangsstyring: string,
         private sprak: Sprak,
-        private meny = new Meny(page),
-    ) { }
+        readonly meny = new Meny(page),
+    ) {
+        this.url = `${tilgangsstyring}/accessmanagement/ui`;
+    }
 
     async navigateTo() {
         await gaaTil(this.page, this.url);

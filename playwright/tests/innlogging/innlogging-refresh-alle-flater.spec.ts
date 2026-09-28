@@ -1,24 +1,27 @@
-import { Flate, testMedFlater as test } from "../../fixtures/test";
-import { runInEnvironment } from "../../miljo";
+import { test } from "../../fixtures/test";
 
-// Verifisert i prod, og endrer ingen data. Innloggingen skjer med logIn, altså uten
-// ID-porten-skjermbildene, som ikke finnes i prod.
-runInEnvironment("at23", "tt02", "prod");
+// Verifisert i prod, og endrer ingen data.
 
-const flater: Flate[] = [
+const flater = [
     "arbeidsflate",
-    "arbeidsflate-profil",
+    "arbeidsflateProfil",
     "tilgangsstyring",
-    "infoportalen",
-];
+    "infoportal",
+] as const;
 
 for (const start of flater) {
     // Det testen verifiserer er at sesjonen gjelder på tvers av flatene og tåler refresh.
-    test(`Bruker forblir innlogget på alle flater etter innlogging fra ${start}`, async ({
+    test(`Bruker forblir innlogget på alle flater etter innlogging fra ${start}`, { tag: ["@at23", "@tt02", "@prod"] }, async ({
+        page,
         innlogging,
         user,
-        flater: sider,
+        arbeidsflate,
+        arbeidsflateProfil,
+        tilgangsstyring,
+        infoportal,
     }) => {
+        const sider = { arbeidsflate, arbeidsflateProfil, tilgangsstyring, infoportal };
+
         await test.step(`Bruker logger inn og lander på ${start}`, async () => {
             await innlogging.logIn(sider[start], user);
             await sider[start].assertLoggedIn(user);
@@ -29,7 +32,7 @@ for (const start of flater) {
                 await sider[flate].navigateTo();
                 await sider[flate].assertLoggedIn(user);
 
-                await innlogging.refresh();
+                await page.reload();
                 await sider[flate].assertLoggedIn(user);
             }
         });

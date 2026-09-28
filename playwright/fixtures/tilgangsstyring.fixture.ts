@@ -1,18 +1,18 @@
+import { test as base } from "@playwright/test";
+
+import { Urler } from "../config/environment";
+import { Sprak } from "../config/sprak";
 import { TilgangsstyringForside } from "../pages/tilgangsstyring/forside";
-import { test as sprakTest } from "./sprak.fixture";
 
-/**
- * Hovedområdet tilgangsstyring med sine undersider. Nye undersider legges til som
- * et felt her og en page object under pages/tilgangsstyring/.
- */
-export type Tilgangsstyring = {
-    forside: TilgangsstyringForside;
-};
+export const tilgangsstyringFixture = base.extend<{
+    tilgangsstyring: TilgangsstyringForside;
+    urler: Urler;
+    sprak: Sprak;
+}>({
+    urler: [{} as Urler, { option: true }],
+    sprak: [Sprak.Bokmaal, { option: true }],
 
-export const test = sprakTest.extend<{ tilgangsstyring: Tilgangsstyring }>({
-    tilgangsstyring: async ({ page, sprak }, use) => {
-        await use({
-            forside: new TilgangsstyringForside(page, sprak),
-        });
+    tilgangsstyring: async ({ page, sprak, urler }, use) => {
+        await use(new TilgangsstyringForside(page, urler.tilgangsstyring, sprak));
     },
 });
