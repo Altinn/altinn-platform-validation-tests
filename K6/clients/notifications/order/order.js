@@ -1,6 +1,7 @@
 
 import http from "k6/http";
 
+import { jsonBody, requestParams } from "../../common/request.js";
 import { ComposedEmailRequestExt, NotificationOrderChainRequestExt } from "../types.js";
 
 const TAGS = {
@@ -47,31 +48,17 @@ class OrderClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     OrderCreateOrder(request, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}`;
-
-        let tags = {
-            endpoint: url,
-            name: url,
-            action: TAGS.OrderCreateOrder.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.post(url, JSON.stringify(request), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json",
-                Accept: "application/json",
-            },
-        });
+        return http.post(
+            `${this.FULL_PATH}`,
+            jsonBody(request),
+            requestParams({
+                endpoint: this.FULL_PATH,
+                action: TAGS.OrderCreateOrder.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+                json: true,
+            }),
+        );
     }
 
     /**
@@ -83,31 +70,17 @@ class OrderClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     OrderCreateComposedEmail(request, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}/composed-email`;
-
-        let tags = {
-            endpoint: url,
-            name: url,
-            action: TAGS.OrderCreateComposedEmail.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.post(url, JSON.stringify(request), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json",
-                Accept: "application/json",
-            },
-        });
+        return http.post(
+            `${this.FULL_PATH}/composed-email`,
+            jsonBody(request),
+            requestParams({
+                endpoint: `${this.FULL_PATH}/composed-email`,
+                action: TAGS.OrderCreateComposedEmail.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+                json: true,
+            }),
+        );
     }
 }
 

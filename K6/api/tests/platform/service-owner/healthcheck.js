@@ -35,6 +35,7 @@ export default function (data) {
     console.log(`Querying ${data.length} endpoints`);
 
     for (const [org, deploy_env, endpoint] of data) {
+
         const tags = { org, endpoint, deploy_env, };
 
         const params = { tags, };

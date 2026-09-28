@@ -1,5 +1,6 @@
 import http from "k6/http";
 
+import { buildUrl, jsonBody, requestParams } from "../common/request.js";
 import { SystemUserByExternalIdQuery, SystemUserPagedQuery, SystemUserUpdateDto, SystemUserVendorQuery } from "./types.js";
 
 const TAGS = {
@@ -19,6 +20,28 @@ const TAGS = {
         action: "system-user-internal-stream",
     },
 };
+
+/**
+ * Unwraps query values that are opaque objects, such as the paging token,
+ * into the plain value the API expects, so buildUrl can stringify them.
+ *
+ * @param {{[key: string]: *}|null} query Query parameters, possibly holding
+ * objects with a `value` field.
+ * @returns {{[key: string]: *}|null} The same parameters with those objects
+ * replaced by their value.
+ */
+function unwrapQuery(query) {
+    if (query === null) {
+        return null;
+    }
+
+    return Object.fromEntries(
+        Object.entries(query).map(([key, value]) => [
+            key,
+            typeof value === "object" && value !== null ? value.value : value,
+        ]),
+    );
+}
 
 class SystemUserClient {
     /**
@@ -57,51 +80,15 @@ class SystemUserClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     SystemUserGetByExternalId(query = null, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        let url = `${this.FULL_PATH}/byExternalId`;
-
-        const params = {
-            tags: {
-                endpoint: url,
-                name: url,
+        return http.get(
+            buildUrl(`${this.FULL_PATH}/byExternalId`, query),
+            requestParams({
+                endpoint: `${this.FULL_PATH}/byExternalId`,
                 action: TAGS.SystemUserGetByExternalId.action,
-            },
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        };
-
-        if (query !== null) {
-            const queryParams = /** @type {string[]} */ ([]);
-
-            Object.entries(query).forEach(([key, value]) => {
-                if (value === null || value === undefined) {
-                    return;
-                }
-
-                queryParams.push(
-                    `${key}=${encodeURIComponent(value)}`,
-                );
-            });
-
-            if (queryParams.length > 0) {
-                url = `${url}?${queryParams.join("&")}`;
-            }
-        }
-
-        // The query stays out of the name tag, or metrics get one series per value.
-        params.tags.endpoint = url;
-
-        if (labels !== null) {
-            params.tags = {
-                ...labels,
-                ...params.tags,
-            };
-        }
-
-        return http.get(url, params);
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 
     /**
@@ -115,31 +102,17 @@ class SystemUserClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     SystemUserUpdate(request, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}`;
-
-        let tags = {
-            endpoint: url,
-            name: url,
-            action: TAGS.SystemUserUpdate.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.put(url, JSON.stringify(request), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json",
-                Accept: "application/json",
-            },
-        });
+        return http.put(
+            `${this.FULL_PATH}`,
+            jsonBody(request),
+            requestParams({
+                endpoint: this.FULL_PATH,
+                action: TAGS.SystemUserUpdate.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+                json: true,
+            }),
+        );
     }
 
     /**
@@ -153,51 +126,15 @@ class SystemUserClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     SystemUserVendorGetByQuery(query = null, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        let url = `${this.FULL_PATH}/vendor/byquery`;
-
-        const params = {
-            tags: {
-                endpoint: url,
-                name: url,
+        return http.get(
+            buildUrl(`${this.FULL_PATH}/vendor/byquery`, query),
+            requestParams({
+                endpoint: `${this.FULL_PATH}/vendor/byquery`,
                 action: TAGS.SystemUserVendorGetByQuery.action,
-            },
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        };
-
-        if (query !== null) {
-            const queryParams = /** @type {string[]} */ ([]);
-
-            Object.entries(query).forEach(([key, value]) => {
-                if (value === null || value === undefined) {
-                    return;
-                }
-
-                queryParams.push(
-                    `${key}=${encodeURIComponent(value)}`,
-                );
-            });
-
-            if (queryParams.length > 0) {
-                url = `${url}?${queryParams.join("&")}`;
-            }
-        }
-
-        // The query stays out of the name tag, or metrics get one series per value.
-        params.tags.endpoint = url;
-
-        if (labels !== null) {
-            params.tags = {
-                ...labels,
-                ...params.tags,
-            };
-        }
-
-        return http.get(url, params);
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 
     /**
@@ -212,55 +149,18 @@ class SystemUserClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     SystemUserVendorGetBySystem(systemId, query = null, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        let url = `${this.FULL_PATH}/vendor/bysystem/${encodeURIComponent(systemId)}`;
-
-        const params = {
-            tags: {
+        return http.get(
+            buildUrl(
+                `${this.FULL_PATH}/vendor/bysystem/${encodeURIComponent(systemId)}`,
+                unwrapQuery(query),
+            ),
+            requestParams({
                 endpoint: `${this.FULL_PATH}/vendor/bysystem/{systemId}`,
-                name: `${this.FULL_PATH}/vendor/bysystem/{systemId}`,
                 action: TAGS.SystemUserVendorGetBySystem.action,
-            },
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        };
-
-        if (query !== null) {
-            const queryParams = /** @type {string[]} */ ([]);
-
-            Object.entries(query).forEach(([key, value]) => {
-                if (value === null || value === undefined) {
-                    return;
-                }
-
-                if (typeof value === "object") {
-                    value = value.value;
-                }
-
-                queryParams.push(
-                    `${key}=${encodeURIComponent(value)}`,
-                );
-            });
-
-            if (queryParams.length > 0) {
-                url = `${url}?${queryParams.join("&")}`;
-            }
-        }
-
-        // The query stays out of the name tag, or metrics get one series per value.
-        params.tags.endpoint = url;
-
-        if (labels !== null) {
-            params.tags = {
-                ...labels,
-                ...params.tags,
-            };
-        }
-
-        return http.get(url, params);
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 
     /**
@@ -274,55 +174,18 @@ class SystemUserClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     SystemUserInternalStream(query = null, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        let url = `${this.FULL_PATH}/internal/systemusers/stream`;
-
-        const params = {
-            tags: {
-                endpoint: url,
-                name: url,
+        return http.get(
+            buildUrl(
+                `${this.FULL_PATH}/internal/systemusers/stream`,
+                unwrapQuery(query),
+            ),
+            requestParams({
+                endpoint: `${this.FULL_PATH}/internal/systemusers/stream`,
                 action: TAGS.SystemUserInternalStream.action,
-            },
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        };
-
-        if (query !== null) {
-            const queryParams = /** @type {string[]} */ ([]);
-
-            Object.entries(query).forEach(([key, value]) => {
-                if (value === null || value === undefined) {
-                    return;
-                }
-
-                if (typeof value === "object") {
-                    value = value.value;
-                }
-
-                queryParams.push(
-                    `${key}=${encodeURIComponent(value)}`,
-                );
-            });
-
-            if (queryParams.length > 0) {
-                url = `${url}?${queryParams.join("&")}`;
-            }
-        }
-
-        // The query stays out of the name tag, or metrics get one series per value.
-        params.tags.endpoint = url;
-
-        if (labels !== null) {
-            params.tags = {
-                ...labels,
-                ...params.tags,
-            };
-        }
-
-        return http.get(url, params);
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 }
 

@@ -1,5 +1,6 @@
 import http from "k6/http";
 
+import { jsonBody, requestParams } from "../common/request.js";
 import { SignRequest } from "./instances.types.js";
 
 const TAGS = {
@@ -48,25 +49,17 @@ class SignClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     SignInstance(instanceOwnerPartyId, instanceGuid, request, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}/instances/${instanceOwnerPartyId}/${instanceGuid}/sign`;
-
-        const tags = {
-            ...labels,
-            endpoint: `${this.FULL_PATH}/instances/{instanceOwnerPartyId}/{instanceGuid}/sign`,
-            name: `${this.FULL_PATH}/instances/{instanceOwnerPartyId}/{instanceGuid}/sign`,
-            action: TAGS.SignInstance.action,
-        };
-
-        return http.post(url, JSON.stringify(request), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-                "Content-Type": "application/json",
-            },
-        });
+        return http.post(
+            `${this.FULL_PATH}/instances/${instanceOwnerPartyId}/${instanceGuid}/sign`,
+            jsonBody(request),
+            requestParams({
+                endpoint: `${this.FULL_PATH}/instances/{instanceOwnerPartyId}/{instanceGuid}/sign`,
+                action: TAGS.SignInstance.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+                json: true,
+            }),
+        );
     }
 }
 

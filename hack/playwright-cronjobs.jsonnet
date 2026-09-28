@@ -6,7 +6,7 @@ local jobs = [
     schedule: '0 * * * *',
     environment: 'at22',
     reportUrl:
-      'https://jolly-plant-033965703-at22.westeurope.7.azurestaticapps.net/api/getreport/',
+      'https://jolly-plant-033965703-at22.westeurope.7.azurestaticapps.net',
     slackWebhookEnabled: false,
   },
   {
@@ -14,7 +14,7 @@ local jobs = [
     schedule: '*/15 * * * *',
     environment: 'at23',
     reportUrl:
-      'https://jolly-plant-033965703-at23.westeurope.7.azurestaticapps.net/api/getreport/',
+      'https://jolly-plant-033965703-at23.westeurope.7.azurestaticapps.net',
     slackWebhookEnabled: false,
   },
   {
@@ -22,7 +22,7 @@ local jobs = [
     schedule: '*/15 * * * *',
     environment: 'tt02',
     reportUrl:
-      'https://jolly-plant-033965703-tt02.westeurope.7.azurestaticapps.net/api/getreport/',
+      'https://jolly-plant-033965703-tt02.westeurope.7.azurestaticapps.net',
     slackWebhookEnabled: false,
   },
   {
@@ -30,7 +30,7 @@ local jobs = [
     schedule: '*/15 * * * *',
     environment: 'prod',
     reportUrl:
-      'https://jolly-plant-033965703.7.azurestaticapps.net/api/getreport/',
+      'https://jolly-plant-033965703.7.azurestaticapps.net',
     slackWebhookEnabled: false,
   },
 ];
@@ -76,8 +76,8 @@ local cronJob(
 
             resources: {
               requests: {
-                cpu: 2,
-                memory: '2000Mi',
+                cpu: 4,
+                memory: '8000Mi',
               },
             },
 
@@ -94,6 +94,7 @@ local cronJob(
               {
                 name: 'playwright',
                 image: 'altinnplatformvalidationtests.azurecr.io/custom-playwright-runner:' + playwrightVersion,
+                // imagePullPolicy: "Always",
 
                 args: [environment],  // TODO: true for now, but might need to think about how we will support different test frequencies within the same env.
                 volumeMounts: [
@@ -138,12 +139,7 @@ local cronJob(
                   },
                   {
                     name: 'REPORT_URL',
-                    valueFrom: {
-                      secretKeyRef: {
-                        name: 'swa-app-token',
-                        key: 'REPORT_URL',
-                      },
-                    },
+                    value: reportUrl,
                   },
                   {
                     name: 'PLAYWRIGHT_HTML_OPEN',
@@ -151,7 +147,7 @@ local cronJob(
                   },
                   {
                     name: 'PLAYWRIGHT_HTML_ATTACHMENTS_BASE_URL',
-                    value: reportUrl,
+                    value: reportUrl + '/api/getreport/',
                   },
                   {
                     name: 'PLAYWRIGHT_JUNIT_OUTPUT_NAME',
@@ -163,7 +159,7 @@ local cronJob(
                       name: 'SLACK_WEBHOOK_URL',
                       valueFrom: {
                         secretKeyRef: {
-                          name: 'slack-test',
+                          name: 'testsenteret-alerts',
                           key: 'SLACK_WEBHOOK_URL',
                         },
                       },

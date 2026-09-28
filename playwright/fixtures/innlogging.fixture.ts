@@ -1,13 +1,17 @@
-import { test as base } from '@playwright/test';
-import { getTestUser, TestUser } from '../config/environment';
-import { Innlogging } from '../flows/innlogging';
+import { test as base } from "@playwright/test";
 
-export const test = base.extend<{ innlogging: Innlogging; user: TestUser }>({
-    innlogging: async ({ page }, use) => {
-        await use(new Innlogging(page));
-    },
+import { Urler } from "../config/environment";
+import { Innlogging } from "../pages/felles/innlogging";
 
-    user: async ({ }, use) => {
-        await use(getTestUser());
+export const innloggingFixture = base.extend<{
+    innlogging: Innlogging;
+    urler: Urler;
+    mockporten: boolean;
+}>({
+    urler: [{} as Urler, { option: true }],
+    mockporten: [false, { option: true }],
+
+    innlogging: async ({ page, mockporten, urler }, use) => {
+        await use(new Innlogging(page, urler.platform, mockporten));
     },
 });

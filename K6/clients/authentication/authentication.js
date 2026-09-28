@@ -1,5 +1,7 @@
 import http from "k6/http";
 
+import { buildUrl, requestParams } from "../common/request.js";
+
 const TAGS = {
     ExchangeToken: {
         action: "authentication-exchange-token",
@@ -56,36 +58,15 @@ class AuthenticationClient {
             ? options.token
             : this.tokenGenerator?.getToken();
 
-        let url = `${this.FULL_PATH}/exchange/${encodeURIComponent(tokenProvider)}`;
-
-        if (options.test !== undefined) {
-            url = `${url}?test=${options.test}`;
-        }
-
-        // The provider stays out of the name tag, or metrics get one series per
-        // provider, and the same for the query.
-        let tags = {
-            endpoint: url,
-            name: `${this.FULL_PATH}/exchange/{tokenProvider}`,
-            action: TAGS.ExchangeToken.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        const headers = /** @type {{[key: string]: string}} */ ({
-            Accept: "application/json",
-        });
-
-        if (token !== null && token !== undefined) {
-            headers.Authorization = `Bearer ${token}`;
-        }
-
-        return http.get(url, { tags, headers });
+        return http.get(
+            buildUrl(`${this.FULL_PATH}/exchange/${encodeURIComponent(tokenProvider)}`, { test: options.test }),
+            requestParams({
+                endpoint: `${this.FULL_PATH}/exchange/{tokenProvider}`,
+                action: TAGS.ExchangeToken.action,
+                labels,
+                token: token ?? null,
+            }),
+        );
     }
 }
 

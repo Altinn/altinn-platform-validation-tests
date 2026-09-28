@@ -1,5 +1,7 @@
 import http from "k6/http";
 
+import { requestParams } from "../../common/request.js";
+
 const TAGS = {
     RefreshToken: {
         action: "refresh-token",
@@ -43,30 +45,15 @@ class AuthenticationClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     RefreshToken(labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(`${this.FULL_PATH}/refresh`);
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/refresh`,
-            name: `${this.FULL_PATH}/refresh`,
-            action: TAGS.RefreshToken.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url.toString(), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.get(
+            `${this.FULL_PATH}/refresh`,
+            requestParams({
+                endpoint: `${this.FULL_PATH}/refresh`,
+                action: TAGS.RefreshToken.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 }
 

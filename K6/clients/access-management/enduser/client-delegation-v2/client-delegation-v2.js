@@ -1,5 +1,6 @@
 import http from "k6/http";
 
+import { buildUrl, jsonBody, requestParams } from "../../../common/request.js";
 import { AgentResourcesQuery, AgentsQuery, ClientResourcesQuery, ClientsQuery, DelegateAgentResourcesQuery, ResourceDelegationBatchInputDto } from "./client-delegation-v2.types.js";
 
 const TAGS = {
@@ -135,54 +136,6 @@ class ClientDelegationV2Client {
     }
 
     /**
-     * Builds the url for a path, with the query appended.
-     *
-     * @param {string} path Path below the base path.
-     * @param {object|null} query Query parameters, or null for none.
-     * @returns {URL} The url to call.
-     */
-    buildUrl(path, query) {
-        const url = new URL(`${this.FULL_PATH}/${path}`);
-
-        if (query !== null) {
-            for (const [key, value] of Object.entries(query)) {
-                if (value === undefined || value === null) {
-                    continue;
-                }
-
-                if (Array.isArray(value)) {
-                    value.forEach((v) => url.searchParams.append(key, String(v)));
-                } else {
-                    url.searchParams.append(key, String(value));
-                }
-            }
-        }
-
-        return url;
-    }
-
-    /**
-     * Builds the k6 tags for a request.
-     *
-     * The endpoint and name tags leave the query out, so every call to the same
-     * endpoint aggregates into one row rather than one row per party.
-     *
-     * @param {string} path Path below the base path.
-     * @param {string} action The action tag for the endpoint.
-     * @param {{[key: string]: string}|null} labels Extra labels, or null for none.
-     * @returns {{[key: string]: string}} The tags to send.
-     */
-    buildTags(path, action, labels) {
-        const tags = {
-            endpoint: `${this.FULL_PATH}/${path}`,
-            name: `${this.FULL_PATH}/${path}`,
-            action,
-        };
-
-        return labels !== null ? { ...labels, ...tags } : tags;
-    }
-
-    /**
      * Sends a GET to one of the read endpoints.
      *
      * @param {string} path Path below the base path.
@@ -193,16 +146,16 @@ class ClientDelegationV2Client {
      * @returns {http.RefinedResponse<"text">} The response.
      */
     doGet(path, action, query, headers, labels) {
-        const token = this.tokenGenerator.getToken();
-
-        return http.get(this.buildUrl(path, query).toString(), {
-            tags: this.buildTags(path, action, labels),
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-                ...(headers ?? {}),
-            },
-        });
+        return http.get(
+            buildUrl(`${this.FULL_PATH}/${path}`, query),
+            requestParams({
+                endpoint: `${this.FULL_PATH}/${path}`,
+                action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+                headers,
+            }),
+        );
     }
 
     /**
@@ -216,19 +169,16 @@ class ClientDelegationV2Client {
      * @returns {http.RefinedResponse<"text">} The response.
      */
     doPost(path, action, query, body, labels) {
-        const token = this.tokenGenerator.getToken();
-
         return http.post(
-            this.buildUrl(path, query).toString(),
-            body !== null ? JSON.stringify(body) : null,
-            {
-                tags: this.buildTags(path, action, labels),
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    "Content-Type": "application/json",
-                    Accept: "application/json",
-                },
-            },
+            buildUrl(`${this.FULL_PATH}/${path}`, query),
+            jsonBody(body),
+            requestParams({
+                endpoint: `${this.FULL_PATH}/${path}`,
+                action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+                json: true,
+            }),
         );
     }
 }

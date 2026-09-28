@@ -4,5 +4,6 @@
 # Add specific ownership for further needs here
 /.github @Altinn/team-platform
 /hack @Altinn/team-platform
+/hack/playwright-cronjobs.jsonnet @Altinn/altinn-test-contributors
 /CODEOWNERS @Altinn/team-platform
 /slos @Altinn/altinn-test-contributors

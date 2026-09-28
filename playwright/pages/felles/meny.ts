@@ -1,4 +1,5 @@
 import { expect, Page } from "@playwright/test";
+
 import { Sprak } from "../../config/sprak";
 
 export class Meny {
@@ -14,7 +15,7 @@ export class Meny {
     async clickMenuButton() {
         await expect(
             this.menuButton(),
-            'Menyknappen i hovednavigasjonen er klar'
+            "Menyknappen i hovednavigasjonen er klar"
         ).toBeEnabled({ timeout: 15_000 });
 
         await this.menuButton().click();
@@ -28,53 +29,31 @@ export class Meny {
     async assertLoggedIn() {
         await expect(
             this.menuButton(),
-            'Menyknappen i hovednavigasjonen er klar'
+            "Menyknappen i hovednavigasjonen er klar"
         ).toBeEnabled({ timeout: 15_000 });
     }
 
     private menuButton() {
-        return this.page.getByRole('banner').getByRole('button', {
+        return this.page.getByRole("banner").getByRole("button", {
             name: /^(meny|menu)$/i,
         });
-    }
-
-    async clickLoginButton() {
-        await this.page.getByRole('button', {
-            name: /logg inn|login/i,
-        }).click();
-    }
-
-    /**
-     * Utloggingen ligger i menyen, så den må åpnes først. Navnet er forankret, slik
-     * menyknappens er: uforankret ville et framtidig "Logg ut av alle enheter" også
-     * truffet.
-     */
-    async clickLogoutButton() {
-        await this.clickMenuButton();
-
-        const logoutButton = this.page.getByRole('button', {
-            name: /^(logg ut|log out)$/i,
-        }).first();
-
-        await expect(logoutButton, 'Logg ut ligger i menyen').toBeEnabled();
-        await logoutButton.click();
     }
 
     async setLanguage(language: Sprak) {
         await this.clickMenuButton();
         await this.page
-            .getByRole('menuitem', { name: 'Språk/language' })
+            .getByRole("menuitem", { name: "Språk/language" })
             .click();
 
         // Sprakvalgene har ikke lenger id-er, så de velges på rollen sin.
         await this.page
-            .getByRole('menuitemradio', { name: languageLabels[language] })
+            .getByRole("menuitemradio", { name: languageLabels[language] })
             .click();
     }
 }
 
 const languageLabels: Record<Sprak, string> = {
-    [Sprak.Bokmaal]: 'Norsk (bokmål)',
-    [Sprak.Nynorsk]: 'Norsk (nynorsk)',
-    [Sprak.Engelsk]: 'English',
+    [Sprak.Bokmaal]: "Norsk (bokmål)",
+    [Sprak.Nynorsk]: "Norsk (nynorsk)",
+    [Sprak.Engelsk]: "English",
 };

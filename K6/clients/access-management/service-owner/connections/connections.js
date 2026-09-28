@@ -1,6 +1,7 @@
 import http from "k6/http";
 
-import { ServiceOwnerAccessPackageDelegation } from "./connections.types.js";
+import { buildUrl, jsonBody, requestParams } from "../../../common/request.js";
+import { GetResourceRightsQuery, ServiceOwnerAccessPackageDelegation, ServiceOwnerResourceDelegation } from "./connections.types.js";
 
 const TAGS = {
     ConnectionsCreateAccessPackage: {
@@ -8,6 +9,15 @@ const TAGS = {
     },
     ConnectionsRevokeAccessPackage: {
         action: "connections-revoke-access-package",
+    },
+    ConnectionsGetResourceRights: {
+        action: "connections-get-resource-rights",
+    },
+    ConnectionsCreateResource: {
+        action: "connections-create-resource",
+    },
+    ConnectionsRevokeResource: {
+        action: "connections-revoke-resource",
     },
 };
 
@@ -46,31 +56,17 @@ class ConnectionsClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     ConnectionsCreateAccessPackage(request, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}/serviceowner/connections/accesspackages`;
-
-        let tags = {
-            endpoint: url,
-            name: url,
-            action: TAGS.ConnectionsCreateAccessPackage.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.post(url, JSON.stringify(request), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json",
-                Accept: "application/json",
-            },
-        });
+        return http.post(
+            `${this.FULL_PATH}/serviceowner/connections/accesspackages`,
+            jsonBody(request),
+            requestParams({
+                endpoint: `${this.FULL_PATH}/serviceowner/connections/accesspackages`,
+                action: TAGS.ConnectionsCreateAccessPackage.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+                json: true,
+            }),
+        );
     }
 
     /**
@@ -82,31 +78,88 @@ class ConnectionsClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     ConnectionsRevokeAccessPackage(request, labels = null) {
-        const token = this.tokenGenerator.getToken();
+        return http.post(
+            `${this.FULL_PATH}/serviceowner/connections/accesspackages/revoke`,
+            jsonBody(request),
+            requestParams({
+                endpoint: `${this.FULL_PATH}/serviceowner/connections/accesspackages/revoke`,
+                action: TAGS.ConnectionsRevokeAccessPackage.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+                json: true,
+            }),
+        );
+    }
 
-        const url = `${this.FULL_PATH}/serviceowner/connections/accesspackages/revoke`;
+    /**
+     * Gets the rights available for a resource.
+     *
+     * @param {GetResourceRightsQuery|null} [query]
+     * Query parameters. Prefer using {@link GetResourceRightsQueryBuilder}.
+     * @param {{[key: string]: string}|null} [labels]
+     * Optional k6 request tags.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
+     */
+    ConnectionsGetResourceRights(query = null, labels = null) {
+        const endpoint = `${this.FULL_PATH}/serviceowner/connections/resources/rights`;
 
-        let tags = {
-            endpoint: url,
-            name: url,
-            action: TAGS.ConnectionsRevokeAccessPackage.action,
-        };
+        return http.get(
+            buildUrl(endpoint, query),
+            requestParams({
+                endpoint,
+                action: TAGS.ConnectionsGetResourceRights.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
+    }
 
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
+    /**
+     * Creates a service owner resource delegation.
+     *
+     * @param {ServiceOwnerResourceDelegation} request Delegation payload.
+     * @param {{[key: string]: string}|null} [labels]
+     * Optional k6 request tags.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
+     */
+    ConnectionsCreateResource(request, labels = null) {
+        const endpoint = `${this.FULL_PATH}/serviceowner/connections/resources`;
 
-        return http.post(url, JSON.stringify(request), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json",
-                Accept: "application/json",
-            },
-        });
+        return http.post(
+            endpoint,
+            jsonBody(request),
+            requestParams({
+                endpoint,
+                action: TAGS.ConnectionsCreateResource.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+                json: true,
+            }),
+        );
+    }
+
+    /**
+     * Revokes a service owner resource delegation.
+     *
+     * @param {ServiceOwnerResourceDelegation} request Delegation payload.
+     * @param {{[key: string]: string}|null} [labels]
+     * Optional k6 request tags.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
+     */
+    ConnectionsRevokeResource(request, labels = null) {
+        const endpoint = `${this.FULL_PATH}/serviceowner/connections/resources/revoke`;
+
+        return http.post(
+            endpoint,
+            jsonBody(request),
+            requestParams({
+                endpoint,
+                action: TAGS.ConnectionsRevokeResource.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+                json: true,
+            }),
+        );
     }
 }
 

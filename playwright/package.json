@@ -4,21 +4,35 @@
     "main": "index.js",
     "scripts": {
         "test": "playwright test",
-        "test:at22": "ENVIRONMENT=at22 playwright test",
-        "test:at23": "ENVIRONMENT=at23 playwright test",
-        "test:tt02": "ENVIRONMENT=tt02 playwright test",
-        "test:prod": "ENVIRONMENT=prod playwright test",
-        "report": "playwright show-report",
-        "typecheck": "tsc --noEmit"
+        "test:at23": "playwright test --project='at23-*'",
+        "test:tt02": "playwright test --project='tt02-*'",
+        "test:prod": "playwright test --project='prod-*'",
+        "test:at23:bokmaal": "playwright test --project='at23-chromium-bokmål'",
+        "test:tt02:bokmaal": "playwright test --project='tt02-chromium-bokmål'",
+        "test:prod:bokmaal": "playwright test --project='prod-chromium-bokmål'",
+        "report": "playwright show-report --port 6060",
+        "typecheck": "tsc --noEmit",
+        "lint": "eslint .",
+        "fix": "eslint --fix .",
+        "validate": "npm run lint && npm run typecheck"
     },
     "keywords": [],
     "author": "",
     "license": "ISC",
     "devDependencies": {
+        "@eslint/js": "10.0.1",
         "@playwright/test": "1.63.0",
-        "@types/node": "24.13.3",
-        "dotenv": "^17.4.2",
-        "typescript": "^7.0.2"
+        "@stylistic/eslint-plugin": "^5.10.0",
+        "@types/node": "24.13.5",
+        "dotenv": "17.4.2",
+        "eslint": "10.11.0",
+        "eslint-plugin-jsdoc": "64.5.4",
+        "eslint-plugin-playwright": "2.12.0",
+        "eslint-plugin-simple-import-sort": "^14.0.0",
+        "eslint-plugin-unused-imports": "^4.4.1",
+        "jiti": "2.7.0",
+        "typescript": "6.0.3",
+        "typescript-eslint": "8.70.1"
     },
     "directories": {
         "test": "tests"

@@ -25,6 +25,7 @@ IGNORE_DIRS=(
 # Specific paths to ignore (relative to DIR)
 IGNORE_PATHS=(
   "K6/testdata"
+  "helpers/detect-new-swagger-versions/.swagger"
 )
 
 found=0

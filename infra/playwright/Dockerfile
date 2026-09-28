@@ -1,6 +1,6 @@
 FROM altinnplatformvalidationtests.azurecr.io/helpers-junitparser:1.0.1 AS builder
 
-FROM node:24-bookworm@sha256:be23f54a88d34e8824c741b19b91064094f92c1c97b194144bfc8b50d67258e2
+FROM node:24-bookworm@sha256:6dac556d980b7f0e5498d08f08cee0ca67798b4ad6c23964a9214920e67758d0
 
 RUN apt update && \
     apt upgrade -y && \
@@ -46,7 +46,7 @@ ENV PLAYWRIGHT_BROWSERS_PATH=/home/playwright/.cache/ms-playwright
 
 RUN playwright install --with-deps
 
-WORKDIR /tmp
+WORKDIR /home/playwright/
 
 COPY --from=builder /app/generateMetricsFromJunitReport .
 
@@ -61,6 +61,6 @@ USER playwright
 #    https://swalocaldeployv2-bndtgugjgqc3dhdx.b01.azurefd.net/downloads/689a6c1fe8fc32f40348cc41223a7e9d83dd43d2/linux/StaticSitesClient@689a6c1fe8fc32f40348cc41223a7e9d83dd43d2 \
 #    -o ~/.swa/deploy/689a6c1fe8fc32f40348cc41223a7e9d83dd43d2/StaticSitesClient
 
-ENV PATH=$PATH:/opt/az/bin
+ENV PATH=$PATH:/opt/az/bin:/home/playwright
 
 ENTRYPOINT ["bash", "./run-playwright-tests.sh"]

@@ -1,5 +1,7 @@
 import http from "k6/http";
 
+import { requestParams } from "../common/request.js";
+
 const TAGS = {
     Introspect: {
         action: "authentication-introspect",
@@ -69,29 +71,19 @@ class IntrospectionClient {
             body.token_type_hint = options.tokenTypeHint;
         }
 
-        let tags = {
-            endpoint: this.FULL_PATH,
-            name: this.FULL_PATH,
-            action: TAGS.Introspect.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        const headers = /** @type {{[key: string]: string}} */ ({
-            Accept: "application/json",
-            "Content-Type": "application/x-www-form-urlencoded",
-        });
-
-        if (bearer !== null && bearer !== undefined) {
-            headers.Authorization = `Bearer ${bearer}`;
-        }
-
-        return http.post(this.FULL_PATH, body, { tags, headers });
+        return http.post(
+            this.FULL_PATH,
+            body,
+            requestParams({
+                endpoint: this.FULL_PATH,
+                action: TAGS.Introspect.action,
+                labels,
+                token: bearer ?? null,
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded",
+                },
+            }),
+        );
     }
 }
 

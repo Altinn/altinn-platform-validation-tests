@@ -1,5 +1,6 @@
 import http from "k6/http";
 
+import { jsonBody, requestParams } from "../common/request.js";
 import { ProcessState, ProcessStateUpdate } from "./instances.types.js";
 
 const TAGS = {
@@ -54,25 +55,17 @@ class ProcessClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     UpdateProcessState(instanceOwnerPartyId, instanceGuid, request, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}/instances/${instanceOwnerPartyId}/${instanceGuid}/process`;
-
-        const tags = {
-            ...labels,
-            endpoint: `${this.FULL_PATH}/instances/{instanceOwnerPartyId}/{instanceGuid}/process`,
-            name: `${this.FULL_PATH}/instances/{instanceOwnerPartyId}/{instanceGuid}/process`,
-            action: TAGS.UpdateProcessState.action,
-        };
-
-        return http.put(url, JSON.stringify(request), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-                "Content-Type": "application/json",
-            },
-        });
+        return http.put(
+            `${this.FULL_PATH}/instances/${instanceOwnerPartyId}/${instanceGuid}/process`,
+            jsonBody(request),
+            requestParams({
+                endpoint: `${this.FULL_PATH}/instances/{instanceOwnerPartyId}/{instanceGuid}/process`,
+                action: TAGS.UpdateProcessState.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+                json: true,
+            }),
+        );
     }
 
     /**
@@ -86,24 +79,15 @@ class ProcessClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetProcessHistory(instanceOwnerPartyId, instanceGuid, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}/instances/${instanceOwnerPartyId}/${instanceGuid}/process/history`;
-
-        const tags = {
-            ...labels,
-            endpoint: `${this.FULL_PATH}/instances/{instanceOwnerPartyId}/{instanceGuid}/process/history`,
-            name: `${this.FULL_PATH}/instances/{instanceOwnerPartyId}/{instanceGuid}/process/history`,
-            action: TAGS.GetProcessHistory.action,
-        };
-
-        return http.get(url, {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.get(
+            `${this.FULL_PATH}/instances/${instanceOwnerPartyId}/${instanceGuid}/process/history`,
+            requestParams({
+                endpoint: `${this.FULL_PATH}/instances/{instanceOwnerPartyId}/{instanceGuid}/process/history`,
+                action: TAGS.GetProcessHistory.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 
     /**
@@ -118,25 +102,17 @@ class ProcessClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     UpdateProcessStateAndEvents(instanceOwnerPartyId, instanceGuid, request, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}/instances/${instanceOwnerPartyId}/${instanceGuid}/process/instanceandevents`;
-
-        const tags = {
-            ...labels,
-            endpoint: `${this.FULL_PATH}/instances/{instanceOwnerPartyId}/{instanceGuid}/process/instanceandevents`,
-            name: `${this.FULL_PATH}/instances/{instanceOwnerPartyId}/{instanceGuid}/process/instanceandevents`,
-            action: TAGS.UpdateProcessStateAndEvents.action,
-        };
-
-        return http.put(url, JSON.stringify(request), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-                "Content-Type": "application/json",
-            },
-        });
+        return http.put(
+            `${this.FULL_PATH}/instances/${instanceOwnerPartyId}/${instanceGuid}/process/instanceandevents`,
+            jsonBody(request),
+            requestParams({
+                endpoint: `${this.FULL_PATH}/instances/{instanceOwnerPartyId}/{instanceGuid}/process/instanceandevents`,
+                action: TAGS.UpdateProcessStateAndEvents.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+                json: true,
+            }),
+        );
     }
 }
 
