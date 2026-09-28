@@ -66,9 +66,7 @@ export default function (data) {
 
             AuthorizedPartiesDomainChecks.CheckPartyIncludesAccessPackages(parties, row.clientSubunitPartyUuid, ACCOUNTANT_PACKAGES);
 
-            AuthorizedPartiesDomainChecks.CheckPartyType(parties, row.innehaverPartyUuid, "Person");
-
-            AuthorizedPartiesDomainChecks.CheckPartyIncludesAccessPackages(parties, row.innehaverPartyUuid, ACCOUNTANT_PACKAGES);
+            AuthorizedPartiesDomainChecks.CheckSomePersonPartyIncludesAccessPackages(parties, ACCOUNTANT_PACKAGES);
 
             AuthorizedPartiesDomainChecks.CheckNoDuplicateParties(parties);
         });

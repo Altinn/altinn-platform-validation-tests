@@ -67,7 +67,6 @@ export const options = {
  * @property {string} clientOrgno
  * @property {string} clientPartyUuid
  * @property {string} clientSubunitPartyUuid
- * @property {string} innehaverPartyUuid Sole proprietorship owner, returned as a person.
  * @property {string} keyRoleOnlyPartyUuid A second party reachable only through a key role.
  * @property {string} directDelegatorPartyUuid A party that delegated to the person directly.
  * @property {string} directDelegatorPackage One package it delegated.
@@ -247,9 +246,7 @@ function discover(authorizedPartiesClient, candidate) {
 
     // The owner of a sole proprietorship client comes back as a person carrying the same
     // packages, which is what separates it from the daglig leder's own party.
-    const innehaver = withKeyRoles.find((party) => party.type === "Person" && holdsAll(party, ACCOUNTANT_PACKAGES));
-
-    if (innehaver === undefined) {
+    if (!withKeyRoles.some((party) => party.type === "Person" && holdsAll(party, ACCOUNTANT_PACKAGES))) {
         return skip("no sole proprietorship owner is returned as a person");
     }
 
@@ -289,7 +286,6 @@ function discover(authorizedPartiesClient, candidate) {
         clientOrgno: client.organizationNumber ?? "",
         clientPartyUuid: client.partyUuid,
         clientSubunitPartyUuid: clientSubunit === undefined ? "" : clientSubunit.partyUuid,
-        innehaverPartyUuid: innehaver.partyUuid,
         keyRoleOnlyPartyUuid: keyRoleOnly.partyUuid,
         directDelegatorPartyUuid: directDelegator.partyUuid,
         directDelegatorPackage: (directDelegator.authorizedAccessPackages ?? [])[0],
@@ -386,7 +382,7 @@ function holdsAll(party, packages) {
 function printCsvs(rows) {
     /** @type {{[scenario: string]: Array<string>}} */
     const columns = {
-        "clients-and-key-role-parties": ["pid", "orgno", "firmPartyUuid", "firmSubunitPartyUuid", "clientOrgno", "clientPartyUuid", "clientSubunitPartyUuid", "innehaverPartyUuid"],
+        "clients-and-key-role-parties": ["pid", "orgno", "firmPartyUuid", "firmSubunitPartyUuid", "clientOrgno", "clientPartyUuid", "clientSubunitPartyUuid"],
         "access-information-flags": ["pid", "firmPartyUuid", "clientPartyUuid"],
         "key-role-filter": ["pid", "firmPartyUuid", "clientPartyUuid", "keyRoleOnlyPartyUuid", "directDelegatorPartyUuid", "directDelegatorPackage"],
         "party-filter": ["pid", "clientPartyUuid", "clientSubunitPartyUuid", "unreachablePartyUuid"],

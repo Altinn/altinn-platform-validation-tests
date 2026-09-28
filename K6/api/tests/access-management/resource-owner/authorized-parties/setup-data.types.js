@@ -207,7 +207,7 @@
  */
 
 /**
- * An accounting firm, one of its clients and that client's sole proprietorship owner.
+ * An accounting firm and one of its clients.
  *
  * @typedef {object} ClientsAndKeyRolePartiesRow
  * @property {string} pid The firm's daglig leder, who is the subject.
@@ -217,7 +217,6 @@
  * @property {string} clientOrgno A client that carries the accountant packages.
  * @property {string} clientPartyUuid That client's party uuid.
  * @property {string} clientSubunitPartyUuid A subunit of that client, carrying them too.
- * @property {string} innehaverPartyUuid The owner of a sole proprietorship client.
  */
 
 /**
