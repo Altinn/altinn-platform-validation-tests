@@ -1,12 +1,15 @@
 import { expect, Page } from "@playwright/test";
 
 import { TestUser } from "../../config/environment";
+import { Sprak } from "../../config/sprak";
+import { Cookiebanner } from "../felles/cookiebanner";
 import { gaaTil, REDIRECT_TIMEOUT } from "../felles/navigasjon";
 
 export class InfoportalForside {
     constructor(
         private page: Page,
         readonly url: string,
+        readonly cookiebanner = new Cookiebanner(page),
     ) { }
 
     // Infoportalen har alltid navigert med et strammere tak enn de andre flatene.
@@ -46,4 +49,18 @@ export class InfoportalForside {
     async assertOnPage() {
         await expect.poll(() => this.page.url()).toContain(new URL(this.url).origin);
     }
+
+    async assertSprak(sprak: Sprak) {
+        await this.assertOnPage();
+        await expect(
+            this.page.getByText(sporsmaal[sprak]),
+            `Infoportalen viser "${sporsmaal[sprak]}"`
+        ).toBeVisible();
+    }
 }
+
+const sporsmaal: Record<Sprak, RegExp> = {
+    [Sprak.Bokmaal]: /^hva vil du gjøre\?$/i,
+    [Sprak.Nynorsk]: /^kva vil du gjere\?$/i,
+    [Sprak.Engelsk]: /^what do you want to do\?$/i,
+};
