@@ -11,8 +11,9 @@ npx playwright install
 cp .env.example .env
 ```
 
-`TEST_IDP_PASSWORD` trengs bare når projectet har `mockporten: true`, altså i
-praksis prod. `.env` og `.env.local` er gitignorert.
+`TEST_IDP_PASSWORD` trengs når innloggingen går via Mockporten: i prod, og for
+røyktesten `tests/innlogging/mockporten.spec.ts` i at23 og tt02. `.env` og
+`.env.local` er gitignorert.
 
 Testbrukerne leses fra `testdata/<gruppe>/<miljø>.csv`, og hver worker får sin egen
 bruker. `prod.csv` er gitignorert, siden prod-brukerne ikke kan sjekkes inn.
@@ -89,8 +90,10 @@ så `assertSections` slår opp riktige navn selv.
 ## Innlogging
 
 `innlogging.logIn(side, user)` logger inn og lander på siden du sender inn. Om det
-skjer via ID-porten med TestID eller via Mockporten styres bare av `mockporten` i
-miljøets project, siden TestID ikke finnes i prod. Testene vet ikke hvilken.
+skjer via ID-porten med TestID eller via Mockporten styres av `mockporten` i
+miljøets project, siden TestID ikke finnes i prod. Testene vet ikke hvilken. Unntaket
+er røyktesten for Mockporten, som setter `test.use({ mockporten: true })` for å
+teste Mockporten også i at23 og tt02.
 Begge veiene starter på Altinns login-endepunkt, siden `state` opprettes serverside.
 
 `innlogging.logOut()` logger ut via menyen. Språket settes med
