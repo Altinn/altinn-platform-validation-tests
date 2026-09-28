@@ -1,2 +1,2 @@
-# Prod-testbrukerne er hemmelige, se TESTDATA_ROOT i README.
+# Prod-testbrukerne er hemmelige og sjekkes ikke inn.
 testdata/*/prod.csv

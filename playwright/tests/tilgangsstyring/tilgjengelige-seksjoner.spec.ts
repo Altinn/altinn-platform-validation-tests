@@ -1,10 +1,8 @@
-import { alleSprak } from "../../config/sprak";
 import { test } from "../../fixtures/test";
 import { Seksjon } from "../../pages/tilgangsstyring/seksjoner";
 
-/**
- * Regelen for hva som vises ligger i useSidebarItems.tsx i altinn-access-management-frontend.
- */
+// Hva denne brukeren skal se. En bruker med færre tilganger får sin egen liste,
+// ikke en conditional i page objectet.
 const forventedeSeksjoner = [
     Seksjon.Foresporsler,
     Seksjon.Brukere,
@@ -13,30 +11,23 @@ const forventedeSeksjoner = [
     Seksjon.SamtykkeOgFullmaktsavtaler,
 ];
 
-for (const valgtSprak of alleSprak) {
-    test.describe(
-        `Tilgangsstyring på ${valgtSprak}`,
-        () => {
-            test.use({ sprak: valgtSprak });
+// Språket kommer fra projectet, så testen kjører én gang per språk.
+test("Bruker ser oversikt over navigasjonsvalg", { tag: ["@at23", "@tt02", "@prod"] }, async ({
+    innlogging,
+    user,
+    sprak,
+    tilgangsstyring,
+}) => {
+    await test.step("Innlogget bruker åpner tilgangsstyring", async () => {
+        await innlogging.logIn(tilgangsstyring, user);
+        await tilgangsstyring.assertLoggedIn();
+    });
 
-            test("Daglig leder som representerer seg selv ser sine navigasjonsvalg", async ({
-                innlogging,
-                dagligLeder,
-                tilgangsstyring,
-            }) => {
-                await test.step("Daglig leder logger inn og representerer seg selv", async () => {
-                    await innlogging.logIn(tilgangsstyring.forside, dagligLeder);
-                    await tilgangsstyring.forside.assertLoggedIn();
-                });
+    await test.step(`Setter språk til ${sprak}`, async () => {
+        await tilgangsstyring.meny.setLanguage(sprak);
+    });
 
-                await test.step(`Setter språk til ${valgtSprak}`, async () => {
-                    await innlogging.setLanguage(valgtSprak);
-                });
-
-                await test.step("Daglig leder ser seksjonene som gjelder ved representasjon av seg selv", async () => {
-                    await tilgangsstyring.forside.assertSections(forventedeSeksjoner);
-                });
-            });
-        },
-    );
-}
+    await test.step("Verifiser tilgjengelige seksjoner", async () => {
+        await tilgangsstyring.assertSections(forventedeSeksjoner);
+    });
+});

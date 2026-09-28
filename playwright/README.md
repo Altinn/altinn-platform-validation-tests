@@ -6,96 +6,96 @@ infoportalen.
 ## Kom i gang
 
 ```bash
-cd playwright
 npm install
 npx playwright install
 cp .env.example .env
 ```
 
-Sett `TEST_IDP_PASSWORD` i `.env` for innlogging med Mockporten. Tilgangsverdien hentes fra
-teamets hemmelighetsforvaltning. Lokale `.env`-filer er gitignorert. URLene til flatene
-ligger i miljøets project i [playwright.config.ts](playwright.config.ts).
+`TEST_IDP_PASSWORD` trengs når innloggingen går via Mockporten: i prod, og for
+røyktesten `tests/innlogging/mockporten.spec.ts` i at23 og tt02. `.env` og
+`.env.local` er gitignorert.
 
-Testpersoner leses fra `testdata/<brukergruppe>/<miljø>.csv`, relativt til `playwright/`, i alle miljøer.
-Mangler fila, eller er den tom, feiler testen som ber om brukeren med en gang.
-at23 og tt02 har filer i repoet. Prod-brukerne kan ikke sjekkes inn, og monteres fra secreten
-`playwright-testdata-prod` med én nøkkel per brukergruppe, for eksempel `dagligLeder.csv`.
-`TESTDATA_ROOT` sier hvor de ligger, se `hack/playwright-cronjobs.jsonnet`. Filene skal ha kolonnene `pid,name`.
-Det er ingen fallback til en miljøkonfigurert testperson.
-CSV-brukere fordeles mellom workerne innenfor én kjøring; separate kjøringer
-deler fortsatt brukerpool.
+Testbrukerne leses fra `testdata/<gruppe>/<miljø>.csv`, og hver worker får sin egen
+bruker. `prod.csv` er gitignorert, siden prod-brukerne ikke kan sjekkes inn.
+`TEST_DATA_PATH` peker på en annen testdata-mappe med samme oppbygning, for eksempel
+en som er montert inn i poden.
 
 ## Kjør
 
-Hvert miljø er et Playwright-[project](https://playwright.dev/docs/test-projects), og
-scriptene velger ett av dem. Område oppgis som sti:
+Scriptene kjører ett miljø, og område oppgis som sti:
 
 ```bash
-npm run test:at23                          # alt, mot at23 (og tt02 / prod)
-npm run test:at23 -- tests/tilgangsstyring # ett område, én fil eller én :linje
-npm run test:at23 -- tests/innlogging --debug   # steppe gjennom tester
-npx playwright test --project=at23 --project=tt02   # flere miljøer i samme kjøring
+npm run test:at23                              # alt, mot at23 (og tt02 / prod)
+npm run test:at23:bokmaal                      # lokalt: bare bokmål og Chrome
+npm run test:prod -- tests/tilgangsstyring     # ett område, én fil eller én :linje
+npm run test:at23 -- tests/innlogging --debug  # Playwright-flagg etter --
 ```
 
-Flagg til Playwright, som `--headed`, `--debug`, `--workers` og `--retries`, skrives etter `--`.
-
+`npm run typecheck` typesjekker, og `npm run report` åpner rapporten fra forrige
+kjøring. Den skrives til `playwright-report/` hver gang, men åpner seg ikke selv.
 I VS Code-utvidelsen velger du miljø under Projects.
 
-## Innlogging
+## Miljøer
 
-`innlogging.logIn(side, user)` bruker ID-porten med TestID, og Mockporten bare når
-det er angitt. Prod-projectet angir `mockporten: true` i `playwright.config.ts`, siden
-TestID ikke finnes der. TestID-feil feiler testen, uten fallback til Mockporten.
-Er ID-porten nede, kan du angi Mockporten for en kjøring med `MOCKPORTEN=true npm run test:at23`.
-Mockporten testes også for seg i at23, tt02 og prod, i `tests/innlogging/innlogging-mockporten.spec.ts`.
+Alt som skiller miljøene, står i `miljoer` i `playwright.config.ts`: URLene og om
+innloggingen går via Mockporten. Hvert miljø blir ett project per nettleser og
+språk, for eksempel `at23-chromium-nynorsk`, og foreløpig er bare Chrome med.
 
-Testene som tester selve innloggingsflyten gjennom ID-porten bruker
-`viaIdporten(start, user)`, og kjører ikke i prod, der TestID ikke finnes.
-Produksjonstestene dekker innlogget sesjon og funksjonalitet med syntetiske
-testpersoner, ikke ordinær eID-innlogging.
-
-Utlogging testes bare i at23 og tt02, siden Mockportens utloggingsside svarer 404.
-Prod-suiten dekker derfor ikke utlogging.
-
-## Hva kreves på selve spec-filen
-
-Hvilke miljøer en spec kjører i står i miljøets project i `playwright.config.ts`.
-En ny spec kjører i at23 uten videre. tt02 og prod kjører bare filene som er
-ført opp i projectets `testMatch`.
-
-En test ber om testpersonen den trenger ved navn, så det står i testen selv
-hvilke testdata den bruker:
+En test sier selv hvilke miljøer den er klar for, med en tag per miljø:
 
 ```ts
-test("...", async ({ innlogging, dagligLeder, tilgangsstyring }) => {
-    await innlogging.logIn(tilgangsstyring.forside, dagligLeder);
+test("...", { tag: ["@at23", "@tt02"] }, async ({ innlogging }) => { ... });
+```
+
+Et project kjører bare testene som har taggen for miljøet sitt. En test uten tag kjører
+ingen steder, så en ny test må forfremmes bevisst. Prod skal bare ha testen når den er
+verifisert i at23 og tt02, og ikke endrer data.
+
+## Struktur
+
+Ett hovedområde per mappe, med en page object per underside:
+
+```
+tests/tilgangsstyring/               testene for området
+pages/tilgangsstyring/forside.ts     page objects, en fil per underside
+pages/felles/                        meny og innlogging, brukt av alle flatene
+config/                              miljøvariabler og språk
+fixtures/arbeidsflate.fixture.ts     én fixture per område: arbeidsflate,
+fixtures/tilgangsstyring.fixture.ts  tilgangsstyring, infoportal og innlogging
+fixtures/infoportal.fixture.ts
+fixtures/innlogging.fixture.ts
+fixtures/testbrukere.fixture.ts      testbrukerne fra testdata/
+fixtures/test.ts                     slår dem sammen med mergeTests
+```
+
+Hver fixture-fil har ett ansvar og extender `base` fra Playwright, aldri en annen
+fixture-fil. Testene importerer `test` fra `fixtures/test.ts` og ingen andre steder.
+Et nytt ansvar, for eksempel API-klienter, er en ny fil og én linje i `mergeTests`.
+
+En test tar sidene den trenger som fixtures, og en ny side er en page object pluss
+ett felt i områdets fixture:
+
+```ts
+test('...', async ({ innlogging, user, tilgangsstyring }) => {
+    await innlogging.logIn(tilgangsstyring, user);
+    await tilgangsstyring.assertSections(forventedeSeksjoner);
 });
 ```
 
-Fixturene er `privatPerson` og `dagligLeder`, se `fixtures/testbruker.fixture.ts`.
+Språket er en del av projectet, så `npm run test:<miljø>` kjører alle testene på
+bokmål, nynorsk og engelsk. Lokalt holder det som regel med bokmål og Chrome, og det
+er det `npm run test:<miljø>:bokmaal` kjører. Sidene får språket injisert,
+så `assertSections` slår opp riktige navn selv.
 
-Nye tester bør minst være kjørt i `at23` og `tt02` og merget og verifisert ok etter merge til main før de føres opp i prod-projectet.
+## Innlogging
 
-Brukergruppene står i enumen `Testbruker` i [testdata/index.ts](testdata/index.ts),
-med mappestien som verdi, for eksempel `testdata/dagligLeder`. Projectet `at23`
-gir da filen [testdata/dagligLeder/at23.csv](testdata/dagligLeder/at23.csv).
-En ny brukergruppe trenger en mappe med CSV-filer, et medlem i enumen og en
-fixture i `fixtures/testbruker.fixture.ts`, og i prod en nøkkel i secreten og i
-`hack/playwright-cronjobs.jsonnet`.
-Hvem hver test faktisk kjørte som står i rapporten, som `testperson`.
-Prod skal bare legges til for tester som
-ikke endrer data.
+`innlogging.logIn(side, user)` logger inn og lander på siden du sender inn. Om det
+skjer via ID-porten med TestID eller via Mockporten styres av `mockporten` i
+miljøets project, siden TestID ikke finnes i prod. Testene vet ikke hvilken. Unntaket
+er røyktesten for Mockporten, som setter `test.use({ mockporten: true })` for å
+teste Mockporten også i at23 og tt02.
+Begge veiene starter på Altinns login-endepunkt, siden `state` opprettes serverside.
 
-`npm run typecheck` typesjekker. `npm run report` åpner siste testrapport.
+`innlogging.logOut()` logger ut via menyen. Språket settes med
+`tilgangsstyring.meny.setLanguage(sprak)`, på menyen til siden du står på.
 
-## Språk i page objects
-
-Felles navigasjon og handlinger må fungere på bokmål, nynorsk og engelsk,
-også før testen har satt språk: profilen kan ha et lagret språk fra en tidligere
-kjøring. Bruk roller og stabile attributter der det er mulig. Når et element må
-finnes via tekst, skal selektoren dekke alle tre språk.
-
-Assertions som kontrollerer oversettelser skal derimot bare godta det valgte
-språket. Bruk `Record<Sprak, ...>` for forventede tekster og `alleSprak` til å
-kjøre språkspesifikke tester. `sprak`-fixturen angir forventningen; den endrer
-ikke profilens språk. Testen må selv velge språket før den kontrollerer teksten.

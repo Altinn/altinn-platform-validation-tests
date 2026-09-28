@@ -22,3 +22,6 @@ terraform.rc
 .DS_Store
 .env
 .env*.local
+
+# Lokale editor-innstillinger
+.vscode/

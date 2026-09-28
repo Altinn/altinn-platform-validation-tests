@@ -12,7 +12,6 @@
     "include": [
         "config/**/*.ts",
         "fixtures/**/*.ts",
-        "flows/**/*.ts",
         "pages/**/*.ts",
         "tests/**/*.ts",
         "playwright.config.ts"

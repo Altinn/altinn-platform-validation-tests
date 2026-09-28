@@ -1,8 +1,17 @@
-import { Innlogging } from "../flows/innlogging";
-import { test as miljoTest } from "./miljo.fixture";
+import { test as base } from "@playwright/test";
 
-export const test = miljoTest.extend<{ innlogging: Innlogging }>({
+import { Urler } from "../config/environment";
+import { Innlogging } from "../pages/felles/innlogging";
+
+export const innloggingFixture = base.extend<{
+    innlogging: Innlogging;
+    urler: Urler;
+    mockporten: boolean;
+}>({
+    urler: [{} as Urler, { option: true }],
+    mockporten: [false, { option: true }],
+
     innlogging: async ({ page, mockporten, urler }, use) => {
-        await use(new Innlogging(page, mockporten, urler.platform));
+        await use(new Innlogging(page, urler.platform, mockporten));
     },
 });

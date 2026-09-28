@@ -2,6 +2,14 @@ local playwrightVersion = std.extVar('playwrightVersion');
 
 local jobs = [
   {
+    name: 'playwright-at22',
+    schedule: '0 * * * *',
+    environment: 'at22',
+    reportUrl:
+      'https://jolly-plant-033965703-at22.westeurope.7.azurestaticapps.net',
+    slackWebhookEnabled: false,
+  },
+  {
     name: 'playwright-at23',
     schedule: '*/15 * * * *',
     environment: 'at23',
@@ -24,8 +32,6 @@ local jobs = [
     reportUrl:
       'https://jolly-plant-033965703.7.azurestaticapps.net',
     slackWebhookEnabled: false,
-    // Prod-testbrukerne kan ikke sjekkes inn, så de monteres fra en secret.
-    testdataSecret: 'playwright-testdata-prod',
   },
 ];
 
@@ -36,7 +42,6 @@ local cronJob(
   environment,
   reportUrl,
   slackWebhookEnabled,
-  testdataSecret,
       ) = {
   apiVersion: 'batch/v1',
   kind: 'CronJob',
@@ -98,16 +103,7 @@ local cronJob(
                     mountPath: '/etc/swa-config',
                     readOnly: true,
                   },
-                ] + (
-                  if testdataSecret != null then [
-                    {
-                      name: 'testdata',
-                      mountPath: '/etc/playwright-testdata',
-                      readOnly: true,
-                    },
-                  ]
-                  else []
-                ),
+                ],
 
                 envFrom: [
                   {
@@ -158,14 +154,6 @@ local cronJob(
                     value: 'test-results.xml',
                   },
                 ] + (
-                  if testdataSecret != null then [
-                    {
-                      name: 'TESTDATA_ROOT',
-                      value: '/etc/playwright-testdata',
-                    },
-                  ]
-                  else []
-                ) + (
                   if slackWebhookEnabled then [
                     {
                       name: 'SLACK_WEBHOOK_URL',
@@ -189,26 +177,7 @@ local cronJob(
                   secretName: 'swa-config',
                 },
               },
-            ] + (
-              // Hver brukergruppe i playwright/testdata/index.ts er en nøkkel i
-              // secreten, og havner der testdata.ts leter etter den.
-              if testdataSecret != null then [
-                {
-                  name: 'testdata',
-                  secret: {
-                    secretName: testdataSecret,
-                    items: [
-                      {
-                        key: gruppe + '.csv',
-                        path: 'testdata/' + gruppe + '/' + environment + '.csv',
-                      }
-                      for gruppe in ['privatPersonUtenVirksomhet', 'dagligLeder']
-                    ],
-                  },
-                },
-              ]
-              else []
-            ),
+            ],
           },
         },
       },
@@ -227,7 +196,6 @@ local cronJob(
       job.environment,
       job.reportUrl,
       job.slackWebhookEnabled,
-      std.get(job, 'testdataSecret', null),
     )
   for job in jobs
 }

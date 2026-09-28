@@ -14,6 +14,14 @@ import { SetupData } from "./setup-data.types.js";
 const SERVICE_OWNER = { org: "digdir", orgno: "991825827" };
 
 /**
+ * The org code the calling service owner owns, and so may filter on.
+ *
+ * Exported rather than read out of the shared fixture, so the org code the token is minted
+ * for and the org code the filter names cannot drift apart: they are the same constant.
+ */
+export const OWN_SERVICE_OWNER_ORG_CODE = SERVICE_OWNER.org;
+
+/**
  * Another service owner's org code, for the org code filter scenario.
  *
  * A plain resource owner may only ask on behalf of the org code it owns, so this

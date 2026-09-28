@@ -308,14 +308,15 @@ export function getApproverTokenOpts(customer) {
  * Signing goes through SubtleCrypto, which is promise based, so this is awaited.
  *
  * @param {ArrangedSystemUser} arranged - What setup returned for this iteration.
+ * @param {string[]} [scopes] - The scopes the grant asks for.
  * @returns {Promise<string>} A Maskinporten system user token.
  */
-export async function fetchSystemUserToken(arranged) {
+export async function fetchSystemUserToken(arranged, scopes = [SCOPE]) {
     const maskinportenTokenGenerator = getMaskinportenTokenGenerator();
 
     maskinportenTokenGenerator.setTokenGeneratorOptions(
         new MaskinportenTokenBuilder()
-            .withScopes(CreateScopeString([SCOPE]))
+            .withScopes(CreateScopeString(scopes))
             .withSystemUser(arranged.customer.orgNo, arranged.externalRef)
             .build(),
     );

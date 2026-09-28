@@ -1,14 +1,15 @@
+import { test as base } from "@playwright/test";
+
+import { Urler } from "../config/environment";
 import { InfoportalForside } from "../pages/infoportal/forside";
-import { test as miljoTest } from "./miljo.fixture";
 
-export type Infoportal = {
-    forside: InfoportalForside;
-};
+export const infoportalFixture = base.extend<{
+    infoportal: InfoportalForside;
+    urler: Urler;
+}>({
+    urler: [{} as Urler, { option: true }],
 
-export const test = miljoTest.extend<{ infoportal: Infoportal }>({
     infoportal: async ({ page, urler }, use) => {
-        await use({
-            forside: new InfoportalForside(page, urler.infoportal),
-        });
+        await use(new InfoportalForside(page, urler.infoportal));
     },
 });

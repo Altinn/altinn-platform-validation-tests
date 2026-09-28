@@ -1,45 +1,21 @@
 import { mergeTests } from "@playwright/test";
 
-import { Side } from "../pages/side";
-import { test as arbeidsflate } from "./arbeidsflate.fixture";
-import { test as cookiebanner } from "./cookiebanner.fixture";
-import { test as infoportal } from "./infoportal.fixture";
-import { test as innlogging } from "./innlogging.fixture";
-import { test as sprak } from "./sprak.fixture";
-import { test as testbruker } from "./testbruker.fixture";
-import { test as tilgangsstyring } from "./tilgangsstyring.fixture";
+import { arbeidsflateFixture } from "./arbeidsflate.fixture";
+import { cookiebannerFixture } from "./cookiebanner.fixture";
+import { infoportalFixture } from "./infoportal.fixture";
+import { innloggingFixture } from "./innlogging.fixture";
+import { testbrukereFixture } from "./testbrukere.fixture";
+import { tilgangsstyringFixture } from "./tilgangsstyring.fixture";
 
-export type Flate =
-    | "arbeidsflate"
-    | "arbeidsflate-profil"
-    | "tilgangsstyring"
-    | "infoportalen";
+// Det eneste stedet testene importerer fra. urler, sprak, mockporten og miljo
+// settes av projectene i playwright.config.ts.
+export const test = mergeTests(
+    arbeidsflateFixture,
+    tilgangsstyringFixture,
+    infoportalFixture,
+    innloggingFixture,
+    testbrukereFixture,
+    cookiebannerFixture,
+);
 
-/**
- * Testene importerer `test` herfra. Hvert hovedområde har sin egen fixture-fil, og
- * nye områder legges til i mergeTests under.
- *
- * `sider` er landingssiden på hver flate, for testene som går på tvers av dem.
- * Testene som holder seg innenfor ett område bruker områdefixturen direkte.
- */
-const test = mergeTests(
-    innlogging,
-    testbruker,
-    sprak,
-    cookiebanner,
-    arbeidsflate,
-    tilgangsstyring,
-    infoportal
-).extend<{ sider: Record<Flate, Side> }>({
-    sider: async ({ arbeidsflate, tilgangsstyring, infoportal }, use) => {
-        await use({
-            "arbeidsflate": arbeidsflate.forside,
-            "arbeidsflate-profil": arbeidsflate.profil,
-            "tilgangsstyring": tilgangsstyring.forside,
-            "infoportalen": infoportal.forside,
-        });
-    },
-});
-
-export { test };
 export { expect } from "@playwright/test";
