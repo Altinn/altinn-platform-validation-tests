@@ -1,2 +1,6 @@
 serviceOwnerOrg,serviceOwnerOrgNo,resource,fromOrganizationNumber
 digdir,991825827,k6-serviceowner-resource-delegation,311715666
+ddlabs,310797510,k6-serviceowner-resource-delegation-ddlabs,311715666
+staf,921627009,k6-serviceowner-resource-delegation-staf,311715666
+slk,960885406,k6-serviceowner-resource-delegation-slk,311715666
+nsm,985165262,k6-serviceowner-resource-delegation-nsm,311715666

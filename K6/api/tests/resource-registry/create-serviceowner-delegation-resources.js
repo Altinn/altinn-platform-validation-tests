@@ -1,4 +1,4 @@
-import { group } from "k6";
+import { fail, group } from "k6";
 
 import {
     ResourceClient,
@@ -13,7 +13,6 @@ import { AltinnScopes, CreateScopeString } from "../../../scopes.js";
 import {
     ResourceCreatePolicy,
     ResourceCreateResource,
-    ResourceGetResource,
     ResourceUpdateResource,
 } from "../../building-blocks/resource-registry/resource/index.js";
 
@@ -58,13 +57,38 @@ import {
 // exist as a party in the environment, and most of the 107 published ones do
 // not. Check a replacement first, by delegating from its organisation number
 // against an existing resource and seeing whether the create is accepted.
-const SERVICE_OWNERS = [
-    { orgcode: "ddlabs", orgno: "310797510", name: "Digdir Labs" },
-    { orgcode: "bits", orgno: "916960190", name: "BITS AS" },
-    { orgcode: "din", orgno: "984195796", name: "DIN" },
-    { orgcode: "kv", orgno: "971040238", name: "KV" },
-];
+/**
+ * @typedef {object} ServiceOwner
+ * @property {string} orgcode Service owner code the token acts as.
+ * @property {string} orgno Organization number the registry validates against.
+ * @property {string} name Owner name, as the resource reports it.
+ */
 
+/** @type {{[environment: string]: Array<ServiceOwner>}} */
+const SERVICE_OWNERS_BY_ENVIRONMENT = {
+    at22: [
+        { orgcode: "ddlabs", orgno: "310797510", name: "Digdir Labs" },
+        { orgcode: "bits", orgno: "916960190", name: "BITS AS" },
+        { orgcode: "din", orgno: "984195796", name: "DIN" },
+        { orgcode: "kv", orgno: "971040238", name: "KV" },
+    ],
+    // Not the same set: which orgs exist as parties differs per environment, and
+    // bits, din and kv are not parties in at23. Seven orgs are, and dropping brg
+    // and skd leaves exactly these four alongside digdir.
+    //
+    // nsm is here to make up the five, not because it is any less recognisable
+    // than the two left out - at23 simply has nothing else to reach five with.
+    // Four service owners would exercise the same thing, so drop it if having a
+    // security authority in the fixture reads worse than the shorter list.
+    at23: [
+        { orgcode: "ddlabs", orgno: "310797510", name: "Digdir Labs" },
+        { orgcode: "staf", orgno: "921627009", name: "Statsforvalterens fellestjenester" },
+        { orgcode: "slk", orgno: "960885406", name: "Statens Lånekasse for utdanning" },
+        { orgcode: "nsm", orgno: "985165262", name: "Nasjonal sikkerhetsmyndighet" },
+    ],
+};
+
+const SERVICE_OWNERS = SERVICE_OWNERS_BY_ENVIRONMENT[__ENV.ENVIRONMENT] ?? [];
 // example.com is reserved by RFC 2606 and routes nowhere, so nothing a test
 // resource publishes can reach a real inbox or page. digdir.no would.
 const CONTACT_POINT = {
@@ -99,6 +123,14 @@ export function setup() {
         "TOKEN_GENERATOR_USERNAME",
         "TOKEN_GENERATOR_PASSWORD",
     ]);
+
+    if (SERVICE_OWNERS.length === 0) {
+        fail(
+            `No service owners listed for ${__ENV.ENVIRONMENT}. Add them to`
+            + " SERVICE_OWNERS_BY_ENVIRONMENT, after checking each one is a party in"
+            + " that environment.",
+        );
+    }
 
     return;
 }
@@ -153,13 +185,14 @@ export default function () {
 
             // POST refuses an identifier that is taken, so an existing resource
             // is updated instead. Reading it back first is what tells the two
-            // apart, and it needs no token.
-            const exists = ResourceGetResource(
-                resourceClient,
+            // apart. Straight off the client rather than through the building
+            // block: a resource that is not there yet is the ordinary case on a
+            // first run, and should not report a failed check for it.
+            const exists = resourceClient.ResourceGetResource(
                 identifier,
                 null,
                 { step: `${step}. Read ${identifier}` },
-            ) !== null;
+            ).status === 200;
 
             const written = exists
                 ? ResourceUpdateResource(
