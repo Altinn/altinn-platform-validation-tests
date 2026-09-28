@@ -57,7 +57,7 @@ export const SYSTEM_ID = `${VENDOR_ORG_NO}_ForretningsføringLeverandør`;
  * Which one hardly matters here: what the tests are about is the token, not what it
  * gets the caller into.
  */
-const ACCESS_PACKAGE = "urn:altinn:accesspackage:jordbruk";
+export const ACCESS_PACKAGE = "urn:altinn:accesspackage:jordbruk";
 
 /**
  * The scope the grant asks for, and the one the token comes back with.
@@ -308,14 +308,15 @@ export function getApproverTokenOpts(customer) {
  * Signing goes through SubtleCrypto, which is promise based, so this is awaited.
  *
  * @param {ArrangedSystemUser} arranged - What setup returned for this iteration.
+ * @param {string[]} [scopes] - The scopes the grant asks for.
  * @returns {Promise<string>} A Maskinporten system user token.
  */
-export async function fetchSystemUserToken(arranged) {
+export async function fetchSystemUserToken(arranged, scopes = [SCOPE]) {
     const maskinportenTokenGenerator = getMaskinportenTokenGenerator();
 
     maskinportenTokenGenerator.setTokenGeneratorOptions(
         new MaskinportenTokenBuilder()
-            .withScopes(CreateScopeString([SCOPE]))
+            .withScopes(CreateScopeString(scopes))
             .withSystemUser(arranged.customer.orgNo, arranged.externalRef)
             .build(),
     );
