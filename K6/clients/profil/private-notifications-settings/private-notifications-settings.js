@@ -1,5 +1,6 @@
 import http from "k6/http";
 
+import { jsonBody, requestParams } from "../../common/request.js";
 import { PrivateNotificationSettingsUpdateRequest } from "./private-notifications-settings.types.js";
 
 const TAGS = {
@@ -45,31 +46,17 @@ class PrivateNotificationsSettingsClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     UpdatePrivateNotificationPhoneNumber(request, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}/phonenumber`;
-
-        let tags = {
-            endpoint: url,
-            name: url,
-            action: TAGS.UpdatePrivateNotificationPhoneNumber.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.put(url, JSON.stringify(request), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json",
-                Accept: "application/json",
-            },
-        });
+        return http.put(
+            `${this.FULL_PATH}/phonenumber`,
+            jsonBody(request),
+            requestParams({
+                endpoint: `${this.FULL_PATH}/phonenumber`,
+                action: TAGS.UpdatePrivateNotificationPhoneNumber.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+                json: true,
+            }),
+        );
     }
 }
 

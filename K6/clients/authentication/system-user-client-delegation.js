@@ -1,5 +1,7 @@
 import http from "k6/http";
 
+import { buildUrl, requestParams } from "../common/request.js";
+
 const TAGS = {
     GetAvailableClients: {
         action: "systemuser-client-delegation-get-available-clients",
@@ -53,37 +55,15 @@ class SystemUserClientDelegationClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetAvailableClients(agent = null, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        let url = `${this.FULL_PATH}/clients/available`;
-
-        const params = {
-            tags: {
-                endpoint: url,
-                name: url,
+        return http.get(
+            buildUrl(`${this.FULL_PATH}/clients/available`, { agent }),
+            requestParams({
+                endpoint: `${this.FULL_PATH}/clients/available`,
                 action: TAGS.GetAvailableClients.action,
-            },
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        };
-
-        if (agent !== null) {
-            url = `${url}?agent=${encodeURIComponent(agent)}`;
-        }
-
-        params.tags.endpoint = url;
-        params.tags.name = url;
-
-        if (labels !== null) {
-            params.tags = {
-                ...labels,
-                ...params.tags,
-            };
-        }
-
-        return http.get(url, params);
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 
     /**
@@ -95,37 +75,15 @@ class SystemUserClientDelegationClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetClients(agent = null, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        let url = `${this.FULL_PATH}/clients`;
-
-        const params = {
-            tags: {
-                endpoint: url,
-                name: url,
+        return http.get(
+            buildUrl(`${this.FULL_PATH}/clients`, { agent }),
+            requestParams({
+                endpoint: `${this.FULL_PATH}/clients`,
                 action: TAGS.GetClients.action,
-            },
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        };
-
-        if (agent !== null) {
-            url = `${url}?agent=${encodeURIComponent(agent)}`;
-        }
-
-        params.tags.endpoint = url;
-        params.tags.name = url;
-
-        if (labels !== null) {
-            params.tags = {
-                ...labels,
-                ...params.tags,
-            };
-        }
-
-        return http.get(url, params);
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 
     /**
@@ -138,37 +96,16 @@ class SystemUserClientDelegationClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     DelegateClient(agent, client, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        let url = `${this.FULL_PATH}/clients`;
-
-        const queryParams = [
-            `agent=${encodeURIComponent(agent)}`,
-            `client=${encodeURIComponent(client)}`,
-        ];
-
-        url = `${url}?${queryParams.join("&")}`;
-
-        const params = {
-            tags: {
+        return http.post(
+            buildUrl(`${this.FULL_PATH}/clients`, { agent, client }),
+            null,
+            requestParams({
                 endpoint: `${this.FULL_PATH}/clients`,
-                name: `${this.FULL_PATH}/clients`,
                 action: TAGS.DelegateClient.action,
-            },
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        };
-
-        if (labels !== null) {
-            params.tags = {
-                ...labels,
-                ...params.tags,
-            };
-        }
-
-        return http.post(url, null, params);
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 
     /**
@@ -181,37 +118,16 @@ class SystemUserClientDelegationClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     RemoveClient(agent, client, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        let url = `${this.FULL_PATH}/clients`;
-
-        const queryParams = [
-            `agent=${encodeURIComponent(agent)}`,
-            `client=${encodeURIComponent(client)}`,
-        ];
-
-        url = `${url}?${queryParams.join("&")}`;
-
-        const params = {
-            tags: {
+        return http.del(
+            buildUrl(`${this.FULL_PATH}/clients`, { agent, client }),
+            null,
+            requestParams({
                 endpoint: `${this.FULL_PATH}/clients`,
-                name: `${this.FULL_PATH}/clients`,
                 action: TAGS.RemoveClient.action,
-            },
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        };
-
-        if (labels !== null) {
-            params.tags = {
-                ...labels,
-                ...params.tags,
-            };
-        }
-
-        return http.del(url, null, params);
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 
     /**
@@ -223,37 +139,15 @@ class SystemUserClientDelegationClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetAgents(party = null, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        let url = `${this.FULL_PATH}/agents`;
-
-        const params = {
-            tags: {
-                endpoint: url,
-                name: url,
+        return http.get(
+            buildUrl(`${this.FULL_PATH}/agents`, { party }),
+            requestParams({
+                endpoint: `${this.FULL_PATH}/agents`,
                 action: TAGS.GetAgents.action,
-            },
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        };
-
-        if (party !== null) {
-            url = `${url}?party=${encodeURIComponent(party)}`;
-        }
-
-        params.tags.endpoint = url;
-        params.tags.name = url;
-
-        if (labels !== null) {
-            params.tags = {
-                ...labels,
-                ...params.tags,
-            };
-        }
-
-        return http.get(url, params);
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 }
 

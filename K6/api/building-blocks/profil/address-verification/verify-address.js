@@ -29,8 +29,6 @@ export function VerifyAddress(
     const succeed = check(res, {
         "VerifyAddress - status code is 204": (r) =>
             r.status === 204,
-        "VerifyAddress - status text is 204 No Content": (r) =>
-            r.status_text === "204 No Content",
     });
 
     if (!succeed) {

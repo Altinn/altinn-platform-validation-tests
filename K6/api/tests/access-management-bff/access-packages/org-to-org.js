@@ -28,7 +28,7 @@ import {
     ValidatePersonInputBuilder,
 } from "../../../../clients/access-management-bff/connection/index.js";
 import { PersonalTokenBuilder, PersonalTokenGenerator } from "../../../../common-imports.js";
-import { fetchTestData, getItemFromList, getNumberOfVUs, getOptions, pickUnique, requireEnv, segmentData } from "../../../../helpers.js";
+import { fetchTestData, getItemFromList, getNumberOfVUs, getOptions, lazy, pickUnique, requireEnv, segmentData } from "../../../../helpers.js";
 import { AltinnScopes, CreateScopeString } from "../../../../scopes.js";
 import { CreateAccessPackageDelegation, DeleteAccessPackageDelegation, GetAccessPackagePermission } from "../../../building-blocks/access-management-bff/access-package/index.js";
 import {
@@ -109,15 +109,6 @@ export const options = getOptions(
     ],
 );
 
-/** @type {PersonalTokenGenerator | undefined} */
-let tokenGenerator = undefined;
-/** @type {ConnectionClient | undefined} */
-let connectionsApiClient = undefined;
-/** @type {AccessPackageClient | undefined} */
-let accessPackageApiClient = undefined;
-/** @type {ClientDelegationsClient | undefined} */
-let clientDelegationsApiClient = undefined;
-
 /**
  * Creates and caches API clients used by the scenario.
  *
@@ -131,30 +122,28 @@ let clientDelegationsApiClient = undefined;
  * PersonalTokenGenerator
  * ]} The initialized API clients and token generator.
  */
-function getClients() {
-    if (tokenGenerator == undefined) {
-        const scopes = CreateScopeString([
-            AltinnScopes.PDP.AUTHORIZE.ENDUSER
-        ]);
-        const tokenOpts = new PersonalTokenBuilder()
-            .withEnvironment(__ENV.ENVIRONMENT)
-            .withTtl(3600)
-            .withScopes(scopes)
-            .build();
+const getClients = lazy(function () {
+    const scopes = CreateScopeString([
+        AltinnScopes.PDP.AUTHORIZE.ENDUSER
+    ]);
+    const tokenOpts = new PersonalTokenBuilder()
+        .withEnvironment(__ENV.ENVIRONMENT)
+        .withTtl(3600)
+        .withScopes(scopes)
+        .build();
 
-        tokenGenerator = new PersonalTokenGenerator(tokenOpts);
-    }
-    if (connectionsApiClient == undefined) {
-        connectionsApiClient = new ConnectionClient(__ENV.AM_UI_BASE_URL, tokenGenerator);
-    }
-    if (accessPackageApiClient == undefined) {
-        accessPackageApiClient = new AccessPackageClient(__ENV.AM_UI_BASE_URL, tokenGenerator);
-    }
-    if (clientDelegationsApiClient == undefined) {
-        clientDelegationsApiClient = new ClientDelegationsClient(__ENV.AM_UI_BASE_URL, tokenGenerator);
-    }
-    return [connectionsApiClient, accessPackageApiClient, clientDelegationsApiClient, tokenGenerator];
-}
+    const tokenGenerator = new PersonalTokenGenerator(tokenOpts);
+
+    /** @type {[ConnectionClient, AccessPackageClient, ClientDelegationsClient, PersonalTokenGenerator]} */
+    const clients = [
+        new ConnectionClient(__ENV.AM_UI_BASE_URL, tokenGenerator),
+        new AccessPackageClient(__ENV.AM_UI_BASE_URL, tokenGenerator),
+        new ClientDelegationsClient(__ENV.AM_UI_BASE_URL, tokenGenerator),
+        tokenGenerator,
+    ];
+
+    return clients;
+});
 
 /**
  * Setup function to segment data for VUs.

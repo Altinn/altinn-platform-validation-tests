@@ -2,7 +2,7 @@
 import { AuthorizedPartiesRequestBuilder } from "../../../../../../clients/access-management/resource-owner/authorized-parties/authorized-parties-request.builder.js";
 import { AuthorizedPartiesClient, AuthorizedPartiesQueryBuilder } from "../../../../../../clients/access-management/resource-owner/authorized-parties/index.js";
 import { EnterpriseTokenBuilder, EnterpriseTokenGenerator } from "../../../../../../common-imports.js";
-import { getItemFromList, getOptions, requireEnv } from "../../../../../../helpers.js";
+import { getItemFromList, getOptions, lazy, requireEnv } from "../../../../../../helpers.js";
 import { AltinnScopes, CreateScopeString } from "../../../../../../scopes.js";
 import { GetAuthorizedParties } from "../../../../../building-blocks/access-management/resource-owner/authorized-parties/index.js";
 import { endUserLabels, endUsers } from "./end-users.js";
@@ -28,11 +28,6 @@ const orgCodes = [
 export const options = getOptions(endUserLabels);
 
 /**
- * @type {AuthorizedPartiesClient | undefined}
- */
-let authorizedPartiesClient = undefined;
-
-/**
  * k6 setup function.
  *
  * Validates required environment variables before the test runs.
@@ -55,27 +50,23 @@ export function setup() {
  *
  * @returns {[AuthorizedPartiesClient]} The initialized API client.
  */
-function getClients() {
-    if (authorizedPartiesClient == undefined) {
-        const scopes = CreateScopeString([
-            AltinnScopes.ACCESSMANAGEMENT.AUTHORIZEDPARTIES.ADMIN
-        ]);
-        const tokenOpts = new EnterpriseTokenBuilder()
-            .withEnvironment(__ENV.ENVIRONMENT)
-            .withTtl(3600)
-            .withScopes(scopes)
-            .build();
+const getClients = lazy(function () {
+    const scopes = CreateScopeString([
+        AltinnScopes.ACCESSMANAGEMENT.AUTHORIZEDPARTIES.ADMIN
+    ]);
+    const tokenOpts = new EnterpriseTokenBuilder()
+        .withEnvironment(__ENV.ENVIRONMENT)
+        .withTtl(3600)
+        .withScopes(scopes)
+        .build();
 
-        const tokenGenerator = new EnterpriseTokenGenerator(tokenOpts);
+    /** @type {[AuthorizedPartiesClient]} */
+    const clients = [
+        new AuthorizedPartiesClient(__ENV.BASE_URL, new EnterpriseTokenGenerator(tokenOpts)),
+    ];
 
-        authorizedPartiesClient = new AuthorizedPartiesClient(
-            __ENV.BASE_URL,
-            tokenGenerator
-        );
-    }
-
-    return [authorizedPartiesClient];
-}
+    return clients;
+});
 
 export default function () {
     const [authorizedPartiesClient] = getClients();

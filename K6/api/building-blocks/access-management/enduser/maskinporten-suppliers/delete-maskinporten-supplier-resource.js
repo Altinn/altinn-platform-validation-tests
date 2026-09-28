@@ -29,9 +29,6 @@ export function DeleteMaskinportenSupplierResource(
     const succeed = check(res, {
         "DeleteMaskinportenSupplierResource - status code is 204": (r) =>
             r.status === 204,
-        "DeleteMaskinportenSupplierResource - status text is 204 No Content": (
-            r,
-        ) => r.status_text === "204 No Content",
     });
 
     if (!succeed) {

@@ -233,6 +233,7 @@
  * @property {string|null} [name] The logical name of the attachment.
  * @property {Array<V1EndUserDialogsQueriesGetTransmission_AttachmentUrl>|null} [urls] The URLs associated with the attachment, each referring to a different representation of the attachment.
  * @property {string|null} [expiresAt] The UTC timestamp when the attachment expires and is no longer available.
+ * @property {boolean} isAuthorized **Experimental:** This is part of an experimental feature that may change or be removed without a major version bump. See https://github.com/Altinn/dialogporten/issues/3978 for details. Indicates whether the authenticated user is authorized for this attachment. If not, the URLs will be replaced with "urn:dialogporten:unauthorized".
  */
 
 /**
@@ -255,13 +256,15 @@
  * @property {Array<V1CommonLocalizations_Localization>|null} [title] The title of the navigational action.
  * @property {string} url The fully qualified URL of the navigational action. Will be set to \"urn:dialogporten:unauthorized\" if the user is not authorized to access the transmission, or \"urn:dialogporten:expired\" if the action has expired.
  * @property {string|null} [expiresAt] The UTC timestamp when the navigational action expires and is no longer available.
+ * @property {string} id The unique identifier for the navigational action in UUIDv7 format.
+ * @property {boolean} isAuthorized **Experimental:** This is part of an experimental feature that may change or be removed without a major version bump. See https://github.com/Altinn/dialogporten/issues/3978 for details. Indicates whether the authenticated user is authorized for this navigational action. If not, the URL will be replaced with "urn:dialogporten:unauthorized".
  */
 
 /**
  * @typedef {object} V1EndUserDialogsQueriesGetTransmission_Transmission
  * @property {string} id The unique identifier for the transmission in UUIDv7 format.
  * @property {string} createdAt The date and time when the transmission was created.
- * @property {string|null} [authorizationAttribute] The authorization attribute associated with the transmission.
+ * @property {string|null} [authorizationAttribute] Deprecated. Use of 'authorizationContext' on the service owner API is preferred; this field only reflects the legacy authorization attribute. The authorization attribute associated with the transmission.
  * @property {boolean} isAuthorized Flag indicating if the authenticated user is authorized for this transmission. If not, embedded content and the attachments will not be available.
  * @property {string|null} [extendedType] The extended type URI for the transmission.
  * @property {string|null} [externalReference] Arbitrary string with a service-specific reference to an external system or service.
@@ -272,6 +275,8 @@
  * @property {V1EndUserDialogsQueriesGetTransmission_Content} content The content of the transmission.
  * @property {Array<V1EndUserDialogsQueriesGetTransmission_Attachment>|null} [attachments] The attachments associated with the transmission.
  * @property {Array<V1EndUserDialogsQueriesGetTransmission_NavigationalAction>|null} [navigationalActions] The navigational actions associated with the transmission.
+ * @property {Array<V1EndUserCommon_ExcludedElement>|null} [excludedAttachments] Experimental. Elements withheld from this collection, represented by id and creation time.
+ * @property {Array<V1EndUserCommon_ExcludedElement>|null} [excludedNavigationalActions] Experimental. Elements withheld from this collection, represented by id and creation time.
  */
 
 /**
@@ -303,7 +308,7 @@
  * @property {string} updatedAt The date and time when the dialog was last updated.
  * @property {string} contentUpdatedAt The date and time when the dialog content was last updated.
  * @property {DialogsEntities_DialogStatus} status The aggregated status of the dialog.
- * @property {DialogEndUserContextsEntities_SystemLabel} systemLabel System defined label used to categorize dialogs. This is obsolete and will only show; Default, Bin or Archive. Use SystemLabels on EndUserContext instead.
+ * @property {DialogEndUserContextsEntities_SystemLabel} systemLabel Deprecated. Use EndUserContext.SystemLabels instead. System defined label used to categorize dialogs. This is obsolete and will only show; Default, Bin or Archive. Use SystemLabels on EndUserContext instead.
  * @property {boolean} isApiOnly Indicates if this dialog is intended for API consumption only and should not be shown in frontends aimed at humans.
  * @property {boolean} hasUnopenedContent Whether the service owner has not yet reported all dialog Transmissions they sent as seen by the end user. A Transmission is considered "sent from the service owner" if the DialogTransmissionType is not one of Submission or Correction. The value of this field is: - true when there are any new unopened Transmissions sent from the service owner. - false when the service owner has created an Activity of type TransmissionOpened for all Transmissions sent from the service owner. The Activities must each contain the relevant Id for all relevant Transmissions. Note that the value is - determined by the service owner and not to be confused with IsContentSeen - not affected by SystemLabels For correspondence: HasUnopenedContent is still true until the service owner also adds a Dialog level Activity (no transmission id) of type CorrespondenceOpened
  * @property {V1EndUserDialogsQueriesGet_Content} content The dialog unstructured text content.
@@ -319,6 +324,10 @@
  * @property {Array<V1EndUserDialogsQueriesGet_DialogSeenLog>|null} [seenSinceLastContentUpdate] The list of seen log entries for the dialog newer than the dialog ContentUpdatedAt date.
  * @property {boolean} isContentSeen Indicates whether a dialog has been seen since its last content update. The value of this field is - true if the dialog has been retrieved since its last content update by either GET /enduser/dialogs/{dialogId} or GET /serviceowner/dialogs/{dialogId}?EndUserId={userId} and there is no SystemLabels MarkedAsUnopened - false if there is a SystemLabels MarkedAsUnopened, even if the dialog has been seen since its last content update - false after the dialog receives a content update. Note that the value is determined by Dialogporten and not to be confused with HasUnopenedContent
  * @property {V1EndUserDialogsQueriesGet_DialogEndUserContext} endUserContext Metadata about the dialog owned by end-users.
+ * @property {Array<V1EndUserCommon_ExcludedElement>|null} [excludedAttachments] Experimental. Elements withheld from this collection, represented by id and creation time.
+ * @property {Array<V1EndUserCommon_ExcludedElement>|null} [excludedTransmissions] Experimental. Elements withheld from this collection, represented by id and creation time.
+ * @property {Array<V1EndUserCommon_ExcludedElement>|null} [excludedGuiActions] Experimental. Elements withheld from this collection, represented by id and creation time.
+ * @property {Array<V1EndUserCommon_ExcludedElement>|null} [excludedApiActions] Experimental. Elements withheld from this collection, represented by id and creation time.
  */
 
 /**
@@ -336,7 +345,7 @@
  * @typedef {object} V1EndUserDialogsQueriesGet_DialogApiAction
  * @property {string} id The unique identifier for the action in UUIDv7 format.
  * @property {string} action String identifier for the action, corresponding to the "action" attributeId used in the XACML service policy, which by default is the policy belonging to the service referred to by "serviceResource" in the dialog.
- * @property {string|null} [authorizationAttribute] Contains an authorization resource attributeId, that can used in custom authorization rules in the XACML service policy, which by default is the policy belonging to the service referred to by "serviceResource" in the dialog. Can also be used to refer to other service policies.
+ * @property {string|null} [authorizationAttribute] Deprecated. Use of 'authorizationContext' on the service owner API is preferred; this field only reflects the legacy authorization attribute. Contains an authorization resource attributeId, that can used in custom authorization rules in the XACML service policy, which by default is the policy belonging to the service referred to by "serviceResource" in the dialog. Can also be used to refer to other service policies.
  * @property {boolean} isAuthorized True if the authenticated user is authorized for this action. If not, the action will not be available and all endpoints will be replaced with a fixed placeholder.
  * @property {string|null} [name] The logical name of the operation the API action refers to.
  * @property {Array<V1EndUserDialogsQueriesGet_DialogApiActionEndpoint>|null} [endpoints] The endpoints associated with the action.
@@ -362,6 +371,7 @@
  * @property {string|null} [name] The logical name of the attachment.
  * @property {Array<V1EndUserDialogsQueriesGet_DialogAttachmentUrl>|null} [urls] The URLs associated with the attachment, each referring to a different representation of the attachment.
  * @property {string|null} [expiresAt] The UTC timestamp when the attachment expires and is no longer available.
+ * @property {boolean} isAuthorized **Experimental:** This is part of an experimental feature that may change or be removed without a major version bump. See https://github.com/Altinn/dialogporten/issues/3978 for details. Indicates whether the authenticated user is authorized for this attachment. If not, the URLs will be replaced with "urn:dialogporten:unauthorized".
  */
 
 /**
@@ -383,7 +393,7 @@
  * @property {string} id The unique identifier for the action in UUIDv7 format.
  * @property {string} action The action identifier for the action, corresponding to the "action" attributeId used in the XACML service policy.
  * @property {string} url The fully qualified URL of the action, to which the user will be redirected when the action is triggered. Will be set to "urn:dialogporten:unauthorized" if the user is not authorized to perform the action.
- * @property {string|null} [authorizationAttribute] Contains an authorization resource attributeId, that can used in custom authorization rules in the XACML service policy, which by default is the policy belonging to the service referred to by "serviceResource" in the dialog. Can also be used to refer to other service policies.
+ * @property {string|null} [authorizationAttribute] Deprecated. Use of 'authorizationContext' on the service owner API is preferred; this field only reflects the legacy authorization attribute. Contains an authorization resource attributeId, that can used in custom authorization rules in the XACML service policy, which by default is the policy belonging to the service referred to by "serviceResource" in the dialog. Can also be used to refer to other service policies.
  * @property {boolean} isAuthorized Whether the user is authorized to perform the action.
  * @property {boolean} isDeleteDialogAction Indicates whether the action results in the dialog being deleted. Used by frontends to implement custom UX for delete actions.
  * @property {DialogsEntitiesActions_DialogGuiActionPriority} priority Indicates a priority for the action, making it possible for frontends to adapt GUI elements based on action priority.
@@ -405,7 +415,7 @@
  * @typedef {object} V1EndUserDialogsQueriesGet_DialogTransmission
  * @property {string} id The unique identifier for the transmission in UUIDv7 format.
  * @property {string} createdAt The date and time when the transmission was created.
- * @property {string|null} [authorizationAttribute] Contains an authorization resource attributeId, that can used in custom authorization rules in the XACML service policy, which by default is the policy belonging to the service referred to by "serviceResource" in the dialog. Can also be used to refer to other service policies.
+ * @property {string|null} [authorizationAttribute] Deprecated. Use of 'authorizationContext' on the service owner API is preferred; this field only reflects the legacy authorization attribute. Contains an authorization resource attributeId, that can used in custom authorization rules in the XACML service policy, which by default is the policy belonging to the service referred to by "serviceResource" in the dialog. Can also be used to refer to other service policies.
  * @property {boolean} isAuthorized Flag indicating if the authenticated user is authorized for this transmission. If not, embedded content and the attachments will not be available.
  * @property {string|null} [extendedType] Arbitrary URI/URN describing a service-specific transmission type. Refer to the service-specific documentation provided by the service owner for details (if in use).
  * @property {string|null} [externalReference] Arbitrary string with a service-specific reference to an external system or service.
@@ -416,6 +426,8 @@
  * @property {V1EndUserDialogsQueriesGet_DialogTransmissionContent} content The transmission unstructured text content.
  * @property {Array<V1EndUserDialogsQueriesGet_DialogTransmissionAttachment>|null} [attachments] The transmission-level attachments.
  * @property {Array<V1EndUserDialogsQueriesGet_DialogTransmissionNavigationalAction>|null} [navigationalActions] The transmission-level navigational actions.
+ * @property {Array<V1EndUserCommon_ExcludedElement>|null} [excludedAttachments] Experimental. Elements withheld from this collection, represented by id and creation time.
+ * @property {Array<V1EndUserCommon_ExcludedElement>|null} [excludedNavigationalActions] Experimental. Elements withheld from this collection, represented by id and creation time.
  */
 
 /**
@@ -425,6 +437,7 @@
  * @property {string|null} [name] The logical name of the attachment.
  * @property {Array<V1EndUserDialogsQueriesGet_DialogTransmissionAttachmentUrl>|null} [urls] The URLs associated with the attachment, each referring to a different representation of the attachment.
  * @property {string|null} [expiresAt] The UTC timestamp when the attachment expires and is no longer available.
+ * @property {boolean} isAuthorized **Experimental:** This is part of an experimental feature that may change or be removed without a major version bump. See https://github.com/Altinn/dialogporten/issues/3978 for details. Indicates whether the authenticated user is authorized for this attachment. If not, the URLs will be replaced with "urn:dialogporten:unauthorized".
  */
 
 /**
@@ -447,6 +460,8 @@
  * @property {Array<V1CommonLocalizations_Localization>|null} [title] The title of the navigational action.
  * @property {string} url The fully qualified URL of the navigational action. Will be set to \"urn:dialogporten:unauthorized\" if the user is not authorized to access the transmission, or \"urn:dialogporten:expired\" if the action has expired.
  * @property {string|null} [expiresAt] The UTC timestamp when the navigational action expires and is no longer available.
+ * @property {string} id The unique identifier for the navigational action in UUIDv7 format.
+ * @property {boolean} isAuthorized **Experimental:** This is part of an experimental feature that may change or be removed without a major version bump. See https://github.com/Altinn/dialogporten/issues/3978 for details. Indicates whether the authenticated user is authorized for this navigational action. If not, the URL will be replaced with "urn:dialogporten:unauthorized".
  */
 
 /**
@@ -475,6 +490,7 @@
  * @property {string|null} [name] The logical name of the attachment.
  * @property {Array<V1EndUserDialogsQueriesSearchTransmissions_AttachmentUrl>|null} [urls] The URLs associated with the attachment, each referring to a different representation of the attachment.
  * @property {string|null} [expiresAt] The UTC timestamp when the attachment expires and is no longer available.
+ * @property {boolean} isAuthorized **Experimental:** This is part of an experimental feature that may change or be removed without a major version bump. See https://github.com/Altinn/dialogporten/issues/3978 for details. Indicates whether the authenticated user is authorized for this attachment. If not, the URLs will be replaced with "urn:dialogporten:unauthorized".
  */
 
 /**
@@ -497,13 +513,15 @@
  * @property {Array<V1CommonLocalizations_Localization>|null} [title] The title of the navigational action.
  * @property {string} url The fully qualified URL of the navigational action. Will be set to \"urn:dialogporten:unauthorized\" if the user is not authorized to access the transmission, or \"urn:dialogporten:expired\" if the action has expired.
  * @property {string|null} [expiresAt] The UTC timestamp when the navigational action expires and is no longer available.
+ * @property {string} id The unique identifier for the navigational action in UUIDv7 format.
+ * @property {boolean} isAuthorized **Experimental:** This is part of an experimental feature that may change or be removed without a major version bump. See https://github.com/Altinn/dialogporten/issues/3978 for details. Indicates whether the authenticated user is authorized for this navigational action. If not, the URL will be replaced with "urn:dialogporten:unauthorized".
  */
 
 /**
  * @typedef {object} V1EndUserDialogsQueriesSearchTransmissions_Transmission
  * @property {string} id The unique identifier for the transmission in UUIDv7 format.
  * @property {string} createdAt The date and time when the transmission was created.
- * @property {string|null} [authorizationAttribute] The authorization attribute associated with the transmission.
+ * @property {string|null} [authorizationAttribute] Deprecated. Use of 'authorizationContext' on the service owner API is preferred; this field only reflects the legacy authorization attribute. The authorization attribute associated with the transmission.
  * @property {boolean} isAuthorized Flag indicating if the authenticated user is authorized for this transmission. If not, embedded content and the attachments will not be available.
  * @property {string|null} [extendedType] The extended type URI for the transmission.
  * @property {string|null} [externalReference] Arbitrary string with a service-specific reference to an external system or service.
@@ -514,6 +532,8 @@
  * @property {V1EndUserDialogsQueriesSearchTransmissions_Content} content The content of the transmission.
  * @property {Array<V1EndUserDialogsQueriesSearchTransmissions_Attachment>|null} [attachments] The attachments associated with the transmission.
  * @property {Array<V1EndUserDialogsQueriesSearchTransmissions_NavigationalAction>|null} [navigationalActions] The navigational actions associated with the transmission.
+ * @property {Array<V1EndUserCommon_ExcludedElement>|null} [excludedAttachments] Experimental. Elements withheld from this collection, represented by id and creation time.
+ * @property {Array<V1EndUserCommon_ExcludedElement>|null} [excludedNavigationalActions] Experimental. Elements withheld from this collection, represented by id and creation time.
  */
 
 /**
@@ -543,7 +563,7 @@
  * @property {string|null} [dueAt] The due date for the dialog. This is the last date when the dialog is expected to be completed.
  * @property {DialogsEntities_DialogStatus} status The aggregated status of the dialog.
  * @property {boolean} hasUnopenedContent Whether the service owner has not yet reported all dialog Transmissions they sent as seen by the end user. A Transmission is considered "sent from the service owner" if the DialogTransmissionType is not one of Submission or Correction. The value of this field is: - true when there are any new unopened Transmissions sent from the service owner. - false when the service owner has created an Activity of type TransmissionOpened for all Transmissions sent from the service owner. The Activities must each contain the relevant Id for all relevant Transmissions. Note that the value is - determined by the service owner and not to be confused with IsContentSeen - not affected by SystemLabels For correspondence: HasUnopenedContent is still true until the service owner also adds a Dialog level Activity (no transmission id) of type CorrespondenceOpened
- * @property {DialogEndUserContextsEntities_SystemLabel} systemLabel System defined label used to categorize dialogs. This is obsolete and will only show; Default, Bin or Archive. Use SystemLabels on EndUserContext instead.
+ * @property {DialogEndUserContextsEntities_SystemLabel} systemLabel Deprecated. Use EndUserContext.SystemLabels instead. System defined label used to categorize dialogs. This is obsolete and will only show; Default, Bin or Archive. Use SystemLabels on EndUserContext instead.
  * @property {boolean} isApiOnly Indicates if this dialog is intended for API consumption only and should not be shown in frontends aimed at humans. When true, human-readable content like title and summary are not required.
  * @property {number} fromServiceOwnerTransmissionsCount The number of transmissions sent by the service owner
  * @property {number} fromPartyTransmissionsCount The number of transmissions sent by a party representative
@@ -584,7 +604,7 @@
 /**
  * @typedef {object} V1EndUserEndUserContextCommandsBulkSetSystemLabels_BulkSetSystemLabel
  * @property {Array<V1EndUserEndUserContextCommandsBulkSetSystemLabels_DialogRevision>|null} [dialogs] List of target dialog ids with optional revision ids
- * @property {Array<DialogEndUserContextsEntities_SystemLabel>|null} [systemLabels] List of system labels to set on target dialogs
+ * @property {Array<DialogEndUserContextsEntities_SystemLabel>|null} [systemLabels] Deprecated. Use AddLabels instead. This property will be removed in a future version. List of system labels to set on target dialogs
  * @property {Array<DialogEndUserContextsEntities_SystemLabel>|null} [addLabels] List of system labels to add to the target dialogs. If multiple instances of 'bin', 'archive', or 'default' are provided, the last one will be used.
  * @property {Array<DialogEndUserContextsEntities_SystemLabel>|null} [removeLabels] List of system labels to remove from the target dialogs. If 'bin' or 'archive' is removed, the 'default' label will be added automatically unless 'bin' or 'archive' is also in the AddLabels list.
  */
@@ -597,7 +617,7 @@
 
 /**
  * @typedef {object} V1EndUserEndUserContextCommandsSetSystemLabel_SetDialogSystemLabelRequest
- * @property {Array<DialogEndUserContextsEntities_SystemLabel>|null} [systemLabels] List of system labels to set on target dialogs
+ * @property {Array<DialogEndUserContextsEntities_SystemLabel>|null} [systemLabels] Deprecated. Use AddLabels instead. This property will be removed in a future version. List of system labels to set on target dialogs
  * @property {Array<DialogEndUserContextsEntities_SystemLabel>|null} [addLabels] List of system labels to add to the target dialog. If multiple instances of 'bin', 'archive', or 'default' are provided, the last one will be used.
  * @property {Array<DialogEndUserContextsEntities_SystemLabel>|null} [removeLabels] List of system labels to remove from the target dialog. If 'bin' or 'archive' is removed, the 'default' label will be added automatically unless 'bin' or 'archive' is also in the AddLabels list.
  */
@@ -640,6 +660,14 @@
 /**
  * @typedef {object} V1MetadataServiceResourcesQueriesGet_ServiceResourceMetadata
  * @property {Array<V1CommonServiceResourceMetadata_ServiceResourceMetadataItem>|null} [items]
+ */
+
+/**
+ * **Experimental:** This is part of an experimental feature that may change or be removed without a major version bump. See https://github.com/Altinn/dialogporten/issues/3978 for details. A stub standing in for an element the authenticated user is not authorized for, and whose authorization context asks for it to be excluded rather than disabled. The element is removed from the collection it belongs to and recorded here instead, so that a client can tell "this existed and you cannot see it" apart from "this does not exist" without being shown anything about it.
+ *
+ * @typedef {object} V1EndUserCommon_ExcludedElement
+ * @property {string} id The identifier of the excluded element, matching the id it would have had in its own collection.
+ * @property {string} createdAt The UTC timestamp when the excluded element was created. Lets a client order exclusions against the elements it can see, e.g. to tell where in a transmission thread something is missing.
  */
 
 export const Actors_ActorType = undefined;
@@ -715,3 +743,4 @@ export const V1MetadataLimitsQueriesGet_EndUserSearchLimits = undefined;
 export const V1MetadataLimitsQueriesGet_Limits = undefined;
 export const V1MetadataLimitsQueriesGet_ServiceOwnerSearchLimits = undefined;
 export const V1MetadataServiceResourcesQueriesGet_ServiceResourceMetadata = undefined;
+export const V1EndUserCommon_ExcludedElement = undefined;

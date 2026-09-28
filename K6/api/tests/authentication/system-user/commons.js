@@ -6,19 +6,27 @@ import {
     ServiceResourceBuilder,
 } from "../../../../clients/resource-registry/index.js";
 import { EnterpriseTokenBuilder, EnterpriseTokenGenerator, uuidv4 } from "../../../../common-imports.js";
+import { lazy } from "../../../../helpers.js";
 import { AltinnScopes, CreateScopeString } from "../../../../scopes.js";
 import { SystemRegisterClient, SystemUserClient } from "../../../authentication-imports.js";
 import { arrangeApprovedSystemUser, pickVendor, resource } from "../change-request-system-user/commons.js";
 
 /**
- * The rights the arranged system user is granted.
+ * The resource the arranged system user is granted a right on.
  *
  * Published in every environment these tests run in, so registering the system
  * works everywhere.
  *
+ * @type {string}
+ */
+export const GRANTED_RESOURCE = "k6-instancedelegation-test";
+
+/**
+ * The rights the arranged system user is granted.
+ *
  * @type {Right[]}
  */
-const GRANTED_RIGHTS = [resource("k6-instancedelegation-test")];
+const GRANTED_RIGHTS = [resource(GRANTED_RESOURCE)];
 
 /**
  * The scopes a vendor reads system users with.
@@ -32,14 +40,15 @@ const VENDOR_SCOPES = CreateScopeString([
 ]);
 
 /**
- * @type {any | undefined}
+ * @typedef {import("../change-request-system-user/commons.js").ArrangedSystemUser} ArrangedSystemUser
  */
-let clients = undefined;
 
 /**
- * @type {EnterpriseTokenGenerator | undefined}
+ * The clients the read tests act with.
+ *
+ * @typedef {object} VendorClients
+ * @property {{systemUserClient: SystemUserClient}} vendor The vendor that looks its own system users up.
  */
-let vendorTokenGenerator = undefined;
 
 /**
  * Arranges the system user these tests read.
@@ -49,7 +58,7 @@ let vendorTokenGenerator = undefined;
  * reused from the change request tests, which arrange the same thing.
  *
  * @param {string} systemNamePrefix - Prefix for the generated system name, so systems are traceable to the test that made them.
- * @returns {any[]} A single arranged system user, as a list so a test picks from it with getItemFromList like any other test data.
+ * @returns {ArrangedSystemUser[]} A single arranged system user, as a list so a test picks from it with getItemFromList like any other test data.
  */
 export function arrangeSystemUser(systemNamePrefix) {
     return arrangeApprovedSystemUser({
@@ -70,27 +79,26 @@ export function arrangeSystemUser(systemNamePrefix) {
  * personal one. It is not built for anyone in particular: which vendor a run acts
  * as is decided by swapping the options with setTokenGeneratorOptions.
  *
- * @returns {[any, EnterpriseTokenGenerator]} The vendor's clients and the token generator behind them.
+ * @returns {{clients: VendorClients, vendorTokenGenerator: EnterpriseTokenGenerator}} The vendor's clients and the token generator behind them.
  */
-export function getClients() {
-    if (clients === undefined || vendorTokenGenerator === undefined) {
-        vendorTokenGenerator = new EnterpriseTokenGenerator(
-            new EnterpriseTokenBuilder()
-                .withEnvironment(__ENV.ENVIRONMENT)
-                .withTtl(3600)
-                .withScopes(VENDOR_SCOPES)
-                .build(),
-        );
+export const getClients = lazy(function () {
+    const vendorTokenGenerator = new EnterpriseTokenGenerator(
+        new EnterpriseTokenBuilder()
+            .withEnvironment(__ENV.ENVIRONMENT)
+            .withTtl(3600)
+            .withScopes(VENDOR_SCOPES)
+            .build(),
+    );
 
-        clients = {
-            vendor: {
-                systemUserClient: new SystemUserClient(__ENV.BASE_URL, vendorTokenGenerator),
-            },
-        };
-    }
+    /** @type {VendorClients} */
+    const clients = {
+        vendor: {
+            systemUserClient: new SystemUserClient(__ENV.BASE_URL, vendorTokenGenerator),
+        },
+    };
 
-    return [clients, vendorTokenGenerator];
-}
+    return { clients, vendorTokenGenerator };
+});
 
 /**
  * Token options for acting as the vendor that owns the system.
@@ -111,16 +119,6 @@ export function getVendorTokenOpts(vendorOrgNo) {
 }
 
 /**
- * @type {SystemUserClient | undefined}
- */
-let streamClient = undefined;
-
-/**
- * @type {EnterpriseTokenGenerator | undefined}
- */
-let streamTokenGenerator = undefined;
-
-/**
  * Creates and caches the client the stream test reads with.
  *
  * A wider token than the vendor one: the stream is not scoped to a vendor or a
@@ -131,26 +129,24 @@ let streamTokenGenerator = undefined;
  * Cached at module scope, so a VU builds it once and keeps the token it fetched
  * rather than refetching on every iteration.
  *
- * @returns {[SystemUserClient, EnterpriseTokenGenerator]} The client, and the generator the pagination helper needs to follow the stream on.
+ * @returns {{systemUserClient: SystemUserClient, tokenGenerator: EnterpriseTokenGenerator}} The client, and the generator the pagination helper needs to follow the stream on.
  */
-export function getStreamClients() {
-    if (streamClient === undefined || streamTokenGenerator === undefined) {
-        streamTokenGenerator = new EnterpriseTokenGenerator(
-            new EnterpriseTokenBuilder()
-                .withEnvironment(__ENV.ENVIRONMENT)
-                .withTtl(3600)
-                .withScopes(CreateScopeString([AltinnScopes.AUTHENTICATION.SYSTEMUSER.ADMIN]))
-                .build(),
-        );
+export const getStreamClients = lazy(function () {
+    const streamTokenGenerator = new EnterpriseTokenGenerator(
+        new EnterpriseTokenBuilder()
+            .withEnvironment(__ENV.ENVIRONMENT)
+            .withTtl(3600)
+            .withScopes(CreateScopeString([AltinnScopes.AUTHENTICATION.SYSTEMUSER.ADMIN]))
+            .build(),
+    );
 
-        streamClient = new SystemUserClient(__ENV.BASE_URL, streamTokenGenerator);
-    }
-
-    return [streamClient, streamTokenGenerator];
-}
+    return {
+        systemUserClient: new SystemUserClient(__ENV.BASE_URL, streamTokenGenerator),
+        tokenGenerator: streamTokenGenerator,
+    };
+});
 
 export { cleanupArranged } from "../change-request-system-user/commons.js";
-
 /**
  * The service owner that owns the resource the resource flow creates. The registry
  * compares the owner organization number against the consumer claim in the token,
@@ -175,11 +171,6 @@ export const RESOURCE_FLOW_VENDOR_ORG_NO = "312605031";
  */
 
 /**
- * @type {ResourceFlowClients | undefined}
- */
-let resourceFlowClients = undefined;
-
-/**
  * Creates and caches the clients the resource flow uses.
  *
  * Separate from getClients above, which hands out the vendor lookups the read
@@ -190,55 +181,54 @@ let resourceFlowClients = undefined;
  *
  * @returns {ResourceFlowClients} Clients grouped by who they act as.
  */
-export function getResourceFlowClients() {
-    if (resourceFlowClients === undefined) {
-        const resourceOwnerTokenGenerator = new EnterpriseTokenGenerator(
-            new EnterpriseTokenBuilder()
-                .withEnvironment(__ENV.ENVIRONMENT)
-                .withTtl(3600)
-                .withOrganization(RESOURCE_OWNER_ORG)
-                .withOrganizationNumber(RESOURCE_OWNER_ORG_NO)
-                .withScopes(CreateScopeString([
-                    AltinnScopes.RESOURCEREGISTRY.RESOURCE.WRITE,
-                ]))
-                .build(),
-        );
+export const getResourceFlowClients = lazy(function () {
+    const resourceOwnerTokenGenerator = new EnterpriseTokenGenerator(
+        new EnterpriseTokenBuilder()
+            .withEnvironment(__ENV.ENVIRONMENT)
+            .withTtl(3600)
+            .withOrganization(RESOURCE_OWNER_ORG)
+            .withOrganizationNumber(RESOURCE_OWNER_ORG_NO)
+            .withScopes(CreateScopeString([
+                AltinnScopes.RESOURCEREGISTRY.RESOURCE.WRITE,
+            ]))
+            .build(),
+    );
 
-        const vendorTokenGenerator = new EnterpriseTokenGenerator(
-            new EnterpriseTokenBuilder()
-                .withEnvironment(__ENV.ENVIRONMENT)
-                .withTtl(3600)
-                .withOrganizationNumber(RESOURCE_FLOW_VENDOR_ORG_NO)
-                .withScopes(CreateScopeString([
-                    AltinnScopes.AUTHENTICATION.SYSTEMREGISTER.WRITE,
-                ]))
-                .build(),
-        );
+    const vendorTokenGenerator = new EnterpriseTokenGenerator(
+        new EnterpriseTokenBuilder()
+            .withEnvironment(__ENV.ENVIRONMENT)
+            .withTtl(3600)
+            .withOrganizationNumber(RESOURCE_FLOW_VENDOR_ORG_NO)
+            .withScopes(CreateScopeString([
+                AltinnScopes.AUTHENTICATION.SYSTEMREGISTER.WRITE,
+            ]))
+            .build(),
+    );
 
-        const enduserTokenGenerator = new EnterpriseTokenGenerator(
-            new EnterpriseTokenBuilder()
-                .withEnvironment(__ENV.ENVIRONMENT)
-                .withTtl(3600)
-                .withOrganization(RESOURCE_OWNER_ORG)
-                .withScopes(CreateScopeString([AltinnScopes.PORTAL.ENDUSER]))
-                .build(),
-        );
+    const enduserTokenGenerator = new EnterpriseTokenGenerator(
+        new EnterpriseTokenBuilder()
+            .withEnvironment(__ENV.ENVIRONMENT)
+            .withTtl(3600)
+            .withOrganization(RESOURCE_OWNER_ORG)
+            .withScopes(CreateScopeString([AltinnScopes.PORTAL.ENDUSER]))
+            .build(),
+    );
 
-        resourceFlowClients = {
-            resourceOwner: {
-                resourceClient: new ResourceClient(__ENV.BASE_URL, resourceOwnerTokenGenerator),
-            },
-            vendor: {
-                systemRegisterClient: new SystemRegisterClient(__ENV.BASE_URL, vendorTokenGenerator),
-            },
-            enduser: {
-                systemRegisterClient: new SystemRegisterClient(__ENV.BASE_URL, enduserTokenGenerator),
-            },
-        };
-    }
+    /** @type {ResourceFlowClients} */
+    const resourceFlowClients = {
+        resourceOwner: {
+            resourceClient: new ResourceClient(__ENV.BASE_URL, resourceOwnerTokenGenerator),
+        },
+        vendor: {
+            systemRegisterClient: new SystemRegisterClient(__ENV.BASE_URL, vendorTokenGenerator),
+        },
+        enduser: {
+            systemRegisterClient: new SystemRegisterClient(__ENV.BASE_URL, enduserTokenGenerator),
+        },
+    };
 
     return resourceFlowClients;
-}
+});
 
 /**
  * Builds a delegable generic resource, owned by the service owner the resource

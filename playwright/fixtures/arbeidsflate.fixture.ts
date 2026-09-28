@@ -1,21 +1,21 @@
-import { test as base } from '@playwright/test';
-import { ArbeidsflateForside } from '../pages/arbeidsflate/forside';
-import { ArbeidsflateProfil } from '../pages/arbeidsflate/profil';
+import { test as base } from "@playwright/test";
 
-/**
- * Hovedområdet arbeidsflate med sine undersider. Nye undersider legges til som
- * et felt her og en page object under pages/arbeidsflate/.
- */
-export type Arbeidsflate = {
-    forside: ArbeidsflateForside;
-    profil: ArbeidsflateProfil;
-};
+import { Urler } from "../config/environment";
+import { ArbeidsflateForside } from "../pages/arbeidsflate/forside";
+import { ArbeidsflateProfil } from "../pages/arbeidsflate/profil";
 
-export const test = base.extend<{ arbeidsflate: Arbeidsflate }>({
-    arbeidsflate: async ({ page }, use) => {
-        await use({
-            forside: new ArbeidsflateForside(page),
-            profil: new ArbeidsflateProfil(page),
-        });
+export const arbeidsflateFixture = base.extend<{
+    arbeidsflate: ArbeidsflateForside;
+    arbeidsflateProfil: ArbeidsflateProfil;
+    urler: Urler;
+}>({
+    urler: [{} as Urler, { option: true }],
+
+    arbeidsflate: async ({ page, urler }, use) => {
+        await use(new ArbeidsflateForside(page, urler.arbeidsflate));
+    },
+
+    arbeidsflateProfil: async ({ page, urler }, use) => {
+        await use(new ArbeidsflateProfil(page, urler.arbeidsflate));
     },
 });

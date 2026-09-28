@@ -1,5 +1,6 @@
 import { AppsInstanceDelegationClient } from "../../../../clients/access-management/altinn-apps/index.js";
 import { PlatformTokenBuilder, PlatformTokenGenerator } from "../../../../common-imports.js";
+import { lazy } from "../../../../helpers.js";
 
 /**
  * The app the delegations are performed by, and the instance they are performed
@@ -33,21 +34,6 @@ export const EXPECTED_DELEGABLE_RIGHT_KEYS = [
 ];
 
 /**
- * @type {AppsInstanceDelegationClient | undefined}
- */
-let appsInstanceDelegationClient = undefined;
-
-/**
- * @type {PlatformTokenGenerator | undefined}
- */
-let appTokenGenerator = undefined;
-
-/**
- * @type {AppsInstanceDelegationClient | undefined}
- */
-let wrongAppClient = undefined;
-
-/**
  * Token options for the app that owns the resource.
  *
  * @returns Built platform token options.
@@ -69,18 +55,17 @@ export function getAppTokenOpts() {
  *
  * @returns {[AppsInstanceDelegationClient, PlatformTokenGenerator]} The client, and the generator behind it.
  */
-export function getClients() {
-    if (appsInstanceDelegationClient === undefined || appTokenGenerator === undefined) {
-        appTokenGenerator = new PlatformTokenGenerator(getAppTokenOpts());
+export const getClients = lazy(function () {
+    const appTokenGenerator = new PlatformTokenGenerator(getAppTokenOpts());
 
-        appsInstanceDelegationClient = new AppsInstanceDelegationClient(
-            __ENV.BASE_URL,
-            appTokenGenerator,
-        );
-    }
+    /** @type {[AppsInstanceDelegationClient, PlatformTokenGenerator]} */
+    const clients = [
+        new AppsInstanceDelegationClient(__ENV.BASE_URL, appTokenGenerator),
+        appTokenGenerator,
+    ];
 
-    return [appsInstanceDelegationClient, appTokenGenerator];
-}
+    return clients;
+});
 
 /**
  * Creates and caches a client whose token carries no app claim at all.
@@ -106,18 +91,14 @@ export function getEmptyTokenClient() {
  *
  * @returns {AppsInstanceDelegationClient} A client calling as an app that owns nothing here.
  */
-export function getWrongAppClient() {
-    if (wrongAppClient === undefined) {
-        wrongAppClient = new AppsInstanceDelegationClient(
-            __ENV.BASE_URL,
-            new PlatformTokenGenerator(
-                new PlatformTokenBuilder()
-                    .withEnvironment(__ENV.ENVIRONMENT)
-                    .withTtl(3600)
-                    .build(),
-            ),
-        );
-    }
-
-    return wrongAppClient;
-}
+export const getWrongAppClient = lazy(function () {
+    return new AppsInstanceDelegationClient(
+        __ENV.BASE_URL,
+        new PlatformTokenGenerator(
+            new PlatformTokenBuilder()
+                .withEnvironment(__ENV.ENVIRONMENT)
+                .withTtl(3600)
+                .build(),
+        ),
+    );
+});

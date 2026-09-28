@@ -3,6 +3,23 @@ import { check } from "k6";
 import { AgentRequestSystemResponse, RequestSystemResponse } from "../../../clients/authentication/types.js";
 
 /**
+ * The part of a system user request that the Access Management BFF serves and the
+ * checks below read.
+ *
+ * Described from what at22 answers rather than from the BFF swagger, which carries
+ * no model for this response. Worth keeping apart from the vendor models above: the
+ * BFF nests the system, where the vendor endpoints carry a flat `systemId`, and the
+ * status comes through in authentication's words rather than the ones the BFF
+ * swagger lists for `RequestStatus`.
+ *
+ * @typedef {object} BffSystemUserRequest
+ * @property {string} [id] Request UUID.
+ * @property {string} [status] Where the request stands: "New", "Accepted" or "Rejected".
+ * @property {{systemId?: string}} [system] The system the request was made for.
+ * @property {boolean} [userMayEscalateButNotApprove] True when the user who loaded the request may only pass it on to someone who can approve.
+ */
+
+/**
  * Checks that a created request echoes what it was asked for and carries the fields
  * the vendor needs to take the customer through approval.
  *
@@ -134,9 +151,63 @@ function CheckRequestDeleted(deleted) {
     return success;
 }
 
+/**
+ * Checks that a request carries the system it was made for.
+ *
+ * Read off the request the approver loaded, so a request that belongs to another
+ * system than the one the test registered is caught before it is approved rather
+ * than as a surprise further down.
+ *
+ * @param {BffSystemUserRequest|null} request - The request as the BFF served it.
+ * @param {string} expectedSystemId - The system the request was made for.
+ * @returns {boolean} True if the request carries that system, false otherwise.
+ */
+function CheckRequestSystem(request, expectedSystemId) {
+    const success = check(request, {
+        "CheckRequestSystem - Request carries the system it was made for": (loaded) =>
+            loaded?.system?.systemId === expectedSystemId,
+    });
+
+    if (!success) {
+        console.error(`CheckRequestSystem - expected system '${expectedSystemId}', got '${request?.system?.systemId}'`);
+        console.error(`CheckRequestSystem - request returned: ${JSON.stringify(request)}`);
+    }
+
+    return success;
+}
+
+/**
+ * Checks that the user who loaded the request is allowed to approve it.
+ *
+ * The BFF answers `userMayEscalateButNotApprove` true for a user who may only pass
+ * the request on to someone who can approve it, so a request that is otherwise
+ * ready is still not one this user can act on. Read before approving, since the
+ * approval would only answer an error the check can say plainly.
+ *
+ * Only for system user requests. A change request cannot be escalated, so the BFF
+ * serves no such field on one.
+ *
+ * @param {BffSystemUserRequest|null} request - The request as the BFF served it.
+ * @returns {boolean} True if the user may approve, false otherwise.
+ */
+function CheckUserMayApprove(request) {
+    const success = check(request, {
+        "CheckUserMayApprove - The user may approve the request, not only escalate it": (loaded) =>
+            loaded?.userMayEscalateButNotApprove === false,
+    });
+
+    if (!success) {
+        console.error(`CheckUserMayApprove - userMayEscalateButNotApprove was '${request?.userMayEscalateButNotApprove}'`);
+    }
+
+    return success;
+}
+
 export const SystemUserRequestDomainChecks = {
     CheckRequestCreated,
     CheckRequestStatus,
+    CheckRequestSystem,
+    CheckUserMayApprove,
     CheckRequestApproved,
     CheckRequestId,
     CheckRequestDeleted,

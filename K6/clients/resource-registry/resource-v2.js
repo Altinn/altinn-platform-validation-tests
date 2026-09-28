@@ -1,5 +1,6 @@
 import http from "k6/http";
 
+import { buildUrl, requestParams } from "../common/request.js";
 import { ResourcePolicyRightsQuery } from "./types.js";
 
 const TAGS = {
@@ -48,49 +49,15 @@ class ResourceV2Client {
         query = null,
         labels = null,
     ) {
-        const token = this.tokenGenerator.getToken();
-
-        let url = `${this.FULL_PATH}/${encodeURIComponent(id)}/policy/rights`;
-
-        if (query !== null) {
-            const params = /** @type {string[]} */ ([]);
-
-            Object.entries(query).forEach(([key, value]) => {
-
-                if (value === undefined || value === null) {
-                    return;
-                }
-
-                params.push(
-                    `${encodeURIComponent(key)}=${encodeURIComponent(value)}`,
-                );
-            });
-
-            if (params.length > 0) {
-                url = `${url}?${params.join("&")}`;
-            }
-        }
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/{id}/policy/rights`,
-            name: `${this.FULL_PATH}/{id}/policy/rights`,
-            action: TAGS.ResourceV2GetPolicyRights.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url, {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.get(
+            buildUrl(`${this.FULL_PATH}/${encodeURIComponent(id)}/policy/rights`, query),
+            requestParams({
+                endpoint: `${this.FULL_PATH}/{id}/policy/rights`,
+                action: TAGS.ResourceV2GetPolicyRights.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 }
 

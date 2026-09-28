@@ -37,8 +37,6 @@ export function GetAccessPackages(
     const succeed = check(res, {
         "GetAccessPackages - status code is 200": (r) =>
             r.status === 200,
-        "GetAccessPackages - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

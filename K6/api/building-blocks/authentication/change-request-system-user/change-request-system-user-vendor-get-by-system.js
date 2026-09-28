@@ -35,9 +35,6 @@ export function ChangeRequestSystemUserVendorGetBySystem(
     const succeed = check(res, {
         "ChangeRequestSystemUserVendorGetBySystem - status code is 200": (r) =>
             r.status === 200,
-        "ChangeRequestSystemUserVendorGetBySystem - status text is 200 OK": (
-            r,
-        ) => r.status_text === "200 OK",
     });
 
     if (!succeed) {

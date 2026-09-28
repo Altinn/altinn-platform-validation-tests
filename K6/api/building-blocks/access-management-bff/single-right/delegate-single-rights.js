@@ -35,8 +35,6 @@ export function DelegateSingleRights(
     const succeed = check(res, {
         "DelegateSingleRights - status code is 200": (r) =>
             r.status === 200,
-        "DelegateSingleRights - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

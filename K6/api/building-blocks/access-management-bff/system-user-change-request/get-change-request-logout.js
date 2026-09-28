@@ -29,8 +29,6 @@ export function GetChangeRequestLogout(
     const succeed = check(res, {
         "GetChangeRequestLogout - status code is 200": (r) =>
             r.status === 200,
-        "GetChangeRequestLogout - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

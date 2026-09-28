@@ -22,8 +22,6 @@ export function GetFavorites(userClient, labels = null) {
     const succeed = check(res, {
         "GetFavorites - status code is 200": (r) =>
             r.status === 200,
-        "GetFavorites - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

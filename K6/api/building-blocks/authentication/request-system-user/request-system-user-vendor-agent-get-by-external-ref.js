@@ -38,8 +38,6 @@ export function RequestSystemUserVendorAgentGetByExternalRef(
     const succeed = check(res, {
         "RequestSystemUserVendorAgentGetByExternalRef - status code is 200": (r) =>
             r.status === 200,
-        "RequestSystemUserVendorAgentGetByExternalRef - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

@@ -33,8 +33,6 @@ export function CreateMaskinportenSupplier(
     const succeed = check(res, {
         "CreateMaskinportenSupplier - status code is 200": (r) =>
             r.status === 200,
-        "CreateMaskinportenSupplier - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

@@ -32,7 +32,7 @@ import {
 } from "../../../../clients/access-management-bff/single-right/index.js";
 import { UserClient } from "../../../../clients/access-management-bff/user/index.js";
 import { PersonalTokenBuilder, PersonalTokenGenerator } from "../../../../common-imports.js";
-import { fetchTestData, getItemFromList, getNumberOfVUs, getOptions, requireEnv, segmentData } from "../../../../helpers.js";
+import { fetchTestData, getItemFromList, getNumberOfVUs, getOptions, lazy, requireEnv, segmentData } from "../../../../helpers.js";
 import { AltinnScopes, CreateScopeString } from "../../../../scopes.js";
 import { GetAccessPackageDelegations } from "../../../building-blocks/access-management-bff/access-package/index.js";
 import { SearchAccessPackages } from "../../../building-blocks/access-management-bff/access-package/index.js";
@@ -131,41 +131,6 @@ export const options = getOptions(
 );
 
 /**
- * @type {PersonalTokenGenerator | undefined}
- */
-let tokenGenerator = undefined;
-
-/**
- * @type {ConnectionClient | undefined}
- */
-let connectionsApiClient = undefined;
-
-/**
- * @type {AccessPackageClient | undefined}
- */
-let accessPackageApiClient = undefined;
-
-/**
- * @type {SingleRightClient | undefined}
- */
-let singleRightsApiClient = undefined;
-
-/**
- * @type {UserClient | undefined}
- */
-let userApiClient = undefined;
-
-/**
- * @type {RoleClient | undefined}
- */
-let roleApiClient = undefined;
-
-/**
- * @type {ResourceClient | undefined}
- */
-let resourceApiClient = undefined;
-
-/**
  * Creates and caches the API clients used by the test.
  *
  * All clients share the same {@link PersonalTokenGenerator} instance.
@@ -181,54 +146,31 @@ let resourceApiClient = undefined;
  * PersonalTokenGenerator
  * ]} The initialized API clients and token generator.
  */
-function getClients() {
-    if (tokenGenerator == undefined) {
-        const scopes = CreateScopeString([
-            AltinnScopes.PDP.AUTHORIZE.ENDUSER
-        ]);
-        const tokenOpts = new PersonalTokenBuilder()
-            .withEnvironment(__ENV.ENVIRONMENT)
-            .withTtl(3600)
-            .withScopes(scopes)
-            .build();
+const getClients = lazy(function () {
+    const scopes = CreateScopeString([
+        AltinnScopes.PDP.AUTHORIZE.ENDUSER
+    ]);
+    const tokenOpts = new PersonalTokenBuilder()
+        .withEnvironment(__ENV.ENVIRONMENT)
+        .withTtl(3600)
+        .withScopes(scopes)
+        .build();
 
-        tokenGenerator = new PersonalTokenGenerator(tokenOpts);
-    }
+    const tokenGenerator = new PersonalTokenGenerator(tokenOpts);
 
-    if (connectionsApiClient == undefined) {
-        connectionsApiClient = new ConnectionClient(__ENV.AM_UI_BASE_URL, tokenGenerator);
-    }
-
-    if (accessPackageApiClient == undefined) {
-        accessPackageApiClient = new AccessPackageClient(__ENV.AM_UI_BASE_URL, tokenGenerator);
-    }
-
-    if (singleRightsApiClient == undefined) {
-        singleRightsApiClient = new SingleRightClient(__ENV.AM_UI_BASE_URL, tokenGenerator);
-    }
-
-    if (userApiClient == undefined) {
-        userApiClient = new UserClient(__ENV.AM_UI_BASE_URL, tokenGenerator);
-    }
-
-    if (roleApiClient == undefined) {
-        roleApiClient = new RoleClient(__ENV.AM_UI_BASE_URL, tokenGenerator);
-    }
-
-    if (resourceApiClient == undefined) {
-        resourceApiClient = new ResourceClient(__ENV.AM_UI_BASE_URL, tokenGenerator);
-    }
-
-    return [
-        connectionsApiClient,
-        accessPackageApiClient,
-        singleRightsApiClient,
-        userApiClient,
-        roleApiClient,
-        resourceApiClient,
+    /** @type {[ConnectionClient, AccessPackageClient, SingleRightClient, UserClient, RoleClient, ResourceClient, PersonalTokenGenerator]} */
+    const clients = [
+        new ConnectionClient(__ENV.AM_UI_BASE_URL, tokenGenerator),
+        new AccessPackageClient(__ENV.AM_UI_BASE_URL, tokenGenerator),
+        new SingleRightClient(__ENV.AM_UI_BASE_URL, tokenGenerator),
+        new UserClient(__ENV.AM_UI_BASE_URL, tokenGenerator),
+        new RoleClient(__ENV.AM_UI_BASE_URL, tokenGenerator),
+        new ResourceClient(__ENV.AM_UI_BASE_URL, tokenGenerator),
         tokenGenerator,
     ];
-}
+
+    return clients;
+});
 
 /**
  * Setup function to segment data for VUs.

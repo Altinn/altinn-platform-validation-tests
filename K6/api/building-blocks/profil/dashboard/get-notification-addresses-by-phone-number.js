@@ -35,8 +35,6 @@ export function GetNotificationAddressesByPhoneNumber(
     const succeed = check(res, {
         "GetNotificationAddressesByPhoneNumber - status code is 200": (r) =>
             r.status === 200,
-        "GetNotificationAddressesByPhoneNumber - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

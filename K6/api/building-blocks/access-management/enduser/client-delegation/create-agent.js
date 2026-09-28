@@ -37,8 +37,6 @@ export function CreateAgent(
     const succeed = check(res, {
         "CreateAgent - status code is 200": (r) =>
             r.status === 200,
-        "CreateAgent - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

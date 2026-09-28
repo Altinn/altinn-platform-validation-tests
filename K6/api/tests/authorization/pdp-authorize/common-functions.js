@@ -1,63 +1,26 @@
 
 import {
+    buildAuthorizeRequest,
     buildXacmlJsonAttributeExternal,
-    buildXacmlJsonCategoryExternal,
-    buildXacmlJsonRequestExternal,
-    buildXacmlJsonRequestRootExternal,
 } from "../../../../clients/authorization/builders.js";
 import { AuthorizeClient } from "../../../../clients/authorization/index.js";
-import { XacmlJsonAttributeExternal, XacmlJsonRequestRootExternal } from "../../../../clients/authorization/types.js";
+import { XacmlJsonRequestRootExternal } from "../../../../clients/authorization/types.js";
 import { PersonalTokenBuilder, PersonalTokenGenerator, randomIntBetween } from "../../../../common-imports.js";
 import { fetchTestData, getNumberOfVUs, requireEnv, segmentData } from "../../../../helpers.js";
 import { AltinnScopes, CreateScopeString } from "../../../../scopes.js";
+import { getAuthorizeClient } from "../authorize-client.js";
 
 /**
- * @type {AuthorizeClient | undefined}
- */
-let authorizeClient = undefined;
-
-/**
- * @type {PersonalTokenGenerator | undefined}
- */
-let tokenGenerator = undefined;
-
-/**
- * Creates and caches the clients required to interact with the
- * PDP Authorize API.
+ * Hands out the client these tests ask the pdp with.
  *
- * The same {@link AuthorizeClient} and {@link PersonalTokenGenerator}
- * instances are reused across iterations. The token is configured with
- * the `altinn:authorization/authorize.admin` scope, allowing reuse across
- * all users in the test without regenerating per-user tokens.
+ * The client itself is built by the shared factory, since the authentication
+ * decision tests ask the same pdp the same way. Kept as a function of its own so
+ * the tests here read as before, and because the tuple order is what they destructure.
  *
- * @returns {[
- * AuthorizeClient,
- * PersonalTokenGenerator
- * ]} Tuple containing the Authorize client and token generator.
+ * @returns {[AuthorizeClient, PersonalTokenGenerator]} Tuple containing the Authorize client and token generator.
  */
 export function getClients() {
-    if (tokenGenerator == undefined) {
-        const scopes = CreateScopeString([
-            AltinnScopes.AUTHORIZATION.AUTHORIZE.ADMIN
-        ]);
-        const tokenOpts = new PersonalTokenBuilder()
-            .withEnvironment(__ENV.ENVIRONMENT)
-            .withTtl(3600)
-            .withScopes(scopes) // This scope allows the token to be used for all users, so there is no need to generate a token per test user.
-            .build();
-
-        tokenGenerator = new PersonalTokenGenerator(tokenOpts);
-    }
-
-    if (authorizeClient == undefined) {
-        authorizeClient = new AuthorizeClient(
-            __ENV.BASE_URL,
-            tokenGenerator,
-            __ENV.AUTHORIZATION_SUBSCRIPTION_KEY
-        );
-    }
-
-    return [authorizeClient, tokenGenerator];
+    return getAuthorizeClient();
 }
 
 /**
@@ -202,42 +165,6 @@ export function buildInstanceRequest({
             value: toSsn,
         }),
     ], resourceAttributes);
-}
-
-/**
- * Assembles the access subject, action and resource categories into a request
- * root the Authorize API accepts.
- *
- * @param {string} action Action, e.g. read, write or sign.
- * @param {XacmlJsonAttributeExternal[]} subjectAttributes Access subject attributes.
- * @param {XacmlJsonAttributeExternal[]} resourceAttributes Resource attributes.
- * @returns {XacmlJsonRequestRootExternal} Authorization request.
- */
-function buildAuthorizeRequest(action, subjectAttributes, resourceAttributes) {
-    return buildXacmlJsonRequestRootExternal({
-        request: buildXacmlJsonRequestExternal({
-            accessSubject: [
-                buildXacmlJsonCategoryExternal({
-                    attribute: subjectAttributes,
-                }),
-            ],
-            action: [
-                buildXacmlJsonCategoryExternal({
-                    attribute: [
-                        buildXacmlJsonAttributeExternal({
-                            attributeId: "urn:oasis:names:tc:xacml:1.0:action:action-id",
-                            value: action,
-                        }),
-                    ],
-                }),
-            ],
-            resource: [
-                buildXacmlJsonCategoryExternal({
-                    attribute: resourceAttributes,
-                }),
-            ],
-        }),
-    });
 }
 
 /**

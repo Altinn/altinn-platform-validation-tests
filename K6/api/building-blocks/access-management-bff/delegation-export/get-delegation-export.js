@@ -30,8 +30,6 @@ export function GetDelegationExport(
     const succeed = check(res, {
         "GetDelegationExport - status code is 200": (r) =>
             r.status === 200,
-        "GetDelegationExport - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

@@ -1,0 +1,50 @@
+name: Playwright Cronjobs
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - "hack/playwright-cronjobs.jsonnet"
+      - "infra/playwright/run-playwright-tests.sh"
+      - ".github/workflows/generate-and-apply-playwright-cronjobs.yml"
+
+permissions:
+  contents: read
+  id-token: write
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: "test"
+    steps:
+      - name: Checkout
+        uses: "actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10"
+
+      - name: Install jsonnet
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y jsonnet
+
+      - name: Install yq
+        run: |
+          mkdir -p "$HOME/bin"
+          wget -qO "$HOME/bin/yq" \
+            https://github.com/mikefarah/yq/releases/download/v4.53.6/yq_linux_amd64
+          chmod +x "$HOME/bin/yq"
+          echo "$HOME/bin" >> "$GITHUB_PATH"
+
+      - name: Generate CronJobs
+        run: |
+          hack/generate_playwright_cronjobs.sh
+
+      - name: "Setup k8s client"
+        uses: "./.github/actions/setup-k8s"
+        with:
+          azure-client-id: "${{ secrets.AZURE_CLIENT_ID }}"
+          azure-subscription-id: "${{ secrets.AZURE_SUBSCRIPTION_ID }}"
+          azure-tenant-id: "${{ secrets.AZURE_TENANT_ID }}"
+
+      - name: "Apply Playwright Cronjobs"
+        run: "kubectl apply -f .dist/ -R"
+        shell: "bash"

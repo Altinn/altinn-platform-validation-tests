@@ -32,8 +32,6 @@ export function CreateAltinn2AccountFromToken(
     const succeed = check(res, {
         "CreateAltinn2AccountFromToken - status code is 200": (r) =>
             r.status === 200,
-        "CreateAltinn2AccountFromToken - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

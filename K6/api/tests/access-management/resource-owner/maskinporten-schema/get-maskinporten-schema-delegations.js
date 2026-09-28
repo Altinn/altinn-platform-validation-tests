@@ -3,7 +3,7 @@ import exec from "k6/execution";
 import { MaskinportenClient, MaskinportenDelegationsQueryBuilder } from "../../../../../clients/access-management/resource-owner/maskinporten/index.js";
 import { MaskinportenDelegationsQuery } from "../../../../../clients/access-management/resource-owner/maskinporten/maskinporten.types.js";
 import { EnterpriseTokenBuilder, EnterpriseTokenGenerator, randomIntBetween } from "../../../../../common-imports.js";
-import { fetchTestData, getItemFromList, getNumberOfVUs, getOptions, pickUnique, requireEnv, segmentData } from "../../../../../helpers.js";
+import { fetchTestData, getItemFromList, getNumberOfVUs, getOptions, lazy, pickUnique, requireEnv, segmentData } from "../../../../../helpers.js";
 import { AltinnScopes, CreateScopeString } from "../../../../../scopes.js";
 import { GetMaskinportenDelegations } from "../../../../building-blocks/access-management/resource-owner/maskinporten/index.js";
 
@@ -19,16 +19,6 @@ const getMaskinportenSchemaLabel7 = { step: "7. Get maskinportenSchema scope as 
 const tokenGeneratorLabel = { token_generator: EnterpriseTokenGenerator.TAGS.getToken.token_generator };
 
 const randomize = __ENV.RANDOMIZE ? __ENV.RANDOMIZE.toLowerCase() === "true" : true;
-
-/**
- * @type {EnterpriseTokenGenerator | undefined}
- */
-let tokenGenerator = undefined;
-
-/**
- * @type {MaskinportenClient | undefined}
- */
-let maskinportenClient = undefined;
 
 const scopes = [
     "altinn:consentrequests.read",
@@ -107,29 +97,17 @@ export default function (data) {
  *
  * @returns {MaskinportenClient} The initialized API client.
  */
-function getClients() {
-    if (tokenGenerator == undefined) {
-        const scopes = CreateScopeString([
+const getClients = lazy(function () {
+    const tokenOpts = new EnterpriseTokenBuilder()
+        .withEnvironment(__ENV.ENVIRONMENT)
+        .withTtl(3600)
+        .withScopes(CreateScopeString([
             AltinnScopes.MASKINPORTEN.DELEGATIONS.ADMIN
-        ]);
-        const tokenOpts = new EnterpriseTokenBuilder()
-            .withEnvironment(__ENV.ENVIRONMENT)
-            .withTtl(3600)
-            .withScopes(scopes)
-            .build();
+        ]))
+        .build();
 
-        tokenGenerator = new EnterpriseTokenGenerator(tokenOpts);
-    }
-
-    if (maskinportenClient == undefined) {
-        maskinportenClient = new MaskinportenClient(
-            __ENV.BASE_URL,
-            tokenGenerator
-        );
-    }
-
-    return maskinportenClient;
-}
+    return new MaskinportenClient(__ENV.BASE_URL, new EnterpriseTokenGenerator(tokenOpts));
+});
 
 /**
  * Picks one of the seven supported filter combinations at random and builds the

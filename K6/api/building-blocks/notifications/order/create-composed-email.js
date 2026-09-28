@@ -28,9 +28,6 @@ export function OrderCreateComposedEmail(
     const succeed = check(res, {
         "OrderCreateComposedEmail - status code is 200 or 201": (r) =>
             r.status === 200 || r.status === 201,
-        "OrderCreateComposedEmail - status text is successful": (r) =>
-            r.status_text === "200 OK" ||
-            r.status_text === "201 Created",
     });
 
     if (!succeed) {

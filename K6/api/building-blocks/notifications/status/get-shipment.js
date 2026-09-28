@@ -29,8 +29,6 @@ export function StatusGetShipment(
     const succeed = check(res, {
         "StatusGetShipment - status code is 200": (r) =>
             r.status === 200,
-        "StatusGetShipment - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

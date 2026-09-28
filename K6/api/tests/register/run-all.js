@@ -19,6 +19,3 @@ export default function (data) {
     runLookUpOnIdportenEmail();
     runAddRemoveCcrRoleForClient(data.addRmCcrRoleForClient);
 }
-
-// Shared end-of-test summary logging (prints check pass/fail counts).
-export { handleSummary } from "../../../common-imports.js";

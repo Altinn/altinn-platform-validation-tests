@@ -25,7 +25,6 @@ export function GetAllDialogsForParty(graphqlClient, variables, labels = null) {
     let res_body = null;
     const succeed = check(res, {
         "GetAllDialogsForParty - status code is 200": (r) => r.status === 200,
-        "GetAllDialogsForParty - status text is 200 OK": (r) => r.status_text == "200 OK",
         "GetAllDialogsForParty - body is not empty": (r) => {
             res_body = JSON.parse(r.body);
             return res_body !== null && res_body !== undefined;
@@ -59,7 +58,6 @@ export function GetAllDialogsForPartyCheckForDialogId(graphqlClient, variables, 
     let res_body = null;
     const succeed = check(res, {
         "GetAllDialogsForParty - status code is 200": (r) => r.status === 200,
-        "GetAllDialogsForParty - status text is 200 OK": (r) => r.status_text == "200 OK",
         "GetAllDialogsForParty - body is not empty and dialogId is present": (r) => {
             res_body = JSON.parse(r.body);
             if (res_body === null || res_body === undefined) {
@@ -106,7 +104,6 @@ export function GetDialogById(graphqlClient, variables, labels = null) {
     let res_body = null;
     const succeed = check(res, {
         "GetDialogById - status code is 200": (r) => r.status === 200,
-        "GetDialogById - status text is 200 OK": (r) => r.status_text == "200 OK",
         "GetDialogById - body is not empty": (r) => {
             res_body = JSON.parse(r.body);
             return res_body !== null && res_body !== undefined;
@@ -139,7 +136,6 @@ export function GetAndVerifyDialogById(graphqlClient, variables, labels = null) 
     let res_body = null;
     const succeed = check(res, {
         "GetDialogById - status code is 200": (r) => r.status === 200,
-        "GetDialogById - status text is 200 OK": (r) => r.status_text == "200 OK",
         "GetDialogById - body is not empty and contains wanted dialog": (r) => {
             res_body = JSON.parse(r.body);
             if (res_body === null || res_body === undefined) {
@@ -184,7 +180,6 @@ export function GetParties(graphqlClient, labels = null) {
     let res_body = null;
     const succeed = check(res, {
         "GetParties - status code is 200": (r) => r.status === 200,
-        "GetParties - status text is 200 OK": (r) => r.status_text == "200 OK",
         "GetParties - body is not empty": (r) => {
             res_body = JSON.parse(r.body);
             return res_body !== null && res_body !== undefined;
@@ -216,7 +211,6 @@ export function GetFilterServiceResources(graphqlClient, labels = null) {
     let res_body = null;
     const succeed = check(res, {
         "GetFilteredServiceResources - status code is 200": (r) => r.status === 200,
-        "GetFilteredServiceResources - status text is 200 OK": (r) => r.status_text == "200 OK",
         "GetFilteredServiceResources - body is not empty": (r) => {
             res_body = JSON.parse(r.body);
             return res_body !== null && res_body !== undefined;

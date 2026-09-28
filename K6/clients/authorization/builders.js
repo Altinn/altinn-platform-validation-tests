@@ -132,6 +132,84 @@ export function buildXacmlJsonRequestRootExternal(overrides = {}) {
 }
 
 /**
+ * Assembles a subject, an action and a resource into a request the Authorize and
+ * Decision endpoints accept.
+ *
+ * The three builders above are generic enough to build anything XACML allows, which
+ * means every caller writes the same three levels of nesting to ask one question.
+ * This is that nesting, once: what differs between callers is which attributes
+ * identify the subject and the resource.
+ *
+ * @param {string} action - Action, e.g. read, write or sign.
+ * @param {XacmlJsonAttributeExternal[]} subjectAttributes - Attributes identifying who is asking.
+ * @param {XacmlJsonAttributeExternal[]} resourceAttributes - Attributes identifying what is being reached.
+ * @returns {XacmlJsonRequestRootExternal} An authorization request.
+ */
+export function buildAuthorizeRequest(action, subjectAttributes, resourceAttributes) {
+    return buildXacmlJsonRequestRootExternal({
+        request: buildXacmlJsonRequestExternal({
+            accessSubject: [
+                buildXacmlJsonCategoryExternal({
+                    attribute: subjectAttributes,
+                }),
+            ],
+            action: [
+                buildXacmlJsonCategoryExternal({
+                    attribute: [
+                        buildXacmlJsonAttributeExternal({
+                            attributeId: "urn:oasis:names:tc:xacml:1.0:action:action-id",
+                            value: action,
+                        }),
+                    ],
+                }),
+            ],
+            resource: [
+                buildXacmlJsonCategoryExternal({
+                    attribute: resourceAttributes,
+                }),
+            ],
+        }),
+    });
+}
+
+/**
+ * Builds the question "may this system user do this to this resource, for this
+ * organisation".
+ *
+ * A system user is named by its own uuid rather than by a person or an
+ * organisation, which is what sets it apart from the requests an end user makes.
+ * The organisation goes on the resource side: it is the party the resource belongs
+ * to, so it is what says whose data is being reached.
+ *
+ * @param {string} systemUserId - Identifier of the system user asking.
+ * @param {string} resourceId - Resource the system user wants to reach.
+ * @param {string} orgNo - Organisation number of the party the resource belongs to.
+ * @param {string} action - Action, e.g. read or write.
+ * @returns {XacmlJsonRequestRootExternal} An authorization request.
+ */
+export function buildSystemUserRequest(systemUserId, resourceId, orgNo, action) {
+    return buildAuthorizeRequest(
+        action,
+        [
+            buildXacmlJsonAttributeExternal({
+                attributeId: "urn:altinn:systemuser:uuid",
+                value: systemUserId,
+            }),
+        ],
+        [
+            buildXacmlJsonAttributeExternal({
+                attributeId: "urn:altinn:resource",
+                value: resourceId,
+            }),
+            buildXacmlJsonAttributeExternal({
+                attributeId: "urn:altinn:organization:identifier-no",
+                value: orgNo,
+            }),
+        ],
+    );
+}
+
+/**
  * Creates an internal XACML API request model.
  *
  * @param {Partial<XacmlRequestApiModel>} [overrides]

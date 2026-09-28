@@ -31,8 +31,6 @@ export function GetSentResourceRequests(
     const succeed = check(res, {
         "GetSentResourceRequests - status code is 200": (r) =>
             r.status === 200,
-        "GetSentResourceRequests - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

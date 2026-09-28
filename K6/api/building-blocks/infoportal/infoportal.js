@@ -58,12 +58,10 @@ export function GetCurrent(infoPortalApiClient, labels = null) {
  * @param {import("k6/http").RefinedResponse<"text">} res - response object
  * @param {*} method - method name for logging
  * @param status_code TODO: description
- * @param status_text TODO: description
  */
-function checker(res, method, status_code = 200, status_text = "200 OK") {
+function checker(res, method, status_code = 200) {
     const succeed = check(res, {
         [`${method} - status code is ${status_code}`]: (r) => r.status === status_code,
-        [`${method} - status text is ${status_text}`]: (r) => r.status_text == status_text,
     });
     if (!succeed) {
         console.log(res.status);

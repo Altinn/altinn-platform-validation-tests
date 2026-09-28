@@ -13,7 +13,7 @@ import {
     ValidatePersonInputBuilder,
 } from "../../../../clients/access-management-bff/connection/index.js";
 import { PersonalTokenBuilder, PersonalTokenGenerator } from "../../../../common-imports.js";
-import { fetchTestData, getItemFromList, getNumberOfVUs, getOptions, requireEnv, segmentData } from "../../../../helpers.js";
+import { fetchTestData, getItemFromList, getNumberOfVUs, getOptions, lazy, requireEnv, segmentData } from "../../../../helpers.js";
 import { AltinnScopes, CreateScopeString, } from "../../../../scopes.js";
 import { CreateAccessPackageDelegation, DeleteAccessPackageDelegation } from "../../../building-blocks/access-management-bff/access-package/index.js";
 import { CreateRightHolder, DeleteReporteeConnection, GetRightHolders } from "../../../building-blocks/access-management-bff/connection/index.js";
@@ -41,13 +41,6 @@ const tokenGeneratorLabel = { token_generator: PersonalTokenGenerator.TAGS.getTo
  */
 const randomize = __ENV.RANDOMIZE ? __ENV.RANDOMIZE.toLowerCase() === "true" : true;
 
-/** @type {PersonalTokenGenerator | undefined} */
-let tokenGenerator = undefined;
-/** @type {ConnectionClient | undefined} */
-let connectionsApiClient = undefined;
-/** @type {AccessPackageClient | undefined} */
-let accessPackageApiClient = undefined;
-
 // get k6 options
 export const options = getOptions([
     postRightholderLabel,
@@ -71,27 +64,27 @@ export const options = getOptions([
  * PersonalTokenGenerator
  * ]} The initialized API clients and token generator.
  */
-function getClients() {
-    if (tokenGenerator == undefined) {
-        const scopes = CreateScopeString([
-            AltinnScopes.PDP.AUTHORIZE.ENDUSER
-        ]);
-        const tokenOpts = new PersonalTokenBuilder()
-            .withEnvironment(__ENV.ENVIRONMENT)
-            .withTtl(3600)
-            .withScopes(scopes)
-            .build();
+const getClients = lazy(function () {
+    const scopes = CreateScopeString([
+        AltinnScopes.PDP.AUTHORIZE.ENDUSER
+    ]);
+    const tokenOpts = new PersonalTokenBuilder()
+        .withEnvironment(__ENV.ENVIRONMENT)
+        .withTtl(3600)
+        .withScopes(scopes)
+        .build();
 
-        tokenGenerator = new PersonalTokenGenerator(tokenOpts);
-    }
-    if (connectionsApiClient == undefined) {
-        connectionsApiClient = new ConnectionClient(__ENV.AM_UI_BASE_URL, tokenGenerator);
-    }
-    if (accessPackageApiClient == undefined) {
-        accessPackageApiClient = new AccessPackageClient(__ENV.AM_UI_BASE_URL, tokenGenerator);
-    }
-    return [connectionsApiClient, accessPackageApiClient, tokenGenerator];
-}
+    const tokenGenerator = new PersonalTokenGenerator(tokenOpts);
+
+    /** @type {[ConnectionClient, AccessPackageClient, PersonalTokenGenerator]} */
+    const clients = [
+        new ConnectionClient(__ENV.AM_UI_BASE_URL, tokenGenerator),
+        new AccessPackageClient(__ENV.AM_UI_BASE_URL, tokenGenerator),
+        tokenGenerator,
+    ];
+
+    return clients;
+});
 
 /**
  * Setup function to segment data for VUs.

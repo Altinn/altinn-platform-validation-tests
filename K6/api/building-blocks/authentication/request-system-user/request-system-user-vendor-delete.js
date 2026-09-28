@@ -31,8 +31,6 @@ export function RequestSystemUserVendorDelete(
     const succeed = check(res, {
         "RequestSystemUserVendorDelete - status code is 202": (r) =>
             r.status === 202,
-        "RequestSystemUserVendorDelete - status text is 202 Accepted": (r) =>
-            r.status_text === "202 Accepted",
     });
 
     if (!succeed) {

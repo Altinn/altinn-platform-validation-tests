@@ -92,6 +92,17 @@ class SubscriptionRequestModelBuilder {
     }
 
     /**
+     * Sets whether to include events for sub-units of the subject.
+     *
+     * @param {boolean} includeSubunits Whether to include sub-unit events.
+     * @returns {SubscriptionRequestModelBuilder} This builder, for chaining.
+     */
+    withIncludeSubunits(includeSubunits) {
+        this.request.includeSubunits = includeSubunits;
+        return this;
+    }
+
+    /**
      * Builds the subscription request payload.
      *
      * @returns {SubscriptionRequestModel} The built payload.

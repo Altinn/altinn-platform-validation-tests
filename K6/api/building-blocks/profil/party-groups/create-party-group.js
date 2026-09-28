@@ -28,8 +28,6 @@ export function CreatePartyGroup(
 
     const succeed = check(res, {
         "CreatePartyGroup - status code is 201": (r) => r.status === 201,
-        "CreatePartyGroup - status text is 201 Created": (r) =>
-            r.status_text === "201 Created",
     });
 
     if (!succeed) {

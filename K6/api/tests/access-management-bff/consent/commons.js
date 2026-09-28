@@ -1,7 +1,7 @@
 
 import { ConsentClient } from "../../../../clients/access-management-bff/consent/index.js";
 import { PersonalTokenBuilder, PersonalTokenGenerator } from "../../../../common-imports.js";
-import { fetchTestData, getNumberOfVUs, requireEnv, segmentData } from "../../../../helpers.js";
+import { fetchTestData, getNumberOfVUs, lazy, requireEnv, segmentData } from "../../../../helpers.js";
 import { AltinnScopes, CreateScopeString } from "../../../../scopes.js";
 
 /*
@@ -48,16 +48,6 @@ export const worst_case_users = [
 ];
 
 /**
- * @type {ConsentClient | undefined}
- */
-let consentClient = undefined;
-
-/**
- * @type {PersonalTokenGenerator | undefined}
- */
-let tokenGenerator = undefined;
-
-/**
  * Creates and caches the client these tests read with.
  *
  * Built once per VU and reused across its iterations. The client is stateless, so
@@ -67,21 +57,23 @@ let tokenGenerator = undefined;
  *
  * @returns {[ConsentClient, PersonalTokenGenerator]} The client, and the generator whose user is swapped per iteration.
  */
-export function getClients() {
-    if (consentClient === undefined || tokenGenerator === undefined) {
-        tokenGenerator = new PersonalTokenGenerator(
-            new PersonalTokenBuilder()
-                .withEnvironment(__ENV.ENVIRONMENT)
-                .withTtl(3600)
-                .withScopes(CreateScopeString([AltinnScopes.PORTAL.ENDUSER]))
-                .build(),
-        );
+export const getClients = lazy(function () {
+    const tokenGenerator = new PersonalTokenGenerator(
+        new PersonalTokenBuilder()
+            .withEnvironment(__ENV.ENVIRONMENT)
+            .withTtl(3600)
+            .withScopes(CreateScopeString([AltinnScopes.PORTAL.ENDUSER]))
+            .build(),
+    );
 
-        consentClient = new ConsentClient(__ENV.AM_UI_BASE_URL, tokenGenerator);
-    }
+    /** @type {[ConsentClient, PersonalTokenGenerator]} */
+    const clients = [
+        new ConsentClient(__ENV.AM_UI_BASE_URL, tokenGenerator),
+        tokenGenerator,
+    ];
 
-    return [consentClient, tokenGenerator];
-}
+    return clients;
+});
 
 /**
  * Token options for reading as one of the users.

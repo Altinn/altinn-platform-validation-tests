@@ -15,6 +15,24 @@ test_definitions:
       - environment: tt02
       - environment: yt01
 
+  # The pdp sits behind API management, so this one needs the subscription key on
+  # top of what the other tests in the folder need. at23 is left out because there
+  # is no authorization-subscription-key-at23 to give it.
+  - test_file: system-user-decision.js
+    contexts:
+      - environment: at22
+        test_run:
+          secrets:
+            - authorization-subscription-key-at22
+      - environment: tt02
+        test_run:
+          secrets:
+            - authorization-subscription-key-tt02
+      - environment: yt01
+        test_run:
+          secrets:
+            - authorization-subscription-key-yt01
+
   - test_file: stream-system-users.js
     contexts:
       - environment: at22

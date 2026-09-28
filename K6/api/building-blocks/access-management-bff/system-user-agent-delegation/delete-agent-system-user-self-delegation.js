@@ -39,8 +39,6 @@ export function DeleteAgentSystemUserSelfDelegation(
     const succeed = check(res, {
         "DeleteAgentSystemUserSelfDelegation - status code is 200": (r) =>
             r.status === 200,
-        "DeleteAgentSystemUserSelfDelegation - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

@@ -30,7 +30,5 @@ export function DeleteInstance(
     return check(res, {
         "DeleteInstance - status code is 204": (r) =>
             r.status === 204,
-        "DeleteInstance - status text is 204 No Content": (r) =>
-            r.status_text === "204 No Content",
     });
 }

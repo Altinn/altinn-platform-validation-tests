@@ -33,8 +33,6 @@ export function EscalateSystemUserRequest(
     const succeed = check(res, {
         "EscalateSystemUserRequest - status code is 200": (r) =>
             r.status === 200,
-        "EscalateSystemUserRequest - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

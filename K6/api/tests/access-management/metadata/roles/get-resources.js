@@ -1,4 +1,3 @@
-export { handleSummary } from "../../../../../common-imports.js";
 import { group } from "k6";
 
 import { RolesGetRoleResourcesQueryBuilder } from "../../../../../clients/access-management/metadata/roles/index.js";

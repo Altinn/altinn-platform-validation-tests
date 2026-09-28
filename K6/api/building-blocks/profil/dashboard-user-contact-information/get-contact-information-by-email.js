@@ -31,8 +31,6 @@ export function GetContactInformationByEmail(
     const succeed = check(res, {
         "GetContactInformationByEmail - status code is 200": (r) =>
             r.status === 200,
-        "GetContactInformationByEmail - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

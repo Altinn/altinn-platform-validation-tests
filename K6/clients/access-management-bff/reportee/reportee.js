@@ -1,5 +1,6 @@
 import http from "k6/http";
 
+import { buildUrl, requestParams } from "../../common/request.js";
 import { ChangeReporteeAndRedirectQuery, ChangeReporteeQuery } from "./reportee.types.js";
 
 const TAGS = {
@@ -50,44 +51,15 @@ class ReporteeClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     ChangeReporteeAndRedirect(query = null, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(`${this.FULL_PATH}/changeandredirect`);
-
-        if (query !== null) {
-            for (const [key, value] of Object.entries(query)) {
-                if (value === undefined || value === null) {
-                    continue;
-                }
-
-                if (Array.isArray(value)) {
-                    value.forEach((v) => url.searchParams.append(key, String(v)));
-                } else {
-                    url.searchParams.append(key, String(value));
-                }
-            }
-        }
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/changeandredirect`,
-            name: `${this.FULL_PATH}/changeandredirect`,
-            action: TAGS.ChangeReporteeAndRedirect.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url.toString(), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.get(
+            buildUrl(`${this.FULL_PATH}/changeandredirect`, query),
+            requestParams({
+                endpoint: `${this.FULL_PATH}/changeandredirect`,
+                action: TAGS.ChangeReporteeAndRedirect.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 
     /**
@@ -99,47 +71,15 @@ class ReporteeClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     ChangeReportee(query = null, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(`${this.FULL_PATH}/change`);
-
-        if (query !== null) {
-            for (const [key, value] of Object.entries(query)) {
-                if (value === undefined || value === null) {
-                    continue;
-                }
-
-                if (Array.isArray(value)) {
-                    value.forEach((v) => url.searchParams.append(key, String(v)));
-                } else {
-                    url.searchParams.append(key, String(value));
-                }
-            }
-        }
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/change`,
-            name: `${this.FULL_PATH}/change`,
-            action: TAGS.ChangeReportee.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
         return http.post(
-            url.toString(),
+            buildUrl(`${this.FULL_PATH}/change`, query),
             null,
-            {
-                tags,
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    Accept: "application/json",
-                },
-            },
+            requestParams({
+                endpoint: `${this.FULL_PATH}/change`,
+                action: TAGS.ChangeReportee.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
         );
     }
 }

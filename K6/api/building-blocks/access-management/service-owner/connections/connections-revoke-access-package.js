@@ -28,8 +28,6 @@ export function ConnectionsRevokeAccessPackage(
     const succeed = check(res, {
         "ConnectionsRevokeAccessPackage - status code is 204": (r) =>
             r.status === 204,
-        "ConnectionsRevokeAccessPackage - status text is 204 No Content": (r) =>
-            r.status_text === "204 No Content",
     });
 
     if (!succeed) {

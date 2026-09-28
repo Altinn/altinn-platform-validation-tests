@@ -4,6 +4,50 @@ import { ChangeRequestSystemUserClient, RequestSystemUserClient, SystemRegisterC
 import { ChangeRequestSystemUserBuildingBlocks, RequestSystemUserBuildingBlocks, SystemRegisterBuildingBlocks } from "../../authentication-imports.js";
 
 /**
+ * A row of `change-request-system-user/end-users-<env>.csv`.
+ *
+ * The customers the system user tests act on behalf of: someone who can approve for
+ * a company without anyone having delegated to them first, so daglig leder in an AS
+ * and innehaver in an ENK. Built per environment by `yarn tenor:endusers` in
+ * altinn-access-management-frontend, since Tenor holds the same synthetic companies
+ * everywhere while the Altinn ids differ per environment.
+ *
+ * Every column comes off the csv as a string, the ids included.
+ *
+ * @typedef {object} EndUser
+ * @property {string} orgNo Organisation number of the company.
+ * @property {string} orgPartyId Party id of the company, which the bff endpoints take.
+ * @property {string} orgPartyUuid Party uuid of the company.
+ * @property {string} orgType Organisation form, `AS` or `ENK`.
+ * @property {string} role The role the user holds in the company, `dagligleder` or `innehaver`.
+ * @property {string} userId User id, for the personal token.
+ * @property {string} userPartyUuid Party uuid of the user, for the personal token.
+ * @property {string} userPid National identity number of the user.
+ */
+
+/**
+ * A row of `system-user-request/<env>.csv` and of
+ * `system-user-client-delegation/<env>.csv`, which have the same columns.
+ *
+ * An organisation paired with a user who can act for it: the customer a system user
+ * request is made for in the one file, and the accountant, auditor or property
+ * manager whose clients are delegated in the other. Both are built per environment
+ * in altinn-access-management-frontend, the facilitators by `yarn
+ * tenor:klientdelegering`.
+ *
+ * Every column comes off the csv as a string, the ids included.
+ *
+ * @typedef {object} OrganizationUser
+ * @property {string} orgNo Organisation number.
+ * @property {string} partyId Party id of the organisation, which the bff endpoints take.
+ * @property {string} orgUuid Party uuid of the organisation.
+ * @property {string} userId User id, for the personal token.
+ * @property {string} userPartyUuid Party uuid of the user, for the personal token.
+ * @property {string} ssn National identity number of the user.
+ * @property {string} orgType What the organisation is to its clients, `revisor`, `regnskapsforer` or `forretningsforer`, and the organisation form for the request customers.
+ */
+
+/**
  * Deletes the systems a test left in a vendor's register.
  *
  * Call from a test's teardown. A test that registers a system deletes it again as
@@ -38,7 +82,7 @@ export function sweepRegisteredSystems(systemRegisterClient, vendorOrgNo, system
                 continue;
             }
 
-            if (requestSystemUserClient !== null && requestSystemUserClient !== undefined) {
+            if (requestSystemUserClient !== null) {
                 sweepPendingRequests(requestSystemUserClient, system.systemId);
             }
 

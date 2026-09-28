@@ -82,7 +82,12 @@ export const AltinnScopes = {
 
     CLIENTDELEGATIONS: {
         READ: "altinn:clientdelegations.read",
-        WRITE: "altinn:clientdelegations.write"
+        WRITE: "altinn:clientdelegations.write",
+
+        MYCLIENTS: {
+            READ: "altinn:clientdelegations/myclients.read",
+            WRITE: "altinn:clientdelegations/myclients.write"
+        }
     },
 
     CONSENTREQUESTS: {
@@ -212,6 +217,12 @@ export const AltinnScopes = {
         },
 
         DELEGATIONS: {
+            ACCESSPACKAGE: {
+                WRITE: "altinn:serviceowner/delegations:accesspackage.write"
+            },
+            RESOURCE: {
+                WRITE: "altinn:serviceowner/delegations:resource.write"
+            },
             WRITE: "altinn:serviceowner/delegations.write"
         },
 

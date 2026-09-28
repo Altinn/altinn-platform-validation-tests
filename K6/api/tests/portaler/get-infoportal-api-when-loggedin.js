@@ -23,7 +23,7 @@ import exec from "k6/execution";
 
 import { InfoPortalApiClient } from "../../../clients/infoportal/index.js";
 import { PersonalTokenBuilder, PersonalTokenGenerator } from "../../../common-imports.js";
-import { fetchTestData, getItemFromList, getNumberOfVUs, getOptions, segmentData } from "../../../helpers.js";
+import { fetchTestData, getItemFromList, getNumberOfVUs, getOptions, lazy, segmentData } from "../../../helpers.js";
 import { requireEnv } from "../../../helpers.js";
 import { AltinnScopes, CreateScopeString, DigDirScopes } from "../../../scopes.js";
 import { GetAuthorizedParties, GetCurrent, GetFavorites } from "../../building-blocks/infoportal/index.js";
@@ -73,16 +73,6 @@ export default function (data) {
 }
 
 /**
- * @type {InfoPortalApiClient | undefined}
- */
-let infoPortalApiClient = undefined;
-
-/**
- * @type {PersonalTokenGenerator | undefined}
- */
-let personalTokenGenerator = undefined;
-
-/**
  * Creates and caches the clients used by the Info Portal tests.
  *
  * Clients are initialized once per VU to avoid unnecessary re-creation
@@ -94,27 +84,26 @@ let personalTokenGenerator = undefined;
  * PersonalTokenGenerator
  * ]} Tuple containing the Info Portal API client and token generator.
  */
-function getClients() {
-    if (infoPortalApiClient === undefined || personalTokenGenerator === undefined) {
-        const scopes = CreateScopeString([
-            AltinnScopes.PDP.AUTHORIZE.ENDUSER
-        ]);
-        const tokenOpts = new PersonalTokenBuilder()
-            .withEnvironment(__ENV.ENVIRONMENT)
-            .withTtl(3600)
-            .withScopes(scopes)
-            .build();
+const getClients = lazy(function () {
+    const scopes = CreateScopeString([
+        AltinnScopes.PDP.AUTHORIZE.ENDUSER
+    ]);
+    const tokenOpts = new PersonalTokenBuilder()
+        .withEnvironment(__ENV.ENVIRONMENT)
+        .withTtl(3600)
+        .withScopes(scopes)
+        .build();
 
-        personalTokenGenerator = new PersonalTokenGenerator(tokenOpts);
+    const personalTokenGenerator = new PersonalTokenGenerator(tokenOpts);
 
-        infoPortalApiClient = new InfoPortalApiClient(
-            __ENV.INFO_CLOUD_URL,
-            personalTokenGenerator
-        );
-    }
+    /** @type {[InfoPortalApiClient, PersonalTokenGenerator]} */
+    const clients = [
+        new InfoPortalApiClient(__ENV.INFO_CLOUD_URL, personalTokenGenerator),
+        personalTokenGenerator,
+    ];
 
-    return [infoPortalApiClient, personalTokenGenerator];
-}
+    return clients;
+});
 
 /**
  * Internal function to get token options for the personal token generator, takes the userId as a parameter to set the correct user for the token.

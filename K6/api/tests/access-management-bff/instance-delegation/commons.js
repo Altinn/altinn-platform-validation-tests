@@ -14,14 +14,16 @@ import { UserClient } from "../../../../clients/access-management-bff/user/index
 import { GraphqlClient } from "../../../../clients/dialogporten/graphql/index.js";
 import { ServiceOwnerApiClient } from "../../../../clients/dialogporten/serviceowner/index.js";
 import { EnterpriseTokenBuilder, EnterpriseTokenGenerator, PersonalTokenBuilder, PersonalTokenGenerator } from "../../../../common-imports.js";
-import { pickUnique } from "../../../../helpers.js";
+import { lazy, pickUnique } from "../../../../helpers.js";
 import { AltinnScopes, CreateScopeString } from "../../../../scopes.js";
 
 export const randomize = __ENV.RANDOMIZE ? __ENV.RANDOMIZE.toLowerCase() === "true" : false;
 
-// All apiclient used in this test
-/** @type {ServiceOwnerApiClient | undefined} */
-let serviceOwnerApiClient = undefined;
+/**
+ * The service owner that creates the dialog the tests delegate on. yt01 runs on a
+ * different org than the other environments.
+ */
+export const SERVICE_OWNER_ORG_NO = __ENV.ENVIRONMENT === "yt01" ? "713431400" : "991825827";
 
 /**
  * Builds the clients that act as the end user.
@@ -74,23 +76,19 @@ function buildEndUserClients() {
     };
 }
 
-/** @type {ReturnType<typeof buildEndUserClients> | undefined} */
-let endUserClients = undefined;
-
 /**
  * Creates and caches the API clients used by the test.
  *
- * The service owner client uses an enterprise token scoped to the provided
- * organization number, while the remaining clients share a single personal
- * token generator.
+ * The service owner client uses an enterprise token scoped to
+ * {@link SERVICE_OWNER_ORG_NO}, while the remaining clients share a single
+ * personal token generator.
  *
- * Existing client instances are reused on subsequent calls.
+ * Built once per VU and reused across its iterations.
  *
  * The Access Management BFF is split into one client per endpoint group, so the
  * clients are returned in an object rather than a tuple. Destructure the ones
  * the test needs.
  *
- * @param {string} serviceOwnerOrgNo - Organization number used when generating the enterprise token.
  * @returns {{
  * serviceOwner: ServiceOwnerApiClient,
  * user: UserClient,
@@ -108,28 +106,23 @@ let endUserClients = undefined;
  * tokenGenerator: PersonalTokenGenerator
  * }} The initialized API clients and shared personal token generator.
  */
-export function getClients(serviceOwnerOrgNo) {
-    if (serviceOwnerApiClient == undefined) {
-        const tokenOpts = new EnterpriseTokenBuilder()
-            .withEnvironment(__ENV.ENVIRONMENT)
-            .withTtl(3600)
-            .withScopes("digdir:dialogporten.serviceprovider")
-            .withOrganization("ttd")
-            .withOrganizationNumber(serviceOwnerOrgNo)
-            .build();
-
-        const tokenGenerator = new EnterpriseTokenGenerator(tokenOpts);
-        serviceOwnerApiClient = new ServiceOwnerApiClient(__ENV.BASE_URL, tokenGenerator);
-    }
-    if (endUserClients == undefined) {
-        endUserClients = buildEndUserClients();
-    }
+export const getClients = lazy(function () {
+    const tokenOpts = new EnterpriseTokenBuilder()
+        .withEnvironment(__ENV.ENVIRONMENT)
+        .withTtl(3600)
+        .withScopes("digdir:dialogporten.serviceprovider")
+        .withOrganization("ttd")
+        .withOrganizationNumber(SERVICE_OWNER_ORG_NO)
+        .build();
 
     return {
-        serviceOwner: serviceOwnerApiClient,
-        ...endUserClients,
+        serviceOwner: new ServiceOwnerApiClient(
+            __ENV.BASE_URL,
+            new EnterpriseTokenGenerator(tokenOpts),
+        ),
+        ...buildEndUserClients(),
     };
-}
+});
 
 /**
  * Token options for acting as one end user.

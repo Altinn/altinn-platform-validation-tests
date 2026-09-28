@@ -1,5 +1,6 @@
 import http from "k6/http";
 
+import { jsonBody, requestParams } from "../../common/request.js";
 import { Altinn2AccountFromTokenRequest, Altinn2AccountRequest, Altinn2ForgotPasswordRequest } from "../common/common.types.js";
 
 const TAGS = {
@@ -54,34 +55,16 @@ class SelfIdentifiedUserClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     CreateAltinn2Account(body = null, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(`${this.FULL_PATH}/altinn2account`);
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/altinn2account`,
-            name: `${this.FULL_PATH}/altinn2account`,
-            action: TAGS.CreateAltinn2Account.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
         return http.post(
-            url.toString(),
-            body !== null ? JSON.stringify(body) : null,
-            {
-                tags,
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    "Content-Type": "application/json",
-                    Accept: "application/json",
-                },
-            },
+            `${this.FULL_PATH}/altinn2account`,
+            jsonBody(body),
+            requestParams({
+                endpoint: `${this.FULL_PATH}/altinn2account`,
+                action: TAGS.CreateAltinn2Account.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+                json: true,
+            }),
         );
     }
 
@@ -94,34 +77,16 @@ class SelfIdentifiedUserClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     SendForgotPassword(body = null, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(`${this.FULL_PATH}/altinn2account/forgotpassword`);
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/altinn2account/forgotpassword`,
-            name: `${this.FULL_PATH}/altinn2account/forgotpassword`,
-            action: TAGS.SendForgotPassword.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
         return http.post(
-            url.toString(),
-            body !== null ? JSON.stringify(body) : null,
-            {
-                tags,
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    "Content-Type": "application/json",
-                    Accept: "application/json",
-                },
-            },
+            `${this.FULL_PATH}/altinn2account/forgotpassword`,
+            jsonBody(body),
+            requestParams({
+                endpoint: `${this.FULL_PATH}/altinn2account/forgotpassword`,
+                action: TAGS.SendForgotPassword.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+                json: true,
+            }),
         );
     }
 
@@ -134,34 +99,16 @@ class SelfIdentifiedUserClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     CreateAltinn2AccountFromToken(body = null, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(`${this.FULL_PATH}/altinn2account/token`);
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/altinn2account/token`,
-            name: `${this.FULL_PATH}/altinn2account/token`,
-            action: TAGS.CreateAltinn2AccountFromToken.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
         return http.post(
-            url.toString(),
-            body !== null ? JSON.stringify(body) : null,
-            {
-                tags,
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    "Content-Type": "application/json",
-                    Accept: "application/json",
-                },
-            },
+            `${this.FULL_PATH}/altinn2account/token`,
+            jsonBody(body),
+            requestParams({
+                endpoint: `${this.FULL_PATH}/altinn2account/token`,
+                action: TAGS.CreateAltinn2AccountFromToken.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+                json: true,
+            }),
         );
     }
 }

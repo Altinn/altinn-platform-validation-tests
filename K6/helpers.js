@@ -118,12 +118,26 @@ export function getItemFromList(listOfItems, randomize = false) {
  * e.g. listOfItems = [1, 2, 3, 4, 5, 6, 7, 8, 9] and numberOfSublists = 3, output = [ [1, 2, 3], [4, 5, 6], [7, 8, 9] ]
  * e.g. listOfItems = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9] and numberOfSublists = 3, output = [ [0, 1, 2, 3], [4, 5, 6], [7, 8, 9] ]
  *
+ * Refuses more sublists than items rather than handing back empty ones at the
+ * end. Every caller divides by VU count, and a VU that draws from an empty slice
+ * reads undefined off it without failing: the run still exits zero, and the only
+ * trace is a summary with fewer checks than usual.
+ *
  * @template T
  * @param {T[]} listOfItems The items to divide.
  * @param {number} numberOfSublists How many sublists to divide them into.
  * @returns {T[][]} A list with numberOfSublists lists.
+ * @throws {Error} If there are more sublists than items to fill them.
  */
 export function segmentData(listOfItems, numberOfSublists = 1) {
+    if (numberOfSublists > listOfItems.length) {
+        throw new Error(
+            `Cannot divide ${listOfItems.length} rows into ${numberOfSublists} slices: the last`
+            + " ones would be empty, and a VU drawing from an empty slice reads undefined without"
+            + " failing. Add rows to the fixture, or run with fewer VUs.",
+        );
+    }
+
     /** @type {T[][]} */
     const sublists = [];
     const itemsPerSublist = Math.floor(listOfItems.length / numberOfSublists);
@@ -195,6 +209,30 @@ export function checkIp(ip) {
         /^([0-9a-fA-F]{1,4}:){7}([0-9a-fA-F]{1,4})$|^([0-9a-fA-F]{1,4}:){1,7}:$|^([0-9a-fA-F]{1,4}:){1,6}(:[0-9a-fA-F]{1,4}){1,2}$|^([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,3}$|^([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,4}$|^([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,5}$|^([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,6}$|^[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,7}|:)$/;
 
     return ipv4.test(ip) || ipv6.test(ip);
+}
+
+/**
+ * Wraps a builder so it runs once and every later call gets what it built.
+ *
+ * For the clients and token generators a test caches at module scope: a VU builds
+ * them on its first iteration and reuses them for the rest, since the token
+ * generators cache their tokens per instance. Written this way rather than as a
+ * `let` that starts out undefined, so what the builder returns keeps its type and
+ * no caller has to check it for undefined first.
+ *
+ * @template T
+ * @param {() => T} build Builds the value the first time it is asked for.
+ * @returns {() => T} A function handing out that one value.
+ */
+export function lazy(build) {
+    /** @type {{value: T} | undefined} */
+    let cached = undefined;
+
+    return function () {
+        cached ??= { value: build() };
+
+        return cached.value;
+    };
 }
 
 /**

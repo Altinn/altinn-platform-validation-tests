@@ -37,8 +37,6 @@ export function CreateAgentAccessPackages(
     const succeed = check(res, {
         "CreateAgentAccessPackages - status code is 200": (r) =>
             r.status === 200,
-        "CreateAgentAccessPackages - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

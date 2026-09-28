@@ -1,6 +1,5 @@
 import { group } from "k6";
 
-import { handleSummary } from "../../../common-imports.js";
 import { InitializeCorrespondences } from "../../building-blocks/correspondence/correspondence/index.js";
 import { CorrespondenceDomainChecks } from "../../domain-checks/correspondence/correspondence.js";
 import { buildInitializeCorrespondenceRequest, CorrespondenceTestUser, getCorrespondenceOptions, getEndUser, getEnterpriseSenderClient, setupCorrespondenceTestData } from "./commons.js";
@@ -40,5 +39,3 @@ export default function (endUsers) {
         );
     });
 }
-
-export { handleSummary };

@@ -7,3 +7,17 @@ test_definitions:
       - environment: at23
       - environment: tt02
       - environment: yt01
+
+  # at22 and tt02 only: the resource the decision is asked about,
+  # klientdelegeringressurse2e, is published there and nowhere else. It also needs
+  # the subscription key, since the pdp sits behind API management.
+  - test_file: delegate-client-and-check-decision.js
+    contexts:
+      - environment: at22
+        test_run:
+          secrets:
+            - authorization-subscription-key-at22
+      - environment: tt02
+        test_run:
+          secrets:
+            - authorization-subscription-key-tt02

@@ -1,5 +1,6 @@
 import http from "k6/http";
 
+import { buildUrl, jsonBody, requestParams } from "../../common/request.js";
 import { ValidatePersonInput } from "../common/common.types.js";
 import { CreateRightHolderQuery, DeleteReporteeConnectionQuery, GetRightHoldersQuery, GetSimplifiedConnectionsQuery } from "./connection.types.js";
 
@@ -62,32 +63,15 @@ class ConnectionClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetReporteeRightHolders(partyId, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(
+        return http.get(
             `${this.FULL_PATH}/reportee/${partyId}/rightholders`,
+            requestParams({
+                endpoint: `${this.FULL_PATH}/reportee/{partyId}/rightholders`,
+                action: TAGS.GetReporteeRightHolders.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
         );
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/reportee/{partyId}/rightholders`,
-            name: `${this.FULL_PATH}/reportee/{partyId}/rightholders`,
-            action: TAGS.GetReporteeRightHolders.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url.toString(), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
     }
 
     /**
@@ -99,47 +83,15 @@ class ConnectionClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     DeleteReporteeConnection(query = null, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(`${this.FULL_PATH}/reportee`);
-
-        if (query !== null) {
-            for (const [key, value] of Object.entries(query)) {
-                if (value === undefined || value === null) {
-                    continue;
-                }
-
-                if (Array.isArray(value)) {
-                    value.forEach((v) => url.searchParams.append(key, String(v)));
-                } else {
-                    url.searchParams.append(key, String(value));
-                }
-            }
-        }
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/reportee`,
-            name: `${this.FULL_PATH}/reportee`,
-            action: TAGS.DeleteReporteeConnection.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
         return http.del(
-            url.toString(),
+            buildUrl(`${this.FULL_PATH}/reportee`, query),
             null,
-            {
-                tags,
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    Accept: "application/json",
-                },
-            },
+            requestParams({
+                endpoint: `${this.FULL_PATH}/reportee`,
+                action: TAGS.DeleteReporteeConnection.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
         );
     }
 
@@ -153,36 +105,16 @@ class ConnectionClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     ValidatePerson(partyUuid, body = null, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(
-            `${this.FULL_PATH}/reportee/${partyUuid}/rightholder/validateperson`,
-        );
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/reportee/{partyUuid}/rightholder/validateperson`,
-            name: `${this.FULL_PATH}/reportee/{partyUuid}/rightholder/validateperson`,
-            action: TAGS.ValidatePerson.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
         return http.post(
-            url.toString(),
-            body !== null ? JSON.stringify(body) : null,
-            {
-                tags,
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    "Content-Type": "application/json",
-                    Accept: "application/json",
-                },
-            },
+            `${this.FULL_PATH}/reportee/${partyUuid}/rightholder/validateperson`,
+            jsonBody(body),
+            requestParams({
+                endpoint: `${this.FULL_PATH}/reportee/{partyUuid}/rightholder/validateperson`,
+                action: TAGS.ValidatePerson.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+                json: true,
+            }),
         );
     }
 
@@ -200,50 +132,16 @@ class ConnectionClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     CreateRightHolder(partyUuid, body = null, query = null, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(
-            `${this.FULL_PATH}/reportee/${partyUuid}/rightholder`,
-        );
-
-        if (query !== null) {
-            for (const [key, value] of Object.entries(query)) {
-                if (value === undefined || value === null) {
-                    continue;
-                }
-
-                if (Array.isArray(value)) {
-                    value.forEach((v) => url.searchParams.append(key, String(v)));
-                } else {
-                    url.searchParams.append(key, String(value));
-                }
-            }
-        }
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/reportee/{partyUuid}/rightholder`,
-            name: `${this.FULL_PATH}/reportee/{partyUuid}/rightholder`,
-            action: TAGS.CreateRightHolder.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
         return http.post(
-            url.toString(),
-            body !== null ? JSON.stringify(body) : null,
-            {
-                tags,
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    "Content-Type": "application/json",
-                    Accept: "application/json",
-                },
-            },
+            buildUrl(`${this.FULL_PATH}/reportee/${partyUuid}/rightholder`, query),
+            jsonBody(body),
+            requestParams({
+                endpoint: `${this.FULL_PATH}/reportee/{partyUuid}/rightholder`,
+                action: TAGS.CreateRightHolder.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+                json: true,
+            }),
         );
     }
 
@@ -256,44 +154,15 @@ class ConnectionClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetRightHolders(query = null, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(`${this.FULL_PATH}/rightholders`);
-
-        if (query !== null) {
-            for (const [key, value] of Object.entries(query)) {
-                if (value === undefined || value === null) {
-                    continue;
-                }
-
-                if (Array.isArray(value)) {
-                    value.forEach((v) => url.searchParams.append(key, String(v)));
-                } else {
-                    url.searchParams.append(key, String(value));
-                }
-            }
-        }
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/rightholders`,
-            name: `${this.FULL_PATH}/rightholders`,
-            action: TAGS.GetRightHolders.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url.toString(), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.get(
+            buildUrl(`${this.FULL_PATH}/rightholders`, query),
+            requestParams({
+                endpoint: `${this.FULL_PATH}/rightholders`,
+                action: TAGS.GetRightHolders.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 
     /**
@@ -305,44 +174,15 @@ class ConnectionClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetSimplifiedConnections(query = null, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(`${this.FULL_PATH}/simplified`);
-
-        if (query !== null) {
-            for (const [key, value] of Object.entries(query)) {
-                if (value === undefined || value === null) {
-                    continue;
-                }
-
-                if (Array.isArray(value)) {
-                    value.forEach((v) => url.searchParams.append(key, String(v)));
-                } else {
-                    url.searchParams.append(key, String(value));
-                }
-            }
-        }
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/simplified`,
-            name: `${this.FULL_PATH}/simplified`,
-            action: TAGS.GetSimplifiedConnections.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url.toString(), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.get(
+            buildUrl(`${this.FULL_PATH}/simplified`, query),
+            requestParams({
+                endpoint: `${this.FULL_PATH}/simplified`,
+                action: TAGS.GetSimplifiedConnections.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 }
 

@@ -31,8 +31,6 @@ export function EventsCreate(
     const succeed = check(res, {
         "EventsCreate - status code is 200": (r) =>
             r.status === 200,
-        "EventsCreate - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

@@ -1,7 +1,7 @@
 
 import { ServiceOwnerApiClient } from "../../../../clients/dialogporten/serviceowner/index.js";
 import { EnterpriseTokenBuilder, EnterpriseTokenGenerator } from "../../../../common-imports.js";
-import { fetchTestData, getItemFromList, getOptions, requireEnv } from "../../../../helpers.js";
+import { fetchTestData, getItemFromList, getOptions, lazy, requireEnv } from "../../../../helpers.js";
 import { AltinnScopes, CreateScopeString } from "../../../../scopes.js";
 import { GetDialogsQueriesNotificationCondition } from "../../../building-blocks/dialogporten/serviceowner/index.js";
 
@@ -18,11 +18,6 @@ const label = { step: "should-send-notifications" };
 export const options = getOptions([label]);
 
 /**
- * @type {ServiceOwnerApiClient | undefined}
- */
-let serviceOwnerApiClient = undefined;
-
-/**
  * Creates and caches the client used to interact with the Service Owner Dialog API.
  *
  * The client uses an enterprise token with the
@@ -34,29 +29,25 @@ let serviceOwnerApiClient = undefined;
  *
  * @returns {[ServiceOwnerApiClient]} Tuple containing the Service Owner API client.
  */
-export function getClients() {
-    if (serviceOwnerApiClient === undefined) {
-        const scopes = CreateScopeString([
-            AltinnScopes.SYSTEM.NOTIFICATIONS.CONDITION.CHECK
-        ]);
-        const tokenOpts = new EnterpriseTokenBuilder()
-            .withEnvironment(__ENV.ENVIRONMENT)
-            .withTtl(3600)
-            .withScopes(scopes)
-            .withOrganization("test")
-            .withOrganizationNumber(getItemFromList(orgNos))
-            .build();
+export const getClients = lazy(function () {
+    const scopes = CreateScopeString([
+        AltinnScopes.SYSTEM.NOTIFICATIONS.CONDITION.CHECK
+    ]);
+    const tokenOpts = new EnterpriseTokenBuilder()
+        .withEnvironment(__ENV.ENVIRONMENT)
+        .withTtl(3600)
+        .withScopes(scopes)
+        .withOrganization("test")
+        .withOrganizationNumber(getItemFromList(orgNos))
+        .build();
 
-        const tokenGenerator = new EnterpriseTokenGenerator(tokenOpts);
+    /** @type {[ServiceOwnerApiClient]} */
+    const clients = [
+        new ServiceOwnerApiClient(__ENV.BASE_URL, new EnterpriseTokenGenerator(tokenOpts)),
+    ];
 
-        serviceOwnerApiClient = new ServiceOwnerApiClient(
-            __ENV.BASE_URL,
-            tokenGenerator
-        );
-    }
-
-    return [serviceOwnerApiClient];
-}
+    return clients;
+});
 
 /**
  * @param {ReturnType<typeof setup>} data Test data from setup.

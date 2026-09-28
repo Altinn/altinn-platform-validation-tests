@@ -33,8 +33,6 @@ export function CreateSystemUser(
     const succeed = check(res, {
         "CreateSystemUser - status code is 200": (r) =>
             r.status === 200,
-        "CreateSystemUser - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

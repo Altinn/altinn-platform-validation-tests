@@ -30,8 +30,6 @@ export function UpdatePartyGroup(
 
     const succeed = check(res, {
         "UpdatePartyGroup - status code is 200": (r) => r.status === 200,
-        "UpdatePartyGroup - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

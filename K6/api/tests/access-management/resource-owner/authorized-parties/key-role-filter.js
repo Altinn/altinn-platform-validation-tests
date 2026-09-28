@@ -1,5 +1,3 @@
-export { handleSummary } from "../../../../../common-imports.js";
-
 import { group } from "k6";
 
 import { AuthorizedPartiesQueryBuilder, AuthorizedPartiesRequestBuilder } from "../../../../../clients/access-management/resource-owner/authorized-parties/index.js";

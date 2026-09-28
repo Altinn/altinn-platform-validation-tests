@@ -1,0 +1,18 @@
+namespace: access-management
+base_dir: K6/api/tests/access-management/enduser/client-delegations-v2/
+test_definitions:
+  # Scheduled with the default one VU and one iteration, which is what the test
+  # is built for: it writes, and each row sets up and tears down its own client
+  # relation, so two VUs on one row would fight over it. setup refuses more VUs
+  # than the fixture has rows rather than letting the surplus ones fail quietly.
+  #
+  # yt01 has no fixture and is deliberately left out.
+  - test_file: delegate-and-remove-resource.js
+    contexts:
+      - environment: at22
+      - environment: at23
+      - environment: tt02
+
+  # run-all.js is not scheduled, following the rest of the repo: it exists to run
+  # the folder by hand. Anything added here has to be added to it as well, since
+  # nothing checks that the two agree.

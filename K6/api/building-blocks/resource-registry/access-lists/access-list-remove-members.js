@@ -38,8 +38,6 @@ export function AccessListRemoveMembers(
     const succeed = check(res, {
         "AccessListRemoveMembers - status code is 200": (r) =>
             r.status === 200,
-        "AccessListRemoveMembers - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

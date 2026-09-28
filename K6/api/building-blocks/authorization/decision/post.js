@@ -40,8 +40,6 @@ export function DecisionPost(
     const succeed = check(res, {
         "DecisionPost - status code is 200": (r) =>
             r.status === 200,
-        "DecisionPost - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

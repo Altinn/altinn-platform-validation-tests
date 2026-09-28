@@ -24,8 +24,6 @@ export function GetReporteeList(userClient, partyUuid, labels = null) {
     const succeed = check(res, {
         "GetReporteeList - status code is 200": (r) =>
             r.status === 200,
-        "GetReporteeList - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

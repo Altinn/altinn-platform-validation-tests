@@ -31,8 +31,6 @@ export function GetInstanceSimplifiedUsers(
     const succeed = check(res, {
         "GetInstanceSimplifiedUsers - status code is 200": (r) =>
             r.status === 200,
-        "GetInstanceSimplifiedUsers - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

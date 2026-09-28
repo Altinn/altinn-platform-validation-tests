@@ -47,4 +47,5 @@ export { SystemRegisterDomainChecks } from "./domain-checks/authentication/syste
 export { SystemUserDomainChecks } from "./domain-checks/authentication/system-user.js";
 export { SystemUserClientDelegationDomainChecks } from "./domain-checks/authentication/system-user-client-delegation.js";
 export { SystemUserRequestDomainChecks } from "./domain-checks/authentication/system-user-request.js";
+export { SystemUserTokenDomainChecks } from "./domain-checks/authentication/system-user-token.js";
 export { TokenExchangeDomainChecks } from "./domain-checks/authentication/token-exchange.js";

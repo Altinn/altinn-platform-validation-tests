@@ -28,8 +28,6 @@ export function GetMyClientProviders(
     const succeed = check(res, {
         "GetMyClientProviders - status code is 200": (r) =>
             r.status === 200,
-        "GetMyClientProviders - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

@@ -26,8 +26,6 @@ export function PackagesExport(
     const succeed = check(res, {
         "PackagesExport - status code is 200": (r) =>
             r.status === 200,
-        "PackagesExport - status text is 200 OK": (r) =>
-            r.status_text === "200 OK",
     });
 
     if (!succeed) {

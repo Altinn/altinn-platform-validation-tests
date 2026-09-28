@@ -1,33 +1,6 @@
 import { check } from "k6";
-import encoding from "k6/encoding";
 
-/**
- * Reads the claims out of a JWT without verifying it.
- *
- * Verifying the signature would mean fetching Altinn's signing keys and doing
- * crypto in the test, which says more about the test than about the endpoint. What
- * the exchange has to get right is which claims come back, so the payload is read
- * and the signature left to the services that consume the token.
- *
- * @param {string|null} token - The token to read.
- * @returns {any|null} The claims, or null when the token is not a readable JWT.
- */
-function readClaims(token) {
-    const parts = (token ?? "").split(".");
-
-    if (parts.length !== 3) {
-        return null;
-    }
-
-    try {
-        // A JWT is base64url encoded and unpadded, which is what "rawurl" means.
-        return JSON.parse(encoding.b64decode(parts[1], "rawurl", "s"));
-    } catch (error) {
-        console.error(`readClaims - cannot read the token payload: ${error}`);
-
-        return null;
-    }
-}
+import { readClaims } from "../common/jwt.js";
 
 /**
  * Checks that the exchange handed back a token.
