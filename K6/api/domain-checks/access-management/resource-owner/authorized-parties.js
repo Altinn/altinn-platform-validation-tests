@@ -453,28 +453,6 @@ function CheckPartyIncludesAccessPackages(parties, partyUuid, expectedAccessPack
 }
 
 /**
- * Some person party in the response holds all of the expected access packages.
- *
- * Asserted on any person rather than a named one, since which people come back this way
- * follows whichever clients are sole proprietorships at the time, and that changes.
- *
- * @param {AuthorizedParty[]} parties - The authorized parties returned by the API.
- * @param {Array<string>} expectedAccessPackages - The access packages the person should hold.
- * @returns {boolean} True if the check held.
- */
-function CheckSomePersonPartyIncludesAccessPackages(parties, expectedAccessPackages) {
-    const persons = (parties ?? []).filter((party) => party.type === "Person");
-
-    return Assert("CheckSomePersonPartyIncludesAccessPackages - a person party holds the expected access packages", parties,
-        () => persons.some((person) =>
-            expectedAccessPackages.every((wanted) => (person.authorizedAccessPackages ?? []).includes(wanted))),
-        () => [
-            `expected some person party to hold: ${JSON.stringify(expectedAccessPackages)}`,
-            `person parties returned: ${JSON.stringify(persons.map((person) => person.partyUuid))}`,
-        ]);
-}
-
-/**
  * The party holds at least one access package.
  *
  * @param {AuthorizedParty[]} parties - The authorized parties returned by the API.
@@ -767,7 +745,6 @@ export const AuthorizedPartiesDomainChecks = {
     CheckPartyHasNoNationalIdentityNumber,
     CheckPartyHasEmailId,
     CheckPartyIncludesAccessPackages,
-    CheckSomePersonPartyIncludesAccessPackages,
     CheckPartyHasSomeAccessPackages,
     CheckPartyIncludesRole,
     CheckPartyHasExactlyResources,
