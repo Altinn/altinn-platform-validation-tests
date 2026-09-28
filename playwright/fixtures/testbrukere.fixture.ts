@@ -4,8 +4,9 @@ import path from "path";
 
 import { TestUser } from "../config/environment";
 
-// TEST_DATA_PATH peker på en annen testdata-mappe, for eksempel en som er montert inn i poden.
-const testdata = process.env.TEST_DATA_PATH ?? path.join(__dirname, "..", "testdata");
+// TEST_DATA_PATH peker på en annen testdata-mappe, for eksempel fra kubernetes
+const testdata =
+    process.env.TEST_DATA_PATH ?? path.join(__dirname, "..", "testdata");
 
 function lesTestbrukere(gruppe: string, miljo: string): TestUser[] {
     const fil = path.join(testdata, gruppe, `${miljo}.csv`);
@@ -17,10 +18,14 @@ function lesTestbrukere(gruppe: string, miljo: string): TestUser[] {
     });
 }
 
-export const testbrukereFixture = base.extend<{ user: TestUser; miljo: string }>({
+export const testbrukereFixture = base.extend<{
+    user: TestUser;
+    miljo: string;
+}>({
     miljo: ["", { option: true }],
 
     // Én bruker per worker, så tester som kjører samtidig ikke endrer språket for hverandre.
+    // Trenger potensielt ordentlig fiks i fremtiden
     user: async ({ miljo }, use, testInfo) => {
         const brukere = lesTestbrukere("privatPersonUtenVirksomhet", miljo);
         await use(brukere[testInfo.parallelIndex % brukere.length]);
