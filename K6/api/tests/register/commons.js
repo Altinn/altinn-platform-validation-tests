@@ -1,5 +1,3 @@
-import { fail } from "k6";
-
 import { EnhetsregisteretClient, RegisterClient } from "../../../clients/register/index.js";
 import {
     PersonalTokenBuilder,
@@ -7,7 +5,7 @@ import {
     PlatformTokenBuilder,
     PlatformTokenGenerator,
 } from "../../../common-imports.js";
-import { fetchTestData, getItemFromList, lazy, retry } from "../../../helpers.js";
+import { fetchTestData, lazy, retry } from "../../../helpers.js";
 import { AltinnScopes, CreateScopeString } from "../../../scopes.js";
 import { RegisterBuildingBlocks } from "../../building-blocks/register/index.js";
 
@@ -19,7 +17,7 @@ import { RegisterBuildingBlocks } from "../../building-blocks/register/index.js"
  *
  * K6/testdata/register/
  * - register-usernames-<env>.csv   (header: username)
- * - organizations-<env>.csv        (header: organizationUuid,organizationId,type)
+ * - organizations-<env>.csv        (header: organizationUuid,organizationId,type,clientOrganizationId,clientOrganizationForm)
  */
 
 /**
@@ -49,8 +47,14 @@ export function getUsernames(env) {
  * customers in its environment when the file was generated, since one without
  * customers gives the role test nothing to remove.
  *
+ * `clientOrganizationId` is the one customer the role test moves out and back in,
+ * fixed rather than drawn, because ER writes the organisasjonsform in the batch onto
+ * the unit. Drawing among every customer turned ENKs, borettslag and stiftelser into
+ * AS. Each is AS in both Tenor and Register, and a row without one has no customer
+ * that was.
+ *
  * @param {string} env - Environment, e.g. "tt02".
- * @returns {Array<{organizationUuid: string, organizationId: string, type: string}>}
+ * @returns {Array<{organizationUuid: string, organizationId: string, type: string, clientOrganizationId: string, clientOrganizationForm: string}>}
  * The organizations.
  */
 export function getOrganizations(env) {
@@ -157,68 +161,6 @@ export function getCustomerOrganizationNumbers(
     return customers
         .map((customer) => customer.organizationIdentifier)
         .filter((identifier) => identifier !== undefined);
-}
-
-/**
- * A customer drawn to move, with the organisasjonsform ER has to be sent back.
- *
- * @typedef {object} CustomerToMove
- * @property {string} organizationIdentifier Organization number of the customer.
- * @property {string} unitType Its organisasjonsform as Register has it, e.g. "ENK".
- */
-
-/**
- * Picks a customer to move in and out of an organization's customer list.
- *
- * @param {RegisterClient} registerClient Client for the Register API.
- * @param {string} ccrRole The role under test, e.g. "revisor".
- * @param {{organizationUuid: string, organizationId: string}} organization The organization holding the role.
- * @param {boolean} randomize Whether to draw at random rather than take the first.
- * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
- * @returns {CustomerToMove} The customer to move.
- */
-export function drawCustomerToMove(
-    registerClient,
-    ccrRole,
-    organization,
-    randomize,
-    labels = null,
-) {
-    // The organisasjonsform comes along because ER writes whatever the batch says onto
-    // the unit, so sending the wrong one turns an ENK into an AS for good.
-    const currentOrgs = RegisterBuildingBlocks.GetCustomers(
-        registerClient,
-        organization.organizationUuid,
-        ccrRole,
-        ["org-id", "org.type"],
-        labels,
-    );
-
-    if (currentOrgs === null) {
-        fail(`cannot continue: reading the ${ccrRole} customers failed`);
-    }
-
-    console.log(
-        `Initial number of ${ccrRole} customers for ${organization.organizationId}: ${currentOrgs.length}`,
-    );
-
-    if (currentOrgs.length === 0) {
-        fail(
-            `cannot continue: ${organization.organizationId} has no ${ccrRole} customers to test with`,
-        );
-    }
-
-    // Drawn the same way as the organization, rather than always the first one. Two
-    // VUs that draw the same organization would otherwise target the same customer,
-    // and each would see the other's removal and add-back as its own.
-    const target = getItemFromList(currentOrgs, randomize);
-    console.log(`Picked target client organizationIdentifier: ${target.organizationIdentifier} (${target.unitType})`);
-
-    if (target.organizationIdentifier === undefined || target.unitType === undefined) {
-        fail(`cannot continue: Register gave no organization number or organisasjonsform for the drawn ${ccrRole} customer`);
-    }
-
-    return { organizationIdentifier: target.organizationIdentifier, unitType: target.unitType };
 }
 
 /**

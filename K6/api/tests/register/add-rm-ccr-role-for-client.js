@@ -5,7 +5,7 @@ import { getItemFromList, getOptions, requireEnv } from "../../../helpers.js";
 import { EnhetsregisteretBuildingBlocks } from "../../building-blocks/register/index.js";
 import { CcrRoleDomainChecks } from "../../domain-checks/register/ccr-role.js";
 import {
-    drawCustomerToMove,
+    getCustomerOrganizationNumbers,
     getEnhetsregisteretClient,
     getOrganizations,
     getPartyLookupAdminClient,
@@ -52,7 +52,7 @@ export function setup() {
         "SOAP_ER_USERNAME",
     ]);
 
-    return getOrganizations(__ENV.ENVIRONMENT);
+    return getOrganizations(__ENV.ENVIRONMENT).filter((organization) => organization.clientOrganizationId !== "");
 }
 
 /**
@@ -74,8 +74,8 @@ export default function (organizations) {
  * Removes one of an organization's customers in ER, waits for Register to drop it,
  * then puts it back and waits for Register to have it again.
  *
- * The role is removed from a customer the organization already has, so the test
- * leaves the environment as it found it. That also means a failure between the two
+ * The role is removed from the fixed customer in the row, which the organization
+ * already has, so the test leaves the environment as it found it. That also means a failure between the two
  * halves leaves a customer without the organization in that role, which the
  * failure says.
  *
@@ -83,7 +83,8 @@ export default function (organizations) {
  * @param {EnhetsregisteretClient} enhetsregisteretClient Client for the ER update service.
  * @param {string} ccrRole The role under test, e.g. "revisor". One of
  * CcrCustomerRoles: revisor, regnskapsforer or forretningsforer.
- * @param {{organizationUuid: string, organizationId: string}} organization The organization holding the role.
+ * @param {{organizationUuid: string, organizationId: string, clientOrganizationId: string, clientOrganizationForm: string}} organization
+ * The organization holding the role, with the customer to move.
  */
 function addRemoveRoleForClient(
     registerClient,
@@ -91,13 +92,14 @@ function addRemoveRoleForClient(
     ccrRole,
     organization,
 ) {
-    const { organizationIdentifier: targetOrg, unitType: targetOrgForm } = drawCustomerToMove(
-        registerClient,
-        ccrRole,
-        organization,
-        randomize,
-        label,
-    );
+    const targetOrg = organization.clientOrganizationId;
+    const targetOrgForm = organization.clientOrganizationForm;
+
+    const currentOrgs = getCustomerOrganizationNumbers(registerClient, organization.organizationUuid, ccrRole, label);
+
+    if (currentOrgs === null || !currentOrgs.includes(targetOrg)) {
+        fail(`cannot continue: ${targetOrg} is not a ${ccrRole} customer of ${organization.organizationId}, so there is nothing to move`);
+    }
 
     removeRoleAndWait(
         registerClient,
