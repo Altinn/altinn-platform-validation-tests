@@ -57,7 +57,7 @@ export const SYSTEM_ID = `${VENDOR_ORG_NO}_ForretningsføringLeverandør`;
  * Which one hardly matters here: what the tests are about is the token, not what it
  * gets the caller into.
  */
-export const ACCESS_PACKAGE = "urn:altinn:accesspackage:jordbruk";
+const ACCESS_PACKAGE = "urn:altinn:accesspackage:jordbruk";
 
 /**
  * The scope the grant asks for, and the one the token comes back with.

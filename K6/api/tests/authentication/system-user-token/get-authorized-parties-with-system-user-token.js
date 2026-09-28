@@ -6,7 +6,7 @@ import { getItemFromList } from "../../../../helpers.js";
 import { AltinnScopes } from "../../../../scopes.js";
 import { GetAuthorizedParties } from "../../../building-blocks/access-management/enduser/authorized-parties/index.js";
 import { AuthorizedPartiesDomainChecks } from "../../../domain-checks/access-management/enduser/authorized-parties.js";
-import { ACCESS_PACKAGE, fetchSystemUserToken } from "./commons.js";
+import { fetchSystemUserToken } from "./commons.js";
 
 export { setup, teardown } from "./commons.js";
 
@@ -44,6 +44,6 @@ export default async function (data) {
         const parties = authorizedParties?.data ?? null;
 
         AuthorizedPartiesDomainChecks.CheckPartyIsPresent(parties, arranged.customer.orgPartyUuid);
-        AuthorizedPartiesDomainChecks.CheckPartyHasAccessPackages(parties, arranged.customer.orgPartyUuid, [ACCESS_PACKAGE]);
+        AuthorizedPartiesDomainChecks.CheckPartyHasAccessPackages(parties, arranged.customer.orgPartyUuid, ["jordbruk"]);
     });
 }
