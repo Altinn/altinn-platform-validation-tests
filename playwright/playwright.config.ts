@@ -3,7 +3,7 @@ import dotenv from "dotenv";
 import path from "path";
 
 import { Urler } from "./config/environment";
-import { Sprak } from "./config/sprak";
+import { alleSprak, Sprak } from "./config/sprak";
 
 // Hemmelighetene kan komme fra shellet eller fra gitignorerte .env-filer. Shellet vinner.
 dotenv.config({
@@ -52,17 +52,6 @@ const nettlesere = {
     // webkit: devices["Desktop Safari"],
 };
 
-// Testene som også kjøres på nynorsk og engelsk. Resten kjører bare på bokmål.
-const spraktester = ["tilgangsstyring/tilgjengelige-seksjoner.spec.ts"];
-
-const kombinasjoner = Object.entries(miljoer).flatMap(([miljo, options]) =>
-    Object.entries(nettlesere).map(([nettleser, device]) => ({
-        miljo,
-        nettleser,
-        use: { ...device, ...options, miljo },
-    })),
-);
-
 export default defineConfig<{
     miljo: string;
     mockporten: boolean;
@@ -86,23 +75,15 @@ export default defineConfig<{
         video: "retain-on-failure",
     },
 
-    projects: [
-        // Alle testene, på bokmål, for eksempel at23-chromium. Scriptene kjører alt for
-        // ett miljø med --project=<miljø>-*.
-        ...kombinasjoner.map(({ miljo, nettleser, use }) => ({
-            name: `${miljo}-${nettleser}`,
-            grep: new RegExp(`@${miljo}`),
-            use,
-        })),
-
-        // Språktestene også på nynorsk og engelsk, for eksempel at23-chromium-nynorsk.
-        ...kombinasjoner.flatMap(({ miljo, nettleser, use }) =>
-            [Sprak.Nynorsk, Sprak.Engelsk].map((sprak) => ({
+    // Ett project per miljø, nettleser og språk, for eksempel at23-chromium-nynorsk.
+    // Scriptene i package.json velger miljø, og eventuelt bare bokmål.
+    projects: Object.entries(miljoer).flatMap(([miljo, options]) =>
+        Object.entries(nettlesere).flatMap(([nettleser, device]) =>
+            alleSprak.map((sprak) => ({
                 name: `${miljo}-${nettleser}-${sprak}`,
                 grep: new RegExp(`@${miljo}`),
-                testMatch: spraktester,
-                use: { ...use, sprak },
+                use: { ...device, ...options, miljo, sprak },
             })),
         ),
-    ],
+    ),
 });

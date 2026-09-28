@@ -7,3 +7,5 @@ export enum Sprak {
     Nynorsk = "nynorsk",
     Engelsk = "engelsk",
 }
+
+export const alleSprak = Object.values(Sprak);

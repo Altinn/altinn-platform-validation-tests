@@ -11,7 +11,7 @@ const forventedeSeksjoner = [
     Seksjon.SamtykkeOgFullmaktsavtaler,
 ];
 
-// Står i spraktester i playwright.config.ts, så den kjører én gang per språk.
+// Språket kommer fra projectet, så testen kjører én gang per språk.
 test("Bruker ser oversikt over navigasjonsvalg", { tag: ["@at23", "@tt02", "@prod"] }, async ({
     innlogging,
     user,

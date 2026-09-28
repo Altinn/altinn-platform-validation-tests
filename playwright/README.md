@@ -22,6 +22,7 @@ Scriptene kjører ett miljø, og område oppgis som sti:
 
 ```bash
 npm run test:at23                              # alt, mot at23 (og tt02 / prod)
+npm run test:at23:bokmaal                      # lokalt: bare bokmål og Chrome
 npm run test:prod -- tests/tilgangsstyring     # ett område, én fil eller én :linje
 npm run test:at23 -- tests/innlogging --debug  # Playwright-flagg etter --
 ```
@@ -33,9 +34,8 @@ I VS Code-utvidelsen velger du miljø under Projects.
 ## Miljøer
 
 Alt som skiller miljøene, står i `miljoer` i `playwright.config.ts`: URLene og om
-innloggingen går via Mockporten. Hvert miljø blir ett project per nettleser, for
-eksempel `at23-chromium`, og ett per ekstra språk for språktestene, for eksempel
-`at23-chromium-nynorsk`. Foreløpig er bare Chrome med.
+innloggingen går via Mockporten. Hvert miljø blir ett project per nettleser og
+språk, for eksempel `at23-chromium-nynorsk`, og foreløpig er bare Chrome med.
 
 En test sier selv hvilke miljøer den er klar for, med en tag per miljø:
 
@@ -78,8 +78,9 @@ test('...', async ({ innlogging, user, tilgangsstyring }) => {
 });
 ```
 
-Språket er en del av projectet. Alle testene kjører på bokmål, og testene i
-`spraktester` i `playwright.config.ts` kjører i tillegg på nynorsk og engelsk. Sidene får språket injisert,
+Språket er en del av projectet, så `npm run test:<miljø>` kjører alle testene på
+bokmål, nynorsk og engelsk. Lokalt holder det som regel med bokmål og Chrome, og det
+er det `npm run test:<miljø>:bokmaal` kjører. Sidene får språket injisert,
 så `assertSections` slår opp riktige navn selv.
 
 ## Innlogging
