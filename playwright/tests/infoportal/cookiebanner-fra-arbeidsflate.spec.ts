@@ -1,6 +1,7 @@
 import { test } from "../../fixtures/test";
 
-test("Cookievalg fra arbeidsflate tas hensyn til i infoportalen", { tag: ["@at23", "@tt02", "@prod"] }, async ({
+// Ikke tt02, siden banneret er skrudd av i arbeidsflaten der (global.enableCookieBanner).
+test("Cookievalg fra arbeidsflate tas hensyn til i infoportalen", { tag: ["@at23", "@prod"] }, async ({
     innlogging,
     user,
     arbeidsflate,
