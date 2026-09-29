@@ -44,12 +44,12 @@ const miljoer = {
     },
 } satisfies Record<string, { mockporten: boolean; urler: Urler }>;
 
-// Firefox og Edge er skrudd av inntil videre.
+// Bare Chrome inntil videre; Firefox, Edge og Safari er skrudd av, se #619.
 const nettlesere = {
     chromium: devices["Desktop Chrome"],
     // firefox: devices["Desktop Firefox"],
     // edge: devices["Desktop Edge"],
-    //webkit: devices["Desktop Safari"],
+    // webkit: devices["Desktop Safari"],
 };
 
 export default defineConfig<{
@@ -60,9 +60,10 @@ export default defineConfig<{
 }>({
     testDir: "./tests",
     fullyParallel: true,
+    workers: 4,
     // Minst én retry, slik at en flaky kjøring ikke rapporteres som feil.
     // Traces skrives ved første retry. --retries overstyrer.
-    retries: process.env.CI ? 2 : 1,
+    retries: 1,
     reporter: [
         ["html", { open: "never", port: 6060 }],
         ["junit", { outputFile: "test-results.xml" }],
