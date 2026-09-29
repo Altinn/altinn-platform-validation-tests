@@ -42,4 +42,4 @@ jobs:
         working-directory: "playwright"
         env:
           TEST_IDP_PASSWORD: ${{ secrets.TEST_IDP_PASSWORD }}
-        run: "npm run test:at23"
+        run: "npm run test:at23:flaky"

@@ -4,6 +4,7 @@
     "main": "index.js",
     "scripts": {
         "test": "playwright test",
+        "test:at23:flaky": "playwright test --project='at23-*' --repeat-each=10 --retries=1 --reporter=line",
         "test:at23": "playwright test --project='at23-*'",
         "test:tt02": "playwright test --project='tt02-*'",
         "test:prod": "playwright test --project='prod-*'",
