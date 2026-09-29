@@ -49,7 +49,7 @@ const nettlesere = {
     chromium: devices["Desktop Chrome"],
     // firefox: devices["Desktop Firefox"],
     // edge: devices["Desktop Edge"],
-    webkit: devices["Desktop Safari"],
+    //webkit: devices["Desktop Safari"],
 };
 
 export default defineConfig<{
