@@ -364,6 +364,3 @@ export function teardown(data) {
         console.warn(`teardown - deleted ${deleted} access list(s) the test left behind`);
     }
 }
-
-// add the custom reporting for this test to the default summary
-export { handleSummary } from "../../../common-imports.js";
