@@ -44,10 +44,10 @@ const miljoer = {
     },
 } satisfies Record<string, { mockporten: boolean; urler: Urler }>;
 
-// Bare Chrome inntil videre; Firefox, Edge og Safari er skrudd av, se #619.
+// Firefox er skrudd av inntil videre.
 const nettlesere = {
     chromium: devices["Desktop Chrome"],
-    firefox: devices["Desktop Firefox"],
+    // firefox: devices["Desktop Firefox"],
     edge: devices["Desktop Edge"],
     webkit: devices["Desktop Safari"],
 };

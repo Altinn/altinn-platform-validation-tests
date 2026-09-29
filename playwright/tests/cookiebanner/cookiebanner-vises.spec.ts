@@ -1,8 +1,6 @@
 import { test } from "../../fixtures/test";
 
-// Cookievalg-testene sjekker at banneret er borte på de andre flatene, og det er bare
-// verdt noe når banneret faktisk vises der for en ny sesjon. Arbeidsflaten har banneret
-// skrudd av i tt02, og tilgangsstyring mangler det i prod.
+// Arbeidsflaten har banneret skrudd av i tt02, og tilgangsstyring mangler det i prod.
 
 test("Cookiebanneret vises på arbeidsflate for en ny sesjon", { tag: ["@at23", "@prod"] }, async ({
     innlogging,
