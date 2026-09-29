@@ -41,3 +41,5 @@ jobs:
       - name: "Run AT23 tests"
         working-directory: "playwright"
         run: "npm run test:at23"
+        env:
+          TEST_IDP_PASSWORD: "${{ secrets.TEST_IDP_PASSWORD }}"
