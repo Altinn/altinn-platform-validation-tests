@@ -67,19 +67,19 @@ export const options = getOptions([
 const OTHER_OWNER = "digdir";
 
 /**
- * Reads the test data once: the resources the iterations pick from, and the
- * organizations this run adds as members, two companies and one sole
- * proprietorship, so both organization forms go through the members endpoints.
+ * Reads the test data once: the resources and the organizations the
+ * iterations pick from. The organizations come split by form, so a file
+ * without one of the forms fails here rather than in the first iteration.
  *
- * @returns {{resources: Array<import("./commons.js").Resource>, companies: Array<import("./commons.js").Organization>, soleProprietorship: import("./commons.js").Organization}} The test data.
+ * @returns {{resources: Array<import("./commons.js").Resource>, companies: Array<import("./commons.js").Organization>, soleProprietorships: Array<import("./commons.js").Organization>}} The test data.
  */
 export function setup() {
     requireEnv(["BASE_URL", "ENVIRONMENT"]);
 
     return {
         resources: getResources(),
-        companies: pickUnique(getOrganizations("AS"), 2),
-        soleProprietorship: pickUnique(getOrganizations("ENK"), 1)[0],
+        companies: getOrganizations("AS"),
+        soleProprietorships: getOrganizations("ENK"),
     };
 }
 
@@ -138,8 +138,12 @@ export default function (data) {
         description: "Created by the resource-registry lifecycle test",
     };
     const updated = { ...written, description: "Updated by the resource-registry lifecycle test" };
-    const all = [...data.companies, data.soleProprietorship];
-    const memberParty = PartyUrn.partyUuid(data.soleProprietorship.partyUuid);
+    // Two companies and one sole proprietorship per iteration, so both
+    // organization forms go through the members endpoints.
+    const companies = pickUnique(data.companies, 2);
+    const [soleProprietorship] = pickUnique(data.soleProprietorships, 1);
+    const all = [...companies, soleProprietorship];
+    const memberParty = PartyUrn.partyUuid(soleProprietorship.partyUuid);
     const resource = ResourceUrn.resourceId(resourceId);
     // `resource` does not filter the lists; it narrows the connections the
     // listing includes on each list to that resource, and the action filters
@@ -294,15 +298,15 @@ export default function (data) {
     });
 
     group("Replace and remove members", function () {
-        const soleProprietorshipOnly = new AccessListMembersBuilder().withOrganization(data.soleProprietorship.orgNo).build();
+        const soleProprietorshipOnly = new AccessListMembersBuilder().withOrganization(soleProprietorship.orgNo).build();
 
         const replaced = AccessListReplaceMembers(client, owner, identifier, soleProprietorshipOnly, replaceLabel);
 
-        AccessListDomainChecks.CheckMembers(replaced, [data.soleProprietorship.orgNo], "AccessListReplaceMembers");
+        AccessListDomainChecks.CheckMembers(replaced, [soleProprietorship.orgNo], "AccessListReplaceMembers");
 
         const afterReplace = AccessListGetMembers(client, owner, identifier, null, null, replaceLabel);
 
-        AccessListDomainChecks.CheckMembers(afterReplace.value, [data.soleProprietorship.orgNo], "AccessListGetMembers after replace");
+        AccessListDomainChecks.CheckMembers(afterReplace.value, [soleProprietorship.orgNo], "AccessListGetMembers after replace");
 
         const removed = AccessListRemoveMembers(client, owner, identifier, soleProprietorshipOnly, replaceLabel);
 
