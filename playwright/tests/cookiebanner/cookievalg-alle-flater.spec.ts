@@ -1,45 +1,117 @@
 import { test } from "../../fixtures/test";
-import { bannerVisesI, Flate, flater } from "./utrulling";
 
-// Valget veksler mellom flatene, så både Ja og Nei blir testet.
-const valg: Record<Flate, "godta" | "avsla"> = {
-    arbeidsflate: "godta",
-    arbeidsflateProfil: "avsla",
-    tilgangsstyring: "godta",
-    infoportal: "avsla",
-};
+// Hver test tar valget på én flate og sjekker at banneret er borte på de andre. Flatene
+// må være kommet opp før "vises ikke" sjekkes, siden banneret rendres tidlig og "vises
+// ikke" er sant også på en tom side.
 
-for (const start of flater) {
-    test(`Cookievalg fra ${start} tas hensyn til på alle flater`, { tag: [...bannerVisesI[start]] }, async ({
-        innlogging,
-        user,
-        arbeidsflate,
-        arbeidsflateProfil,
-        tilgangsstyring,
-        infoportal,
-    }) => {
-        const sider = { arbeidsflate, arbeidsflateProfil, tilgangsstyring, infoportal };
-
-        await test.step(`Bruker tar et valg i cookiebanneret på ${start}`, async () => {
-            // Infoportalen er åpen, så valget tas før innloggingen.
-            if (start === "infoportal") {
-                await infoportal.navigateTo();
-                await infoportal.cookiebanner[valg[start]]();
-                await innlogging.logIn(arbeidsflate, user);
-            } else {
-                await innlogging.logIn(sider[start], user);
-                await sider[start].cookiebanner[valg[start]]();
-            }
-        });
-
-        await test.step("Banneret vises ikke igjen på de andre flatene", async () => {
-            for (const flate of flater.filter((f) => f !== start)) {
-                await sider[flate].navigateTo();
-                // Flaten må være kommet opp først. Banneret rendres tidlig, så "vises ikke"
-                // er sant også på en tom side.
-                await sider[flate].assertLoggedIn(user);
-                await sider[flate].cookiebanner.assertHidden();
-            }
-        });
+test("Godtatt på arbeidsflate gjelder på alle flater", { tag: ["@at23", "@prod"] }, async ({
+    innlogging,
+    user,
+    arbeidsflate,
+    arbeidsflateProfil,
+    tilgangsstyring,
+    infoportal,
+}) => {
+    await test.step("Bruker godtar informasjonskapsler på arbeidsflate", async () => {
+        await innlogging.logIn(arbeidsflate, user);
+        await arbeidsflate.cookiebanner.godta();
     });
-}
+
+    await test.step("Banneret vises ikke på de andre flatene", async () => {
+        await arbeidsflateProfil.navigateTo();
+        await arbeidsflateProfil.assertLoggedIn();
+        await arbeidsflateProfil.cookiebanner.assertHidden();
+
+        await tilgangsstyring.navigateTo();
+        await tilgangsstyring.assertLoggedIn();
+        await tilgangsstyring.cookiebanner.assertHidden();
+
+        await infoportal.navigateTo();
+        await infoportal.assertLoggedIn(user);
+        await infoportal.cookiebanner.assertHidden();
+    });
+});
+
+test("Avslått på profilen gjelder på alle flater", { tag: ["@at23", "@prod"] }, async ({
+    innlogging,
+    user,
+    arbeidsflate,
+    arbeidsflateProfil,
+    tilgangsstyring,
+    infoportal,
+}) => {
+    await test.step("Bruker avslår informasjonskapsler på profilen", async () => {
+        await innlogging.logIn(arbeidsflateProfil, user);
+        await arbeidsflateProfil.cookiebanner.avsla();
+    });
+
+    await test.step("Banneret vises ikke på de andre flatene", async () => {
+        await arbeidsflate.navigateTo();
+        await arbeidsflate.assertLoggedIn();
+        await arbeidsflate.cookiebanner.assertHidden();
+
+        await tilgangsstyring.navigateTo();
+        await tilgangsstyring.assertLoggedIn();
+        await tilgangsstyring.cookiebanner.assertHidden();
+
+        await infoportal.navigateTo();
+        await infoportal.assertLoggedIn(user);
+        await infoportal.cookiebanner.assertHidden();
+    });
+});
+
+test("Godtatt på tilgangsstyring gjelder på alle flater", { tag: ["@at23", "@tt02"] }, async ({
+    innlogging,
+    user,
+    arbeidsflate,
+    arbeidsflateProfil,
+    tilgangsstyring,
+    infoportal,
+}) => {
+    await test.step("Bruker godtar informasjonskapsler på tilgangsstyring", async () => {
+        await innlogging.logIn(tilgangsstyring, user);
+        await tilgangsstyring.cookiebanner.godta();
+    });
+
+    await test.step("Banneret vises ikke på de andre flatene", async () => {
+        await arbeidsflate.navigateTo();
+        await arbeidsflate.assertLoggedIn();
+        await arbeidsflate.cookiebanner.assertHidden();
+
+        await arbeidsflateProfil.navigateTo();
+        await arbeidsflateProfil.assertLoggedIn();
+        await arbeidsflateProfil.cookiebanner.assertHidden();
+
+        await infoportal.navigateTo();
+        await infoportal.assertLoggedIn(user);
+        await infoportal.cookiebanner.assertHidden();
+    });
+});
+
+test("Avslått på infoportalen gjelder på alle flater", { tag: ["@at23", "@tt02", "@prod"] }, async ({
+    innlogging,
+    user,
+    arbeidsflate,
+    arbeidsflateProfil,
+    tilgangsstyring,
+    infoportal,
+}) => {
+    await test.step("Bruker avslår informasjonskapsler på infoportalen før innlogging", async () => {
+        await infoportal.navigateTo();
+        await infoportal.cookiebanner.avsla();
+    });
+
+    await test.step("Banneret vises ikke på de andre flatene", async () => {
+        await innlogging.logIn(arbeidsflate, user);
+        await arbeidsflate.assertLoggedIn();
+        await arbeidsflate.cookiebanner.assertHidden();
+
+        await arbeidsflateProfil.navigateTo();
+        await arbeidsflateProfil.assertLoggedIn();
+        await arbeidsflateProfil.cookiebanner.assertHidden();
+
+        await tilgangsstyring.navigateTo();
+        await tilgangsstyring.assertLoggedIn();
+        await tilgangsstyring.cookiebanner.assertHidden();
+    });
+});

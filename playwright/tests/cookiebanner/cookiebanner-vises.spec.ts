@@ -1,21 +1,42 @@
 import { test } from "../../fixtures/test";
-import { bannerVisesI, flater } from "./utrulling";
 
-// Cookievalg-testene sjekker at banneret er borte på de andre flatene, og det er
-// bare verdt noe når banneret faktisk vises der for en ny sesjon.
-for (const flate of flater) {
-    test(`Cookiebanneret vises på ${flate} for en ny sesjon`, { tag: [...bannerVisesI[flate]] }, async ({
-        innlogging,
-        user,
-        arbeidsflate,
-        arbeidsflateProfil,
-        tilgangsstyring,
-        infoportal,
-    }) => {
-        const sider = { arbeidsflate, arbeidsflateProfil, tilgangsstyring, infoportal };
+// Cookievalg-testene sjekker at banneret er borte på de andre flatene, og det er bare
+// verdt noe når banneret faktisk vises der for en ny sesjon. Arbeidsflaten har banneret
+// skrudd av i tt02, og tilgangsstyring mangler det i prod.
 
-        await innlogging.logIn(sider[flate], user);
-        await sider[flate].assertLoggedIn(user);
-        await sider[flate].cookiebanner.assertVisible();
-    });
-}
+test("Cookiebanneret vises på arbeidsflate for en ny sesjon", { tag: ["@at23", "@prod"] }, async ({
+    innlogging,
+    user,
+    arbeidsflate,
+}) => {
+    await innlogging.logIn(arbeidsflate, user);
+    await arbeidsflate.assertLoggedIn();
+    await arbeidsflate.cookiebanner.assertVisible();
+});
+
+test("Cookiebanneret vises på profilen for en ny sesjon", { tag: ["@at23", "@prod"] }, async ({
+    innlogging,
+    user,
+    arbeidsflateProfil,
+}) => {
+    await innlogging.logIn(arbeidsflateProfil, user);
+    await arbeidsflateProfil.assertLoggedIn();
+    await arbeidsflateProfil.cookiebanner.assertVisible();
+});
+
+test("Cookiebanneret vises på tilgangsstyring for en ny sesjon", { tag: ["@at23", "@tt02"] }, async ({
+    innlogging,
+    user,
+    tilgangsstyring,
+}) => {
+    await innlogging.logIn(tilgangsstyring, user);
+    await tilgangsstyring.assertLoggedIn();
+    await tilgangsstyring.cookiebanner.assertVisible();
+});
+
+test("Cookiebanneret vises på infoportalen for en ny sesjon", { tag: ["@at23", "@tt02", "@prod"] }, async ({
+    infoportal,
+}) => {
+    await infoportal.navigateTo();
+    await infoportal.cookiebanner.assertVisible();
+});
