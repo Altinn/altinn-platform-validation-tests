@@ -1,7 +1,9 @@
 import { fail, group } from "k6";
 
 import {
+    AccessListGetByOwnerQueryBuilder,
     AccessListMembersBuilder,
+    AccessListMembershipsQueryBuilder,
     AccessListResourceConnectionBuilder,
     CreateAccessListBuilder,
     PartyUrn,
@@ -139,6 +141,10 @@ export default function (data) {
     const all = [...data.companies, data.soleProprietorship];
     const memberParty = PartyUrn.partyUuid(data.soleProprietorship.partyUuid);
     const resource = ResourceUrn.resourceId(resourceId);
+    // `resource` does not filter the lists; it narrows the connections the
+    // listing includes on each list to that resource, and the action filters
+    // only come with resource-actions.
+    const withResourceActions = new AccessListGetByOwnerQueryBuilder().addInclude("resource-actions").withResource(resourceId).build();
     /** @type {string} */
     let etag = "";
     /** @type {string} */
@@ -257,10 +263,7 @@ export default function (data) {
 
         AccessListDomainChecks.CheckResourceConnections(connections?.data, expected, "AccessListsGetResourceConnections");
 
-        // `resource` does not filter the lists; it narrows the connections the
-        // listing includes on each list to that resource, and the action
-        // filters only come with resource-actions.
-        const listing = AccessListGetByOwner(client, owner, { include: ["resource-actions"], resource: resourceId }, null, connectionLabel);
+        const listing = AccessListGetByOwner(client, owner, withResourceActions, null, connectionLabel);
 
         AccessListDomainChecks.CheckContainsList(listing?.data, identifier, "AccessListGetByOwner with resource-actions included");
         AccessListDomainChecks.CheckResourceConnections(
@@ -275,7 +278,7 @@ export default function (data) {
         // platform access token; both filters on the memberships query are URNs.
         const memberships = AccessListMembershipsGetMemberships(
             getAccessListMembershipsClient(),
-            { party: [memberParty], resource: [resource] },
+            new AccessListMembershipsQueryBuilder().addParty(memberParty).addResource(resource).build(),
             lookupsLabel,
         );
 
@@ -317,7 +320,7 @@ export default function (data) {
 
         AccessListDomainChecks.CheckResourceConnections(connections?.data, [], "AccessListsGetResourceConnections after delete");
 
-        const listing = AccessListGetByOwner(client, owner, { include: ["resource-actions"], resource: resourceId }, null, disconnectLabel);
+        const listing = AccessListGetByOwner(client, owner, withResourceActions, null, disconnectLabel);
 
         AccessListDomainChecks.CheckResourceConnections(
             listing?.data.find((list) => list.identifier === identifier)?.resourceConnections ?? [],

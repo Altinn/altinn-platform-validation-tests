@@ -1,5 +1,7 @@
 export {
+    AccessListGetByOwnerQueryBuilder,
     AccessListMembersBuilder,
+    AccessListMembershipsQueryBuilder,
     AccessListResourceConnectionBuilder,
     CreateAccessListBuilder,
     PartyUrn,
@@ -23,4 +25,5 @@ export {
 } from "./resource.constants.js";
 export { ResourceClient } from "./resource.js";
 export { ResourceOwnerClient } from "./resource-owner.js";
+export { ResourcePolicyRightsQueryBuilder } from "./resource-v2.builders.js";
 export { ResourceV2Client } from "./resource-v2.js";

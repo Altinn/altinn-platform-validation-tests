@@ -1,5 +1,6 @@
 import { check, group } from "k6";
 
+import { ResourcePolicyRightsQueryBuilder } from "../../../clients/resource-registry/index.js";
 import { getItemFromList, getOptions, requireEnv } from "../../../helpers.js";
 import { ResourceV2GetPolicyRights } from "../../building-blocks/resource-registry/resource-v2/index.js";
 import { PolicyRightsDomainChecks } from "../../domain-checks/resource-registry/policy-rights.js";
@@ -39,7 +40,8 @@ export default function (data) {
     const { resourceId, actions } = getItemFromList(data.resources);
 
     group("Read the decomposed policy rights of a resource", function () {
-        const decomposed = ResourceV2GetPolicyRights(client, resourceId, { includeServiceOwnerRights: true }, rightsLabel);
+        const query = new ResourcePolicyRightsQueryBuilder().withServiceOwnerRights(true).build();
+        const decomposed = ResourceV2GetPolicyRights(client, resourceId, query, rightsLabel);
         // The swagger nests each right one level down, `{ rights: [{ right }] }`.
         const rights = decomposed?.rights?.map((entry) => entry.right) ?? null;
 

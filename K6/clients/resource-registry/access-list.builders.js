@@ -1,4 +1,9 @@
-import { CreateAccessListModel, UpsertAccessListResourceConnectionDto } from "./types.js";
+import {
+    AccessListGetByOwnerQuery,
+    AccessListMembershipsQuery,
+    CreateAccessListModel,
+    UpsertAccessListResourceConnectionDto,
+} from "./types.js";
 
 /**
  * The party URN forms the access list endpoints take and report, from the
@@ -156,4 +161,109 @@ class AccessListResourceConnectionBuilder {
     }
 }
 
-export { AccessListMembersBuilder, AccessListResourceConnectionBuilder, CreateAccessListBuilder };
+/**
+ * Builds the query for listing the access lists of an owner.
+ */
+class AccessListGetByOwnerQueryBuilder {
+    constructor() {
+        this.query = /** @type {AccessListGetByOwnerQuery} */ ({});
+    }
+
+    /**
+     * Includes related data on each list. Can be called more than once.
+     * `resource-actions` needs `withResource` too; the swagger requires the
+     * resource when the connections are included.
+     *
+     * @param {import("./types.js").AccessListInclude} include What to include: resources, resource-actions or members.
+     * @returns {AccessListGetByOwnerQueryBuilder} This builder, for chaining.
+     */
+    addInclude(include) {
+        this.query.include ??= [];
+        this.query.include.push(include);
+
+        return this;
+    }
+
+    /**
+     * Narrows the included connections to one resource. It does not filter
+     * the lists.
+     *
+     * @param {string} resourceId Resource identifier.
+     * @returns {AccessListGetByOwnerQueryBuilder} This builder, for chaining.
+     */
+    withResource(resourceId) {
+        this.query.resource = resourceId;
+
+        return this;
+    }
+
+    /**
+     * Sets the continuation token for the next page.
+     *
+     * @param {string} token Continuation token.
+     * @returns {AccessListGetByOwnerQueryBuilder} This builder, for chaining.
+     */
+    withToken(token) {
+        this.query.token = token;
+
+        return this;
+    }
+
+    /**
+     * @returns {AccessListGetByOwnerQuery} The query.
+     */
+    build() {
+        return { ...this.query };
+    }
+}
+
+/**
+ * Builds the query for the memberships lookup. Both filters take URNs, see
+ * PartyUrn and ResourceUrn.
+ */
+class AccessListMembershipsQueryBuilder {
+    constructor() {
+        this.query = /** @type {AccessListMembershipsQuery} */ ({});
+    }
+
+    /**
+     * Adds a party to look up. Can be called more than once.
+     *
+     * @param {import("./types.js").PartyUrn} party Party URN.
+     * @returns {AccessListMembershipsQueryBuilder} This builder, for chaining.
+     */
+    addParty(party) {
+        this.query.party ??= [];
+        this.query.party.push(party);
+
+        return this;
+    }
+
+    /**
+     * Adds a resource to look up. Can be called more than once.
+     *
+     * @param {import("./types.js").ResourceUrnResourceId} resource Resource URN.
+     * @returns {AccessListMembershipsQueryBuilder} This builder, for chaining.
+     */
+    addResource(resource) {
+        this.query.resource ??= [];
+        this.query.resource.push(resource);
+
+        return this;
+    }
+
+    /**
+     * @returns {AccessListMembershipsQuery} The query.
+     */
+    build() {
+        return { ...this.query };
+    }
+}
+
+export {
+    AccessListGetByOwnerQueryBuilder,
+    AccessListMembersBuilder,
+    AccessListMembershipsQueryBuilder,
+    AccessListResourceConnectionBuilder,
+    CreateAccessListBuilder,
+};
