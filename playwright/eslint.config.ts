@@ -47,6 +47,7 @@ export default defineConfig(
             "playwright/no-focused-test": "error",
             "playwright/no-wait-for-timeout": "error",
             "playwright/prefer-web-first-assertions": "error",
+            "playwright/expect-expect": "off",
 
             // General
             "no-trailing-spaces": "error",
