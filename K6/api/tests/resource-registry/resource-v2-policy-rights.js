@@ -26,7 +26,7 @@ export function setup() {
  * Test: the v2 policy rights endpoint decomposes a resource's policy into one
  * named right per action.
  *
- * The endpoint is public. It answers with a flat list of rights, each scoped
+ * The endpoint is public. It answers with one right per action, each scoped
  * to the resource and carrying the action it grants and a display name, and
  * a policy that arrived intact has exactly one right per action. Service
  * owner rights are asked for too, so the rights the owner keeps for itself
@@ -39,7 +39,9 @@ export default function (data) {
     const { resourceId, actions } = getItemFromList(data.resources);
 
     group("Read the decomposed policy rights of a resource", function () {
-        const rights = ResourceV2GetPolicyRights(client, resourceId, { includeServiceOwnerRights: true }, rightsLabel);
+        const decomposed = ResourceV2GetPolicyRights(client, resourceId, { includeServiceOwnerRights: true }, rightsLabel);
+        // The swagger nests each right one level down, `{ rights: [{ right }] }`.
+        const rights = decomposed?.rights?.map((entry) => entry.right) ?? null;
 
         PolicyRightsDomainChecks.CheckOneRightPerAction(rights, actions, "ResourceV2GetPolicyRights");
         PolicyRightsDomainChecks.CheckRightsForResource(rights, resourceId, "ResourceV2GetPolicyRights");

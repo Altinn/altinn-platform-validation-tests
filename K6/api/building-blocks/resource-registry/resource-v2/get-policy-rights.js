@@ -1,16 +1,17 @@
 import { check } from "k6";
 
 import { ResourceV2Client } from "../../../../clients/resource-registry/index.js";
-import { ResourcePolicyRightsQuery, RightDto } from "../../../../clients/resource-registry/types.js";
+import { ResourceDecomposedDto, ResourcePolicyRightsQuery } from "../../../../clients/resource-registry/types.js";
 import { withRetries } from "../../common/retry.js";
 
 /**
- * Gets the policy rights for a resource.
+ * Gets the decomposed policy rights of a resource.
  *
- * The swagger declares the body as ResourceDecomposedDto, an object with a
- * `rights` list, but the controller returns the RightDto list directly
- * (ResourceV2Controller.GetRights returns Ok(IEnumerable<RightDto>)), and that
- * is what every environment answers with. This returns what is on the wire.
+ * Returns the swagger's ResourceDecomposedDto, `{ rights: [{ right }] }`. The
+ * registry answers with the RightDto list directly instead
+ * (Altinn/altinn-resource-registry#878), so a list body is wrapped into that
+ * shape here, with a warning, and nothing else needs to know. Once the
+ * registry answers as declared, the wrapping is never taken.
  *
  * @param {ResourceV2Client} resourceV2Client Client for the Resource V2 API.
  * @param {string} id Resource identifier.
@@ -18,7 +19,7 @@ import { withRetries } from "../../common/retry.js";
  * Optional query parameters.
  * @param {{[key: string]: string}|null} [labels] See the API documentation.
  * Optional k6 request labels.
- * @returns {Array<RightDto>|null} Parsed response body, or null when the call failed.
+ * @returns {ResourceDecomposedDto|null} Parsed response body, or null when the call failed.
  */
 export function ResourceV2GetPolicyRights(
     resourceV2Client,
@@ -35,8 +36,8 @@ export function ResourceV2GetPolicyRights(
         "ResourceV2GetPolicyRights",
     );
 
-    /** @type {Array<RightDto>|null} */
-    let resource = null;
+    /** @type {ResourceDecomposedDto|null} */
+    let decomposed = null;
 
     const succeed = check(res, {
         "ResourceV2GetPolicyRights - status code is 200": (r) =>
@@ -46,13 +47,20 @@ export function ResourceV2GetPolicyRights(
     if (!succeed) {
         console.log(res.status);
         console.log(res.body);
-        return resource;
+        return decomposed;
     }
 
     check(res, {
         "ResourceV2GetPolicyRights - body is valid": (r) => {
             try {
-                resource = JSON.parse(r.body);
+                const body = JSON.parse(r.body);
+
+                if (Array.isArray(body)) {
+                    console.warn("ResourceV2GetPolicyRights - the registry returned the RightDto list directly rather than ResourceDecomposedDto (Altinn/altinn-resource-registry#878); wrapping it");
+                    decomposed = { rights: body.map((right) => ({ right })) };
+                } else {
+                    decomposed = body;
+                }
 
                 return true;
             } catch (err) {
@@ -64,5 +72,5 @@ export function ResourceV2GetPolicyRights(
         },
     });
 
-    return resource;
+    return decomposed;
 }

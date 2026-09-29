@@ -50,8 +50,9 @@ building blocks: it is not a test step, so a failed read there is logged, not ch
 - `ResourceV2GetPolicyRights` is declared in the swagger as `ResourceDecomposedDto` (`{ "rights": [...] }`) but the
   registry returns the `RightDto` list directly
   ([Altinn/altinn-resource-registry#878](https://github.com/Altinn/altinn-resource-registry/issues/878)). The
-  building block returns what is on the wire; switch it back to the generated type once the registry and its swagger
-  agree.
+  building block returns the swagger type: a list body is wrapped into `{ rights: [{ right }] }` with a warning in
+  the log, so the test reads the shape the swagger declares and the wrapping goes unused once the registry agrees
+  with it.
 - `create-resource-and-policy.js` is not in `run-all.js` or any yaml. Deleting a resource leaves rows in
   `resourceregistry.resourcesubjects` behind, reported as
   [Altinn/altinn-resource-registry#848](https://github.com/Altinn/altinn-resource-registry/issues/848), so every run
