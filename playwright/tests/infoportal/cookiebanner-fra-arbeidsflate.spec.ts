@@ -1,7 +1,6 @@
 import { test } from "../../fixtures/test";
 
-// Bare at23, siden banneret ikke er rullet ut i tt02 ennå.
-test("Cookievalg fra arbeidsflate tas hensyn til i infoportalen", { tag: ["@at23"] }, async ({
+test("Cookievalg fra arbeidsflate tas hensyn til i infoportalen", { tag: ["@at23", "@tt02", "@prod"] }, async ({
     innlogging,
     user,
     arbeidsflate,
