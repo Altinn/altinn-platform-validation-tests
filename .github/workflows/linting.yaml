@@ -9,6 +9,7 @@ on:
       - "conf"
       - "jsconfig.json"
       - "package.json"
+      - "tests/**"
       - "**/*.jsonnet"
       - "**/*.libsonnet"
 run-name: "linting"
@@ -39,6 +40,9 @@ jobs:
 
       - name: "Typecheck Code"
         run: "npm run typecheck"
+
+      - name: "Test RDF statement counting"
+        run: "node --test tests/count-rdf-statements.test.mjs"
 
       - name: "Make sure Jsonnet files are formatted"
         run: "./hack/format_jsonnet_files.sh --test"
