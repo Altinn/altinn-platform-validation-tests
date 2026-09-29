@@ -47,9 +47,9 @@ const miljoer = {
 // Bare Chrome inntil videre; Firefox, Edge og Safari er skrudd av, se #619.
 const nettlesere = {
     chromium: devices["Desktop Chrome"],
-    // firefox: devices["Desktop Firefox"],
-    // edge: devices["Desktop Edge"],
-    // webkit: devices["Desktop Safari"],
+    firefox: devices["Desktop Firefox"],
+    edge: devices["Desktop Edge"],
+    webkit: devices["Desktop Safari"],
 };
 
 export default defineConfig<{
