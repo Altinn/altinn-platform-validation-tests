@@ -1,13 +1,13 @@
 import { fail, group } from "k6";
 
 import { EnhetsregisteretClient, RegisterClient } from "../../../clients/register/index.js";
-import { getItemFromList, getOptions, requireEnv } from "../../../helpers.js";
+import { getOptions, requireEnv } from "../../../helpers.js";
 import { EnhetsregisteretBuildingBlocks } from "../../building-blocks/register/index.js";
 import { CcrRoleDomainChecks } from "../../domain-checks/register/ccr-role.js";
 import {
-    drawCustomerToMove,
+    getCcrRoleClient,
+    getCustomerOrganizationNumbers,
     getEnhetsregisteretClient,
-    getOrganizations,
     getPartyLookupAdminClient,
     waitForRegister,
 } from "./commons.js";
@@ -31,14 +31,11 @@ import {
  * and after ER's English name, the Central Coordinating Register: "revisor",
  * "regnskapsforer" or "forretningsforer".
  *
- * All three roles are covered by this one file. Every row of the test data carries
- * the role its organization holds in a `type` column, so an iteration takes the
- * role of the organization it drew and the roles spread across iterations and VUs
- * by themselves. The requests carry the role in a `ccrRole` tag, so they stay apart
- * in the metrics.
+ * The test data is one organization and one of its customers per environment, with
+ * the role in a `type` column. The requests carry the role in a `ccrRole` tag, so
+ * they stay apart in the metrics.
  */
 
-const randomize = (__ENV.RANDOMIZE ?? "true") === "true";
 const label = { step: "test-add-rm-ccr-role" };
 
 export const options = getOptions([label]);
@@ -52,16 +49,14 @@ export function setup() {
         "SOAP_ER_USERNAME",
     ]);
 
-    return getOrganizations(__ENV.ENVIRONMENT);
+    return getCcrRoleClient(__ENV.ENVIRONMENT);
 }
 
 /**
- * @param {ReturnType<typeof setup>} organizations The organizations from setup.
+ * @param {ReturnType<typeof setup>} organization The organization and customer from setup.
  * @returns {void} Nothing. The checks record what the calls returned.
  */
-export default function (organizations) {
-    const organization = getItemFromList(organizations, randomize);
-
+export default function (organization) {
     addRemoveRoleForClient(
         getPartyLookupAdminClient(),
         getEnhetsregisteretClient(),
@@ -74,8 +69,8 @@ export default function (organizations) {
  * Removes one of an organization's customers in ER, waits for Register to drop it,
  * then puts it back and waits for Register to have it again.
  *
- * The role is removed from a customer the organization already has, so the test
- * leaves the environment as it found it. That also means a failure between the two
+ * The role is removed from the fixed customer in the row, which the organization
+ * already has, so the test leaves the environment as it found it. That also means a failure between the two
  * halves leaves a customer without the organization in that role, which the
  * failure says.
  *
@@ -83,7 +78,8 @@ export default function (organizations) {
  * @param {EnhetsregisteretClient} enhetsregisteretClient Client for the ER update service.
  * @param {string} ccrRole The role under test, e.g. "revisor". One of
  * CcrCustomerRoles: revisor, regnskapsforer or forretningsforer.
- * @param {{organizationUuid: string, organizationId: string}} organization The organization holding the role.
+ * @param {{organizationUuid: string, organizationId: string, clientOrganizationId: string, clientOrganizationForm: string}} organization
+ * The organization holding the role, with the customer to move.
  */
 function addRemoveRoleForClient(
     registerClient,
@@ -91,13 +87,14 @@ function addRemoveRoleForClient(
     ccrRole,
     organization,
 ) {
-    const targetOrg = drawCustomerToMove(
-        registerClient,
-        ccrRole,
-        organization,
-        randomize,
-        label,
-    );
+    const targetOrg = organization.clientOrganizationId;
+    const targetOrgForm = organization.clientOrganizationForm;
+
+    const currentOrgs = getCustomerOrganizationNumbers(registerClient, organization.organizationUuid, ccrRole, label);
+
+    if (currentOrgs === null || !currentOrgs.includes(targetOrg)) {
+        fail(`cannot continue: ${targetOrg} is not a ${ccrRole} customer of ${organization.organizationId}, so there is nothing to move`);
+    }
 
     removeRoleAndWait(
         registerClient,
@@ -105,6 +102,7 @@ function addRemoveRoleForClient(
         ccrRole,
         organization,
         targetOrg,
+        targetOrgForm,
     );
 
     addRoleBackAndWait(
@@ -113,6 +111,7 @@ function addRemoveRoleForClient(
         ccrRole,
         organization,
         targetOrg,
+        targetOrgForm,
     );
 }
 
@@ -124,6 +123,7 @@ function addRemoveRoleForClient(
  * @param {string} ccrRole The role under test, e.g. "revisor".
  * @param {{organizationUuid: string, organizationId: string}} organization The organization holding the role.
  * @param {string} targetOrg Organization number of the customer to remove.
+ * @param {string} targetOrgForm Its organisasjonsform, sent back to ER unchanged.
  */
 function removeRoleAndWait(
     registerClient,
@@ -131,6 +131,7 @@ function removeRoleAndWait(
     ccrRole,
     organization,
     targetOrg,
+    targetOrgForm,
 ) {
     // The role is in the group name, and it is one of the three rather than all of
     // them, so a summary cannot be read as covering roles this iteration never drew.
@@ -141,6 +142,7 @@ function removeRoleAndWait(
             __ENV.SOAP_ER_PASSWORD,
             ccrRole,
             targetOrg,
+            targetOrgForm,
             organization.organizationId,
             label,
         );
@@ -174,6 +176,7 @@ function removeRoleAndWait(
  * @param {string} ccrRole The role under test, e.g. "revisor".
  * @param {{organizationUuid: string, organizationId: string}} organization The organization holding the role.
  * @param {string} targetOrg Organization number of the customer to add back.
+ * @param {string} targetOrgForm Its organisasjonsform, sent back to ER unchanged.
  */
 function addRoleBackAndWait(
     registerClient,
@@ -181,6 +184,7 @@ function addRoleBackAndWait(
     ccrRole,
     organization,
     targetOrg,
+    targetOrgForm,
 ) {
     group(`Put the drawn role ${ccrRole} back in ER and make sure Register has it again`, () => {
         const addedBack = EnhetsregisteretBuildingBlocks.AddCcrRoleToEr(
@@ -189,6 +193,7 @@ function addRoleBackAndWait(
             __ENV.SOAP_ER_PASSWORD,
             ccrRole,
             targetOrg,
+            targetOrgForm,
             organization.organizationId,
             label,
         );
