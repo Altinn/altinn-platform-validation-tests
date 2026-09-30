@@ -21,7 +21,7 @@ const utloggingsflater = flater.filter((flate) => flate !== "infoportal");
 for (const start of utloggingsflater) {
     // Sesjonen gjelder på tvers av flatene, så en utlogging fra én av dem skal ta
     // brukeren ut av alle.
-    test(`Bruker er utlogget på alle flater etter utlogging fra ${start}`, { tag: ["@at23", "@tt02", "@prod"] }, async ({
+    test(`Bruker er utlogget på alle flater etter utlogging fra ${start}`, { tag: ["@at23", "@tt02"] }, async ({
         innlogging,
         user,
         arbeidsflate,
