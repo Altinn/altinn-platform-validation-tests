@@ -11,6 +11,9 @@ export class Meny {
      * `disabled` mens den henter det den trenger, og `click()` blokkerer da uten
      * egen timeout til testen har brukt opp tiden sin. Det har skjedd, se
      * `helpers/junitparser/example-junit-report.xml`.
+     *
+     * Klikket prøves på nytt til menyen er åpen. Infoportalen rendrer knappen før
+     * siden er hydrert, og et klikk før det åpner ingenting.
      */
     async clickMenuButton() {
         await expect(
@@ -18,7 +21,30 @@ export class Meny {
             "Menyknappen i hovednavigasjonen er klar"
         ).toBeEnabled({ timeout: 15_000 });
 
-        await this.menuButton().click();
+        await expect(async () => {
+            await this.menuButton().click();
+            await expect(this.page.getByRole("menuitem").first()).toBeVisible({ timeout: 2_000 });
+        }, "Menyen åpner seg").toPass({ timeout: 15_000 });
+    }
+
+    // "Altinn"-logoen i headeren går til infoportalens forside på alle flatene.
+    async gaTilForsiden() {
+        await this.page.getByRole("link", { name: "Altinn", exact: true }).click();
+    }
+
+    async gaTilInnboks() {
+        await this.clickMenuButton();
+        await this.page.getByRole("menuitem", { name: /^(innboks|inbox)$/i }).click();
+    }
+
+    async gaTilProfil() {
+        await this.clickMenuButton();
+        await this.page.getByRole("menuitem", { name: /^(din profil|your profile)$/i }).click();
+    }
+
+    async gaTilTilgangsstyring() {
+        await this.clickMenuButton();
+        await this.page.getByRole("menuitem", { name: /^(tilgangsstyring|access management)$/i }).click();
     }
 
     /**

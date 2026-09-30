@@ -77,7 +77,7 @@ ett felt i områdets fixture:
 
 ```ts
 test('...', async ({ innlogging, user, tilgangsstyring }) => {
-    await innlogging.logIn(tilgangsstyring, user);
+    await innlogging.logInViaTilgangsstyring(user);
     await tilgangsstyring.assertSections(forventedeSeksjoner);
 });
 ```
@@ -89,12 +89,14 @@ så `assertSections` slår opp riktige navn selv.
 
 ## Innlogging
 
-`innlogging.logIn(side, user)` logger inn og lander på siden du sender inn. Om det
+`innlogging.logInViaArbeidsflate(user)` og `innlogging.logInViaTilgangsstyring(user)`
+logger inn via en av de to hovedsidene. Med TestID klikker de seg fram fra
+infoportalen, og med Mockporten er det `goto` som bestemmer flaten. Andre sider nås
+etterpå med knappene i menyen, for eksempel `meny.gaTilProfil()`. Om innloggingen
 skjer via ID-porten med TestID eller via Mockporten styres av `mockporten` i
 miljøets project, siden TestID ikke finnes i prod. Testene vet ikke hvilken. Unntaket
 er røyktesten for Mockporten, som setter `test.use({ mockporten: true })` for å
 teste Mockporten også i at23 og tt02.
-Begge veiene starter på Altinns login-endepunkt, siden `state` opprettes serverside.
 
 `innlogging.logOut()` logger ut via menyen. Språket settes med
 `tilgangsstyring.meny.setLanguage(sprak)`, på menyen til siden du står på.

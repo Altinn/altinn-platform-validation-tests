@@ -13,7 +13,7 @@ test("Godtatt på arbeidsflate gjelder på alle flater", { tag: ["@at23", "@prod
     infoportal,
 }) => {
     await test.step("Bruker godtar informasjonskapsler på arbeidsflate", async () => {
-        await innlogging.logIn(arbeidsflate, user);
+        await innlogging.logInViaArbeidsflate(user);
         await arbeidsflate.cookiebanner.godta();
     });
 
@@ -41,7 +41,8 @@ test("Avslått på profilen gjelder på alle flater", { tag: ["@at23", "@prod"] 
     infoportal,
 }) => {
     await test.step("Bruker avslår informasjonskapsler på profilen", async () => {
-        await innlogging.logIn(arbeidsflateProfil, user);
+        await innlogging.logInViaArbeidsflate(user);
+        await arbeidsflate.meny.gaTilProfil();
         await arbeidsflateProfil.cookiebanner.avsla();
     });
 
@@ -69,7 +70,7 @@ test("Godtatt på tilgangsstyring gjelder på alle flater", { tag: ["@at23", "@t
     infoportal,
 }) => {
     await test.step("Bruker godtar informasjonskapsler på tilgangsstyring", async () => {
-        await innlogging.logIn(tilgangsstyring, user);
+        await innlogging.logInViaTilgangsstyring(user);
         await tilgangsstyring.cookiebanner.godta();
     });
 
@@ -102,7 +103,7 @@ test("Avslått på infoportalen gjelder på alle flater", { tag: ["@at23", "@tt0
     });
 
     await test.step("Banneret vises ikke på de andre flatene", async () => {
-        await innlogging.logIn(arbeidsflate, user);
+        await innlogging.logInViaArbeidsflate(user);
         await arbeidsflate.assertLoggedIn();
         await arbeidsflate.cookiebanner.assertHidden();
 

@@ -1,6 +1,6 @@
 import { expect, Locator, Page } from "@playwright/test";
 
-import { requireEnv, TestUser } from "../../config/environment";
+import { requireEnv, TestUser, Urler } from "../../config/environment";
 import { Meny } from "./meny";
 import { REDIRECT_TIMEOUT } from "./navigasjon";
 
@@ -12,8 +12,9 @@ import { REDIRECT_TIMEOUT } from "./navigasjon";
 const SESJONSCOOKIES = ["AltinnStudioRuntime", "altinnsession"];
 
 /**
- * Innloggingen for alle flatene. Om den går via ID-porten med TestID eller via
- * Mockporten styres av `mockporten` i projectet, siden TestID ikke finnes i prod.
+ * Innloggingen går via en av de to hovedsidene, arbeidsflaten eller tilgangsstyring.
+ * Om den går via ID-porten med TestID eller via Mockporten styres av `mockporten` i
+ * projectet, siden TestID ikke finnes i prod.
  */
 export class Innlogging {
     private readonly meny: Meny;
@@ -24,7 +25,6 @@ export class Innlogging {
     readonly testUserLoginButton: Locator;
 
     // ID-porten med TestID
-    readonly testIdButton: Locator;
     readonly idportenPidField: Locator;
     readonly submitButton: Locator;
 
@@ -33,7 +33,7 @@ export class Innlogging {
 
     constructor(
         private page: Page,
-        private platformUrl: string,
+        private urler: Urler,
         private mockporten: boolean,
     ) {
         this.meny = new Meny(page);
@@ -44,7 +44,6 @@ export class Innlogging {
             name: /log in as test user/i,
         });
 
-        this.testIdButton = page.locator("#testid1");
         this.idportenPidField = page.locator("input[name=\"pid\"]");
         this.submitButton = page.locator("#submit");
 
@@ -54,33 +53,54 @@ export class Innlogging {
     }
 
     /**
-     * Logger inn og lander på siden som ble sendt inn. Flyten må starte på Altinns
-     * login-endepunkt, siden `state` opprettes serverside; en authorize-URL kan ikke
-     * bygges her eller gjenbrukes.
+     * Logger inn fra infoportalens "Logg inn"-knapp, som lander på arbeidsflaten.
+     * Med Mockporten er det `goto` som bestemmer flaten.
      */
-    async logIn(side: { url: string }, user: TestUser) {
-        const goto = encodeURIComponent(side.url);
-
+    async logInViaArbeidsflate(user: TestUser) {
         if (this.mockporten) {
-            await this.page.goto(
-                `${this.platformUrl}/authentication/api/v1/authentication?goto=${goto}&iss=mockporten`,
-            );
-
-            // Tjenesten låser seg globalt etter fem feilforsøk, så testen skal feile
-            // på et manglende passord framfor å prøve seg fram.
-            await expect(this.mockportenPidField, "Er på Mockporten").toBeVisible();
-            await this.passwordField.fill(requireEnv("TEST_IDP_PASSWORD"));
-            await this.mockportenPidField.fill(user.pid);
-            await this.testUserLoginButton.click();
-        } else {
-            await this.page.goto(
-                `${this.platformUrl}/authentication/api/v1/authentication?goto=${goto}`,
-            );
-
-            await this.testIdButton.click();
-            await this.idportenPidField.fill(user.pid);
-            await this.submitButton.click();
+            await this.logInMedMockporten(this.urler.arbeidsflate, user);
+            return;
         }
+
+        await this.page.goto(this.urler.infoportal);
+        await this.page.getByRole("button", { name: "Logg inn" }).click();
+        await this.page.getByRole("link", { name: "TestID på nivå høyt Lag din" }).click();
+        await this.idportenPidField.fill(user.pid);
+        await this.submitButton.click();
+    }
+
+    /**
+     * Logger inn fra Tilgangsstyring i infoportalens meny, som lander på
+     * tilgangsstyring. Med Mockporten er det `goto` som bestemmer flaten.
+     */
+    async logInViaTilgangsstyring(user: TestUser) {
+        if (this.mockporten) {
+            await this.logInMedMockporten(`${this.urler.tilgangsstyring}/accessmanagement/ui`, user);
+            return;
+        }
+
+        await this.page.goto(this.urler.infoportal);
+        await this.meny.gaTilTilgangsstyring();
+        await this.page.getByRole("link", { name: "TestID på nivå høyt Lag din" }).click();
+        await this.idportenPidField.fill(user.pid);
+        await this.submitButton.click();
+    }
+
+    /**
+     * Flyten må starte på Altinns login-endepunkt, siden `state` opprettes
+     * serverside; en authorize-URL kan ikke bygges her eller gjenbrukes.
+     */
+    private async logInMedMockporten(goto: string, user: TestUser) {
+        await this.page.goto(
+            `${this.urler.platform}/authentication/api/v1/authentication?goto=${encodeURIComponent(goto)}&iss=mockporten`,
+        );
+
+        // Tjenesten låser seg globalt etter fem feilforsøk, så testen skal feile
+        // på et manglende passord framfor å prøve seg fram.
+        await expect(this.mockportenPidField, "Er på Mockporten").toBeVisible();
+        await this.passwordField.fill(requireEnv("TEST_IDP_PASSWORD"));
+        await this.mockportenPidField.fill(user.pid);
+        await this.testUserLoginButton.click();
     }
 
     /**
