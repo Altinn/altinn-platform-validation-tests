@@ -24,7 +24,11 @@ export class Innlogging {
     readonly mockportenPidField: Locator;
     readonly testUserLoginButton: Locator;
 
+    // Infoportalen, der innloggingen via arbeidsflaten starter
+    readonly loginButton: Locator;
+
     // ID-porten med TestID
+    readonly testIdHoytNivaaLink: Locator;
     readonly idportenPidField: Locator;
     readonly submitButton: Locator;
 
@@ -44,6 +48,9 @@ export class Innlogging {
             name: /log in as test user/i,
         });
 
+        this.loginButton = page.getByRole("button", { name: "Logg inn" });
+
+        this.testIdHoytNivaaLink = page.getByRole("link", { name: "TestID på nivå høyt Lag din" });
         this.idportenPidField = page.locator("input[name=\"pid\"]");
         this.submitButton = page.locator("#submit");
 
@@ -63,8 +70,8 @@ export class Innlogging {
         }
 
         await this.page.goto(this.urler.infoportal);
-        await this.page.getByRole("button", { name: "Logg inn" }).click();
-        await this.page.getByRole("link", { name: "TestID på nivå høyt Lag din" }).click();
+        await this.loginButton.click();
+        await this.testIdHoytNivaaLink.click();
         await this.idportenPidField.fill(user.pid);
         await this.submitButton.click();
     }
@@ -81,7 +88,7 @@ export class Innlogging {
 
         await this.page.goto(this.urler.infoportal);
         await this.meny.gaTilTilgangsstyring();
-        await this.page.getByRole("link", { name: "TestID på nivå høyt Lag din" }).click();
+        await this.testIdHoytNivaaLink.click();
         await this.idportenPidField.fill(user.pid);
         await this.submitButton.click();
     }

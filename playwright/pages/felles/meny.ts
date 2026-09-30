@@ -1,10 +1,34 @@
-import { expect, Page } from "@playwright/test";
+import { expect, Locator, Page } from "@playwright/test";
 
 import { Sprak } from "../../config/sprak";
 
 export class Meny {
+    readonly menuButton: Locator;
+    readonly menuItems: Locator;
 
-    constructor(private page: Page) { }
+    // "Altinn"-logoen i headeren går til infoportalens forside på alle flatene.
+    readonly altinnLink: Locator;
+
+    readonly innboksMenuItem: Locator;
+    readonly profilMenuItem: Locator;
+    readonly tilgangsstyringMenuItem: Locator;
+    readonly languageMenuItem: Locator;
+
+    constructor(private page: Page) {
+        this.menuButton = page.getByRole("banner").getByRole("button", {
+            name: /^(meny|menu)$/i,
+        });
+        this.menuItems = page.getByRole("menuitem");
+
+        this.altinnLink = page.getByRole("link", { name: "Altinn", exact: true });
+
+        this.innboksMenuItem = page.getByRole("menuitem", { name: /^(innboks|inbox)$/i });
+        this.profilMenuItem = page.getByRole("menuitem", { name: /^(din profil|your profile)$/i });
+        this.tilgangsstyringMenuItem = page.getByRole("menuitem", {
+            name: /^(tilgangsstyring|access management)$/i,
+        });
+        this.languageMenuItem = page.getByRole("menuitem", { name: "Språk/language" });
+    }
 
     /**
      * Venter på at knappen er aktivert og ikke bare synlig. Headeren rendrer den
@@ -17,34 +41,33 @@ export class Meny {
      */
     async clickMenuButton() {
         await expect(
-            this.menuButton(),
+            this.menuButton,
             "Menyknappen i hovednavigasjonen er klar"
         ).toBeEnabled({ timeout: 15_000 });
 
         await expect(async () => {
-            await this.menuButton().click();
-            await expect(this.page.getByRole("menuitem").first()).toBeVisible({ timeout: 2_000 });
+            await this.menuButton.click();
+            await expect(this.menuItems.first()).toBeVisible({ timeout: 2_000 });
         }, "Menyen åpner seg").toPass({ timeout: 15_000 });
     }
 
-    // "Altinn"-logoen i headeren går til infoportalens forside på alle flatene.
     async gaTilForsiden() {
-        await this.page.getByRole("link", { name: "Altinn", exact: true }).click();
+        await this.altinnLink.click();
     }
 
     async gaTilInnboks() {
         await this.clickMenuButton();
-        await this.page.getByRole("menuitem", { name: /^(innboks|inbox)$/i }).click();
+        await this.innboksMenuItem.click();
     }
 
     async gaTilProfil() {
         await this.clickMenuButton();
-        await this.page.getByRole("menuitem", { name: /^(din profil|your profile)$/i }).click();
+        await this.profilMenuItem.click();
     }
 
     async gaTilTilgangsstyring() {
         await this.clickMenuButton();
-        await this.page.getByRole("menuitem", { name: /^(tilgangsstyring|access management)$/i }).click();
+        await this.tilgangsstyringMenuItem.click();
     }
 
     /**
@@ -54,22 +77,14 @@ export class Meny {
      */
     async assertLoggedIn() {
         await expect(
-            this.menuButton(),
+            this.menuButton,
             "Menyknappen i hovednavigasjonen er klar"
         ).toBeEnabled({ timeout: 15_000 });
     }
 
-    private menuButton() {
-        return this.page.getByRole("banner").getByRole("button", {
-            name: /^(meny|menu)$/i,
-        });
-    }
-
     async setLanguage(language: Sprak) {
         await this.clickMenuButton();
-        await this.page
-            .getByRole("menuitem", { name: "Språk/language" })
-            .click();
+        await this.languageMenuItem.click();
 
         // Sprakvalgene har ikke lenger id-er, så de velges på rollen sin.
         await this.page
