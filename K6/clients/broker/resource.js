@@ -50,7 +50,7 @@ class ResourceClient {
         return http.get(
             `${this.FULL_PATH}/${resourceId}`,
             requestParams({
-                endpoint: this.FULL_PATH,
+                endpoint: `${this.FULL_PATH}/{resourceId}`,
                 action: TAGS.GetResource.action,
                 labels,
                 token: this.tokenGenerator.getToken(),
@@ -74,7 +74,7 @@ class ResourceClient {
             `${this.FULL_PATH}/${resourceId}`,
             jsonBody(request),
             requestParams({
-                endpoint: this.FULL_PATH,
+                endpoint: `${this.FULL_PATH}/{resourceId}`,
                 action: TAGS.PutResource.action,
                 labels,
                 token: this.tokenGenerator.getToken(),

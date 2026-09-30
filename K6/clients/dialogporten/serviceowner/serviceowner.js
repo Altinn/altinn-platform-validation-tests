@@ -81,7 +81,7 @@ class ServiceOwnerApiClient {
         return http.get(
             buildUrl(this.FULL_PATH + "/dialogs" + `/${dialogId}` + "/actions/should-send-notification", { conditionType, activityType, transmissionId }),
             requestParams({
-                endpoint: this.FULL_PATH + "/dialogs/dialogId/actions/should-send-notification",
+                endpoint: this.FULL_PATH + "/dialogs/{dialogId}/actions/should-send-notification",
                 action: TAGS.GetDialogsQueriesNotificationCondition.action,
                 labels,
                 token: this.tokenGenerator.getToken(),
@@ -145,7 +145,7 @@ class ServiceOwnerApiClient {
             this.FULL_PATH + `/dialogs/${dialogId}/transmissions`,
             jsonBody(requestBody),
             requestParams({
-                endpoint: this.FULL_PATH + "/dialogs/dialogId/transmissions",
+                endpoint: this.FULL_PATH + "/dialogs/{dialogId}/transmissions",
                 action: TAGS.PostTransmission.action,
                 labels,
                 token: this.tokenGenerator.getToken(),
@@ -172,7 +172,7 @@ class ServiceOwnerApiClient {
             this.FULL_PATH + `/dialogs/${dialogId}/activities`,
             jsonBody(requestBody),
             requestParams({
-                endpoint: this.FULL_PATH + "/dialogs/dialogId/activities",
+                endpoint: this.FULL_PATH + "/dialogs/{dialogId}/activities",
                 action: TAGS.PostActivity.action,
                 labels,
                 token: this.tokenGenerator.getToken(),
@@ -217,7 +217,7 @@ class ServiceOwnerApiClient {
         return http.get(
             this.FULL_PATH + `/dialogs/${dialogId}`,
             requestParams({
-                endpoint: this.FULL_PATH + "/dialogs/dialogId",
+                endpoint: this.FULL_PATH + "/dialogs/{dialogId}",
                 action: TAGS.GetDialog.action,
                 labels,
                 token: this.tokenGenerator.getToken(),
@@ -239,7 +239,7 @@ class ServiceOwnerApiClient {
         return http.get(
             this.FULL_PATH + `/dialogs/${dialogId}/activities`,
             requestParams({
-                endpoint: this.FULL_PATH + "/dialogs/dialogId/activities",
+                endpoint: this.FULL_PATH + "/dialogs/{dialogId}/activities",
                 action: TAGS.GetDialogActivities.action,
                 labels,
                 token: this.tokenGenerator.getToken(),
@@ -263,7 +263,7 @@ class ServiceOwnerApiClient {
         return http.get(
             this.FULL_PATH + `/dialogs/${dialogId}/activities/${activityId}`,
             requestParams({
-                endpoint: this.FULL_PATH + "/dialogs/dialogId/activities/activityId",
+                endpoint: this.FULL_PATH + "/dialogs/{dialogId}/activities/{activityId}",
                 action: TAGS.GetDialogActivity.action,
                 labels,
                 token: this.tokenGenerator.getToken(),
@@ -285,7 +285,7 @@ class ServiceOwnerApiClient {
         return http.get(
             this.FULL_PATH + `/dialogs/${dialogId}/context/labels`,
             requestParams({
-                endpoint: this.FULL_PATH + "/dialogs/dialogId/context/labels",
+                endpoint: this.FULL_PATH + "/dialogs/{dialogId}/context/labels",
                 action: TAGS.GetServiceOwnerLabels.action,
                 labels,
                 token: this.tokenGenerator.getToken(),
@@ -307,7 +307,7 @@ class ServiceOwnerApiClient {
         return http.get(
             this.FULL_PATH + `/dialogs/${dialogId}/seenlog`,
             requestParams({
-                endpoint: this.FULL_PATH + "/dialogs/dialogId/seenlog",
+                endpoint: this.FULL_PATH + "/dialogs/{dialogId}/seenlog",
                 action: TAGS.GetDialogSeenLogs.action,
                 labels,
                 token: this.tokenGenerator.getToken(),
@@ -331,7 +331,7 @@ class ServiceOwnerApiClient {
         return http.get(
             this.FULL_PATH + `/dialogs/${dialogId}/seenlog/${seenLogId}`,
             requestParams({
-                endpoint: this.FULL_PATH + "/dialogs/dialogId/seenlog/seenLogId",
+                endpoint: this.FULL_PATH + "/dialogs/{dialogId}/seenlog/{seenLogId}",
                 action: TAGS.GetDialogSeenLog.action,
                 labels,
                 token: this.tokenGenerator.getToken(),
@@ -353,7 +353,7 @@ class ServiceOwnerApiClient {
         return http.get(
             this.FULL_PATH + `/dialogs/${dialogId}/transmissions`,
             requestParams({
-                endpoint: this.FULL_PATH + "/dialogs/dialogId/transmissions",
+                endpoint: this.FULL_PATH + "/dialogs/{dialogId}/transmissions",
                 action: TAGS.GetDialogTransmissions.action,
                 labels,
                 token: this.tokenGenerator.getToken(),
@@ -377,7 +377,7 @@ class ServiceOwnerApiClient {
         return http.get(
             this.FULL_PATH + `/dialogs/${dialogId}/transmissions/${transmissionId}`,
             requestParams({
-                endpoint: this.FULL_PATH + "/dialogs/dialogId/transmissions/transmissionId",
+                endpoint: this.FULL_PATH + "/dialogs/{dialogId}/transmissions/{transmissionId}",
                 action: TAGS.GetDialogTransmission.action,
                 labels,
                 token: this.tokenGenerator.getToken(),

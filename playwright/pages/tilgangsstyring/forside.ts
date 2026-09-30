@@ -4,7 +4,6 @@ import { TestUser } from "../../config/environment";
 import { Sprak } from "../../config/sprak";
 import { Cookiebanner } from "../felles/cookiebanner";
 import { Meny } from "../felles/meny";
-import { gaaTil } from "../felles/navigasjon";
 import { assertFlateUtlogget } from "../felles/utlogget";
 import { Seksjon, seksjonsnavn } from "./seksjoner";
 
@@ -23,7 +22,7 @@ export class TilgangsstyringForside {
     }
 
     async navigateTo() {
-        await gaaTil(this.page, this.url);
+        await this.page.goto(this.url, { waitUntil: "commit" });
     }
 
     // Flatene bak innlogging svarer likt for en utlogget bruker, så påstanden
