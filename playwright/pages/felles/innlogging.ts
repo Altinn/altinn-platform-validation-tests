@@ -119,6 +119,7 @@ export class Innlogging {
     async assertOnIdporten() {
         await expect(this.page, "Er sendt til ID-porten-innlogging").toHaveURL(
             /idporten/,
+            { timeout: REDIRECT_TIMEOUT },
         );
     }
 }
