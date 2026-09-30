@@ -120,6 +120,13 @@ local cronJob(
 
     args: [environment],
 
+    resources: {
+      requests: {
+        cpu: 4,
+        memory: '8000Mi',
+      },
+    },
+
     volumeMounts: [
       {
         name: 'swa-config',
@@ -227,13 +234,6 @@ local cronJob(
               nodeSelector: {
                 'kubernetes.azure.com/scalesetpriority': 'spot',
                 spot8cpu28gbmem: 'true',
-              },
-
-              resources: {
-                requests: {
-                  cpu: 4,
-                  memory: '8000Mi',
-                },
               },
 
               tolerations: [
