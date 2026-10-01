@@ -1,7 +1,8 @@
-import { ResourceClient, ResourceUpdatedQueryBuilder } from "../../../clients/resource-registry/index.js";
+import { ResourceUpdatedQueryBuilder } from "../../../clients/resource-registry/index.js";
 import { requireEnv } from "../../../helpers.js";
 import { ResourceUpdated } from "../../building-blocks/resource-registry/resource/index.js";
 import { PaginationDomainChecks } from "../../domain-checks/common/pagination.js";
+import { getPublicResourceClient } from "./commons.js";
 
 export function setup() {
     requireEnv(["BASE_URL"]);
@@ -15,7 +16,7 @@ export function setup() {
  * test can run as a healthcheck all the way to prod.
  */
 export default function () {
-    const resourceClient = new ResourceClient(__ENV.BASE_URL);
+    const resourceClient = getPublicResourceClient();
 
     const expectedBaseUrl = `${__ENV.BASE_URL}/resourceregistry/`;
 

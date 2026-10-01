@@ -1,4 +1,5 @@
 import runGetOrgs, { setup as setupGetOrgs } from "./get-orgs.js";
+import runGetResourceList, { setup as setupGetResourceList } from "./get-resource-list.js";
 import runGetUpdatedResources, { setup as setupGetUpdatedResources } from "./get-updated-resources.js";
 
 /**
@@ -10,6 +11,7 @@ export function setup() {
     return {
         getUpdatedResources: setupGetUpdatedResources(),
         getOrgs: setupGetOrgs(),
+        getResourceList: setupGetResourceList(),
     };
 }
 
@@ -28,4 +30,5 @@ export function setup() {
 export default function () {
     runGetUpdatedResources();
     runGetOrgs();
+    runGetResourceList();
 }

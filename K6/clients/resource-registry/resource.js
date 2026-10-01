@@ -96,7 +96,7 @@ class ResourceClient {
                 endpoint: `${this.FULL_PATH}/resourcelist`,
                 action: TAGS.ResourceGetResourceList.action,
                 labels,
-                token: this.tokenGenerator.getToken(),
+                token: this.tokenGenerator?.getToken() ?? null,
             }),
         );
     }
