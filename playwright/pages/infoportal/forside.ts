@@ -1,4 +1,4 @@
-import { expect, Page } from "@playwright/test";
+import { expect, Locator, Page } from "@playwright/test";
 
 import { TestUser } from "../../config/environment";
 import { Sprak } from "../../config/sprak";
@@ -6,11 +6,15 @@ import { Cookiebanner } from "../felles/cookiebanner";
 import { REDIRECT_TIMEOUT } from "../felles/navigasjon";
 
 export class InfoportalForside {
+    readonly loginButton: Locator;
+
     constructor(
         private page: Page,
         readonly url: string,
         readonly cookiebanner = new Cookiebanner(page),
-    ) { }
+    ) {
+        this.loginButton = page.getByRole("button", { name: /logg inn|login/i }).first();
+    }
 
     async navigateTo() {
         await this.page.goto(this.url, { waitUntil: "commit" });
@@ -35,7 +39,7 @@ export class InfoportalForside {
         await this.assertOnPage();
 
         await expect(
-            this.page.getByRole("button", { name: /logg inn|login/i }).first(),
+            this.loginButton,
             "Innloggingsknappen vises på infoportalen"
         ).toBeVisible({ timeout: REDIRECT_TIMEOUT });
 

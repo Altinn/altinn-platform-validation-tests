@@ -7,7 +7,7 @@ test("Infoportalens header gjenspeiler pålogget bruker og valgt aktør etter na
     infoportal,
 }) => {
     await test.step("Bruker logger inn på arbeidsflate", async () => {
-        await innlogging.logIn(arbeidsflate, user);
+        await innlogging.loggInnViaArbeidsflate(user);
         await arbeidsflate.assertLoggedIn();
     });
 

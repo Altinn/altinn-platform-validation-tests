@@ -193,6 +193,8 @@
  * "Order_SendConditionNotMet"|
  * "Order_Cancelled"|
  * "Order_Processed"|
+ * "Order_Retrying"|
+ * "Order_Failed"|
  * "SMS_New"|
  * "SMS_Sending"|
  * "SMS_Accepted"|

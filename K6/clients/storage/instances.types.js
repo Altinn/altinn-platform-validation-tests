@@ -12,6 +12,7 @@
  * @property {string|null} [filename]
  * @property {string|null} [contentType]
  * @property {string|null} [blobStoragePath]
+ * @property {string|null} [blobVersionId]
  * @property {ResourceLinks} selfLinks
  * @property {number} size
  * @property {string|null} [contentHash]
@@ -59,6 +60,7 @@
 /**
  * @typedef {object} FileScanStatus
  * @property {string|null} [contentHash]
+ * @property {string|null} [blobVersionId]
  * @property {FileScanResult} fileScanResult
  */
 
@@ -100,6 +102,23 @@
 /**
  * @typedef {object} InstanceEventList
  * @property {Array<InstanceEvent>|null} [instanceEvents]
+ */
+
+/**
+ * @typedef {object} InstanceLockRequest
+ * @property {number} ttlSeconds
+ */
+
+/**
+ * @typedef {object} InstanceLockResponse
+ * @property {string|null} [lockToken]
+ */
+
+/**
+ * @typedef {object} InstanceMutationResponse
+ * @property {Instance} instance
+ * @property {Array<string>|null} [createdDataElementIds]
+ * @property {boolean} replayed
  */
 
 /**
@@ -190,12 +209,17 @@
  * @property {ProcessElementInfo} currentTask
  * @property {string|null} [ended]
  * @property {string|null} [endEvent]
+ * @property {ProcessStatus} status
  */
 
 /**
  * @typedef {object} ProcessStateUpdate
  * @property {ProcessState} state
  * @property {Array<InstanceEvent>|null} [events]
+ */
+
+/**
+ * @typedef {"idle"|"processing"} ProcessStatus
  */
 
 /**
@@ -262,6 +286,9 @@ export const FileScanStatus = undefined;
 export const Instance = undefined;
 export const InstanceEvent = undefined;
 export const InstanceEventList = undefined;
+export const InstanceLockRequest = undefined;
+export const InstanceLockResponse = undefined;
+export const InstanceMutationResponse = undefined;
 export const InstanceOwner = undefined;
 export const InstanceQueryResponse = undefined;
 export const InstanceStatus = undefined;
@@ -273,6 +300,7 @@ export const ProcessHistoryItem = undefined;
 export const ProcessHistoryList = undefined;
 export const ProcessState = undefined;
 export const ProcessStateUpdate = undefined;
+export const ProcessStatus = undefined;
 export const ReadStatus = undefined;
 export const Reference = undefined;
 export const ReferenceType = undefined;

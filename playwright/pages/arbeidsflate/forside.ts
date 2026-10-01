@@ -1,4 +1,4 @@
-import { expect, Page } from "@playwright/test";
+import { expect, Locator, Page } from "@playwright/test";
 
 import { TestUser } from "../../config/environment";
 import { Cookiebanner } from "../felles/cookiebanner";
@@ -6,12 +6,18 @@ import { Meny } from "../felles/meny";
 import { assertFlateUtlogget } from "../felles/utlogget";
 
 export class ArbeidsflateForside {
+    // Utkast-lenken i sidemenyen finnes bare på innboksen, og href-en er den
+    // samme uansett språk.
+    readonly utkastLink: Locator;
+
     constructor(
         private page: Page,
         readonly url: string,
         readonly meny = new Meny(page),
         readonly cookiebanner = new Cookiebanner(page),
-    ) { }
+    ) {
+        this.utkastLink = page.getByRole("complementary").locator("a[href=\"/drafts\"]");
+    }
 
     async navigateTo() {
         await this.page.goto(this.url, { waitUntil: "commit" });
@@ -26,11 +32,6 @@ export class ArbeidsflateForside {
     async assertLoggedIn() {
         await this.meny.assertLoggedIn();
 
-        // Utkast-lenken i sidemenyen finnes bare på innboksen, og href-en er den
-        // samme uansett språk.
-        await expect(
-            this.page.getByRole("complementary").locator("a[href=\"/drafts\"]"),
-            "Innboksens sidemeny vises"
-        ).toBeVisible();
+        await expect(this.utkastLink, "Innboksens sidemeny vises").toBeVisible();
     }
 }

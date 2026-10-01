@@ -1,5 +1,5 @@
 import { test as base } from "@playwright/test";
-import { mkdirSync, readFileSync, writeFileSync } from "fs";
+import { mkdirSync, readFileSync, rmSync, writeFileSync } from "fs";
 import path from "path";
 
 import { TestUser } from "../config/environment";
@@ -18,8 +18,18 @@ function lesTestbrukere(gruppe: string, miljo: string): TestUser[] {
     });
 }
 
-// Første ledige bruker reserveres med en fil som bare kan opprettes én gang. En retry
-// finner igjen sin egen reservasjon, og ingen test får en bruker en annen test har hatt.
+// Fila kan være slettet siden vi prøvde å opprette den, fordi en annen test frigav brukeren.
+function reservertAv(fil: string): string | undefined {
+    try {
+        return readFileSync(fil, "utf8");
+    } catch {
+        return undefined;
+    }
+}
+
+// Første ledige bruker reserveres med en fil som bare kan opprettes én gang, så to tester
+// som kjører samtidig aldri får samme bruker. Overlever reservasjonen en krasj, finner
+// retryen den igjen.
 function reserverTestbruker(brukere: TestUser[], katalog: string, testId: string): TestUser {
     mkdirSync(katalog, { recursive: true });
 
@@ -29,13 +39,13 @@ function reserverTestbruker(brukere: TestUser[], katalog: string, testId: string
             writeFileSync(fil, testId, { flag: "wx" });
             return bruker;
         } catch {
-            if (readFileSync(fil, "utf8") === testId) {
+            if (reservertAv(fil) === testId) {
                 return bruker;
             }
         }
     }
 
-    throw new Error(`Alle ${brukere.length} testbrukerne i ${katalog} er brukt opp.`);
+    throw new Error(`Alle ${brukere.length} testbrukerne i ${katalog} er i bruk samtidig.`);
 }
 
 export const testbrukereFixture = base.extend<{
@@ -44,11 +54,14 @@ export const testbrukereFixture = base.extend<{
 }>({
     miljo: ["", { option: true }],
 
-    // Én bruker per test, så ingen test arver språk eller sesjon fra en annen. Playwright
-    // tømmer output-mappa ved start, så reservasjonene gjelder én kjøring.
+    // Én bruker om gangen per test, så ingen test deler sesjon med en annen. Brukeren
+    // frigis når testen er ferdig, så neste test kan bruke den. Playwright tømmer
+    // output-mappa ved start, så reservasjonene gjelder én kjøring.
     user: async ({ miljo }, use, testInfo) => {
         const brukere = lesTestbrukere("privatPersonUtenVirksomhet", miljo);
         const katalog = path.join(testInfo.project.outputDir, ".testbrukere", miljo);
-        await use(reserverTestbruker(brukere, katalog, testInfo.testId));
+        const bruker = reserverTestbruker(brukere, katalog, testInfo.testId);
+        await use(bruker);
+        rmSync(path.join(katalog, bruker.pid), { force: true });
     },
 });
