@@ -2,6 +2,7 @@ import http from "k6/http";
 
 import { jsonBody, requestParams } from "../common/request.js";
 import { SignRequest } from "./instances.types.js";
+import { VersionMatch, versionMatchHeaders } from "./version-match.js";
 
 const TAGS = {
     SignInstance: {
@@ -45,10 +46,11 @@ class SignClient {
      * @param {number} instanceOwnerPartyId Instance owner party id.
      * @param {string} instanceGuid Instance UUID.
      * @param {SignRequest} request Signature request.
+     * @param {VersionMatch|null} [versionMatch] Instance and process-state versions the write is conditioned on.
      * @param {{[key:string]:string}|null} [labels] Optional k6 request labels.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
-    SignInstance(instanceOwnerPartyId, instanceGuid, request, labels = null) {
+    SignInstance(instanceOwnerPartyId, instanceGuid, request, versionMatch = null, labels = null) {
         return http.post(
             `${this.FULL_PATH}/instances/${instanceOwnerPartyId}/${instanceGuid}/sign`,
             jsonBody(request),
@@ -58,6 +60,7 @@ class SignClient {
                 labels,
                 token: this.tokenGenerator.getToken(),
                 json: true,
+                headers: versionMatchHeaders(versionMatch),
             }),
         );
     }
