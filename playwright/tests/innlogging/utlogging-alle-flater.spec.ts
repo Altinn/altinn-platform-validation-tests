@@ -12,12 +12,12 @@ test("Bruker er utlogget på alle flater etter utlogging fra arbeidsflate", { ta
     infoportal,
 }) => {
     await test.step("Bruker logger inn via arbeidsflate", async () => {
-        await innlogging.logInViaArbeidsflate(user);
+        await innlogging.loggInnViaArbeidsflate(user);
         await arbeidsflate.assertLoggedIn();
     });
 
     await test.step("Bruker logger ut", async () => {
-        await innlogging.logOut();
+        await innlogging.loggUt();
     });
 
     await test.step("Ingen av flatene viser brukeren som innlogget", async () => {
@@ -44,7 +44,7 @@ test("Bruker er utlogget på alle flater etter utlogging fra profilen", { tag: [
     infoportal,
 }) => {
     await test.step("Bruker logger inn via arbeidsflate og går til profilen", async () => {
-        await innlogging.logInViaArbeidsflate(user);
+        await innlogging.loggInnViaArbeidsflate(user);
         await arbeidsflate.assertLoggedIn();
 
         await arbeidsflate.meny.gaTilProfil();
@@ -52,7 +52,7 @@ test("Bruker er utlogget på alle flater etter utlogging fra profilen", { tag: [
     });
 
     await test.step("Bruker logger ut", async () => {
-        await innlogging.logOut();
+        await innlogging.loggUt();
     });
 
     await test.step("Ingen av flatene viser brukeren som innlogget", async () => {
@@ -84,7 +84,7 @@ test("Bruker er utlogget på alle flater etter utlogging fra tilgangsstyring", {
     });
 
     await test.step("Bruker logger ut", async () => {
-        await innlogging.logOut();
+        await innlogging.loggUt();
     });
 
     await test.step("Ingen av flatene viser brukeren som innlogget", async () => {

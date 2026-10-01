@@ -9,7 +9,7 @@ test("Bruker er innlogget på alle flater etter innlogging via arbeidsflate", { 
     infoportal,
 }) => {
     await test.step("Bruker logger inn via arbeidsflate", async () => {
-        await innlogging.logInViaArbeidsflate(user);
+        await innlogging.loggInnViaArbeidsflate(user);
         await arbeidsflate.assertLoggedIn();
     });
 

@@ -10,7 +10,7 @@ test("Bruker logger inn via Mockporten", { tag: ["@at23", "@tt02"] }, async ({
     arbeidsflate,
 }) => {
     await test.step("Bruker logger inn via Mockporten", async () => {
-        await innlogging.logInViaArbeidsflate(user);
+        await innlogging.loggInnViaArbeidsflate(user);
     });
 
     await test.step("Bruker er innlogget på arbeidsflate", async () => {

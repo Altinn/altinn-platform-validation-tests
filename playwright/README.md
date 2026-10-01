@@ -77,7 +77,7 @@ ett felt i områdets fixture:
 
 ```ts
 test('...', async ({ innlogging, user, tilgangsstyring }) => {
-    await innlogging.logInViaTilgangsstyring(user);
+    await innlogging.loggInnViaTilgangsstyring(user);
     await tilgangsstyring.assertSections(forventedeSeksjoner);
 });
 ```
@@ -89,7 +89,7 @@ så `assertSections` slår opp riktige navn selv.
 
 ## Innlogging
 
-`innlogging.logInViaArbeidsflate(user)` og `innlogging.logInViaTilgangsstyring(user)`
+`innlogging.loggInnViaArbeidsflate(user)` og `innlogging.loggInnViaTilgangsstyring(user)`
 logger inn via en av de to hovedsidene. Med TestID klikker de seg fram fra
 infoportalen, og med Mockporten er det `goto` som bestemmer flaten. Andre sider nås
 etterpå med knappene i menyen, for eksempel `meny.gaTilProfil()`. Om innloggingen
@@ -98,6 +98,6 @@ miljøets project, siden TestID ikke finnes i prod. Testene vet ikke hvilken. Un
 er røyktesten for Mockporten, som setter `test.use({ mockporten: true })` for å
 teste Mockporten også i at23 og tt02.
 
-`innlogging.logOut()` logger ut via menyen. Språket settes med
+`innlogging.loggUt()` logger ut via menyen. Språket settes med
 `tilgangsstyring.meny.setLanguage(sprak)`, på menyen til siden du står på.
 

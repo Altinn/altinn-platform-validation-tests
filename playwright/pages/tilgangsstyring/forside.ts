@@ -7,6 +7,9 @@ import { Meny } from "../felles/meny";
 import { assertFlateUtlogget } from "../felles/utlogget";
 import { Seksjon, seksjonsnavn } from "./seksjoner";
 
+// Brukes også av `Innlogging`, så stien står ett sted.
+export const tilgangsstyringUrl = (tilgangsstyring: string) => `${tilgangsstyring}/accessmanagement/ui`;
+
 export class TilgangsstyringForside {
     readonly url: string;
 
@@ -22,7 +25,7 @@ export class TilgangsstyringForside {
         readonly meny = new Meny(page),
         readonly cookiebanner = new Cookiebanner(page),
     ) {
-        this.url = `${tilgangsstyring}/accessmanagement/ui`;
+        this.url = tilgangsstyringUrl(tilgangsstyring);
 
         this.sidemeny = page.getByRole("complementary");
         this.brukereLink = this.sidemeny.locator("a[href=\"/accessmanagement/ui/users\"]");

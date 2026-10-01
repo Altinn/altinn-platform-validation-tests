@@ -1,6 +1,8 @@
 import { expect, Locator, Page } from "@playwright/test";
 
 import { requireEnv, TestUser, Urler } from "../../config/environment";
+import { InfoportalForside } from "../infoportal/forside";
+import { tilgangsstyringUrl } from "../tilgangsstyring/forside";
 import { Meny } from "./meny";
 import { REDIRECT_TIMEOUT } from "./navigasjon";
 
@@ -18,14 +20,13 @@ const SESJONSCOOKIES = ["AltinnStudioRuntime", "altinnsession"];
  */
 export class Innlogging {
     private readonly meny: Meny;
+    // Innloggingen via arbeidsflaten starter på infoportalens "Logg inn"-knapp.
+    private readonly infoportal: InfoportalForside;
 
     // Mockporten
     readonly passwordField: Locator;
     readonly mockportenPidField: Locator;
     readonly testUserLoginButton: Locator;
-
-    // Infoportalen, der innloggingen via arbeidsflaten starter
-    readonly loginButton: Locator;
 
     // ID-porten med TestID
     readonly testIdHoytNivaaLink: Locator;
@@ -41,6 +42,7 @@ export class Innlogging {
         private mockporten: boolean,
     ) {
         this.meny = new Meny(page);
+        this.infoportal = new InfoportalForside(page, urler.infoportal);
 
         this.passwordField = page.getByLabel(/shared access password/i);
         this.mockportenPidField = page.getByLabel(/fødselsnummer/i);
@@ -49,10 +51,8 @@ export class Innlogging {
         });
 
         // Logger inn via Arbeidsflate / innboks
-        this.loginButton = page.getByRole("button", { name: "Logg inn" });
-
         // Med denne får du nivå 4-innlogging
-        this.testIdHoytNivaaLink = page.getByRole("link", { name: "TestID på nivå høyt Lag din" });
+        this.testIdHoytNivaaLink = page.getByRole("link", { name: /TestID på nivå høyt/i });
         this.idportenPidField = page.locator("input[name=\"pid\"]");
         this.submitButton = page.locator("#submit");
 
@@ -65,15 +65,15 @@ export class Innlogging {
      * Logger inn fra infoportalens "Logg inn"-knapp, som lander på arbeidsflaten.
      * Med Mockporten er det `goto` som bestemmer flaten.
      */
-    async logInViaArbeidsflate(user: TestUser) {
+    async loggInnViaArbeidsflate(user: TestUser) {
         if (this.mockporten) {
-            await this.logInMedMockporten(this.urler.arbeidsflate, user);
+            await this.loggInnMedMockporten(this.urler.arbeidsflate, user);
             return;
         }
 
         await this.page.goto(this.urler.infoportal);
-        await this.loginButton.click();
-        await this.logInMedTestId(user);
+        await this.infoportal.loginButton.click();
+        await this.loggInnMedTestId(user);
     }
 
     /**
@@ -82,20 +82,20 @@ export class Innlogging {
      */
     async loggInnViaTilgangsstyring(user: TestUser) {
         if (this.mockporten) {
-            await this.logInMedMockporten(`${this.urler.tilgangsstyring}/accessmanagement/ui`, user);
+            await this.loggInnMedMockporten(tilgangsstyringUrl(this.urler.tilgangsstyring), user);
             return;
         }
 
         await this.page.goto(this.urler.infoportal);
         await this.meny.gaTilTilgangsstyring();
-        await this.logInMedTestId(user);
+        await this.loggInnMedTestId(user);
     }
 
     /**
      * Fortsetter fra ID-portens valg av innloggingsmetode. Sjekker at valget er der
      * først, så en redirect som ikke kommer fram feiler her og ikke på klikket.
      */
-    private async logInMedTestId(user: TestUser) {
+    private async loggInnMedTestId(user: TestUser) {
         await expect(this.testIdHoytNivaaLink, "Er på ID-porten").toBeVisible({
             timeout: REDIRECT_TIMEOUT,
         });
@@ -108,7 +108,7 @@ export class Innlogging {
      * Flyten må starte på Altinns login-endepunkt, siden `state` opprettes
      * serverside; en authorize-URL kan ikke bygges her eller gjenbrukes.
      */
-    private async logInMedMockporten(goto: string, user: TestUser) {
+    private async loggInnMedMockporten(goto: string, user: TestUser) {
         await this.page.goto(
             `${this.urler.platform}/authentication/api/v1/authentication?goto=${encodeURIComponent(goto)}&iss=mockporten`,
         );
@@ -127,7 +127,7 @@ export class Innlogging {
      * gjorde jobben sin. Cookiene ryddes først når kjeden via ID-porten og tilbake
      * til `/logout/handleloggedout` er ferdig, så ventingen hører til utloggingen.
      */
-    async logOut() {
+    async loggUt() {
         await this.meny.clickMenuButton();
 
         await expect(this.logoutButton, "Logg ut ligger i menyen").toBeEnabled();

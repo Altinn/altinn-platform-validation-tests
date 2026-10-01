@@ -7,7 +7,7 @@ test("Cookiebanneret vises på arbeidsflate for en ny sesjon", { tag: ["@at23", 
     user,
     arbeidsflate,
 }) => {
-    await innlogging.logInViaArbeidsflate(user);
+    await innlogging.loggInnViaArbeidsflate(user);
     await arbeidsflate.assertLoggedIn();
     await arbeidsflate.cookiebanner.assertVisible();
 });
@@ -18,7 +18,7 @@ test("Cookiebanneret vises på profilen for en ny sesjon", { tag: ["@at23", "@pr
     arbeidsflate,
     arbeidsflateProfil,
 }) => {
-    await innlogging.logInViaArbeidsflate(user);
+    await innlogging.loggInnViaArbeidsflate(user);
     await arbeidsflate.meny.gaTilProfil();
     await arbeidsflateProfil.assertLoggedIn();
     await arbeidsflateProfil.cookiebanner.assertVisible();
