@@ -1,15 +1,9 @@
 import { test } from "../../fixtures/test";
 
-// Endrer ingen data. Utloggingen går gjennom authentication /logout, som sender
-// brukeren videre til /logout/handleloggedout, og det er de to endepunktene testene
-// er her for. Sesjonen gjelder på tvers av flatene, så en utlogging fra én av dem
-// skal ta brukeren ut av alle. Infoportalen sjekkes, men logges ikke ut fra: den har
-// ikke hovednavigasjonen utloggingen ligger i.
-//
-// Ikke i prod: der logger testene inn via Mockporten, og utloggingen derfra lander
-// på en feilside.
-
-test("Bruker er utlogget på alle flater etter utlogging fra arbeidsflate", { tag: ["@at23", "@tt02"] }, async ({
+// mockporten støtter per nå ikke utlogging (på en god måte)
+// Ikke i tt02 inntil videre: arbeidsflaten kan vise brukeren som innlogget etter
+// utlogging, se https://github.com/Altinn/dialogporten-frontend/issues/4683
+test("Bruker er utlogget på alle flater etter utlogging fra arbeidsflate", { tag: ["@at23"] }, async ({
     innlogging,
     user,
     arbeidsflate,
@@ -41,7 +35,7 @@ test("Bruker er utlogget på alle flater etter utlogging fra arbeidsflate", { ta
     });
 });
 
-test("Bruker er utlogget på alle flater etter utlogging fra profilen", { tag: ["@at23", "@tt02"] }, async ({
+test("Bruker er utlogget på alle flater etter utlogging fra profilen", { tag: ["@at23"] }, async ({
     innlogging,
     user,
     arbeidsflate,
@@ -76,7 +70,7 @@ test("Bruker er utlogget på alle flater etter utlogging fra profilen", { tag: [
     });
 });
 
-test("Bruker er utlogget på alle flater etter utlogging fra tilgangsstyring", { tag: ["@at23", "@tt02"] }, async ({
+test("Bruker er utlogget på alle flater etter utlogging fra tilgangsstyring", { tag: ["@at23"] }, async ({
     innlogging,
     user,
     arbeidsflate,
