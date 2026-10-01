@@ -195,16 +195,6 @@
  */
 
 /**
- * @typedef {object} RightDecomposedDto
- * @property {RightDto} right
- */
-
-/**
- * @typedef {object} ResourceDecomposedDto
- * @property {Array<RightDecomposedDto>|null} rights
- */
-
-/**
  * @typedef {"Default"|"Altinn1"|"Altinn2"|"Altinn3"|"ExternalPlatform"} ReferenceSource
  */
 
@@ -479,6 +469,7 @@ export const AccessListInfoDtoPaginated = undefined;
 export const AccessListMembershipDtoAggregateVersionVersionedPaginated = undefined;
 export const AccessListMembershipsQuery = undefined;
 export const AccessListPagedQuery = undefined;
+export const AccessListResourceConnectionDto = undefined;
 export const AccessListResourceConnectionDtoAggregateVersionVersionedPaginated = undefined;
 export const AccessListResourceConnectionWithVersionDto = undefined;
 export const AccessListResourceMembershipWithActionFilterDtoListObject = undefined;
@@ -488,13 +479,13 @@ export const JsonPatchOperation = undefined;
 export const OrgList = undefined;
 export const PolicyRightsDTO = undefined;
 export const PolicyRuleDTO = undefined;
-export const ResourceDecomposedDto = undefined;
 export const ResourceListQuery = undefined;
 export const ResourceListQueryBuilder = undefined;
 export const ResourcePolicyRightsQuery = undefined;
 export const ResourceSearchQuery = undefined;
 export const ResourceSearchQueryBuilder = undefined;
 export const ResourceType = undefined;
+export const RightDto = undefined;
 export const ServiceResource = undefined;
 export const SubjectResourcesPaginated = undefined;
 export const UpdatedResourceSubjectPaginated = undefined;

@@ -12,9 +12,11 @@ const TAGS = {
 class ResourceV2Client {
     /**
      * @param {string} baseUrl Base URL, e.g. https://platform.tt02.altinn.no
-     * @param {*} tokenGenerator Generates bearer tokens.
+     * @param {*} [tokenGenerator] Generates bearer tokens. The policy rights
+     * endpoint is public, so a client built without one sends no Authorization
+     * header.
      */
-    constructor(baseUrl, tokenGenerator) {
+    constructor(baseUrl, tokenGenerator = null) {
         /**
          * Generates authentication tokens.
          */
@@ -55,7 +57,7 @@ class ResourceV2Client {
                 endpoint: `${this.FULL_PATH}/{id}/policy/rights`,
                 action: TAGS.ResourceV2GetPolicyRights.action,
                 labels,
-                token: this.tokenGenerator.getToken(),
+                token: this.tokenGenerator?.getToken() || null,
             }),
         );
     }

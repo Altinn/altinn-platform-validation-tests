@@ -1,11 +1,11 @@
 import { check } from "k6";
 
 import { ResourceV2Client } from "../../../../clients/resource-registry/index.js";
-import { ResourceDecomposedDto, ResourcePolicyRightsQuery } from "../../../../clients/resource-registry/types.js";
+import { ResourcePolicyRightsQuery, RightDto } from "../../../../clients/resource-registry/types.js";
 import { withRetries } from "../../common/retry.js";
 
 /**
- * Gets the policy rights for a resource.
+ * Gets the decomposed policy rights of a resource, one right per action.
  *
  * @param {ResourceV2Client} resourceV2Client Client for the Resource V2 API.
  * @param {string} id Resource identifier.
@@ -13,7 +13,7 @@ import { withRetries } from "../../common/retry.js";
  * Optional query parameters.
  * @param {{[key: string]: string}|null} [labels] See the API documentation.
  * Optional k6 request labels.
- * @returns {ResourceDecomposedDto|null} Parsed response body, or null when the call failed.
+ * @returns {Array<RightDto>|null} Parsed response body, or null when the call failed.
  */
 export function ResourceV2GetPolicyRights(
     resourceV2Client,
@@ -30,8 +30,8 @@ export function ResourceV2GetPolicyRights(
         "ResourceV2GetPolicyRights",
     );
 
-    /** @type {ResourceDecomposedDto|null} */
-    let resource = null;
+    /** @type {Array<RightDto>|null} */
+    let rights = null;
 
     const succeed = check(res, {
         "ResourceV2GetPolicyRights - status code is 200": (r) =>
@@ -41,13 +41,13 @@ export function ResourceV2GetPolicyRights(
     if (!succeed) {
         console.log(res.status);
         console.log(res.body);
-        return resource;
+        return rights;
     }
 
     check(res, {
         "ResourceV2GetPolicyRights - body is valid": (r) => {
             try {
-                resource = JSON.parse(r.body);
+                rights = JSON.parse(r.body);
 
                 return true;
             } catch (err) {
@@ -59,5 +59,5 @@ export function ResourceV2GetPolicyRights(
         },
     });
 
-    return resource;
+    return rights;
 }

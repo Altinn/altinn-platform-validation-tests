@@ -27,6 +27,7 @@ export function AccessListRemoveMembers(
             owner,
             identifier,
             request,
+            {},
             labels,
         ),
         "AccessListRemoveMembers",
