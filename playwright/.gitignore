@@ -1,2 +1,6 @@
 # Prod-testbrukerne er hemmelige og sjekkes ikke inn.
 testdata/*/prod.csv
+
+# Lokale eksperimenter, sjekkes ikke inn. README-en forklarer hvordan mappa brukes.
+tests/scratch/*
+!tests/scratch/README.md
