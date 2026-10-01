@@ -228,6 +228,12 @@ export const AltinnScopes = {
         },
 
         DELEGATIONS: {
+            ACCESSPACKAGE: {
+                WRITE: "altinn:serviceowner/delegations:accesspackage.write"
+            },
+            RESOURCE: {
+                WRITE: "altinn:serviceowner/delegations:resource.write"
+            },
             WRITE: "altinn:serviceowner/delegations.write"
         },
 

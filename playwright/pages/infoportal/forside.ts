@@ -1,16 +1,19 @@
 import { expect, Page } from "@playwright/test";
-import { baseUrls, TestUser } from "../../config/environment";
-import { gaaTil, REDIRECT_TIMEOUT } from "../felles/navigasjon";
-import { Side } from "../side";
 
-export class InfoportalForside implements Side {
-    readonly url = baseUrls.infoportal;
+import { TestUser } from "../../config/environment";
+import { Sprak } from "../../config/sprak";
+import { Cookiebanner } from "../felles/cookiebanner";
+import { REDIRECT_TIMEOUT } from "../felles/navigasjon";
 
-    constructor(private page: Page) { }
+export class InfoportalForside {
+    constructor(
+        private page: Page,
+        readonly url: string,
+        readonly cookiebanner = new Cookiebanner(page),
+    ) { }
 
-    // Infoportalen har alltid navigert med et strammere tak enn de andre flatene.
     async navigateTo() {
-        await gaaTil(this.page, this.url, 15_000);
+        await this.page.goto(this.url, { waitUntil: "commit" });
     }
 
     // Infoportalen har ingen egen innloggingsindikator, så navnet på brukeren er
@@ -19,7 +22,7 @@ export class InfoportalForside implements Side {
         await this.assertOnPage();
         await expect(
             this.page.getByText(user.name).first(),
-            'Brukeren er innlogget på infoportalen'
+            "Brukeren er innlogget på infoportalen"
         ).toBeVisible();
     }
 
@@ -32,17 +35,31 @@ export class InfoportalForside implements Side {
         await this.assertOnPage();
 
         await expect(
-            this.page.getByRole('button', { name: /logg inn|login/i }).first(),
-            'Innloggingsknappen vises på infoportalen'
+            this.page.getByRole("button", { name: /logg inn|login/i }).first(),
+            "Innloggingsknappen vises på infoportalen"
         ).toBeVisible({ timeout: REDIRECT_TIMEOUT });
 
         await expect(
             this.page.getByText(user.name).first(),
-            'Brukeren er ikke innlogget på infoportalen'
+            "Brukeren er ikke innlogget på infoportalen"
         ).toBeHidden();
     }
 
     async assertOnPage() {
         await expect.poll(() => this.page.url()).toContain(new URL(this.url).origin);
     }
+
+    async assertSprak(sprak: Sprak) {
+        await this.assertOnPage();
+        await expect(
+            this.page.getByText(sporsmaal[sprak]),
+            `Infoportalen viser "${sporsmaal[sprak]}"`
+        ).toBeVisible();
+    }
 }
+
+const sporsmaal: Record<Sprak, RegExp> = {
+    [Sprak.Bokmaal]: /^hva vil du gjøre\?$/i,
+    [Sprak.Nynorsk]: /^kva vil du gjere\?$/i,
+    [Sprak.Engelsk]: /^what do you want to do\?$/i,
+};

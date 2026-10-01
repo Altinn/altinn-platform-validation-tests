@@ -1,5 +1,3 @@
-import { fail } from "k6";
-
 import { EnhetsregisteretClient, RegisterClient } from "../../../clients/register/index.js";
 import {
     PersonalTokenBuilder,
@@ -7,7 +5,7 @@ import {
     PlatformTokenBuilder,
     PlatformTokenGenerator,
 } from "../../../common-imports.js";
-import { fetchTestData, getItemFromList, lazy, retry } from "../../../helpers.js";
+import { fetchTestData, lazy, retry } from "../../../helpers.js";
 import { AltinnScopes, CreateScopeString } from "../../../scopes.js";
 import { RegisterBuildingBlocks } from "../../building-blocks/register/index.js";
 
@@ -20,6 +18,7 @@ import { RegisterBuildingBlocks } from "../../building-blocks/register/index.js"
  * K6/testdata/register/
  * - register-usernames-<env>.csv   (header: username)
  * - organizations-<env>.csv        (header: organizationUuid,organizationId,type)
+ * - ccr-role-client-<env>.csv      (header: organizationUuid,organizationId,type,clientOrganizationId,clientOrganizationForm)
  */
 
 /**
@@ -55,6 +54,21 @@ export function getUsernames(env) {
  */
 export function getOrganizations(env) {
     return fetchTestData(`register/organizations-${env}.csv`);
+}
+
+/**
+ * The one organization and customer the role test moves, per environment.
+ *
+ * One fixed pair rather than a draw, because ER writes the organisasjonsform in the
+ * batch onto the unit. Drawing among every customer turned ENKs, borettslag and
+ * stiftelser into AS. The customer is AS in both Tenor and Register.
+ *
+ * @param {string} env - Environment, e.g. "tt02".
+ * @returns {{organizationUuid: string, organizationId: string, type: string, clientOrganizationId: string, clientOrganizationForm: string}}
+ * The organization, with the customer to move.
+ */
+export function getCcrRoleClient(env) {
+    return fetchTestData(`register/ccr-role-client-${env}.csv`)[0];
 }
 
 /**
@@ -157,55 +171,6 @@ export function getCustomerOrganizationNumbers(
     return customers
         .map((customer) => customer.organizationIdentifier)
         .filter((identifier) => identifier !== undefined);
-}
-
-/**
- * Picks a customer to move in and out of an organization's customer list.
- *
- * @param {RegisterClient} registerClient Client for the Register API.
- * @param {string} ccrRole The role under test, e.g. "revisor".
- * @param {{organizationUuid: string, organizationId: string}} organization The organization holding the role.
- * @param {boolean} randomize Whether to draw at random rather than take the first.
- * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
- * @returns {string} Organization number of the customer to move.
- */
-export function drawCustomerToMove(
-    registerClient,
-    ccrRole,
-    organization,
-    randomize,
-    labels = null,
-) {
-    // The customers are organizations, so the organization number is what ER takes
-    // and what the assertions compare on.
-    const currentOrgs = getCustomerOrganizationNumbers(
-        registerClient,
-        organization.organizationUuid,
-        ccrRole,
-        labels,
-    );
-
-    if (currentOrgs === null) {
-        fail(`cannot continue: reading the ${ccrRole} customers failed`);
-    }
-
-    console.log(
-        `Initial number of ${ccrRole} customers for ${organization.organizationId}: ${currentOrgs.length}`,
-    );
-
-    if (currentOrgs.length === 0) {
-        fail(
-            `cannot continue: ${organization.organizationId} has no ${ccrRole} customers to test with`,
-        );
-    }
-
-    // Drawn the same way as the organization, rather than always the first one. Two
-    // VUs that draw the same organization would otherwise target the same customer,
-    // and each would see the other's removal and add-back as its own.
-    const targetOrg = getItemFromList(currentOrgs, randomize);
-    console.log(`Picked target client organizationIdentifier: ${targetOrg}`);
-
-    return targetOrg;
 }
 
 /**

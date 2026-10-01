@@ -326,6 +326,10 @@ class CorrespondenceClient {
      * Gets the message body of a correspondence. This endpoint supports a
      * Dialogporten dialog token through the configured token generator.
      *
+     * Not in the swagger on purpose: the controller marks it `HideFromPublicApi`
+     * as an endpoint meant for Felles Arbeidsflate. Kept here since the
+     * recipient flow reads the body through it.
+     *
      * @param {string} correspondenceId Correspondence UUID.
      * @param {{[key:string]: string}|null} [labels]
      * Optional k6 request tags.

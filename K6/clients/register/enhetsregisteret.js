@@ -61,6 +61,7 @@ class EnhetsregisteretClient {
      * @param {string} ccrRole The role to assign, keyed as in ErRoleFieldTypes,
      * e.g. "revisor" for felttype REVI.
      * @param {string} clientOrg Organization number of the organization getting a facilitator.
+     * @param {string} clientOrgForm The client's organisasjonsform as Register has it, e.g. "ENK".
      * @param {string} facilitatorOrg Organization number of the facilitator.
      * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Body holds the ER batch response XML.
@@ -70,6 +71,7 @@ class EnhetsregisteretClient {
         soapErPassword,
         ccrRole,
         clientOrg,
+        clientOrgForm,
         facilitatorOrg,
         labels = null,
     ) {
@@ -82,7 +84,8 @@ class EnhetsregisteretClient {
         }
 
         // endringstype="N" is the new assignment. Everything else in the batch is
-        // fixed test scaffolding: one unit, one change, sent as if from BRG.
+        // fixed test scaffolding: one unit, one change, sent as if from BRG. The one
+        // exception is organisasjonsform, which ER writes onto the unit.
         const body = `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.altinn.no/services/Register/ER/2013/06">
    <soapenv:Header/>
    <soapenv:Body>
@@ -92,7 +95,7 @@ class EnhetsregisteretClient {
          <ns:ERData><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
 <batchAjourholdXML>
   <head avsender="BRG" dato="20170714" kjoerenr="00001" mottaker="ALT" type="A" />
-  <enhet organisasjonsnummer="${clientOrg}" organisasjonsform="AS" hovedsakstype="N" undersakstype="NY" foersteOverfoering="N" datoFoedt="20210315" datoSistEndret="20210315">
+  <enhet organisasjonsnummer="${clientOrg}" organisasjonsform="${clientOrgForm}" hovedsakstype="N" undersakstype="NY" foersteOverfoering="N" datoFoedt="20210315" datoSistEndret="20210315">
     <samendringer felttype="${fieldType}" endringstype="N" type="K" data="D">
       <knytningOrganisasjonsnummer>${facilitatorOrg}</knytningOrganisasjonsnummer>
     </samendringer>
@@ -130,6 +133,7 @@ class EnhetsregisteretClient {
      * @param {string} ccrRole The role to remove, keyed as in ErRoleFieldTypes,
      * e.g. "regnskapsforer" for felttype REGN.
      * @param {string} clientOrg Organization number of the organization losing a facilitator.
+     * @param {string} clientOrgForm The client's organisasjonsform as Register has it, e.g. "ENK".
      * @param {string} facilitatorOrg Organization number of the facilitator.
      * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Body holds the ER batch response XML.
@@ -139,6 +143,7 @@ class EnhetsregisteretClient {
         soapErPassword,
         ccrRole,
         clientOrg,
+        clientOrgForm,
         facilitatorOrg,
         labels = null,
     ) {
@@ -160,7 +165,7 @@ class EnhetsregisteretClient {
          <ns:ERData><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
 <batchAjourholdXML>
   <head avsender="BRG" dato="20170714" kjoerenr="00001" mottaker="ALT" type="A" />
-  <enhet organisasjonsnummer="${clientOrg}" organisasjonsform="AS" hovedsakstype="N" undersakstype="NY" foersteOverfoering="N" datoFoedt="20210315" datoSistEndret="20210315">
+  <enhet organisasjonsnummer="${clientOrg}" organisasjonsform="${clientOrgForm}" hovedsakstype="N" undersakstype="NY" foersteOverfoering="N" datoFoedt="20210315" datoSistEndret="20210315">
     <samendringer felttype="${fieldType}" endringstype="U" type="K" data="D">
       <knytningOrganisasjonsnummer>${facilitatorOrg}</knytningOrganisasjonsnummer>
     </samendringer>
