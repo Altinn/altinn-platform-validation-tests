@@ -15,7 +15,8 @@ Kjør flyten mange ganger og behold bare treffene:
 npx playwright test tests/scratch/min.spec.ts --project=at23-chromium-bokmål --repeat-each=40 --retries=0
 ```
 
-Hver test får sin egen testbruker, så `--repeat-each` er begrenset av antallet i
+Hver test får sin egen testbruker, og frigir den når den er ferdig. Det er derfor
+antallet samtidige tester, ikke `--repeat-each`, som er begrenset av antallet i
 `testdata/`.
 
 ## Video av feilen
