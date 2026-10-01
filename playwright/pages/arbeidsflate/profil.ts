@@ -3,7 +3,6 @@ import { expect, Page } from "@playwright/test";
 import { TestUser } from "../../config/environment";
 import { Cookiebanner } from "../felles/cookiebanner";
 import { Meny } from "../felles/meny";
-import { gaaTil } from "../felles/navigasjon";
 import { assertFlateUtlogget } from "../felles/utlogget";
 
 export class ArbeidsflateProfil {
@@ -19,7 +18,7 @@ export class ArbeidsflateProfil {
     }
 
     async navigateTo() {
-        await gaaTil(this.page, this.url);
+        await this.page.goto(this.url, { waitUntil: "commit" });
     }
 
     // Flatene bak innlogging svarer likt for en utlogget bruker, så påstanden

@@ -1,5 +1,5 @@
 import { test as base } from "@playwright/test";
-import { readFileSync } from "fs";
+import { mkdirSync, readFileSync, writeFileSync } from "fs";
 import path from "path";
 
 import { TestUser } from "../config/environment";
@@ -18,16 +18,37 @@ function lesTestbrukere(gruppe: string, miljo: string): TestUser[] {
     });
 }
 
+// Første ledige bruker reserveres med en fil som bare kan opprettes én gang. En retry
+// finner igjen sin egen reservasjon, og ingen test får en bruker en annen test har hatt.
+function reserverTestbruker(brukere: TestUser[], katalog: string, testId: string): TestUser {
+    mkdirSync(katalog, { recursive: true });
+
+    for (const bruker of brukere) {
+        const fil = path.join(katalog, bruker.pid);
+        try {
+            writeFileSync(fil, testId, { flag: "wx" });
+            return bruker;
+        } catch {
+            if (readFileSync(fil, "utf8") === testId) {
+                return bruker;
+            }
+        }
+    }
+
+    throw new Error(`Alle ${brukere.length} testbrukerne i ${katalog} er brukt opp.`);
+}
+
 export const testbrukereFixture = base.extend<{
     user: TestUser;
     miljo: string;
 }>({
     miljo: ["", { option: true }],
 
-    // Én bruker per worker, så tester som kjører samtidig ikke endrer språket for hverandre.
-    // Trenger potensielt ordentlig fiks i fremtiden
+    // Én bruker per test, så ingen test arver språk eller sesjon fra en annen. Playwright
+    // tømmer output-mappa ved start, så reservasjonene gjelder én kjøring.
     user: async ({ miljo }, use, testInfo) => {
         const brukere = lesTestbrukere("privatPersonUtenVirksomhet", miljo);
-        await use(brukere[testInfo.parallelIndex % brukere.length]);
+        const katalog = path.join(testInfo.project.outputDir, ".testbrukere", miljo);
+        await use(reserverTestbruker(brukere, katalog, testInfo.testId));
     },
 });

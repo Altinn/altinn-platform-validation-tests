@@ -3,7 +3,7 @@ import { expect, Page } from "@playwright/test";
 import { TestUser } from "../../config/environment";
 import { Sprak } from "../../config/sprak";
 import { Cookiebanner } from "../felles/cookiebanner";
-import { gaaTil, REDIRECT_TIMEOUT } from "../felles/navigasjon";
+import { REDIRECT_TIMEOUT } from "../felles/navigasjon";
 
 export class InfoportalForside {
     constructor(
@@ -12,9 +12,8 @@ export class InfoportalForside {
         readonly cookiebanner = new Cookiebanner(page),
     ) { }
 
-    // Infoportalen har alltid navigert med et strammere tak enn de andre flatene.
     async navigateTo() {
-        await gaaTil(this.page, this.url, 15_000);
+        await this.page.goto(this.url, { waitUntil: "commit" });
     }
 
     // Infoportalen har ingen egen innloggingsindikator, så navnet på brukeren er

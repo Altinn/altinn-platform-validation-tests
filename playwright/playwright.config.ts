@@ -60,9 +60,11 @@ export default defineConfig<{
 }>({
     testDir: "./tests",
     fullyParallel: true,
+    // Ellers velger Playwright selv, halvparten av kjernene.
+    workers: process.env.GITHUB_ACTIONS ? 4 : undefined,
     // Minst én retry, slik at en flaky kjøring ikke rapporteres som feil.
     // Traces skrives ved første retry. --retries overstyrer.
-    retries: process.env.CI ? 2 : 1,
+    retries: 1,
     reporter: [
         ["html", { open: "never", port: 6060 }],
         ["junit", { outputFile: "test-results.xml" }],
