@@ -13,6 +13,19 @@ export enum Seksjon {
     SamtykkeOgFullmaktsavtaler = "samtykkeOgFullmaktsavtaler",
 }
 
+/**
+ * Stien hver seksjon lenker til i sidemenyen, fra `amUIPath` i tilgangsstyring.
+ * Språkuavhengig, og uten telleren tilgangsstyring legger i navnet når brukeren har
+ * ubehandlede forespørsler.
+ */
+export const seksjonssti: Record<Seksjon, string> = {
+    [Seksjon.Foresporsler]: "requests",
+    [Seksjon.Brukere]: "users",
+    [Seksjon.Fullmakter]: "poa-overview",
+    [Seksjon.FullmakterHosAndre]: "received-from",
+    [Seksjon.SamtykkeOgFullmaktsavtaler]: "consent/active",
+};
+
 export const seksjonsnavn: Record<Sprak, Record<Seksjon, string>> = {
     [Sprak.Bokmaal]: {
         [Seksjon.Foresporsler]: "Forespørsler",

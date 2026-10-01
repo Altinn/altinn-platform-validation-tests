@@ -5,17 +5,10 @@ import { Sprak } from "../../config/sprak";
 import { Cookiebanner } from "../felles/cookiebanner";
 import { Meny } from "../felles/meny";
 import { assertFlateUtlogget } from "../felles/utlogget";
-import { Seksjon, seksjonsnavn } from "./seksjoner";
+import { Seksjon, seksjonsnavn, seksjonssti } from "./seksjoner";
 
 // Brukes også av `Innlogging`, så stien står ett sted.
 export const tilgangsstyringUrl = (tilgangsstyring: string) => `${tilgangsstyring}/accessmanagement/ui`;
-
-/**
- * Hele navnet på seksjonen, eventuelt med en teller etter: har brukeren ubehandlede
- * forespørsler, heter menypunktet for eksempel "Forespørsler (1 forespørsel)".
- */
-const seksjonsLabel = (navn: string) =>
-    new RegExp(`^${navn.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}( \\(.+\\))?$`);
 
 export class TilgangsstyringForside {
     readonly url: string;
@@ -62,7 +55,7 @@ export class TilgangsstyringForside {
         const navn = seksjonsnavn[this.sprak];
 
         for (const seksjon of Object.values(Seksjon)) {
-            const lenke = this.sidemeny.getByLabel(seksjonsLabel(navn[seksjon])).first();
+            const lenke = this.sidemeny.locator(`a[href="/accessmanagement/ui/${seksjonssti[seksjon]}"]`);
 
             if (forventet.includes(seksjon)) {
                 await expect(lenke, `Seksjonen "${navn[seksjon]}" vises`).toBeVisible();
