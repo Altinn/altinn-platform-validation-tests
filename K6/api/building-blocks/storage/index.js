@@ -1,9 +1,12 @@
 export { CreateData, DeleteData, GetData, GetDataElements, UpdateData, UpdateDataElement, UpdateFileScanStatus } from "./data.js";
+export { LockDataElement, UnlockDataElement } from "./data-lock.js";
 export { GetApplication } from "./get-application.js";
 export { GetApplications } from "./get-applications.js";
 export { GetApplicationsByOrg } from "./get-applications-by-org.js";
 export { GetTextResource } from "./get-text-resource.js";
 export { CreateInstanceEvent, GetInstanceEvent, GetInstanceEvents } from "./instance-events.js";
+export { ExtendInstanceLock, LockInstance } from "./instance-lock.js";
+export { MutateInstance } from "./instance-mutations.js";
 export { CompleteInstance, CreateInstance, DeleteInstance, GetInstance, GetInstanceByGuid, QueryInstances, UpdateDataValues, UpdatePresentationTexts, UpdateReadStatus, UpdateSubStatus } from "./instances.js";
 export { GetProcessHistory, UpdateProcessState, UpdateProcessStateAndEvents } from "./process.js";
 export { SignInstance } from "./sign.js";

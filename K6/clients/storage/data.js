@@ -2,6 +2,7 @@ import http from "k6/http";
 
 import { buildUrl, jsonBody, requestParams } from "../common/request.js";
 import { DataElement, FileScanStatus } from "./instances.types.js";
+import { VersionMatch, versionMatchHeaders } from "./version-match.js";
 
 const TAGS = {
     CreateData: {
@@ -66,10 +67,11 @@ class DataClient {
      * @param {string|null} [dataType] Data type id the element belongs to.
      * @param {Array<string>|null} [refs] Ids of related data elements.
      * @param {string|null} [generatedFromTask] Task the element was generated from.
+     * @param {VersionMatch|null} [versionMatch] Instance and process-state versions the write is conditioned on.
      * @param {{[key:string]:string}|null} [labels] Optional k6 request labels.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
-    CreateData(instanceOwnerPartyId, instanceGuid, body, dataType = null, refs = null, generatedFromTask = null, labels = null) {
+    CreateData(instanceOwnerPartyId, instanceGuid, body, dataType = null, refs = null, generatedFromTask = null, versionMatch = null, labels = null) {
         return http.post(
             buildUrl(`${this.FULL_PATH}/instances/${instanceOwnerPartyId}/${instanceGuid}/data`, {
                 dataType,
@@ -82,7 +84,7 @@ class DataClient {
                 action: TAGS.CreateData.action,
                 labels,
                 token: this.tokenGenerator.getToken(),
-                headers: { "Content-Type": "application/octet-stream" },
+                headers: { "Content-Type": "application/octet-stream", ...versionMatchHeaders(versionMatch) },
             }),
         );
     }
@@ -122,10 +124,11 @@ class DataClient {
      * @param {*} body Binary file content.
      * @param {Array<string>|null} [refs] Ids of related data elements.
      * @param {string|null} [generatedFromTask] Task the element was generated from.
+     * @param {VersionMatch|null} [versionMatch] Instance and process-state versions the write is conditioned on.
      * @param {{[key:string]:string}|null} [labels] Optional k6 request labels.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
-    UpdateData(instanceOwnerPartyId, instanceGuid, dataGuid, body, refs = null, generatedFromTask = null, labels = null) {
+    UpdateData(instanceOwnerPartyId, instanceGuid, dataGuid, body, refs = null, generatedFromTask = null, versionMatch = null, labels = null) {
         return http.put(
             buildUrl(`${this.FULL_PATH}/instances/${instanceOwnerPartyId}/${instanceGuid}/data/${dataGuid}`, {
                 refs: refs !== null ? refs.join(",") : null,
@@ -137,7 +140,7 @@ class DataClient {
                 action: TAGS.UpdateData.action,
                 labels,
                 token: this.tokenGenerator.getToken(),
-                headers: { "Content-Type": "application/octet-stream" },
+                headers: { "Content-Type": "application/octet-stream", ...versionMatchHeaders(versionMatch) },
             }),
         );
     }
@@ -151,10 +154,11 @@ class DataClient {
      * @param {string} instanceGuid Instance UUID.
      * @param {string} dataGuid Data element UUID.
      * @param {boolean|null} [delay] Whether to delay the delete until the instance is deleted.
+     * @param {VersionMatch|null} [versionMatch] Instance and process-state versions the delete is conditioned on.
      * @param {{[key:string]:string}|null} [labels] Optional k6 request labels.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
-    DeleteData(instanceOwnerPartyId, instanceGuid, dataGuid, delay = null, labels = null) {
+    DeleteData(instanceOwnerPartyId, instanceGuid, dataGuid, delay = null, versionMatch = null, labels = null) {
         return http.del(
             buildUrl(`${this.FULL_PATH}/instances/${instanceOwnerPartyId}/${instanceGuid}/data/${dataGuid}`, { delay }),
             null,
@@ -163,6 +167,7 @@ class DataClient {
                 action: TAGS.DeleteData.action,
                 labels,
                 token: this.tokenGenerator.getToken(),
+                headers: versionMatchHeaders(versionMatch),
             }),
         );
     }
@@ -198,10 +203,11 @@ class DataClient {
      * @param {string} instanceGuid Instance UUID.
      * @param {string} dataGuid Data element UUID.
      * @param {DataElement} request Data element metadata to store.
+     * @param {VersionMatch|null} [versionMatch] Instance and process-state versions the write is conditioned on.
      * @param {{[key:string]:string}|null} [labels] Optional k6 request labels.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
-    UpdateDataElement(instanceOwnerPartyId, instanceGuid, dataGuid, request, labels = null) {
+    UpdateDataElement(instanceOwnerPartyId, instanceGuid, dataGuid, request, versionMatch = null, labels = null) {
         return http.put(
             `${this.FULL_PATH}/instances/${instanceOwnerPartyId}/${instanceGuid}/dataelements/${dataGuid}`,
             jsonBody(request),
@@ -211,6 +217,7 @@ class DataClient {
                 labels,
                 token: this.tokenGenerator.getToken(),
                 json: true,
+                headers: versionMatchHeaders(versionMatch),
             }),
         );
     }
