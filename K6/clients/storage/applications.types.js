@@ -76,7 +76,6 @@
  * @property {boolean} autoDeleteOnProcessEnd
  * @property {boolean} disallowUserCreate
  * @property {boolean} disallowUserDelete
- * @property {boolean} allowInSubform Deprecated in Swagger; retained for compatibility.
  * @property {ShadowFields|null} shadowFields
  */
 
