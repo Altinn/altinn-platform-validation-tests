@@ -33,7 +33,7 @@ const miljoer = {
         },
     },
     prod: {
-    // TestID finnes ikke i prod, så innloggingen går via Mockporten.
+        // TestID finnes ikke i prod, så innloggingen går via Mockporten.
         mockporten: true,
         urler: {
             arbeidsflate: "https://af.altinn.no",
@@ -48,8 +48,8 @@ const miljoer = {
 const nettlesere = {
     chromium: devices["Desktop Chrome"],
     // firefox: devices["Desktop Firefox"],
-    // edge: devices["Desktop Edge"],
-    // webkit: devices["Desktop Safari"],
+    edge: devices["Desktop Edge"],
+    webkit: devices["Desktop Safari"],
 };
 
 export default defineConfig<{
