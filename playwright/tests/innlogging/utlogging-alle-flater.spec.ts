@@ -1,9 +1,12 @@
 import { test } from "../../fixtures/test";
 
 // mockporten støtter per nå ikke utlogging (på en god måte)
-// Ikke i tt02 inntil videre: arbeidsflaten kan vise brukeren som innlogget etter
-// utlogging, se https://github.com/Altinn/dialogporten-frontend/issues/4683
-test("Bruker er utlogget på alle flater etter utlogging fra arbeidsflate", { tag: ["@at23"] }, async ({
+
+// Skrudd av til arbeidsflaten logger ut ordentlig: den kan vise brukeren som
+// innlogget etter utlogging. Fjern disse linjene når issuen er lukket.
+test.fixme(true, "https://github.com/Altinn/dialogporten-frontend/issues/4683");
+
+test("Bruker er utlogget på alle flater etter utlogging fra arbeidsflate", { tag: ["@at23", "@tt02"] }, async ({
     innlogging,
     user,
     arbeidsflate,
@@ -35,7 +38,7 @@ test("Bruker er utlogget på alle flater etter utlogging fra arbeidsflate", { ta
     });
 });
 
-test("Bruker er utlogget på alle flater etter utlogging fra profilen", { tag: ["@at23"] }, async ({
+test("Bruker er utlogget på alle flater etter utlogging fra profilen", { tag: ["@at23", "@tt02"] }, async ({
     innlogging,
     user,
     arbeidsflate,
@@ -70,7 +73,7 @@ test("Bruker er utlogget på alle flater etter utlogging fra profilen", { tag: [
     });
 });
 
-test("Bruker er utlogget på alle flater etter utlogging fra tilgangsstyring", { tag: ["@at23"] }, async ({
+test("Bruker er utlogget på alle flater etter utlogging fra tilgangsstyring", { tag: ["@at23", "@tt02"] }, async ({
     innlogging,
     user,
     arbeidsflate,
