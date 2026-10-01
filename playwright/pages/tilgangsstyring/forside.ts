@@ -30,6 +30,8 @@ export class TilgangsstyringForside {
         this.url = tilgangsstyringUrl(tilgangsstyring);
 
         this.sidemeny = page.getByRole("complementary");
+        // Lenken i sidemenyen til en side i tilgangsstyring, gitt stien etter
+        // /accessmanagement/ui/, for eksempel "users" for Brukere.
         const lenke = (sti: string) => this.sidemeny.locator(`a[href="/accessmanagement/ui/${sti}"]`);
         this.foresporslerLink = lenke("requests");
         this.brukereLink = lenke("users");
