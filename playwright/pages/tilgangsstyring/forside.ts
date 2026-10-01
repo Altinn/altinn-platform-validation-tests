@@ -1,24 +1,43 @@
-import { expect, Page } from "@playwright/test";
+import { expect, Locator, Page } from "@playwright/test";
 
 import { TestUser } from "../../config/environment";
-import { Sprak } from "../../config/sprak";
 import { Cookiebanner } from "../felles/cookiebanner";
 import { Meny } from "../felles/meny";
 import { assertFlateUtlogget } from "../felles/utlogget";
-import { Seksjon, seksjonsnavn } from "./seksjoner";
+
+// Brukes også av `Innlogging`, så stien står ett sted.
+export const tilgangsstyringUrl = (tilgangsstyring: string) => `${tilgangsstyring}/accessmanagement/ui`;
 
 export class TilgangsstyringForside {
     readonly url: string;
 
-    // Språket kommer fra fixturen, så assertions slipper å ta det som argument.
+    // Lenkene i sidemenyen finnes på href, som er den samme uansett språk. Navnet
+    // får en teller når brukeren har ubehandlede forespørsler, og sidemenyen har
+    // ingen test-id-er. Stiene er fra amUIPath i tilgangsstyring.
+    readonly sidemeny: Locator;
+    readonly foresporslerLink: Locator;
+    readonly brukereLink: Locator;
+    readonly fullmakterLink: Locator;
+    readonly fullmakterHosAndreLink: Locator;
+    readonly samtykkeOgFullmaktsavtalerLink: Locator;
+
     constructor(
         private page: Page,
         tilgangsstyring: string,
-        private sprak: Sprak,
         readonly meny = new Meny(page),
         readonly cookiebanner = new Cookiebanner(page),
     ) {
-        this.url = `${tilgangsstyring}/accessmanagement/ui`;
+        this.url = tilgangsstyringUrl(tilgangsstyring);
+
+        this.sidemeny = page.getByRole("complementary");
+        // Lenken i sidemenyen til en side i tilgangsstyring, gitt stien etter
+        // /accessmanagement/ui/, for eksempel "users" for Brukere.
+        const sidemenyLenkeTil = (sti: string) => this.sidemeny.locator(`a[href="/accessmanagement/ui/${sti}"]`);
+        this.foresporslerLink = sidemenyLenkeTil("requests");
+        this.brukereLink = sidemenyLenkeTil("users");
+        this.fullmakterLink = sidemenyLenkeTil("poa-overview");
+        this.fullmakterHosAndreLink = sidemenyLenkeTil("received-from");
+        this.samtykkeOgFullmaktsavtalerLink = sidemenyLenkeTil("consent/active");
     }
 
     async navigateTo() {
@@ -34,30 +53,7 @@ export class TilgangsstyringForside {
     async assertLoggedIn() {
         await this.meny.assertLoggedIn();
 
-        // Brukere-lenken i sidemenyen finnes på alle tilgangsstyringssidene, og
-        // href-en er den samme uansett språk.
-        await expect(
-            this.page.getByRole("complementary").locator("a[href=\"/accessmanagement/ui/users\"]"),
-            "Tilgangsstyringens sidemeny vises"
-        ).toBeVisible();
+        await expect(this.brukereLink, "Tilgangsstyringens sidemeny vises").toBeVisible();
     }
 
-    /**
-     * Sjekker at nøyaktig de forventede seksjonene vises i sidemenyen. Hvilke det
-     * er avhenger av brukerens tilganger, så testen sier hva den forventer.
-     */
-    async assertSections(forventet: Seksjon[]) {
-        const sidebar = this.page.getByRole("complementary");
-        const navn = seksjonsnavn[this.sprak];
-
-        for (const seksjon of Object.values(Seksjon)) {
-            const lenke = sidebar.getByLabel(navn[seksjon], { exact: true }).first();
-
-            if (forventet.includes(seksjon)) {
-                await expect(lenke, `Seksjonen "${navn[seksjon]}" vises`).toBeVisible();
-            } else {
-                await expect(lenke, `Seksjonen "${navn[seksjon]}" vises ikke`).toBeHidden();
-            }
-        }
-    }
 }

@@ -12,6 +12,6 @@ export const innloggingFixture = base.extend<{
     mockporten: [false, { option: true }],
 
     innlogging: async ({ page, mockporten, urler }, use) => {
-        await use(new Innlogging(page, urler.platform, mockporten));
+        await use(new Innlogging(page, urler, mockporten));
     },
 });

@@ -12,7 +12,7 @@ export const tilgangsstyringFixture = base.extend<{
     urler: [{} as Urler, { option: true }],
     sprak: [Sprak.Bokmaal, { option: true }],
 
-    tilgangsstyring: async ({ page, sprak, urler }, use) => {
-        await use(new TilgangsstyringForside(page, urler.tilgangsstyring, sprak));
+    tilgangsstyring: async ({ page, urler }, use) => {
+        await use(new TilgangsstyringForside(page, urler.tilgangsstyring));
     },
 });

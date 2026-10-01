@@ -1,33 +1,23 @@
-import { test } from "../../fixtures/test";
-import { Seksjon } from "../../pages/tilgangsstyring/seksjoner";
+import { expect, test } from "../../fixtures/test";
 
-// Hva denne brukeren skal se. En bruker med færre tilganger får sin egen liste,
-// ikke en conditional i page objectet.
-const forventedeSeksjoner = [
-    Seksjon.Foresporsler,
-    Seksjon.Brukere,
-    Seksjon.Fullmakter,
-    Seksjon.FullmakterHosAndre,
-    Seksjon.SamtykkeOgFullmaktsavtaler,
-];
-
-// Språket kommer fra projectet, så testen kjører én gang per språk.
+// Seksjonene finnes på href, uavhengig av språk. Språkvalget testes i
+// infoportal/sprak-fra-profil.spec.ts, og oversettelsene eies av tilgangsstyring.
 test("Bruker ser oversikt over navigasjonsvalg", { tag: ["@at23", "@tt02", "@prod"] }, async ({
     innlogging,
     user,
-    sprak,
     tilgangsstyring,
 }) => {
     await test.step("Innlogget bruker åpner tilgangsstyring", async () => {
-        await innlogging.logIn(tilgangsstyring, user);
+        await innlogging.loggInnViaTilgangsstyring(user);
         await tilgangsstyring.assertLoggedIn();
     });
 
-    await test.step(`Setter språk til ${sprak}`, async () => {
-        await tilgangsstyring.meny.setLanguage(sprak);
-    });
-
-    await test.step("Verifiser tilgjengelige seksjoner", async () => {
-        await tilgangsstyring.assertSections(forventedeSeksjoner);
+    // En bruker med færre tilganger ser færre seksjoner, og får sin egen test.
+    await test.step("Bruker ser seksjonene i sidemenyen", async () => {
+        await expect(tilgangsstyring.foresporslerLink, "Forespørsler vises").toBeVisible();
+        await expect(tilgangsstyring.brukereLink, "Brukere vises").toBeVisible();
+        await expect(tilgangsstyring.fullmakterLink, "Fullmakter vises").toBeVisible();
+        await expect(tilgangsstyring.fullmakterHosAndreLink, "Fullmakter hos andre vises").toBeVisible();
+        await expect(tilgangsstyring.samtykkeOgFullmaktsavtalerLink, "Samtykke- og fullmaktsavtaler vises").toBeVisible();
     });
 });
