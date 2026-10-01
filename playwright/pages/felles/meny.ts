@@ -15,19 +15,18 @@ export class Meny {
     readonly languageMenuItem: Locator;
 
     constructor(private page: Page) {
-        this.menuButton = page.getByRole("banner").getByRole("button", {
-            name: /^(meny|menu)$/i,
-        });
+        this.menuButton = page.getByRole("button", { name: /^(meny|menu)$/i });
         this.menuItems = page.getByRole("menuitem");
 
         this.altinnLink = page.getByRole("link", { name: "Altinn", exact: true });
 
-        this.innboksMenuItem = page.getByRole("menuitem", { name: /^(innboks|inbox)$/i });
-        this.profilMenuItem = page.getByRole("menuitem", { name: /^(din profil|your profile)$/i });
-        this.tilgangsstyringMenuItem = page.getByRole("menuitem", {
-            name: /^(tilgangsstyring|access management)$/i,
-        });
-        this.languageMenuItem = page.getByRole("menuitem", { name: "Språk/language" });
+        // Hele navnet på et av språkene, uavhengig av store og små bokstaver.
+        const menuItem = (...navn: string[]) =>
+            page.getByRole("menuitem", { name: new RegExp(`^(${navn.join("|")})$`, "i") });
+        this.innboksMenuItem = menuItem("innboks", "inbox");
+        this.profilMenuItem = menuItem("din profil", "your profile");
+        this.tilgangsstyringMenuItem = menuItem("tilgangsstyring", "access management");
+        this.languageMenuItem = menuItem("språk/language");
     }
 
     /**
