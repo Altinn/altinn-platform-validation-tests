@@ -195,16 +195,6 @@
  */
 
 /**
- * @typedef {object} RightDecomposedDto
- * @property {RightDto} right
- */
-
-/**
- * @typedef {object} ResourceDecomposedDto
- * @property {Array<RightDecomposedDto>|null} rights
- */
-
-/**
  * @typedef {"Default"|"Altinn1"|"Altinn2"|"Altinn3"|"ExternalPlatform"} ReferenceSource
  */
 
@@ -489,7 +479,6 @@ export const JsonPatchOperation = undefined;
 export const OrgList = undefined;
 export const PolicyRightsDTO = undefined;
 export const PolicyRuleDTO = undefined;
-export const ResourceDecomposedDto = undefined;
 export const ResourceListQuery = undefined;
 export const ResourceListQueryBuilder = undefined;
 export const ResourcePolicyRightsQuery = undefined;

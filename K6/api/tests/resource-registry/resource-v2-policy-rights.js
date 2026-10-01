@@ -41,9 +41,7 @@ export default function (data) {
 
     group("Read the decomposed policy rights of a resource", function () {
         const query = new ResourcePolicyRightsQueryBuilder().withServiceOwnerRights(true).build();
-        const decomposed = ResourceV2GetPolicyRights(client, resourceId, query, rightsLabel);
-        // The swagger nests each right one level down, `{ rights: [{ right }] }`.
-        const rights = decomposed?.rights?.map((entry) => entry.right) ?? null;
+        const rights = ResourceV2GetPolicyRights(client, resourceId, query, rightsLabel);
 
         PolicyRightsDomainChecks.CheckOneRightPerAction(rights, actions, "ResourceV2GetPolicyRights");
         PolicyRightsDomainChecks.CheckRightsForResource(rights, resourceId, "ResourceV2GetPolicyRights");
