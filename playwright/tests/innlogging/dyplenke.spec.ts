@@ -2,7 +2,7 @@ import { test } from "../../fixtures/test";
 
 // En utlogget bruker som åpner en lenke til en beskyttet side, for eksempel fra et
 // varsel, skal sendes til innlogging og lande på siden lenken pekte på.
-test("Bruker som åpner en lenke til profilen logges inn og lander på profilen", { tag: ["@at23", "@tt02"] }, async ({
+test("Bruker som åpner en lenke til profilen logges inn og lander på profilen", { tag: ["@at23", "@tt02", "@prod"] }, async ({
     innlogging,
     user,
     arbeidsflateProfil,

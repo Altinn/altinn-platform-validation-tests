@@ -38,8 +38,10 @@ export class ArbeidsflateProfil {
         await this.meny.assertLoggedIn();
 
         // Sidemenyen alene skiller ikke profilen fra innboksen: lagrede søk-lenken
-        // finnes i begge.
-        await expect(this.page, "Er på profilen").toHaveURL(this.url);
+        // finnes i begge. Stien sjekkes, så query-parametre ikke gir falsk feil.
+        await expect
+            .poll(() => new URL(this.page.url()).pathname, { message: "Er på profilen" })
+            .toBe(new URL(this.url).pathname);
 
         await expect(this.lagredeSokLink, "Profilens sidemeny vises").toBeVisible();
     }

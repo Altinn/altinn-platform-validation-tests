@@ -1,6 +1,13 @@
 import { test } from "../../fixtures/test";
 
-// mockporten støtter per nå ikke utlogging (på en god måte)
+// Endrer ingen data. Utloggingen går via /logout og tilbake til
+// /logout/handleloggedout, og det er de endepunktene testene er her for. Sesjonen
+// gjelder på tvers av flatene, så en utlogging fra én av dem skal ta brukeren ut av
+// alle. Infoportalen sjekkes, men logges ikke ut fra: den har ikke menyen
+// utloggingen ligger i.
+//
+// Ikke i prod: der logger testene inn via Mockporten, og utloggingen derfra lander
+// på en feilside.
 
 // Skrudd av til arbeidsflaten logger ut ordentlig: den kan vise brukeren som
 // innlogget etter utlogging. https://github.com/Altinn/dialogporten-frontend/issues/4683

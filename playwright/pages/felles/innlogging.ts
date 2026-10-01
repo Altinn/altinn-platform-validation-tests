@@ -50,7 +50,6 @@ export class Innlogging {
             name: /log in as test user/i,
         });
 
-        // Logger inn via Arbeidsflate / innboks
         // Med denne får du nivå 4-innlogging
         this.testIdHoytNivaaLink = page.getByRole("link", { name: /TestID på nivå høyt/i });
         this.idportenPidField = page.locator("input[name=\"pid\"]");
