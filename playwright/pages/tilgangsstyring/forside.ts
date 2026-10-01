@@ -32,12 +32,12 @@ export class TilgangsstyringForside {
         this.sidemeny = page.getByRole("complementary");
         // Lenken i sidemenyen til en side i tilgangsstyring, gitt stien etter
         // /accessmanagement/ui/, for eksempel "users" for Brukere.
-        const lenke = (sti: string) => this.sidemeny.locator(`a[href="/accessmanagement/ui/${sti}"]`);
-        this.foresporslerLink = lenke("requests");
-        this.brukereLink = lenke("users");
-        this.fullmakterLink = lenke("poa-overview");
-        this.fullmakterHosAndreLink = lenke("received-from");
-        this.samtykkeOgFullmaktsavtalerLink = lenke("consent/active");
+        const sidemenyLenkeTil = (sti: string) => this.sidemeny.locator(`a[href="/accessmanagement/ui/${sti}"]`);
+        this.foresporslerLink = sidemenyLenkeTil("requests");
+        this.brukereLink = sidemenyLenkeTil("users");
+        this.fullmakterLink = sidemenyLenkeTil("poa-overview");
+        this.fullmakterHosAndreLink = sidemenyLenkeTil("received-from");
+        this.samtykkeOgFullmaktsavtalerLink = sidemenyLenkeTil("consent/active");
     }
 
     async navigateTo() {
