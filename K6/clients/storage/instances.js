@@ -2,6 +2,7 @@ import http from "k6/http";
 
 import { buildUrl, jsonBody, requestParams } from "../common/request.js";
 import { DataValues, Instance, PresentationTexts, Substatus } from "./instances.types.js";
+import { VersionMatch, versionMatchHeaders } from "./version-match.js";
 
 const TAGS = {
     QueryInstances: {
@@ -162,10 +163,11 @@ class InstancesClient {
      * @param {number} instanceOwnerPartyId Instance owner party id.
      * @param {string} instanceGuid Instance UUID.
      * @param {boolean|null} [hard] Whether to hard delete the instance.
+     * @param {VersionMatch|null} [versionMatch] Instance and process-state versions the delete is conditioned on.
      * @param {{[key:string]:string}|null} [labels] Optional k6 request labels.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
-    DeleteInstance(instanceOwnerPartyId, instanceGuid, hard = null, labels = null) {
+    DeleteInstance(instanceOwnerPartyId, instanceGuid, hard = null, versionMatch = null, labels = null) {
         return http.del(
             buildUrl(`${this.FULL_PATH}/instances/${instanceOwnerPartyId}/${instanceGuid}`, { hard }),
             null,
@@ -174,6 +176,7 @@ class InstancesClient {
                 action: TAGS.DeleteInstance.action,
                 labels,
                 token: this.tokenGenerator.getToken(),
+                headers: versionMatchHeaders(versionMatch),
             }),
         );
     }
@@ -185,10 +188,11 @@ class InstancesClient {
      *
      * @param {number} instanceOwnerPartyId Instance owner party id.
      * @param {string} instanceGuid Instance UUID.
+     * @param {VersionMatch|null} [versionMatch] Instance and process-state versions the write is conditioned on.
      * @param {{[key:string]:string}|null} [labels] Optional k6 request labels.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
-    CompleteInstance(instanceOwnerPartyId, instanceGuid, labels = null) {
+    CompleteInstance(instanceOwnerPartyId, instanceGuid, versionMatch = null, labels = null) {
         return http.post(
             `${this.FULL_PATH}/instances/${instanceOwnerPartyId}/${instanceGuid}/complete`,
             null,
@@ -197,6 +201,7 @@ class InstancesClient {
                 action: TAGS.CompleteInstance.action,
                 labels,
                 token: this.tokenGenerator.getToken(),
+                headers: versionMatchHeaders(versionMatch),
             }),
         );
     }
@@ -209,10 +214,11 @@ class InstancesClient {
      * @param {number} instanceOwnerPartyId Instance owner party id.
      * @param {string} instanceGuid Instance UUID.
      * @param {DataValues} request Data values to store.
+     * @param {VersionMatch|null} [versionMatch] Instance and process-state versions the write is conditioned on.
      * @param {{[key:string]:string}|null} [labels] Optional k6 request labels.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
-    UpdateDataValues(instanceOwnerPartyId, instanceGuid, request, labels = null) {
+    UpdateDataValues(instanceOwnerPartyId, instanceGuid, request, versionMatch = null, labels = null) {
         return http.put(
             `${this.FULL_PATH}/instances/${instanceOwnerPartyId}/${instanceGuid}/datavalues`,
             jsonBody(request),
@@ -222,6 +228,7 @@ class InstancesClient {
                 labels,
                 token: this.tokenGenerator.getToken(),
                 json: true,
+                headers: versionMatchHeaders(versionMatch),
             }),
         );
     }
@@ -234,10 +241,11 @@ class InstancesClient {
      * @param {number} instanceOwnerPartyId Instance owner party id.
      * @param {string} instanceGuid Instance UUID.
      * @param {PresentationTexts} request Presentation texts to store.
+     * @param {VersionMatch|null} [versionMatch] Instance and process-state versions the write is conditioned on.
      * @param {{[key:string]:string}|null} [labels] Optional k6 request labels.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
-    UpdatePresentationTexts(instanceOwnerPartyId, instanceGuid, request, labels = null) {
+    UpdatePresentationTexts(instanceOwnerPartyId, instanceGuid, request, versionMatch = null, labels = null) {
         return http.put(
             `${this.FULL_PATH}/instances/${instanceOwnerPartyId}/${instanceGuid}/presentationtexts`,
             jsonBody(request),
@@ -247,6 +255,7 @@ class InstancesClient {
                 labels,
                 token: this.tokenGenerator.getToken(),
                 json: true,
+                headers: versionMatchHeaders(versionMatch),
             }),
         );
     }
@@ -283,10 +292,11 @@ class InstancesClient {
      * @param {number} instanceOwnerPartyId Instance owner party id.
      * @param {string} instanceGuid Instance UUID.
      * @param {Substatus} request Substatus to store.
+     * @param {VersionMatch|null} [versionMatch] Instance and process-state versions the write is conditioned on.
      * @param {{[key:string]:string}|null} [labels] Optional k6 request labels.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
-    UpdateSubStatus(instanceOwnerPartyId, instanceGuid, request, labels = null) {
+    UpdateSubStatus(instanceOwnerPartyId, instanceGuid, request, versionMatch = null, labels = null) {
         return http.put(
             `${this.FULL_PATH}/instances/${instanceOwnerPartyId}/${instanceGuid}/substatus`,
             jsonBody(request),
@@ -296,6 +306,7 @@ class InstancesClient {
                 labels,
                 token: this.tokenGenerator.getToken(),
                 json: true,
+                headers: versionMatchHeaders(versionMatch),
             }),
         );
     }

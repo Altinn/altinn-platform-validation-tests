@@ -1,14 +1,10 @@
 import http from "k6/http";
 
-import { buildUrl, jsonBody, requestParams } from "../common/request.js";
-import { Application } from "./applications.types.js";
+import { requestParams } from "../common/request.js";
 
 const TAGS = {
     GetApplications: {
         action: "get-applications",
-    },
-    CreateApplication: {
-        action: "create-application",
     },
     GetApplicationsByOrg: {
         action: "get-applications-by-org",
@@ -16,14 +12,13 @@ const TAGS = {
     GetApplication: {
         action: "get-application",
     },
-    UpdateApplication: {
-        action: "update-application",
-    },
-    DeleteApplication: {
-        action: "delete-application",
-    },
 };
 
+/**
+ * Client for the Applications API. Read only: the swagger no longer lists the
+ * create, update and delete operations, which are Studio Designer's and take a
+ * platform token this repository does not have.
+ */
 class ApplicationsClient {
     /**
      * Creates a client for the Applications API.
@@ -76,28 +71,6 @@ class ApplicationsClient {
     }
 
     /**
-     * Create application metadata.
-     *
-     * @param {string|null} appId Application identifier.
-     * @param {Application} application Application metadata.
-     * @param {{[key:string]:string}|null} labels Optional k6 request labels.
-     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
-     */
-    CreateApplication(appId, application, labels = null) {
-        return http.post(
-            buildUrl(`${this.FULL_PATH}/applications`, { appId }),
-            jsonBody(application),
-            requestParams({
-                endpoint: `${this.FULL_PATH}/applications`,
-                action: TAGS.CreateApplication.action,
-                labels,
-                token: this.tokenGenerator.getToken(),
-                json: true,
-            }),
-        );
-    }
-
-    /**
      * Get all applications for an organization.
      *
      * @param {string} org Organization identifier.
@@ -130,51 +103,6 @@ class ApplicationsClient {
             requestParams({
                 endpoint: `${this.FULL_PATH}/applications/{org}/{app}`,
                 action: TAGS.GetApplication.action,
-                labels,
-                token: this.tokenGenerator.getToken(),
-            }),
-        );
-    }
-
-    /**
-     * Update application metadata.
-     *
-     * @param {string} org Organization identifier.
-     * @param {string} app Application identifier.
-     * @param {Application} application Application metadata.
-     * @param {{[key:string]:string}|null} labels Optional k6 request labels.
-     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
-     */
-    UpdateApplication(org, app, application, labels = null) {
-        return http.put(
-            `${this.FULL_PATH}/applications/${org}/${app}`,
-            jsonBody(application),
-            requestParams({
-                endpoint: `${this.FULL_PATH}/applications/{org}/{app}`,
-                action: TAGS.UpdateApplication.action,
-                labels,
-                token: this.tokenGenerator.getToken(),
-                json: true,
-            }),
-        );
-    }
-
-    /**
-     * Delete application metadata.
-     *
-     * @param {string} org Organization identifier.
-     * @param {string} app Application identifier.
-     * @param {boolean|null} hard Permanently delete.
-     * @param {{[key:string]:string}|null} labels Optional k6 request labels.
-     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
-     */
-    DeleteApplication(org, app, hard = null, labels = null) {
-        return http.del(
-            buildUrl(`${this.FULL_PATH}/applications/${org}/${app}`, { hard }),
-            null,
-            requestParams({
-                endpoint: `${this.FULL_PATH}/applications/{org}/{app}`,
-                action: TAGS.DeleteApplication.action,
                 labels,
                 token: this.tokenGenerator.getToken(),
             }),

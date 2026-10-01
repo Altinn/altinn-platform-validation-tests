@@ -2,6 +2,7 @@ import { check } from "k6";
 
 import { InstancesClient } from "../../../clients/storage/index.js";
 import { DataValues, Instance, InstanceQueryResponse, PresentationTexts, Substatus } from "../../../clients/storage/instances.types.js";
+import { VersionMatch } from "../../../clients/storage/version-match.js";
 import { withRetries } from "../common/retry.js";
 
 /**
@@ -232,6 +233,7 @@ export function GetInstance(
  * @param {number} instanceOwnerPartyId Instance owner party id.
  * @param {string} instanceGuid Instance UUID.
  * @param {boolean|null} [hard] Whether to hard delete.
+ * @param {VersionMatch|null} [versionMatch] Instance and process-state versions the delete is conditioned on.
  * @param {{[key:string]:string}|null} [labels] Optional k6 request labels.
  * @returns {Instance|null} The deleted instance on a soft delete, or null on a
  * hard delete, which answers 204, and when the call failed.
@@ -241,6 +243,7 @@ export function DeleteInstance(
     instanceOwnerPartyId,
     instanceGuid,
     hard = null,
+    versionMatch = null,
     labels = null,
 ) {
     const res = withRetries(
@@ -248,6 +251,7 @@ export function DeleteInstance(
             instanceOwnerPartyId,
             instanceGuid,
             hard,
+            versionMatch,
             labels,
         ),
         "DeleteInstance",
@@ -297,6 +301,7 @@ export function DeleteInstance(
  * @param {InstancesClient} instancesClient Client for the API.
  * @param {number} instanceOwnerPartyId Instance owner party id.
  * @param {string} instanceGuid Instance UUID.
+ * @param {VersionMatch|null} [versionMatch] Instance and process-state versions the write is conditioned on.
  * @param {{[key:string]:string}|null} [labels] Optional k6 request labels.
  * @returns {Instance|null} Parsed response body, or null when the call failed.
  */
@@ -304,12 +309,14 @@ export function CompleteInstance(
     instancesClient,
     instanceOwnerPartyId,
     instanceGuid,
+    versionMatch = null,
     labels = null,
 ) {
     const res = withRetries(
         () => instancesClient.CompleteInstance(
             instanceOwnerPartyId,
             instanceGuid,
+            versionMatch,
             labels,
         ),
         "CompleteInstance",
@@ -354,6 +361,7 @@ export function CompleteInstance(
  * @param {number} instanceOwnerPartyId Instance owner party id.
  * @param {string} instanceGuid Instance UUID.
  * @param {DataValues} request Data values to store.
+ * @param {VersionMatch|null} [versionMatch] Instance and process-state versions the write is conditioned on.
  * @param {{[key:string]:string}|null} [labels] Optional k6 request labels.
  * @returns {Instance|null} Parsed response body, or null when the call failed.
  */
@@ -362,6 +370,7 @@ export function UpdateDataValues(
     instanceOwnerPartyId,
     instanceGuid,
     request,
+    versionMatch = null,
     labels = null,
 ) {
     const res = withRetries(
@@ -369,6 +378,7 @@ export function UpdateDataValues(
             instanceOwnerPartyId,
             instanceGuid,
             request,
+            versionMatch,
             labels,
         ),
         "UpdateDataValues",
@@ -413,6 +423,7 @@ export function UpdateDataValues(
  * @param {number} instanceOwnerPartyId Instance owner party id.
  * @param {string} instanceGuid Instance UUID.
  * @param {PresentationTexts} request Presentation texts to store.
+ * @param {VersionMatch|null} [versionMatch] Instance and process-state versions the write is conditioned on.
  * @param {{[key:string]:string}|null} [labels] Optional k6 request labels.
  * @returns {Instance|null} Parsed response body, or null when the call failed.
  */
@@ -421,6 +432,7 @@ export function UpdatePresentationTexts(
     instanceOwnerPartyId,
     instanceGuid,
     request,
+    versionMatch = null,
     labels = null,
 ) {
     const res = withRetries(
@@ -428,6 +440,7 @@ export function UpdatePresentationTexts(
             instanceOwnerPartyId,
             instanceGuid,
             request,
+            versionMatch,
             labels,
         ),
         "UpdatePresentationTexts",
@@ -531,6 +544,7 @@ export function UpdateReadStatus(
  * @param {number} instanceOwnerPartyId Instance owner party id.
  * @param {string} instanceGuid Instance UUID.
  * @param {Substatus} request Substatus to store.
+ * @param {VersionMatch|null} [versionMatch] Instance and process-state versions the write is conditioned on.
  * @param {{[key:string]:string}|null} [labels] Optional k6 request labels.
  * @returns {Instance|null} Parsed response body, or null when the call failed.
  */
@@ -539,6 +553,7 @@ export function UpdateSubStatus(
     instanceOwnerPartyId,
     instanceGuid,
     request,
+    versionMatch = null,
     labels = null,
 ) {
     const res = withRetries(
@@ -546,6 +561,7 @@ export function UpdateSubStatus(
             instanceOwnerPartyId,
             instanceGuid,
             request,
+            versionMatch,
             labels,
         ),
         "UpdateSubStatus",
