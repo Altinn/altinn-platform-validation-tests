@@ -8,7 +8,7 @@ import { assertFlateUtlogget } from "../felles/utlogget";
 export class ArbeidsflateProfil {
     readonly url: string;
 
-    // Lagrede søk ligger bare under profilen, og href-en er språkuavhengig.
+    // Lagrede søk i profilens sidemeny. href-en er språkuavhengig.
     readonly lagredeSokLink: Locator;
 
     constructor(
@@ -36,6 +36,10 @@ export class ArbeidsflateProfil {
 
     async assertLoggedIn() {
         await this.meny.assertLoggedIn();
+
+        // Sidemenyen alene skiller ikke profilen fra innboksen: lagrede søk-lenken
+        // finnes i begge.
+        await expect(this.page, "Er på profilen").toHaveURL(this.url);
 
         await expect(this.lagredeSokLink, "Profilens sidemeny vises").toBeVisible();
     }

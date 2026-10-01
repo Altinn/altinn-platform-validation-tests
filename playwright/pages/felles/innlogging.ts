@@ -92,6 +92,20 @@ export class Innlogging {
     }
 
     /**
+     * Logger inn fra en direkte lenke, slik en bruker som kommer fra et varsel eller et
+     * bokmerke gjør: siden sender brukeren til innlogging og tilbake etterpå.
+     */
+    async loggInnFraDyplenke(url: string, user: TestUser) {
+        if (this.mockporten) {
+            await this.loggInnMedMockporten(url, user);
+            return;
+        }
+
+        await this.page.goto(url);
+        await this.loggInnMedTestId(user);
+    }
+
+    /**
      * Fortsetter fra ID-portens valg av innloggingsmetode. Sjekker at valget er der
      * først, så en redirect som ikke kommer fram feiler her og ikke på klikket.
      */

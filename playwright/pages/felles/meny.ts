@@ -15,7 +15,8 @@ export class Meny {
     readonly languageMenuItem: Locator;
 
     constructor(private page: Page) {
-        this.menuButton = page.getByRole("button", { name: /^(meny|menu)$/i });
+        // Avgrenset til headeren, så en annen "Meny"-knapp på siden ikke gir strict mode-feil.
+        this.menuButton = page.getByRole("banner").getByRole("button", { name: /^(meny|menu)$/i });
         this.menuItems = page.getByRole("menuitem");
 
         this.altinnLink = page.getByRole("link", { name: "Altinn", exact: true });
