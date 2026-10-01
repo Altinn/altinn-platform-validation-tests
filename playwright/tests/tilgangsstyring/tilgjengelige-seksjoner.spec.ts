@@ -1,15 +1,4 @@
-import { test } from "../../fixtures/test";
-import { Seksjon } from "../../pages/tilgangsstyring/seksjoner";
-
-// Hva denne brukeren skal se. En bruker med færre tilganger får sin egen liste,
-// ikke en conditional i page objectet.
-const forventedeSeksjoner = [
-    Seksjon.Foresporsler,
-    Seksjon.Brukere,
-    Seksjon.Fullmakter,
-    Seksjon.FullmakterHosAndre,
-    Seksjon.SamtykkeOgFullmaktsavtaler,
-];
+import { expect, test } from "../../fixtures/test";
 
 // Språket kommer fra projectet, så testen kjører én gang per språk.
 test("Bruker ser oversikt over navigasjonsvalg", { tag: ["@at23", "@tt02", "@prod"] }, async ({
@@ -27,7 +16,12 @@ test("Bruker ser oversikt over navigasjonsvalg", { tag: ["@at23", "@tt02", "@pro
         await tilgangsstyring.meny.setLanguage(sprak);
     });
 
-    await test.step("Verifiser tilgjengelige seksjoner", async () => {
-        await tilgangsstyring.assertSections(forventedeSeksjoner);
+    // En bruker med færre tilganger ser færre seksjoner, og får sin egen test.
+    await test.step("Bruker ser seksjonene i sidemenyen", async () => {
+        await expect(tilgangsstyring.foresporslerLink, "Forespørsler vises").toBeVisible();
+        await expect(tilgangsstyring.brukereLink, "Brukere vises").toBeVisible();
+        await expect(tilgangsstyring.fullmakterLink, "Fullmakter vises").toBeVisible();
+        await expect(tilgangsstyring.fullmakterHosAndreLink, "Fullmakter hos andre vises").toBeVisible();
+        await expect(tilgangsstyring.samtykkeOgFullmaktsavtalerLink, "Samtykke- og fullmaktsavtaler vises").toBeVisible();
     });
 });

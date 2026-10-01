@@ -1,11 +1,9 @@
 import { expect, Locator, Page } from "@playwright/test";
 
 import { TestUser } from "../../config/environment";
-import { Sprak } from "../../config/sprak";
 import { Cookiebanner } from "../felles/cookiebanner";
 import { Meny } from "../felles/meny";
 import { assertFlateUtlogget } from "../felles/utlogget";
-import { Seksjon, seksjonsnavn, seksjonssti } from "./seksjoner";
 
 // Brukes også av `Innlogging`, så stien står ett sted.
 export const tilgangsstyringUrl = (tilgangsstyring: string) => `${tilgangsstyring}/accessmanagement/ui`;
@@ -13,22 +11,31 @@ export const tilgangsstyringUrl = (tilgangsstyring: string) => `${tilgangsstyrin
 export class TilgangsstyringForside {
     readonly url: string;
 
+    // Lenkene i sidemenyen finnes på href, som er den samme uansett språk. Navnet
+    // får en teller når brukeren har ubehandlede forespørsler, og sidemenyen har
+    // ingen test-id-er. Stiene er fra amUIPath i tilgangsstyring.
     readonly sidemeny: Locator;
-    // Finnes på alle tilgangsstyringssidene, og href-en er den samme uansett språk.
+    readonly foresporslerLink: Locator;
     readonly brukereLink: Locator;
+    readonly fullmakterLink: Locator;
+    readonly fullmakterHosAndreLink: Locator;
+    readonly samtykkeOgFullmaktsavtalerLink: Locator;
 
-    // Språket kommer fra fixturen, så assertions slipper å ta det som argument.
     constructor(
         private page: Page,
         tilgangsstyring: string,
-        private sprak: Sprak,
         readonly meny = new Meny(page),
         readonly cookiebanner = new Cookiebanner(page),
     ) {
         this.url = tilgangsstyringUrl(tilgangsstyring);
 
         this.sidemeny = page.getByRole("complementary");
-        this.brukereLink = this.sidemeny.locator("a[href=\"/accessmanagement/ui/users\"]");
+        const lenke = (sti: string) => this.sidemeny.locator(`a[href="/accessmanagement/ui/${sti}"]`);
+        this.foresporslerLink = lenke("requests");
+        this.brukereLink = lenke("users");
+        this.fullmakterLink = lenke("poa-overview");
+        this.fullmakterHosAndreLink = lenke("received-from");
+        this.samtykkeOgFullmaktsavtalerLink = lenke("consent/active");
     }
 
     async navigateTo() {
@@ -47,21 +54,4 @@ export class TilgangsstyringForside {
         await expect(this.brukereLink, "Tilgangsstyringens sidemeny vises").toBeVisible();
     }
 
-    /**
-     * Sjekker at nøyaktig de forventede seksjonene vises i sidemenyen. Hvilke det
-     * er avhenger av brukerens tilganger, så testen sier hva den forventer.
-     */
-    async assertSections(forventet: Seksjon[]) {
-        const navn = seksjonsnavn[this.sprak];
-
-        for (const seksjon of Object.values(Seksjon)) {
-            const lenke = this.sidemeny.locator(`a[href="/accessmanagement/ui/${seksjonssti[seksjon]}"]`);
-
-            if (forventet.includes(seksjon)) {
-                await expect(lenke, `Seksjonen "${navn[seksjon]}" vises`).toBeVisible();
-            } else {
-                await expect(lenke, `Seksjonen "${navn[seksjon]}" vises ikke`).toBeHidden();
-            }
-        }
-    }
 }

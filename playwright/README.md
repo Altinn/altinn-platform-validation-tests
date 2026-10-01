@@ -78,14 +78,14 @@ ett felt i områdets fixture:
 ```ts
 test('...', async ({ innlogging, user, tilgangsstyring }) => {
     await innlogging.loggInnViaTilgangsstyring(user);
-    await tilgangsstyring.assertSections(forventedeSeksjoner);
+    await expect(tilgangsstyring.foresporslerLink).toBeVisible();
 });
 ```
 
 Språket er en del av projectet, så `npm run test:<miljø>` kjører alle testene på
 bokmål, nynorsk og engelsk. Lokalt holder det som regel med bokmål og Chrome, og det
-er det `npm run test:<miljø>:bokmaal` kjører. Sidene får språket injisert,
-så `assertSections` slår opp riktige navn selv.
+er det `npm run test:<miljø>:bokmaal` kjører. Locatorene i page objectene er
+språkuavhengige, for eksempel lenkene i sidemenyen, som finnes på href.
 
 ## Innlogging
 
