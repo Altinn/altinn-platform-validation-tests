@@ -19,7 +19,7 @@ test("Bruker ser oversikt over navigasjonsvalg", { tag: ["@at23", "@tt02", "@pro
     tilgangsstyring,
 }) => {
     await test.step("Innlogget bruker åpner tilgangsstyring", async () => {
-        await innlogging.logInViaTilgangsstyring(user);
+        await innlogging.loggInnViaTilgangsstyring(user);
         await tilgangsstyring.assertLoggedIn();
     });
 

@@ -70,7 +70,7 @@ test("Godtatt på tilgangsstyring gjelder på alle flater", { tag: ["@at23", "@t
     infoportal,
 }) => {
     await test.step("Bruker godtar informasjonskapsler på tilgangsstyring", async () => {
-        await innlogging.logInViaTilgangsstyring(user);
+        await innlogging.loggInnViaTilgangsstyring(user);
         await tilgangsstyring.cookiebanner.godta();
     });
 

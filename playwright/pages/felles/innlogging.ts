@@ -48,8 +48,10 @@ export class Innlogging {
             name: /log in as test user/i,
         });
 
+        // Logger inn via Arbeidsflate / innboks
         this.loginButton = page.getByRole("button", { name: "Logg inn" });
 
+        // Med denne får du nivå 4-innlogging
         this.testIdHoytNivaaLink = page.getByRole("link", { name: "TestID på nivå høyt Lag din" });
         this.idportenPidField = page.locator("input[name=\"pid\"]");
         this.submitButton = page.locator("#submit");
@@ -71,16 +73,14 @@ export class Innlogging {
 
         await this.page.goto(this.urler.infoportal);
         await this.loginButton.click();
-        await this.testIdHoytNivaaLink.click();
-        await this.idportenPidField.fill(user.pid);
-        await this.submitButton.click();
+        await this.logInMedTestId(user);
     }
 
     /**
      * Logger inn fra Tilgangsstyring i infoportalens meny, som lander på
      * tilgangsstyring. Med Mockporten er det `goto` som bestemmer flaten.
      */
-    async logInViaTilgangsstyring(user: TestUser) {
+    async loggInnViaTilgangsstyring(user: TestUser) {
         if (this.mockporten) {
             await this.logInMedMockporten(`${this.urler.tilgangsstyring}/accessmanagement/ui`, user);
             return;
@@ -88,6 +88,17 @@ export class Innlogging {
 
         await this.page.goto(this.urler.infoportal);
         await this.meny.gaTilTilgangsstyring();
+        await this.logInMedTestId(user);
+    }
+
+    /**
+     * Fortsetter fra ID-portens valg av innloggingsmetode. Sjekker at valget er der
+     * først, så en redirect som ikke kommer fram feiler her og ikke på klikket.
+     */
+    private async logInMedTestId(user: TestUser) {
+        await expect(this.testIdHoytNivaaLink, "Er på ID-porten").toBeVisible({
+            timeout: REDIRECT_TIMEOUT,
+        });
         await this.testIdHoytNivaaLink.click();
         await this.idportenPidField.fill(user.pid);
         await this.submitButton.click();
@@ -137,15 +148,5 @@ export class Innlogging {
                 },
             )
             .toEqual([]);
-    }
-
-    /**
-     * Sjekker på URLen og ikke på TestID-knappen, siden prod viser de ekte
-     * ID-porten-valgene og ikke testbruker-knappen.
-     */
-    async assertOnIdporten() {
-        await expect(this.page, "Er sendt til ID-porten-innlogging").toHaveURL(
-            /idporten/,
-        );
     }
 }

@@ -82,7 +82,7 @@ test("Bruker er utlogget på alle flater etter utlogging fra tilgangsstyring", {
     infoportal,
 }) => {
     await test.step("Bruker logger inn via tilgangsstyring", async () => {
-        await innlogging.logInViaTilgangsstyring(user);
+        await innlogging.loggInnViaTilgangsstyring(user);
         await tilgangsstyring.assertLoggedIn();
     });
 

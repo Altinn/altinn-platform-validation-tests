@@ -1,4 +1,4 @@
-import { expect, Page } from "@playwright/test";
+import { expect, Locator, Page } from "@playwright/test";
 
 import { TestUser } from "../../config/environment";
 import { Cookiebanner } from "../felles/cookiebanner";
@@ -8,6 +8,9 @@ import { assertFlateUtlogget } from "../felles/utlogget";
 export class ArbeidsflateProfil {
     readonly url: string;
 
+    // Lagrede søk ligger bare under profilen, og href-en er språkuavhengig.
+    readonly lagredeSokLink: Locator;
+
     constructor(
         private page: Page,
         arbeidsflate: string,
@@ -15,6 +18,10 @@ export class ArbeidsflateProfil {
         readonly cookiebanner = new Cookiebanner(page),
     ) {
         this.url = `${arbeidsflate}/profile`;
+
+        this.lagredeSokLink = page
+            .getByRole("complementary")
+            .locator("a[href=\"/profile/saved-searches\"]");
     }
 
     async navigateTo() {
@@ -30,10 +37,6 @@ export class ArbeidsflateProfil {
     async assertLoggedIn() {
         await this.meny.assertLoggedIn();
 
-        // Lagrede søk ligger bare under profilen, og href-en er språkuavhengig.
-        await expect(
-            this.page.getByRole("complementary").locator("a[href=\"/profile/saved-searches\"]"),
-            "Profilens sidemeny vises"
-        ).toBeVisible();
+        await expect(this.lagredeSokLink, "Profilens sidemeny vises").toBeVisible();
     }
 }

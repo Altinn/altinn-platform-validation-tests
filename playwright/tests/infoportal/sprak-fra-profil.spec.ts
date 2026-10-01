@@ -9,7 +9,7 @@ test("Brukerens språkvalg fra profilen vises i infoportalen", { tag: ["@at23", 
     infoportal,
 }) => {
     await test.step(`Bruker logger inn og setter språk til ${sprak}`, async () => {
-        await innlogging.logInViaTilgangsstyring(user);
+        await innlogging.loggInnViaTilgangsstyring(user);
         await tilgangsstyring.assertLoggedIn();
         await tilgangsstyring.meny.setLanguage(sprak);
     });

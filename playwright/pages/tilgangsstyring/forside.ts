@@ -1,4 +1,4 @@
-import { expect, Page } from "@playwright/test";
+import { expect, Locator, Page } from "@playwright/test";
 
 import { TestUser } from "../../config/environment";
 import { Sprak } from "../../config/sprak";
@@ -10,6 +10,10 @@ import { Seksjon, seksjonsnavn } from "./seksjoner";
 export class TilgangsstyringForside {
     readonly url: string;
 
+    readonly sidemeny: Locator;
+    // Finnes på alle tilgangsstyringssidene, og href-en er den samme uansett språk.
+    readonly brukereLink: Locator;
+
     // Språket kommer fra fixturen, så assertions slipper å ta det som argument.
     constructor(
         private page: Page,
@@ -19,6 +23,9 @@ export class TilgangsstyringForside {
         readonly cookiebanner = new Cookiebanner(page),
     ) {
         this.url = `${tilgangsstyring}/accessmanagement/ui`;
+
+        this.sidemeny = page.getByRole("complementary");
+        this.brukereLink = this.sidemeny.locator("a[href=\"/accessmanagement/ui/users\"]");
     }
 
     async navigateTo() {
@@ -34,12 +41,7 @@ export class TilgangsstyringForside {
     async assertLoggedIn() {
         await this.meny.assertLoggedIn();
 
-        // Brukere-lenken i sidemenyen finnes på alle tilgangsstyringssidene, og
-        // href-en er den samme uansett språk.
-        await expect(
-            this.page.getByRole("complementary").locator("a[href=\"/accessmanagement/ui/users\"]"),
-            "Tilgangsstyringens sidemeny vises"
-        ).toBeVisible();
+        await expect(this.brukereLink, "Tilgangsstyringens sidemeny vises").toBeVisible();
     }
 
     /**
@@ -47,11 +49,10 @@ export class TilgangsstyringForside {
      * er avhenger av brukerens tilganger, så testen sier hva den forventer.
      */
     async assertSections(forventet: Seksjon[]) {
-        const sidebar = this.page.getByRole("complementary");
         const navn = seksjonsnavn[this.sprak];
 
         for (const seksjon of Object.values(Seksjon)) {
-            const lenke = sidebar.getByLabel(navn[seksjon], { exact: true }).first();
+            const lenke = this.sidemeny.getByLabel(navn[seksjon], { exact: true }).first();
 
             if (forventet.includes(seksjon)) {
                 await expect(lenke, `Seksjonen "${navn[seksjon]}" vises`).toBeVisible();

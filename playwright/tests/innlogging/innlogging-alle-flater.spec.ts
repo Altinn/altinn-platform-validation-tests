@@ -38,7 +38,7 @@ test("Bruker er innlogget på alle flater etter innlogging via tilgangsstyring",
     infoportal,
 }) => {
     await test.step("Bruker logger inn via tilgangsstyring", async () => {
-        await innlogging.logInViaTilgangsstyring(user);
+        await innlogging.loggInnViaTilgangsstyring(user);
         await tilgangsstyring.assertLoggedIn();
     });
 

@@ -29,7 +29,7 @@ test("Cookiebanneret vises på tilgangsstyring for en ny sesjon", { tag: ["@at23
     user,
     tilgangsstyring,
 }) => {
-    await innlogging.logInViaTilgangsstyring(user);
+    await innlogging.loggInnViaTilgangsstyring(user);
     await tilgangsstyring.assertLoggedIn();
     await tilgangsstyring.cookiebanner.assertVisible();
 });
