@@ -5,8 +5,11 @@ import { test } from "../../fixtures/test";
 // er her for. Sesjonen gjelder på tvers av flatene, så en utlogging fra én av dem
 // skal ta brukeren ut av alle. Infoportalen sjekkes, men logges ikke ut fra: den har
 // ikke hovednavigasjonen utloggingen ligger i.
+//
+// Ikke i prod: der logger testene inn via Mockporten, og utloggingen derfra lander
+// på en feilside.
 
-test("Bruker er utlogget på alle flater etter utlogging fra arbeidsflate", { tag: ["@at23", "@tt02", "@prod"] }, async ({
+test("Bruker er utlogget på alle flater etter utlogging fra arbeidsflate", { tag: ["@at23", "@tt02"] }, async ({
     innlogging,
     user,
     arbeidsflate,
@@ -38,7 +41,7 @@ test("Bruker er utlogget på alle flater etter utlogging fra arbeidsflate", { ta
     });
 });
 
-test("Bruker er utlogget på alle flater etter utlogging fra profilen", { tag: ["@at23", "@tt02", "@prod"] }, async ({
+test("Bruker er utlogget på alle flater etter utlogging fra profilen", { tag: ["@at23", "@tt02"] }, async ({
     innlogging,
     user,
     arbeidsflate,
@@ -73,7 +76,7 @@ test("Bruker er utlogget på alle flater etter utlogging fra profilen", { tag: [
     });
 });
 
-test("Bruker er utlogget på alle flater etter utlogging fra tilgangsstyring", { tag: ["@at23", "@tt02", "@prod"] }, async ({
+test("Bruker er utlogget på alle flater etter utlogging fra tilgangsstyring", { tag: ["@at23", "@tt02"] }, async ({
     innlogging,
     user,
     arbeidsflate,
