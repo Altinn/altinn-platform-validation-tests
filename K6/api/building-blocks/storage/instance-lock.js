@@ -7,6 +7,9 @@ import { withRetries } from "../common/retry.js";
 /**
  * Attempts to acquire a lock for an instance.
  *
+ * Not retried: if the first attempt took the lock but its response was lost,
+ * a retry would answer 409 and fail the check for a lock the caller holds.
+ *
  * @param {InstanceLockClient} instanceLockClient Client for the API.
  * @param {number} instanceOwnerPartyId Instance owner party id.
  * @param {string} instanceGuid Instance UUID.
@@ -21,14 +24,11 @@ export function LockInstance(
     request,
     labels = null,
 ) {
-    const res = withRetries(
-        () => instanceLockClient.LockInstance(
-            instanceOwnerPartyId,
-            instanceGuid,
-            request,
-            labels,
-        ),
-        "LockInstance",
+    const res = instanceLockClient.LockInstance(
+        instanceOwnerPartyId,
+        instanceGuid,
+        request,
+        labels,
     );
 
     /** @type {InstanceLockResponse|null} */
@@ -69,8 +69,8 @@ export function LockInstance(
  * @param {InstanceLockClient} instanceLockClient Client for the API.
  * @param {number} instanceOwnerPartyId Instance owner party id.
  * @param {string} instanceGuid Instance UUID.
+ * @param {string} lockToken The lock token from LockInstance.
  * @param {InstanceLockRequest} request The new TTL.
- * @param {string|null} [lockToken] The lock token from LockInstance.
  * @param {{[key:string]:string}|null} [labels] Optional k6 request labels.
  * @returns {boolean} Whether the call succeeded.
  */
@@ -78,16 +78,16 @@ export function ExtendInstanceLock(
     instanceLockClient,
     instanceOwnerPartyId,
     instanceGuid,
+    lockToken,
     request,
-    lockToken = null,
     labels = null,
 ) {
     const res = withRetries(
         () => instanceLockClient.ExtendInstanceLock(
             instanceOwnerPartyId,
             instanceGuid,
-            request,
             lockToken,
+            request,
             labels,
         ),
         "ExtendInstanceLock",

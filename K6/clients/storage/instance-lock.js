@@ -73,12 +73,12 @@ class InstanceLockClient {
      *
      * @param {number} instanceOwnerPartyId Instance owner party id.
      * @param {string} instanceGuid Instance UUID.
+     * @param {string} lockToken The lock token from LockInstance, sent as `Altinn-Storage-Lock-Token`.
      * @param {InstanceLockRequest} request The new TTL.
-     * @param {string|null} [lockToken] The lock token from LockInstance, sent as `Altinn-Storage-Lock-Token`.
      * @param {{[key:string]:string}|null} [labels] Optional k6 request labels.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
-    ExtendInstanceLock(instanceOwnerPartyId, instanceGuid, request, lockToken = null, labels = null) {
+    ExtendInstanceLock(instanceOwnerPartyId, instanceGuid, lockToken, request, labels = null) {
         return http.patch(
             `${this.FULL_PATH}/instances/${instanceOwnerPartyId}/${instanceGuid}/lock`,
             jsonBody(request),
