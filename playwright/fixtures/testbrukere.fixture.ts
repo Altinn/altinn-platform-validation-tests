@@ -8,7 +8,7 @@ import { TestUser } from "../config/environment";
 const testdata =
     process.env.TEST_DATA_PATH ?? path.join(__dirname, "..", "testdata");
 
-function lesTestbrukere(gruppe: string, miljo: string): TestUser[] {
+export function lesTestbrukere(gruppe: string, miljo: string): TestUser[] {
     const fil = path.join(testdata, gruppe, `${miljo}.csv`);
     const [, ...rader] = readFileSync(fil, "utf8").trim().split(/\r?\n/);
 

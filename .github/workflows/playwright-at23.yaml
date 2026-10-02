@@ -43,3 +43,6 @@ jobs:
         run: "npm run test:at23"
         env:
           TEST_IDP_PASSWORD: "${{ secrets.TEST_IDP_PASSWORD }}"
+          TOKEN_GENERATOR_USERNAME: "${{ secrets.TOKEN_GENERATOR_USERNAME }}"
+          TOKEN_GENERATOR_PASSWORD: "${{ secrets.TOKEN_GENERATOR_PASSWORD }}"
+          AUTHORIZATION_SUBSCRIPTION_KEY: "${{ secrets.AUTHORIZATION_SUBSCRIPTION_KEY }}"
