@@ -1,5 +1,6 @@
 import { mergeTests } from "@playwright/test";
 
+import { apiClientsFixture } from "./api-clients.fixture";
 import { arbeidsflateFixture } from "./arbeidsflate.fixture";
 import { infoportalFixture } from "./infoportal.fixture";
 import { innloggingFixture } from "./innlogging.fixture";
@@ -14,6 +15,7 @@ export const test = mergeTests(
     infoportalFixture,
     innloggingFixture,
     testbrukereFixture,
+    apiClientsFixture,
 );
 
 export { expect } from "@playwright/test";

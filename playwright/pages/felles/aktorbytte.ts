@@ -18,6 +18,47 @@ export class Aktorbytte {
         return this.page.getByRole("banner").locator("button[data-color='company']").first();
     }
 
+    private drawer() {
+        return this.page.locator("#header-account");
+    }
+
+    private async erApen(): Promise<boolean> {
+        return (await this.drawer().getAttribute("open")) !== null;
+    }
+
+    /**
+     * Lukker aktørvelgeren igjen UTEN å bytte aktør, ved å velge seg selv
+     * ("Deg") — alltid et gyldig alternativ uansett hvor mange andre aktører
+     * brukeren har.
+     *
+     * En bruker med mange aktører (som en reell DAGL med 30+
+     * virksomhetsrelasjoner) lander etter innlogging med aktørvelgeren
+     * allerede åpen ("Hvem vil du bruke Altinn på vegne av?"), som en
+     * `<dialog aria-modal="true">` som blokkerer klikk på alt bak den —
+     * blant annet cookiebanneret. Verken Escape eller et nytt klikk på
+     * headerknappen (den er `disabled` mens drawer-en er åpen) lukker den
+     * uten at et valg gjøres — bekreftet direkte mot at23 (testen hang i
+     * 25 minutter og ventet på cookiebanneret før dette ble funnet). Se
+     * minnefila for Brukermønster test-H.
+     */
+    async lukkHvisAutoApnet() {
+        // Drawer-en dukker opp en liten stund ETTER at innloggingen selv er
+        // ferdig (asynkront etter at aktørlisten er hentet), ikke med det
+        // samme — en umiddelbar, ikke-ventende sjekk her rekker for det meste
+        // ikke å se den, og cookiebanneret blir likevel blokkert like
+        // etterpå. `waitFor` gir den sjansen til å dukke opp, uten å bruke
+        // tid i det vanlige tilfellet der den aldri gjør det (få nok
+        // aktører).
+        try {
+            await this.drawer().waitFor({ state: "visible", timeout: 5_000 });
+        } catch {
+            return;
+        }
+
+        await this.drawer().getByText("Deg", { exact: true }).click();
+        await this.drawer().waitFor({ state: "hidden" });
+    }
+
     /**
      * Finner den synlige blant flere like treff. Flere steder i denne appen
      * rendrer samme felt to ganger (en mobil-/desktopvariant), der bare én av
@@ -48,7 +89,13 @@ export class Aktorbytte {
      * mot at23 for begge. Matcher derfor bare prefikset "Søk".
      */
     async byttTilVirksomhet(orgnr: string, navn: string) {
-        await this.knapp().click();
+        // Kan allerede stå åpen (se `lukkHvisAutoApnet`), f.eks. rett etter en
+        // reload for en bruker med mange nok aktører til at den auto-åpnes.
+        // Knappen er disabled mens den er åpen, så et unødvendig klikk her
+        // ville hengt seg opp i stedet for å gjøre ingenting.
+        if (!(await this.erApen())) {
+            await this.knapp().click();
+        }
 
         const sokefelt = await this.forsteSynlige(this.page.getByPlaceholder(/^Søk/));
         await sokefelt.fill(orgnr);

@@ -1,4 +1,4 @@
-import { requireEnv } from "./environment";
+import { requireEnv } from "../environment";
 
 /**
  * Samme testverktøy som k6-testene bruker, se K6/token-generator.js. Utsteder

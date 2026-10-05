@@ -6,7 +6,7 @@ import { Page } from "@playwright/test";
  *
  * Dette er den virkelige instansieringsveien en sluttbruker går gjennom —
  * ikke "skygge-dialogen" fra dialogporten-serviceowner-API-et
- * (`config/dialogporten.ts`). OBS: en tidlig måling trodde dette også løste
+ * (`config/clients/dialogporten/serviceowner.ts`). OBS: en tidlig måling trodde dette også løste
  * Dialogportens synkroniseringsforsinkelse (fant en instans etter 4
  * sekunder), men det viste seg å være en forurenset måling — en grundigere
  * oppfølging fant ikke dialogen i det hele tatt etter 147 sekunder for en

@@ -1,9 +1,6 @@
 import { Browser } from "@playwright/test";
 
-import { erDialogSynligForPerson } from "../../config/dialogporten";
 import { Urler } from "../../config/environment";
-import { authorize } from "../../config/pdp";
-import { Sprak } from "../../config/sprak";
 import { expect, test } from "../../fixtures/test";
 import { lesTestbrukere } from "../../fixtures/testbrukere.fixture";
 import { ArbeidsflateForside } from "../../pages/arbeidsflate/forside";
@@ -16,6 +13,10 @@ import { TilgangsstyringForside } from "../../pages/tilgangsstyring/forside";
 // Endrer ekte tilganger og oppretter en app-instans i at23, så testen kjører
 // ikke i prod eller tt02 før den er verifisert der. Se README-notatet om
 // tester som endrer data.
+//
+// Hardkodet her og ikke hentet fra `miljo`-fixturen fordi testbrukerne under
+// slås opp på modulnivå (ved fil-innlasting), før noen fixture er løst for en
+// konkret testkjøring — se diskusjonspunktet ved DAGL_A/PERSON_B.
 const MILJO = "at23";
 
 /**
@@ -35,7 +36,7 @@ const MILJO = "at23";
  *    TilgangsstyringBrukere. `Aktorbytte` sjekker nå synlighet eksplisitt
  *    istedenfor å anta DOM-rekkefølge.
  * 3. Den store: en "skygge-dialog" opprettet direkte mot
- *    dialogporten-serviceowner-API-et (`config/dialogporten.ts`) synker ALDRI
+ *    dialogporten-serviceowner-API-et (`config/clients/dialogporten/serviceowner.ts`) synker ALDRI
  *    inn i mottakerens aktørliste/innboks etter en tilgangspakke-delegering —
  *    verifisert med tre uavhengige, rene kjøringer (5 min, 5 min, 15 min
  *    polling, ingenting annet rørte testbrukeren) som alle kom til samme
@@ -87,7 +88,7 @@ const MILJO = "at23";
  *    Fordi GUI-sjekken (aktørbytteren) kan gi opp uten at det betyr at
  *    delegeringen faktisk feilet, har steget en fallback: spør Dialogportens
  *    egen enduser-API direkte (`erDialogSynligForPerson` i
- *    `config/dialogporten.ts`) med person Bs eget personlige token. Det er en
+ *    `config/clients/dialogporten/enduser.ts`) med person Bs eget personlige token. Det er en
  *    mer presis bekreftelse enn PDP-sjekken over, siden den spør om selve
  *    DIALOGEN er søkbar for personen — ikke bare at ressursen generelt sett
  *    er tillatt. Går rett mot Dialogporten, ikke via arbeidsflatens BFF
@@ -114,6 +115,29 @@ const MILJO = "at23";
  * - PDP-kallet (krever AUTHORIZATION_SUBSCRIPTION_KEY) spør om tilgang på
  *   vegne av virksomheten (`buildOrgRequest`) — en tidligere versjon spurte om
  *   personens EGEN tilgang og traff da PRIV-regelen uansett delegering.
+ *
+ * ÅPNE DISKUSJONSPUNKTER fra PR #676-gjennomgangen (til pair programming-økten):
+ * 1. DAGL_A/PERSON_B er hardkodede pid-er, ikke reservert dynamisk via
+ *    testbrukere-fixturen (`user`/`reserverTestbruker` i
+ *    `fixtures/testbrukere.fixture.ts`) slik andre tester gjør. Årsak: testen
+ *    trenger en VERIFISERT relasjon (denne DAGL-en er faktisk DAGL for akkurat
+ *    denne virksomheten; denne personen har null eksisterende relasjon til
+ *    den) — mange dagligLeder-rader har 30+ andre virksomhetsrelasjoner som
+ *    ikke er DAGL for virksomheten testen trenger. Løsningen er trolig å
+ *    utvide testdataformatet til å kode denne paringen eksplisitt, men det bør
+ *    avklares sammen, ikke bestemmes ensidig her.
+ * 2. `loggInnSomAktor` instansierer Page-objektene manuelt istedenfor å bruke
+ *    fixturene (`tilgangsstyring`/`brukere`/`aktorbytte` finnes allerede i
+ *    `fixtures/tilgangsstyring.fixture.ts`) fordi testen trenger TO innloggede
+ *    aktører (DAGL A og person B) samtidig, og dagens fixtures gir bare én
+ *    `page` per test. Trolig løsning: en fixture som returnerer en
+ *    innloggings-factory man kan kalle flere ganger per test, men det er ikke
+ *    forsøkt ennå.
+ * 3. PDP- og Dialogporten-enduser-kallene går nå via `pdp`/`dialogportenEnduser`
+ *    i `fixtures/api-clients.fixture.ts` istedenfor rå funksjonsimport — ett
+ *    forslag til hvordan API-klientene kan eksponeres som fixtures (jf.
+ *    K6-mønsteret Renato pekte på), ikke en fasit. Se diskusjonspunktene i den
+ *    fila, blant annet om tokenGenerator bør bli en fixture.
  */
 const DAGL_A = lesTestbrukere("dagligLeder", MILJO).find((p) => p.pid === "01846099855");
 const PERSON_B = lesTestbrukere("privatPersonUtenVirksomhet", MILJO).find((p) => p.pid === "01832449055");
@@ -151,10 +175,19 @@ async function loggInnSomAktor(browser: Browser, urler: Urler, mockporten: boole
     const context = await browser.newContext();
     const page = await context.newPage();
 
-    const innlogging = new Innlogging(page, urler.platform, mockporten);
-    const tilgangsstyringForside = new TilgangsstyringForside(page, urler.tilgangsstyring, Sprak.Bokmaal);
+    const innlogging = new Innlogging(page, urler, mockporten);
+    const tilgangsstyringForside = new TilgangsstyringForside(page, urler.tilgangsstyring);
 
-    await innlogging.logIn(tilgangsstyringForside, person);
+    await innlogging.loggInnViaTilgangsstyring(person);
+
+    const aktorbytte = new Aktorbytte(page);
+
+    // En bruker med mange aktører (som DAGL A) lander med aktørvelgeren
+    // allerede åpen, som blokkerer cookiebanneret bak den til et valg er
+    // gjort — se `Aktorbytte.lukkHvisAutoApnet`. Må skje FØR cookiebanneret
+    // besvares, ellers henger testen i ventingen på et cookiebanner den
+    // aldri får klikket.
+    await aktorbytte.lukkHvisAutoApnet();
 
     // Et ubesvart cookiebanner lar aktørbytteren stå i "loading" for alltid,
     // siden den ikke blir en reell overlay-blokkering men visstnok forsinker
@@ -165,7 +198,7 @@ async function loggInnSomAktor(browser: Browser, urler: Urler, mockporten: boole
     return {
         context,
         page,
-        aktorbytte: new Aktorbytte(page),
+        aktorbytte,
         brukere: new TilgangsstyringBrukere(page, urler.tilgangsstyring),
         arbeidsflate: new ArbeidsflateForside(page, urler.arbeidsflate),
     };
@@ -174,7 +207,7 @@ async function loggInnSomAktor(browser: Browser, urler: Urler, mockporten: boole
 test(
     "DAGL delegerer tilgangspakke til person, som dermed ser virksomhetens dialog",
     { tag: ["@at23"] },
-    async ({ browser, urler, mockporten }, testInfo) => {
+    async ({ browser, urler, mockporten, pdp, dialogportenEnduser }, testInfo) => {
         // PDP-pollingen på vei ut kan ta opptil 5 minutter, og
         // API-fallbacken for å se dialogen (se klassekommentaren og steget
         // lenger ned) kan selv ta opptil 13 minutter, pluss to innlogginger,
@@ -183,7 +216,7 @@ test(
         testInfo.setTimeout(25 * 60_000);
 
         await test.step("Person B har ikke tilgang på ressursen fra før", async () => {
-            const beslutning = await authorize(urler.platform, MILJO, PERSON_B.pid, VIRKSOMHET_A.orgnr, RESSURS_R, "read");
+            const beslutning = await pdp.authorize(PERSON_B.pid, VIRKSOMHET_A.orgnr, RESSURS_R, "read");
             expect(beslutning, "Person B har ikke tilgang før delegering").not.toBe("Permit");
         });
 
@@ -214,7 +247,7 @@ test(
 
             await test.step("PDP gir Person B tilgang på ressursen", async () => {
                 await expect.poll(
-                    () => authorize(urler.platform, MILJO, PERSON_B.pid, VIRKSOMHET_A.orgnr, RESSURS_R, "read"),
+                    () => pdp.authorize(PERSON_B.pid, VIRKSOMHET_A.orgnr, RESSURS_R, "read"),
                     {
                         message: "PDP svarer Permit for person B",
                         timeout: 30_000,
@@ -273,7 +306,7 @@ test(
                     }
 
                     const dialogSynligViaApi = await expect.poll(
-                        () => erDialogSynligForPerson(urler.platform, MILJO, PERSON_B.pid, VIRKSOMHET_A.orgnr, RESSURS_R),
+                        () => dialogportenEnduser.erDialogSynlig(PERSON_B.pid, VIRKSOMHET_A.orgnr, RESSURS_R),
                         {
                             message: "Dialogporten enduser-API-et viser dialogen for person B",
                             timeout: 13 * 60_000,
@@ -315,7 +348,7 @@ test(
             // En ren måling (se klassekommentaren) viste at dette tar rundt 80
             // sekunder. 5 minutter her er romslig margin, ikke fordi det trengs.
             await expect.poll(
-                () => authorize(urler.platform, MILJO, PERSON_B.pid, VIRKSOMHET_A.orgnr, RESSURS_R, "read"),
+                () => pdp.authorize(PERSON_B.pid, VIRKSOMHET_A.orgnr, RESSURS_R, "read"),
                 {
                     message: "PDP svarer ikke lenger Permit for person B",
                     timeout: 5 * 60_000,
