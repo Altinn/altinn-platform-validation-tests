@@ -18,23 +18,6 @@ function lesTestbrukere(gruppe: string, miljo: string): TestUser[] {
     });
 }
 
-// Stokker brukerne med et frø fra kjøringen og testen, så samme test i samme kjøring, også
-// på retry, får samme rekkefølge, mens en ny kjøring får en annen.
-function stokk(brukere: TestUser[], froe: string): TestUser[] {
-    let tilstand = [...froe].reduce((hash, tegn) => Math.imul(hash ^ tegn.charCodeAt(0), 16777619), 2166136261);
-    const neste = () => {
-        tilstand = Math.imul(tilstand ^ (tilstand >>> 15), 2246822507) + 0x6d2b79f5;
-        return (tilstand >>> 0) / 4294967296;
-    };
-
-    const stokket = [...brukere];
-    for (let i = stokket.length - 1; i > 0; i--) {
-        const j = Math.floor(neste() * (i + 1));
-        [stokket[i], stokket[j]] = [stokket[j], stokket[i]];
-    }
-    return stokket;
-}
-
 // Fila kan være slettet siden vi prøvde å opprette den, fordi en annen test frigav brukeren.
 function reservertAv(fil: string): string | undefined {
     try {
@@ -84,12 +67,12 @@ export class Testbrukere {
     ) {}
 
     /**
-     * Uten `tilfeldig` tas de første ledige brukerne i fila. Med `tilfeldig` stokkes de
-     * først, så samme brukere ikke brukes kjøring etter kjøring.
+     * Uten `tilfeldig` tas de første ledige brukerne i fila. Med `tilfeldig` velges de
+     * tilfeldig blant de ledige, så samme brukere ikke brukes kjøring etter kjøring.
      */
     reserver(gruppe: string, antall: number, { tilfeldig = false } = {}): TestUser[] {
         const alle = lesTestbrukere(gruppe, this.miljo);
-        const brukere = tilfeldig ? stokk(alle, `${process.env.TESTBRUKER_FROE}:${this.testId}`) : alle;
+        const brukere = tilfeldig ? [...alle].sort(() => Math.random() - 0.5) : alle;
 
         return Array.from({ length: antall }, () => {
             const bruker = reserverTestbruker(brukere, this.katalog, this.testId, this.reservert);
