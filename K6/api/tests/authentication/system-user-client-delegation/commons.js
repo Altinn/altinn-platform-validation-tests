@@ -9,7 +9,7 @@ import { CreateAgentRequestSystemUserBuilder, RegisterSystemRequestBuilder, Requ
 import { DeleteAgentSystemUser, GetAgentSystemUsers } from "../../../building-blocks/access-management-bff/system-user/index.js";
 import { ApproveAgentRequest, GetAgentRequest } from "../../../building-blocks/access-management-bff/system-user-agent-request/index.js";
 import { pickVendor } from "../change-request-system-user/commons.js";
-import { sweepRegisteredSystems } from "../commons.js";
+import { deleteRequest, deleteSystem, sweepRegisteredSystems } from "../commons.js";
 
 /**
  * Whether to draw a random facilitator rather than walk the list.
@@ -375,16 +375,16 @@ export function cleanupArranged(arranged) {
  * goes first, since a pending one outlives the system it was made for.
  *
  * @param {string} systemId - The system the arrange registered.
- * @param {string} [requestId] - The agent system user request to withdraw, when the arrange got as far as creating one.
+ * @param {string} [requestId] - The agent system user request to delete, when the arrange got as far as creating one.
  */
 function unwindArrange(systemId, requestId = undefined) {
     const { clients: apiClients } = getClients();
 
     if (requestId !== undefined) {
-        RequestSystemUserBuildingBlocks.VendorDelete(apiClients.vendor.requestSystemUserClient, requestId);
+        deleteRequest(apiClients.vendor.requestSystemUserClient, requestId);
     }
 
-    SystemRegisterBuildingBlocks.VendorDelete(apiClients.vendor.systemRegisterClient, systemId);
+    deleteSystem(apiClients.vendor.systemRegisterClient, systemId);
 }
 
 /**
