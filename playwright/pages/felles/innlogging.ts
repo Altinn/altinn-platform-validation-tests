@@ -135,19 +135,6 @@ export class Innlogging {
     }
 
     /**
-     * Altinn-tokenet til den innloggede brukeren, fra `AltinnStudioRuntime`-cookien.
-     * Brukes som sluttbrukertoken mot API-ene.
-     */
-    async altinnToken(): Promise<string> {
-        const token = (await this.page.context().cookies())
-            .find((cookie) => cookie.name === "AltinnStudioRuntime")?.value;
-        if (!token) {
-            throw new Error("Fant ikke AltinnStudioRuntime-cookien; er brukeren logget inn?");
-        }
-        return token;
-    }
-
-    /**
      * Logger ut og venter til sesjonscookiene er borte. En flate som er nede ser
      * utlogget ut uansett, mens en cookie som ligger igjen betyr at `/logout` ikke
      * gjorde jobben sin. Cookiene ryddes først når kjeden via ID-porten og tilbake

@@ -50,8 +50,6 @@ const SLETT_FULLMAKT: Record<Sprak, string> = {
     [Sprak.Nynorsk]: "Slett fullmakt",
     [Sprak.Engelsk]: "Delete power of attorney",
 };
-// Ikke direkte observert (ville krevd en fullmakt som ikke allerede var gitt),
-// men følger av symmetrien med slett-knappen over, i samme komponent.
 const GI_FULLMAKT_FOR_PAKKE: Record<Sprak, string> = {
     [Sprak.Bokmaal]: "Gi fullmakt",
     [Sprak.Nynorsk]: "Gi fullmakt",
@@ -89,6 +87,9 @@ export class TilgangsstyringBrukere {
         await this.etternavnInput.click();
         await this.etternavnInput.fill(etternavn);
         await this.leggTilPersonButton.click();
+
+        // UI-et går til siden for brukeren først når brukeren er lagret.
+        await expect(this.giFullmaktButton, "Står på siden til den nye brukeren").toBeVisible();
     }
 
     /**
@@ -99,7 +100,7 @@ export class TilgangsstyringBrukere {
      * UI-teksten rundt), og bare starten trengs siden søkeresultatets knapp har
      * med antall tjenester i navnet.
      */
-    private async apnePakkeDetaljer(navn: string, tilgangspakke: string) {
+    async apnePakkeDetaljer(navn: string, tilgangspakke: string): Promise<PakkeDetaljer> {
         await this.giFullmaktButton.click();
 
         const dialog = this.page.getByRole("dialog", { name: dialogTittel(this.sprak, navn) });
@@ -109,48 +110,43 @@ export class TilgangsstyringBrukere {
 
         await dialog.getByRole("button", { name: new RegExp(`^${tilgangspakke}`, "i") }).click();
 
-        return dialog;
+        return new PakkeDetaljer(dialog, this.sprak, navn, tilgangspakke);
+    }
+}
+
+/** Detaljvisningen til én tilgangspakke i fullmaktsdialogen, for personen `navn`. */
+export class PakkeDetaljer {
+    readonly giFullmaktButton: Locator;
+    readonly slettFullmaktButton: Locator;
+    readonly lukkButton: Locator;
+
+    constructor(
+        private dialog: Locator,
+        sprak: Sprak,
+        private navn: string,
+        private tilgangspakke: string,
+    ) {
+        this.giFullmaktButton = dialog.getByRole("button", { name: new RegExp(`^${GI_FULLMAKT_FOR_PAKKE[sprak]}`, "i") });
+        this.slettFullmaktButton = dialog.getByRole("button", { name: new RegExp(`^${SLETT_FULLMAKT[sprak]}`, "i") });
+        this.lukkButton = dialog.getByRole("button", { name: LUKK[sprak] });
     }
 
-    /** Delegerer `tilgangspakke` til personen `navn`. Idempotent: om personen
-     * allerede har fullmakten, er det ingenting å gjøre. */
-    async giFullmaktForTilgangspakke(navn: string, tilgangspakke: string) {
-        const dialog = await this.apnePakkeDetaljer(navn, tilgangspakke);
-
-        const alleredeGitt = await dialog
-            .getByRole("button", { name: new RegExp(`^${SLETT_FULLMAKT[this.sprak]}`, "i") })
-            .isVisible();
-
-        if (!alleredeGitt) {
-            await dialog
-                .getByRole("button", { name: new RegExp(`^${GI_FULLMAKT_FOR_PAKKE[this.sprak]}`, "i") })
-                .click();
-        }
-
-        await dialog.getByRole("button", { name: LUKK[this.sprak] }).click();
+    async giFullmakt() {
+        await this.giFullmaktButton.click();
     }
 
-    /** Verifiserer at personen `navn` har fått `tilgangspakke`. */
-    async assertHarTilgangspakke(navn: string, tilgangspakke: string) {
-        const dialog = await this.apnePakkeDetaljer(navn, tilgangspakke);
+    async assertHarFullmakt() {
+        await expect(this.slettFullmaktButton, `${this.tilgangspakke} er gitt til ${this.navn}`).toBeVisible();
+    }
 
+    async assertInneholderApp(appNavn: string) {
         await expect(
-            dialog.getByRole("button", { name: new RegExp(`^${SLETT_FULLMAKT[this.sprak]}`, "i") }),
-            `${tilgangspakke} er gitt til ${navn}`
+            this.dialog.getByText(appNavn),
+            `${appNavn} vises som en av tjenestene i ${this.tilgangspakke}`,
         ).toBeVisible();
-
-        await dialog.getByRole("button", { name: LUKK[this.sprak] }).click();
     }
 
-    /** Verifiserer at `appNavn` er en av tjenestene i `tilgangspakke` for personen `navn`. */
-    async assertTilgangspakkeInneholderApp(navn: string, tilgangspakke: string, appNavn: string) {
-        const dialog = await this.apnePakkeDetaljer(navn, tilgangspakke);
-
-        await expect(
-            dialog.getByText(appNavn),
-            `${appNavn} vises som en av tjenestene i ${tilgangspakke}`
-        ).toBeVisible();
-
-        await dialog.getByRole("button", { name: LUKK[this.sprak] }).click();
+    async lukk() {
+        await this.lukkButton.click();
     }
 }

@@ -1,6 +1,7 @@
 import { BrowserContext, Page, test as base } from "@playwright/test";
 
-import { Urler } from "../config/environment";
+import { Testapp, Urler } from "../config/environment";
+import { App } from "../pages/apps/app";
 import { Aktorvelger } from "../pages/felles/aktorvelger";
 import { Innlogging } from "../pages/felles/innlogging";
 
@@ -9,20 +10,23 @@ export type Sesjon = {
     page: Page;
     innlogging: Innlogging;
     aktorvelger: Aktorvelger;
+    app: App;
 };
 
 export const sesjonFixture = base.extend<{
     nySesjon: () => Promise<Sesjon>;
     urler: Urler;
     mockporten: boolean;
+    testapp: Testapp;
 }>({
     urler: [{} as Urler, { option: true }],
     mockporten: [false, { option: true }],
+    testapp: [{} as Testapp, { option: true }],
 
     // For tester med flere brukere: hver bruker logger inn i sin egen økt, så ingen
     // arver noe fra den forrige. Den nye konteksten får projectets enhetsinnstillinger,
     // og lukkes når testen er ferdig.
-    nySesjon: async ({ browser, urler, mockporten }, use) => {
+    nySesjon: async ({ browser, urler, mockporten, testapp }, use) => {
         const kontekster: BrowserContext[] = [];
 
         await use(async () => {
@@ -33,6 +37,7 @@ export const sesjonFixture = base.extend<{
                 page,
                 innlogging: new Innlogging(page, urler, mockporten),
                 aktorvelger: new Aktorvelger(page),
+                app: new App(page, urler.apps, testapp.id),
             };
         });
 

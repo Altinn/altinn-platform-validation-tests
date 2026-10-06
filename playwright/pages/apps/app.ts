@@ -57,21 +57,8 @@ export class App {
         );
     }
 
-    /**
-     * Kan brukeren representere flere aktører, spør appen "Hvem vil du sende inn for?"
-     * før den oppretter instansen. Da velges `aktor`. Klikket prøves på nytt til
-     * instansen er opprettet, siden et klikk før lista er klar ikke gjør noe. Det er
-     * urlen som avgjør: appen viser overskriften også mens den laster, før den
-     * eventuelt sender brukeren til aktørvalget.
-     */
-    async velgAktorHvisSpurt(aktor: string) {
-        const aktorKnapp = this.page.getByRole("button", { name: new RegExp(aktor, "i") });
-
-        await expect(async () => {
-            if (await aktorKnapp.isVisible()) {
-                await aktorKnapp.click();
-            }
-            await expect(this.page).toHaveURL(INSTANS_URL, { timeout: 3_000 });
-        }, "Appen har opprettet instansen").toPass({ timeout: 20_000 });
+    /** Appen har opprettet instansen og står på den. */
+    async assertPaInstans() {
+        await expect(this.page, "Appen har opprettet instansen").toHaveURL(INSTANS_URL, { timeout: 20_000 });
     }
 }

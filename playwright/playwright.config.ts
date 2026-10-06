@@ -2,7 +2,7 @@ import { defineConfig, devices } from "@playwright/test";
 import dotenv from "dotenv";
 import path from "path";
 
-import { Urler } from "./config/environment";
+import { Testapp, Urler } from "./config/environment";
 import { alleSprak, Sprak } from "./config/sprak";
 
 // Hemmelighetene kan komme fra shellet eller fra gitignorerte .env-filer. Shellet vinner.
@@ -11,12 +11,22 @@ dotenv.config({
     quiet: true,
 });
 
+const bruksmoensterTestApp: Testapp = {
+    id: "brukermonster-test-app",
+    visningsnavn: "Bruksmønster-test",
+    tilgangspakke: {
+        [Sprak.Bokmaal]: "Fritidsaktiviteter og friluftsliv",
+        [Sprak.Nynorsk]: "Fritidsaktivitetar og friluftsliv",
+        [Sprak.Engelsk]: "Leisure activities and outdoor life",
+    },
+};
+
 // Alt som skiller miljøene. Et miljø kjører bare testene som er tagget med det,
 // for eksempel { tag: ["@at23", "@tt02"] }.
 const miljoer = {
     at23: {
         mockporten: false,
-        testapp: "brukermonster-test-app",
+        testapp: bruksmoensterTestApp,
         urler: {
             arbeidsflate: "https://af.at23.altinn.cloud",
             tilgangsstyring: "https://am.ui.at23.altinn.cloud",
@@ -27,7 +37,7 @@ const miljoer = {
     },
     tt02: {
         mockporten: false,
-        testapp: "brukermonster-test-app",
+        testapp: bruksmoensterTestApp,
         urler: {
             arbeidsflate: "https://af.tt02.altinn.no",
             tilgangsstyring: "https://am.ui.tt02.altinn.no",
@@ -39,7 +49,7 @@ const miljoer = {
     prod: {
     // TestID finnes ikke i prod, så innloggingen går via Mockporten.
         mockporten: true,
-        testapp: "brukermonster-test-app",
+        testapp: bruksmoensterTestApp,
         urler: {
             arbeidsflate: "https://af.altinn.no",
             tilgangsstyring: "https://am.ui.altinn.no",
@@ -48,7 +58,7 @@ const miljoer = {
             apps: "https://ttd.apps.altinn.no/ttd",
         },
     },
-} satisfies Record<string, { mockporten: boolean; testapp: string; urler: Urler }>;
+} satisfies Record<string, { mockporten: boolean; testapp: Testapp; urler: Urler }>;
 
 // Bare Chrome inntil videre; Firefox, Edge og Safari er skrudd av, se #619.
 const nettlesere = {
@@ -61,7 +71,7 @@ const nettlesere = {
 export default defineConfig<{
     miljo: string;
     mockporten: boolean;
-    testapp: string;
+    testapp: Testapp;
     urler: Urler;
     sprak: Sprak;
 }>({
