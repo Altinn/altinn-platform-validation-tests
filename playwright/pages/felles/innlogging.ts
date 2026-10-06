@@ -108,7 +108,7 @@ export class Innlogging {
      * Fortsetter fra ID-portens valg av innloggingsmetode. Sjekker at valget er der
      * først, så en redirect som ikke kommer fram feiler her og ikke på klikket.
      */
-    private async loggInnMedTestId(user: TestUser) {
+    public async loggInnMedTestId(user: TestUser) {
         await expect(this.testIdHoytNivaaLink, "Er på ID-porten").toBeVisible({
             timeout: REDIRECT_TIMEOUT,
         });
