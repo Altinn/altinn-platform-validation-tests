@@ -88,8 +88,8 @@ export class TilgangsstyringBrukere {
         await this.etternavnInput.fill(etternavn);
         await this.leggTilPersonButton.click();
 
-        // UI-et går til siden for brukeren først når brukeren er lagret.
-        await expect(this.giFullmaktButton, "Står på siden til den nye brukeren").toBeVisible();
+        // Dialogen lukkes først når personen er lagret; feiler det, blir den stående med feilmeldingen.
+        await expect(this.fodselsnummerInput, "Personen er lagt til").toBeHidden();
     }
 
     /**

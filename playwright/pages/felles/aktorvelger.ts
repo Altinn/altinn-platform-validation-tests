@@ -37,18 +37,25 @@ export class Aktorvelger {
             await this.aktorKnapp.click();
             await expect(this.dialog).toBeVisible({ timeout: 2_000 });
         }, "Aktørvelgeren åpner seg").toPass({ timeout: 15_000 });
-        await this.velgAktor(navn, antallAktorer);
+        await this.velgIListen(navn, antallAktorer);
         await expect(this.aktorKnapp, `Står på ${navn}`).toContainText(navn, { ignoreCase: true });
     }
 
     /**
-     * Velger aktøren med dette navnet. Navnet skrives med store bokstaver i lista, og
-     * menypunktet har med fødselsdato eller org.nr, så det matches uten store og små
-     * bokstaver og uten å kreve hele navnet.
+     * Velger `navn` i aktørvelgeren som åpner seg av seg selv etter innlogging. Det gjør
+     * den bare når brukeren har mer enn én aktør, ellers kommer den aldri.
      */
     async velgAktor(navn: string, antallAktorer: number) {
+        expect(antallAktorer, "Brukeren har flere aktører, så aktørvelgeren åpner seg").toBeGreaterThan(1);
         await expect(this.dialog, "Aktørvelgeren vises").toBeVisible();
+        await this.velgIListen(navn, antallAktorer);
+    }
 
+    /**
+     * Navnet skrives med store bokstaver i lista, og menypunktet har med fødselsdato eller
+     * org.nr, så det matches uten store og små bokstaver og uten å kreve hele navnet.
+     */
+    private async velgIListen(navn: string, antallAktorer: number) {
         if (antallAktorer > SOK_OVER_ANTALL_AKTORER) {
             await this.searchBox.fill(navn);
         }

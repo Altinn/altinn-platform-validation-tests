@@ -31,7 +31,8 @@ async function medRetry(beskrivelse: string, send: () => Promise<APIResponse>): 
             }
             arsak = `status ${response.status()}`;
         } catch (error) {
-            if (forsok === RETRIES) {
+            // Er testen ferdig eller konteksten stengt, er det ingenting å prøve igjen.
+            if (forsok === RETRIES || /disposed|has been closed/.test(String(error))) {
                 throw error;
             }
             arsak = String(error).split("\n")[0];
