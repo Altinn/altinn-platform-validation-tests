@@ -1,26 +1,21 @@
 import { etternavn } from "../../config/environment";
 import { expect, test } from "../../fixtures/test";
 import { antallAktorer } from "../../helpers/aktorer";
+import { slettAlleInstanser } from "../../helpers/instanser";
 import { rettighetshaverUuid } from "../../helpers/rettighetshavere";
-import { aktivAktorUuid, altinnToken } from "../../helpers/sesjonsdata";
-import { Instans } from "../../pages/apps/app";
-
-// Instansen testen opprettet, med sluttbrukertokenet som kan slette den. Én per worker,
-// siden hver worker laster fila på nytt og kjører testene sine etter hverandre.
-let instans: (Instans & { token: string }) | undefined;
+import { aktivAktorPartyId, aktivAktorUuid, altinnToken } from "../../helpers/sesjonsdata";
 
 // Brukeren A la til, med tokenet til A. Å slette brukeren sletter også tilgangspakkene den har fått.
 let kobling: { fra: string; til: string; token: string } | undefined;
 
-// Rydder opp app-instanser og delegeringer gjort til brukere. Brukeren slettes også når
-// slettingen av instansen feiler, så testbrukerne ikke frigis med fullmakten i behold.
-test.afterEach(async ({ api, testapp }) => {
+// Rydder opp app-instanser og delegeringer gjort til brukere. Alle aktive instanser A har av
+// appen slettes, ikke bare den testen opprettet. Brukeren slettes også når slettingen av
+// instansene feiler, så testbrukerne ikke frigis med fullmakten i behold.
+test.afterEach(async ({ api, testapp, page }) => {
     try {
-        expect(instans, "Testen opprettet en instans").toBeDefined();
-        const { partyId, guid, token } = instans!;
-        instans = undefined;
-        const slettInstans = await api.apps.instances.DeleteInstance(token, testapp.id, partyId, guid, true);
-        expect(slettInstans.ok(), `Sletting av instans ${partyId}/${guid}: ${slettInstans.status()}`).toBe(true);
+        const token = await altinnToken(page);
+        const partyId = await aktivAktorPartyId(page);
+        await slettAlleInstanser(api, token, testapp.id, partyId);
     } finally {
         expect(kobling, "Testen la til en bruker").toBeDefined();
         const { fra, til, token } = kobling!;
@@ -44,7 +39,7 @@ test("Bruker instansierer app", { tag: ["@at23", "@tt02", "@prod"] }, async ({
     testapp,
 }) => {
     // A oppretter instansen og gir B tilgangspakken; B åpner instansen på vegne av A.
-    const [personA, personB] = testbrukere.reserver("privatPersonUtenVirksomhet", 2);
+    const [personA, personB] = testbrukere.reserver("privatPersonUtenVirksomhet", 2, { tilfeldig: true });
 
     await test.step("Privatperson navigerer til appen", async () => {
         await innlogging.loggInnFraDyplenke(app.url, personA);
@@ -55,7 +50,7 @@ test("Bruker instansierer app", { tag: ["@at23", "@tt02", "@prod"] }, async ({
         await expect(app.presentationHeading).toContainText(app.navn);
         await expect(app.hovedinnhold).toContainText("Testdepartementet");
 
-        instans = { ...app.aktivInstans(), token: await altinnToken(page) };
+        const instans = app.aktivInstans();
 
         await app.gaTilbakeTilInnboks();
         return instans;

@@ -11,6 +11,10 @@ dotenv.config({
     quiet: true,
 });
 
+// Frø for tilfeldig valg av testbrukere. Settes én gang per kjøring; workerne arver det,
+// så en retry får samme rekkefølge og dermed de samme brukerne.
+process.env.TESTBRUKER_FROE ??= String(Date.now());
+
 const bruksmoensterTestApp: Testapp = {
     id: "brukermonster-test-app",
     visningsnavn: "Bruksmønster-test",

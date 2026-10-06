@@ -10,6 +10,18 @@ export class InstancesClient {
     ) {}
 
     /**
+     * Instansene eieren har av appen som ikke er arkivert eller slettet. Svarer 200 med en
+     * liste SimpleInstance, der `id` er `{instanceOwnerPartyId}/{instanceGuid}`.
+     *
+     * GET /{org}/{app}/instances/{instanceOwnerPartyId}/active
+     */
+    GetActiveInstances(token: string, app: string, instanceOwnerPartyId: string | number): Promise<APIResponse> {
+        return this.request.get(`${this.baseUrl}/${app}/instances/${instanceOwnerPartyId}/active`, {
+            headers: { Authorization: `Bearer ${token}` },
+        });
+    }
+
+    /**
      * Sletter en instans. Svarer 200 med instansen.
      *
      * DELETE /{org}/{app}/instances/{instanceOwnerPartyId}/{instanceGuid}
