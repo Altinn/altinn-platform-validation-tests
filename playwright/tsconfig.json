@@ -10,6 +10,7 @@
         ]
     },
     "include": [
+        "clients/**/*.ts",
         "config/**/*.ts",
         "fixtures/**/*.ts",
         "pages/**/*.ts",

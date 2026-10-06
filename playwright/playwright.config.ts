@@ -16,33 +16,39 @@ dotenv.config({
 const miljoer = {
     at23: {
         mockporten: false,
+        testapp: "brukermonster-test-app",
         urler: {
             arbeidsflate: "https://af.at23.altinn.cloud",
             tilgangsstyring: "https://am.ui.at23.altinn.cloud",
             infoportal: "https://info.at23.altinn.cloud",
             platform: "https://platform.at23.altinn.cloud",
+            apps: "https://ttd.apps.at23.altinn.cloud/ttd",
         },
     },
     tt02: {
         mockporten: false,
+        testapp: "brukermonster-test-app",
         urler: {
             arbeidsflate: "https://af.tt02.altinn.no",
             tilgangsstyring: "https://am.ui.tt02.altinn.no",
             infoportal: "https://info.tt02.altinn.no",
             platform: "https://platform.tt02.altinn.no",
+            apps: "https://ttd.apps.tt02.altinn.no/ttd",
         },
     },
     prod: {
     // TestID finnes ikke i prod, så innloggingen går via Mockporten.
         mockporten: true,
+        testapp: "brukermonster-test-app",
         urler: {
             arbeidsflate: "https://af.altinn.no",
             tilgangsstyring: "https://am.ui.altinn.no",
             infoportal: "https://info.altinn.no",
             platform: "https://platform.altinn.no",
+            apps: "https://ttd.apps.altinn.no/ttd",
         },
     },
-} satisfies Record<string, { mockporten: boolean; urler: Urler }>;
+} satisfies Record<string, { mockporten: boolean; testapp: string; urler: Urler }>;
 
 // Bare Chrome inntil videre; Firefox, Edge og Safari er skrudd av, se #619.
 const nettlesere = {
@@ -55,6 +61,7 @@ const nettlesere = {
 export default defineConfig<{
     miljo: string;
     mockporten: boolean;
+    testapp: string;
     urler: Urler;
     sprak: Sprak;
 }>({

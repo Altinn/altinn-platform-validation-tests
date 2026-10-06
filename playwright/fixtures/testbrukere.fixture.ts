@@ -29,11 +29,16 @@ function reservertAv(fil: string): string | undefined {
 
 // Første ledige bruker reserveres med en fil som bare kan opprettes én gang, så to tester
 // som kjører samtidig aldri får samme bruker. Overlever reservasjonen en krasj, finner
-// retryen den igjen.
-function reserverTestbruker(brukere: TestUser[], katalog: string, testId: string): TestUser {
+// retryen den igjen. Brukere testen allerede har fått, hoppes over.
+function reserverTestbruker(
+    brukere: TestUser[],
+    katalog: string,
+    testId: string,
+    allerede: Set<string>,
+): TestUser | undefined {
     mkdirSync(katalog, { recursive: true });
 
-    for (const bruker of brukere) {
+    for (const bruker of brukere.filter((b) => !allerede.has(b.pid))) {
         const fil = path.join(katalog, bruker.pid);
         try {
             writeFileSync(fil, testId, { flag: "wx" });
@@ -45,23 +50,66 @@ function reserverTestbruker(brukere: TestUser[], katalog: string, testId: string
         }
     }
 
-    throw new Error(`Alle ${brukere.length} testbrukerne i ${katalog} er i bruk samtidig.`);
+    return undefined;
+}
+
+/**
+ * Reserverer testbrukere for én test. Reservasjonene gjelder på tvers av grupper, siden
+ * de er per fødselsnummer, og frigis samlet når testen er ferdig.
+ */
+export class Testbrukere {
+    private readonly reservert = new Set<string>();
+
+    constructor(
+        private readonly miljo: string,
+        private readonly katalog: string,
+        private readonly testId: string,
+    ) {}
+
+    reserver(gruppe: string, antall: number): TestUser[] {
+        const brukere = lesTestbrukere(gruppe, this.miljo);
+
+        return Array.from({ length: antall }, () => {
+            const bruker = reserverTestbruker(brukere, this.katalog, this.testId, this.reservert);
+            if (!bruker) {
+                throw new Error(
+                    `Fant ikke ${antall} ledige testbrukere i ${gruppe}/${this.miljo}.csv; ` +
+                    `de ${brukere.length} er i bruk samtidig.`,
+                );
+            }
+            this.reservert.add(bruker.pid);
+            return bruker;
+        });
+    }
+
+    frigi() {
+        for (const pid of this.reservert) {
+            rmSync(path.join(this.katalog, pid), { force: true });
+        }
+        this.reservert.clear();
+    }
 }
 
 export const testbrukereFixture = base.extend<{
+    testbrukere: Testbrukere;
     user: TestUser;
     miljo: string;
 }>({
     miljo: ["", { option: true }],
 
-    // Én bruker om gangen per test, så ingen test deler sesjon med en annen. Brukeren
-    // frigis når testen er ferdig, så neste test kan bruke den. Playwright tømmer
-    // output-mappa ved start, så reservasjonene gjelder én kjøring.
-    user: async ({ miljo }, use, testInfo) => {
-        const brukere = lesTestbrukere("privatPersonUtenVirksomhet", miljo);
+    // Ingen test deler bruker, og dermed sesjon, med en annen. Brukerne frigis når testen
+    // er ferdig, så neste test kan bruke dem. Playwright tømmer output-mappa ved start,
+    // så reservasjonene gjelder én kjøring.
+    testbrukere: async ({ miljo }, use, testInfo) => {
         const katalog = path.join(testInfo.project.outputDir, ".testbrukere", miljo);
-        const bruker = reserverTestbruker(brukere, katalog, testInfo.testId);
+        const testbrukere = new Testbrukere(miljo, katalog, testInfo.testId);
+        await use(testbrukere);
+        testbrukere.frigi();
+    },
+
+    // Snarvei for testene som bare trenger én privatperson.
+    user: async ({ testbrukere }, use) => {
+        const [bruker] = testbrukere.reserver("privatPersonUtenVirksomhet", 1);
         await use(bruker);
-        rmSync(path.join(katalog, bruker.pid), { force: true });
     },
 });
