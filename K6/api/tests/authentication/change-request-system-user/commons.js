@@ -19,7 +19,7 @@ import { ChangeRequestSystemUserDomainChecks, CreateRequestSystemUserBuilder, Re
 import { PackagesSearch } from "../../../building-blocks/access-management/metadata/packages/index.js";
 import { DeleteSystemUser } from "../../../building-blocks/access-management-bff/system-user/index.js";
 import { ApproveSystemUserRequest, GetSystemUserRequest } from "../../../building-blocks/access-management-bff/system-user-request/index.js";
-import { sweepPendingChangeRequests, sweepRegisteredSystems } from "../commons.js";
+import { removeSystem, sweepPendingChangeRequests, sweepRegisteredSystems, withdrawRequest } from "../commons.js";
 
 /**
  * Whether to pick a random customer rather than walk the list.
@@ -606,8 +606,8 @@ function unwindArrange(registration, requestId = undefined) {
     const { clients: apiClients } = getClients();
 
     if (requestId !== undefined) {
-        RequestSystemUserBuildingBlocks.VendorDelete(apiClients.vendor.requestSystemUserClient, requestId);
+        withdrawRequest(apiClients.vendor.requestSystemUserClient, requestId);
     }
 
-    SystemRegisterBuildingBlocks.VendorDelete(apiClients.vendor.systemRegisterClient, registration.systemId);
+    removeSystem(apiClients.vendor.systemRegisterClient, registration.systemId);
 }

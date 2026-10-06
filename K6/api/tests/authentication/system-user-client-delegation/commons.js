@@ -9,7 +9,7 @@ import { CreateAgentRequestSystemUserBuilder, RegisterSystemRequestBuilder, Requ
 import { DeleteAgentSystemUser, GetAgentSystemUsers } from "../../../building-blocks/access-management-bff/system-user/index.js";
 import { ApproveAgentRequest, GetAgentRequest } from "../../../building-blocks/access-management-bff/system-user-agent-request/index.js";
 import { pickVendor } from "../change-request-system-user/commons.js";
-import { sweepRegisteredSystems } from "../commons.js";
+import { removeSystem, sweepRegisteredSystems, withdrawRequest } from "../commons.js";
 
 /**
  * Whether to draw a random facilitator rather than walk the list.
@@ -381,10 +381,10 @@ function unwindArrange(systemId, requestId = undefined) {
     const { clients: apiClients } = getClients();
 
     if (requestId !== undefined) {
-        RequestSystemUserBuildingBlocks.VendorDelete(apiClients.vendor.requestSystemUserClient, requestId);
+        withdrawRequest(apiClients.vendor.requestSystemUserClient, requestId);
     }
 
-    SystemRegisterBuildingBlocks.VendorDelete(apiClients.vendor.systemRegisterClient, systemId);
+    removeSystem(apiClients.vendor.systemRegisterClient, systemId);
 }
 
 /**

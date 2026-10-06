@@ -1,7 +1,7 @@
 import { group } from "k6";
 
 import { ChangeRequestSystemUserClient, RequestSystemUserClient, SystemRegisterClient } from "../../../clients/authentication/index.js";
-import { ChangeRequestSystemUserBuildingBlocks, RequestSystemUserBuildingBlocks, SystemRegisterBuildingBlocks } from "../../authentication-imports.js";
+import { SystemRegisterBuildingBlocks } from "../../authentication-imports.js";
 
 /**
  * A row of `change-request-system-user/end-users-<env>.csv`.
@@ -48,6 +48,39 @@ import { ChangeRequestSystemUserBuildingBlocks, RequestSystemUserBuildingBlocks,
  */
 
 /**
+ * Withdraws a system user request while cleaning up.
+ *
+ * Cleanup only calls this when something was left over or a step already failed,
+ * so it goes to the client rather than through the building block. A check that
+ * only runs then shows up on the dashboard with a 0% success rate.
+ *
+ * @param {RequestSystemUserClient} requestSystemUserClient - Client authenticated as the vendor that made the request.
+ * @param {string} requestId - The request to withdraw.
+ */
+export function withdrawRequest(requestSystemUserClient, requestId) {
+    const res = requestSystemUserClient.RequestSystemUserVendorDelete(requestId);
+
+    if (res.status !== 202) {
+        console.warn(`withdrawRequest - could not withdraw ${requestId}: ${res.status} ${res.body}`);
+    }
+}
+
+/**
+ * Removes a system from the register while cleaning up, without a check for the
+ * same reason as withdrawRequest.
+ *
+ * @param {SystemRegisterClient} systemRegisterClient - Client authenticated as the vendor that owns the system.
+ * @param {string} systemId - The system to remove.
+ */
+export function removeSystem(systemRegisterClient, systemId) {
+    const res = systemRegisterClient.SystemRegisterVendorDelete(systemId);
+
+    if (res.status !== 200) {
+        console.warn(`removeSystem - could not remove ${systemId}: ${res.status} ${res.body}`);
+    }
+}
+
+/**
  * Deletes the systems a test left in a vendor's register.
  *
  * Call from a test's teardown. A test that registers a system deletes it again as
@@ -90,7 +123,7 @@ export function sweepRegisteredSystems(systemRegisterClient, vendorOrgNo, system
                 sweepPendingChangeRequests(changeRequestSystemUserClient, system.systemId);
             }
 
-            SystemRegisterBuildingBlocks.VendorDelete(systemRegisterClient, system.systemId);
+            removeSystem(systemRegisterClient, system.systemId);
         }
 
         swept = leftovers.length;
@@ -122,12 +155,12 @@ export function sweepRegisteredSystems(systemRegisterClient, vendorOrgNo, system
  */
 function sweepPendingRequests(requestSystemUserClient, systemId) {
     const pending = [
-        ...(RequestSystemUserBuildingBlocks.VendorGetBySystem(requestSystemUserClient, systemId)?.data ?? []),
-        ...(RequestSystemUserBuildingBlocks.VendorAgentGetBySystem(requestSystemUserClient, systemId)?.data ?? []),
+        ...listedOn(requestSystemUserClient.RequestSystemUserVendorGetBySystem(systemId), "sweepPendingRequests", systemId),
+        ...listedOn(requestSystemUserClient.RequestSystemUserVendorAgentGetBySystem(systemId), "sweepPendingRequests", systemId),
     ].filter((request) => request?.status === "New");
 
     for (const request of pending) {
-        RequestSystemUserBuildingBlocks.VendorDelete(requestSystemUserClient, request.id);
+        withdrawRequest(requestSystemUserClient, request.id);
     }
 
     if (pending.length > 0) {
@@ -157,11 +190,15 @@ function sweepPendingRequests(requestSystemUserClient, systemId) {
  * @returns {number} How many change requests were withdrawn.
  */
 export function sweepPendingChangeRequests(changeRequestSystemUserClient, systemId) {
-    const pending = (ChangeRequestSystemUserBuildingBlocks.VendorGetBySystem(changeRequestSystemUserClient, systemId)?.data ?? [])
+    const pending = listedOn(changeRequestSystemUserClient.ChangeRequestSystemUserVendorGetBySystem(systemId), "sweepPendingChangeRequests", systemId)
         .filter((changeRequest) => changeRequest?.status === "New");
 
     for (const changeRequest of pending) {
-        ChangeRequestSystemUserBuildingBlocks.VendorDelete(changeRequestSystemUserClient, changeRequest.id);
+        const res = changeRequestSystemUserClient.ChangeRequestSystemUserVendorDelete(changeRequest.id);
+
+        if (res.status !== 202) {
+            console.warn(`sweepPendingChangeRequests - could not withdraw ${changeRequest.id} on ${systemId}: ${res.status} ${res.body}`);
+        }
     }
 
     if (pending.length > 0) {
@@ -169,4 +206,22 @@ export function sweepPendingChangeRequests(changeRequestSystemUserClient, system
     }
 
     return pending.length;
+}
+
+/**
+ * The requests a by-system listing answered with, or none when it did not answer.
+ *
+ * @param {{status: number, body: string|null}} res - The listing response.
+ * @param {string} caller - The sweep asking, for the warning.
+ * @param {string} systemId - The system that was listed.
+ * @returns {{id: string, status: string}[]} The requests on the first page.
+ */
+function listedOn(res, caller, systemId) {
+    if (res.status !== 200) {
+        console.warn(`${caller} - could not list the requests on ${systemId}: ${res.status} ${res.body}`);
+
+        return [];
+    }
+
+    return JSON.parse(String(res.body))?.data ?? [];
 }
