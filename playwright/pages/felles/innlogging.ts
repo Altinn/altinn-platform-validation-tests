@@ -78,10 +78,14 @@ export class Innlogging {
     /**
      * Logger inn fra Tilgangsstyring i infoportalens meny, som lander på
      * tilgangsstyring. Med Mockporten er det `goto` som bestemmer flaten.
+     *
+     * Tilgangsstyring legger selv på `openAccountMenu=true` når den sender brukeren til
+     * innlogging, og det er den som åpner aktørvelgeren etterpå. Mockporten-flyten går
+     * forbi det, så parameteren legges på her.
      */
     async loggInnViaTilgangsstyring(user: TestUser) {
         if (this.mockporten) {
-            await this.loggInnMedMockporten(tilgangsstyringUrl(this.urler.tilgangsstyring), user);
+            await this.loggInnMedMockporten(`${tilgangsstyringUrl(this.urler.tilgangsstyring)}?openAccountMenu=true`, user);
             return;
         }
 
@@ -108,7 +112,7 @@ export class Innlogging {
      * Fortsetter fra ID-portens valg av innloggingsmetode. Sjekker at valget er der
      * først, så en redirect som ikke kommer fram feiler her og ikke på klikket.
      */
-    public async loggInnMedTestId(user: TestUser) {
+    private async loggInnMedTestId(user: TestUser) {
         await expect(this.testIdHoytNivaaLink, "Er på ID-porten").toBeVisible({
             timeout: REDIRECT_TIMEOUT,
         });

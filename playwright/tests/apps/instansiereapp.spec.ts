@@ -12,22 +12,25 @@ let instans: (Instans & { token: string }) | undefined;
 // Brukeren A la til, med tokenet til A. Å slette brukeren sletter også tilgangspakkene den har fått.
 let kobling: { fra: string; til: string; token: string } | undefined;
 
-// Rydder opp app-instanser og delegeringer gjort til brukere
+// Rydder opp app-instanser og delegeringer gjort til brukere. Brukeren slettes også når
+// slettingen av instansen feiler, så testbrukerne ikke frigis med fullmakten i behold.
 test.afterEach(async ({ api, testapp }) => {
-    expect(instans, "Testen opprettet en instans").toBeDefined();
-    const { partyId, guid, token } = instans!;
-    instans = undefined;
-    const slettInstans = await api.apps.instances.DeleteInstance(token, testapp.id, partyId, guid, true);
-    expect(slettInstans.ok(), `Sletting av instans ${partyId}/${guid}: ${slettInstans.status()}`).toBe(true);
-
-    expect(kobling, "Testen la til en bruker").toBeDefined();
-    const { fra, til, token: tokenA } = kobling!;
-    kobling = undefined;
-    const slettBruker = await api.accessManagementBff.connection.RevokeRightHolder(tokenA, { party: fra, from: fra, to: til });
-    expect(slettBruker.ok(), `Sletting av bruker ${til} hos ${fra}: ${slettBruker.status()}`).toBe(true);
+    try {
+        expect(instans, "Testen opprettet en instans").toBeDefined();
+        const { partyId, guid, token } = instans!;
+        instans = undefined;
+        const slettInstans = await api.apps.instances.DeleteInstance(token, testapp.id, partyId, guid, true);
+        expect(slettInstans.ok(), `Sletting av instans ${partyId}/${guid}: ${slettInstans.status()}`).toBe(true);
+    } finally {
+        expect(kobling, "Testen la til en bruker").toBeDefined();
+        const { fra, til, token } = kobling!;
+        kobling = undefined;
+        const slettBruker = await api.accessManagementBff.connection.RevokeRightHolder(token, { party: fra, from: fra, to: til });
+        expect(slettBruker.ok(), `Sletting av bruker ${til} hos ${fra}: ${slettBruker.status()}`).toBe(true);
+    }
 });
 
-test("Bruker instansierer app", { tag: ["@at23", "@tt02"] }, async ({
+test("Bruker instansierer app", { tag: ["@at23", "@tt02", "@prod"] }, async ({
     page,
     api,
     innlogging,
@@ -44,8 +47,7 @@ test("Bruker instansierer app", { tag: ["@at23", "@tt02"] }, async ({
     const [personA, personB] = testbrukere.reserver("privatPersonUtenVirksomhet", 2);
 
     await test.step("Privatperson navigerer til appen", async () => {
-        await app.navigateTo();
-        await innlogging.loggInnMedTestId(personA);
+        await innlogging.loggInnFraDyplenke(app.url, personA);
     });
 
     const opprettet = await test.step("Verifisere bruker får instansiert appen", async () => {

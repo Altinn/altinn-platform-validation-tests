@@ -28,10 +28,6 @@ export class App {
         });
     }
 
-    async navigateTo() {
-        await this.page.goto(this.url);
-    }
-
     async gaTilInstans({ partyId, guid }: Instans) {
         await this.page.goto(`${this.url}#/instance/${partyId}/${guid}`);
     }
