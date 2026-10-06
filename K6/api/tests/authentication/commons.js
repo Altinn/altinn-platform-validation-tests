@@ -48,35 +48,35 @@ import { SystemRegisterBuildingBlocks } from "../../authentication-imports.js";
  */
 
 /**
- * Withdraws a system user request while cleaning up.
+ * Deletes a system user request while cleaning up.
  *
  * Cleanup only calls this when something was left over or a step already failed,
  * so it goes to the client rather than through the building block. A check that
  * only runs then shows up on the dashboard with a 0% success rate.
  *
  * @param {RequestSystemUserClient} requestSystemUserClient - Client authenticated as the vendor that made the request.
- * @param {string} requestId - The request to withdraw.
+ * @param {string} requestId - The request to delete.
  */
-export function withdrawRequest(requestSystemUserClient, requestId) {
+export function deleteRequest(requestSystemUserClient, requestId) {
     const res = requestSystemUserClient.RequestSystemUserVendorDelete(requestId);
 
     if (res.status !== 202) {
-        console.warn(`withdrawRequest - could not withdraw ${requestId}: ${res.status} ${res.body}`);
+        console.warn(`deleteRequest - could not delete ${requestId}: ${res.status} ${res.body}`);
     }
 }
 
 /**
- * Removes a system from the register while cleaning up, without a check for the
- * same reason as withdrawRequest.
+ * Deletes a system from the register while cleaning up, without a check for the
+ * same reason as deleteRequest.
  *
  * @param {SystemRegisterClient} systemRegisterClient - Client authenticated as the vendor that owns the system.
- * @param {string} systemId - The system to remove.
+ * @param {string} systemId - The system to delete.
  */
-export function removeSystem(systemRegisterClient, systemId) {
+export function deleteSystem(systemRegisterClient, systemId) {
     const res = systemRegisterClient.SystemRegisterVendorDelete(systemId);
 
     if (res.status !== 200) {
-        console.warn(`removeSystem - could not remove ${systemId}: ${res.status} ${res.body}`);
+        console.warn(`deleteSystem - could not delete ${systemId}: ${res.status} ${res.body}`);
     }
 }
 
@@ -123,7 +123,7 @@ export function sweepRegisteredSystems(systemRegisterClient, vendorOrgNo, system
                 sweepPendingChangeRequests(changeRequestSystemUserClient, system.systemId);
             }
 
-            removeSystem(systemRegisterClient, system.systemId);
+            deleteSystem(systemRegisterClient, system.systemId);
         }
 
         swept = leftovers.length;
@@ -137,11 +137,11 @@ export function sweepRegisteredSystems(systemRegisterClient, vendorOrgNo, system
 }
 
 /**
- * Withdraws the requests still pending on a system.
+ * Deletes the requests still pending on a system.
  *
  * A system that is about to be swept away can still carry requests nobody acted
  * on, which is what a run that failed at the approval leaves behind. Only the ones
- * still waiting are withdrawn: an accepted request has become a system user and is
+ * still waiting are deleted: an accepted request has become a system user and is
  * that system user's business, and asking to delete it only answers an error.
  *
  * Both kinds are listed, since agent requests live on their own endpoint and a
@@ -150,8 +150,8 @@ export function sweepRegisteredSystems(systemRegisterClient, vendorOrgNo, system
  * leftovers.
  *
  * @param {RequestSystemUserClient} requestSystemUserClient - Client authenticated as the vendor that made the requests.
- * @param {string} systemId - The system whose requests are withdrawn.
- * @returns {number} How many requests were withdrawn.
+ * @param {string} systemId - The system whose requests are deleted.
+ * @returns {number} How many requests were deleted.
  */
 function sweepPendingRequests(requestSystemUserClient, systemId) {
     const pending = [
@@ -160,34 +160,34 @@ function sweepPendingRequests(requestSystemUserClient, systemId) {
     ].filter((request) => request?.status === "New");
 
     for (const request of pending) {
-        withdrawRequest(requestSystemUserClient, request.id);
+        deleteRequest(requestSystemUserClient, request.id);
     }
 
     if (pending.length > 0) {
-        console.info(`sweepPendingRequests - withdrew ${pending.length} pending request(s) on ${systemId}`);
+        console.info(`sweepPendingRequests - deleted ${pending.length} pending request(s) on ${systemId}`);
     }
 
     return pending.length;
 }
 
 /**
- * Withdraws the change requests still pending on a system.
+ * Deletes the change requests still pending on a system.
  *
  * Same job as sweepPendingRequests, for the other kind. A change request that
  * nobody acted on stays listed for the system even after the system user it was
  * made for and the system itself are deleted, so a run that stopped between
- * creating one and withdrawing it leaves it behind for good. Nothing else in the
+ * creating one and deleting it leaves it behind for good. Nothing else in the
  * repo picks those up.
  *
  * Only the ones still waiting: an accepted change request has been applied to the
- * system user, and asking to withdraw it only answers an error.
+ * system user, and asking to delete it only answers an error.
  *
  * Only the first page: a system these tests make carries a handful of change
  * requests per run, so a second page means something other than leftovers.
  *
  * @param {ChangeRequestSystemUserClient} changeRequestSystemUserClient - Client authenticated as the vendor that made the change requests.
- * @param {string} systemId - The system whose change requests are withdrawn.
- * @returns {number} How many change requests were withdrawn.
+ * @param {string} systemId - The system whose change requests are deleted.
+ * @returns {number} How many change requests were deleted.
  */
 export function sweepPendingChangeRequests(changeRequestSystemUserClient, systemId) {
     const pending = listedOn(changeRequestSystemUserClient.ChangeRequestSystemUserVendorGetBySystem(systemId), "sweepPendingChangeRequests", systemId)
@@ -197,12 +197,12 @@ export function sweepPendingChangeRequests(changeRequestSystemUserClient, system
         const res = changeRequestSystemUserClient.ChangeRequestSystemUserVendorDelete(changeRequest.id);
 
         if (res.status !== 202) {
-            console.warn(`sweepPendingChangeRequests - could not withdraw ${changeRequest.id} on ${systemId}: ${res.status} ${res.body}`);
+            console.warn(`sweepPendingChangeRequests - could not delete ${changeRequest.id} on ${systemId}: ${res.status} ${res.body}`);
         }
     }
 
     if (pending.length > 0) {
-        console.info(`sweepPendingChangeRequests - withdrew ${pending.length} pending change request(s) on ${systemId}`);
+        console.info(`sweepPendingChangeRequests - deleted ${pending.length} pending change request(s) on ${systemId}`);
     }
 
     return pending.length;
