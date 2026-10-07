@@ -39,7 +39,7 @@ test("Bruker instansierer app", { tag: ["@at23", "@tt02", "@prod"] }, async ({
     testapp,
 }) => {
     // A oppretter instansen og gir B tilgangspakken; B åpner instansen på vegne av A.
-    const [personA, personB] = testbrukere.reserver("privatPersonUtenVirksomhet", 2, { tilfeldig: true });
+    const [personA, personB] = testbrukere.reserver("privatPersonUtenVirksomhet", 2);
 
     await test.step("Privatperson navigerer til appen", async () => {
         await innlogging.loggInnFraDyplenke(app.url, personA);

@@ -27,7 +27,7 @@ function reservertAv(fil: string): string | undefined {
     }
 }
 
-// Første ledige bruker reserveres med en fil som bare kan opprettes én gang, så to tester
+// Første ledige bruker i lista reserveres med en fil som bare kan opprettes én gang, så to tester
 // som kjører samtidig aldri får samme bruker. Overlever reservasjonen en krasj, finner
 // retryen den igjen. Brukere testen allerede har fått, hoppes over.
 function reserverTestbruker(
@@ -66,13 +66,9 @@ export class Testbrukere {
         private readonly testId: string,
     ) {}
 
-    /**
-     * Uten `tilfeldig` tas de første ledige brukerne i fila. Med `tilfeldig` velges de
-     * tilfeldig blant de ledige, så samme brukere ikke brukes kjøring etter kjøring.
-     */
-    reserver(gruppe: string, antall: number, { tilfeldig = false } = {}): TestUser[] {
-        const alle = lesTestbrukere(gruppe, this.miljo);
-        const brukere = tilfeldig ? [...alle].sort(() => Math.random() - 0.5) : alle;
+    // Brukerne stokkes, så testene ikke bruker de samme brukerne kjøring etter kjøring.
+    reserver(gruppe: string, antall: number): TestUser[] {
+        const brukere = lesTestbrukere(gruppe, this.miljo).sort(() => Math.random() - 0.5);
 
         return Array.from({ length: antall }, () => {
             const bruker = reserverTestbruker(brukere, this.katalog, this.testId, this.reservert);
