@@ -5,8 +5,10 @@ import { slettAlleInstanser } from "../../helpers/instanser";
 import { rettighetshaverUuid } from "../../helpers/rettighetshavere";
 import { aktivAktorPartyId, aktivAktorUuid, altinnToken } from "../../helpers/sesjonsdata";
 
-// Brukeren A la til, med tokenet til A. Å slette brukeren sletter også tilgangspakkene den har fått.
-let kobling: { fra: string; til: string; token: string } | undefined;
+// Brukeren A legger til, med tokenet til A. Settes før brukeren legges til, så oppryddingen
+// finner den igjen selv om testen feiler rett etterpå. Å slette brukeren sletter også
+// tilgangspakkene den har fått.
+let kobling: { fra: string; navn: string; token: string } | undefined;
 
 // Rydder opp app-instanser og delegeringer gjort til brukere. Alle aktive instanser A har av
 // appen slettes, ikke bare den testen opprettet. Brukeren slettes også når slettingen av
@@ -18,8 +20,9 @@ test.afterEach(async ({ api, testapp, page }) => {
         await slettAlleInstanser(api, token, testapp.id, partyId);
     } finally {
         expect(kobling, "Testen la til en bruker").toBeDefined();
-        const { fra, til, token } = kobling!;
+        const { fra, navn, token } = kobling!;
         kobling = undefined;
+        const til = await rettighetshaverUuid(api, token, fra, navn);
         const slettBruker = await api.accessManagementBff.connection.RevokeRightHolder(token, { party: fra, from: fra, to: til });
         expect(slettBruker.ok(), `Sletting av bruker ${til} hos ${fra}: ${slettBruker.status()}`).toBe(true);
     }
@@ -63,12 +66,10 @@ test("Bruker instansierer app", { tag: ["@at23", "@tt02", "@prod"] }, async ({
         // Fullmakten skal gis fra A selv, ikke fra en aktør A tidligere har fått fullmakt fra.
         await aktorvelger.velgAktorFraHeader(personA.name, await antallAktorer(api, await altinnToken(page)));
 
+        kobling = { fra: await aktivAktorUuid(page), navn: personB.name, token: await altinnToken(page) };
+
         await tilgangsstyring.brukereLink.click();
         await tilgangsstyring.brukere.leggTilNyBruker(personB.pid, etternavn(personB));
-
-        const fra = await aktivAktorUuid(page);
-        const token = await altinnToken(page);
-        kobling = { fra, til: await rettighetshaverUuid(api, token, fra, personB.name), token };
 
         const tilgangspakke = testapp.tilgangspakke[sprak];
         const pakke = await tilgangsstyring.brukere.apnePakkeDetaljer(personB.name, tilgangspakke);
