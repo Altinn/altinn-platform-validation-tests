@@ -44,6 +44,12 @@ test("Bruker instansierer app", { tag: ["@at23", "@tt02", "@prod"] }, async ({
     // A oppretter instansen og gir B tilgangspakken; B åpner instansen på vegne av A.
     const [personA, personB] = testbrukere.reserver("privatPersonUtenVirksomhet", 2);
 
+    // B logger inn i sin egen nettleserøkt samtidig med at A jobber, så innloggingen er
+    // ferdig når B trengs. Feiler den, kastes feilen der testen venter på B, ikke midt i A.
+    const sesjonB = await nySesjon();
+    const bInnlogget = sesjonB.innlogging.loggInnViaTilgangsstyring(personB);
+    bInnlogget.catch(() => {});
+
     await test.step("Privatperson navigerer til appen", async () => {
         await innlogging.loggInnFraDyplenke(app.url, personA);
     });
@@ -64,9 +70,12 @@ test("Bruker instansierer app", { tag: ["@at23", "@tt02", "@prod"] }, async ({
         await tilgangsstyring.meny.setLanguage(sprak);
 
         // Fullmakten skal gis fra A selv, ikke fra en aktør A tidligere har fått fullmakt fra.
-        await aktorvelger.velgAktorFraHeader(personA.name, await antallAktorer(api, await altinnToken(page)));
+        const tokenA = await altinnToken(page);
+        const aktorerA = await antallAktorer(api, tokenA);
+        await aktorvelger.velgAktorFraHeader(personA.name, aktorerA);
 
-        kobling = { fra: await aktivAktorUuid(page), navn: personB.name, token: await altinnToken(page) };
+        const fra = await aktivAktorUuid(page);
+        kobling = { fra, navn: personB.name, token: tokenA };
 
         await tilgangsstyring.brukereLink.click();
         await tilgangsstyring.brukere.leggTilNyBruker(personB.pid, etternavn(personB));
@@ -79,12 +88,13 @@ test("Bruker instansierer app", { tag: ["@at23", "@tt02", "@prod"] }, async ({
         await pakke.lukk();
     });
 
-    // B får sin egen nettleserøkt, så ingenting fra A sin innlogging følger med.
-    const sesjonB = await nySesjon();
-
     await test.step("Person-B logger inn i en ny sesjon og velger bruker A som aktør", async () => {
-        await sesjonB.innlogging.loggInnViaTilgangsstyring(personB);
-        await sesjonB.aktorvelger.velgAktor(personA.name, await antallAktorer(api, await altinnToken(sesjonB.page)));
+        await bInnlogget;
+        // B logget inn før fullmakten fantes, så siden lastes på nytt for å hente aktørlisten.
+        await sesjonB.page.reload();
+        const tokenB = await altinnToken(sesjonB.page);
+        const aktorerB = await antallAktorer(api, tokenB);
+        await sesjonB.aktorvelger.velgAktorFraHeader(personA.name, aktorerB);
     });
 
     await test.step("Verifisere person-B har tilgang til instansen", async () => {
