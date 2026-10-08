@@ -1,6 +1,6 @@
 import { expect, Locator, Page } from "@playwright/test";
 
-import { Testapp, TestUser } from "../../config/environment";
+import { etternavn, Testapp, TestUser } from "../../config/environment";
 import { Sprak } from "../../config/sprak";
 
 // Appen legger instansen i urlen: #/instance/{partyId}/{instanceGuid}/...
@@ -25,15 +25,9 @@ const TTD: Record<Sprak, string> = {
     [Sprak.Engelsk]: "Test Ministry",
 };
 
-// Appen viser navnet slik det står i Folkeregisteret, og rekkefølgen på delene er ikke alltid
-// den samme som i testdataene, så navnet matches med delene i hvilken som helst rekkefølge.
-// Mellomnavn kan være utelatt.
-function navnIAppen({ name }: TestUser): string {
-    const rekkefolger = (deler: string[]): string[][] =>
-        deler.length <= 1 ? [deler] : deler.flatMap((del, i) => rekkefolger([...deler.slice(0, i), ...deler.slice(i + 1)]).map((rest) => [del, ...rest]));
-    const deler = name.split(" ").map((del) => del.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"));
-    const varianter = deler.length > 2 ? [deler, [deler[0], deler.at(-1)!]] : [deler];
-    return `(?:${varianter.flatMap(rekkefolger).map((r) => r.join(" ")).join("|")})`;
+// Appen forkorter og snur navnet («U. SILHUETT FLØYTE», «KØ KJÆRLIG»), så bare etternavnet matches.
+function etternavnIAppen(bruker: TestUser): string {
+    return etternavn(bruker).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
 /**
@@ -100,7 +94,7 @@ export class App {
     /** Headeren viser at `bruker` fyller ut på vegne av `aktor`: "<bruker> for <aktør>". */
     async assertPaVegneAv(bruker: TestUser, aktor: TestUser) {
         await expect(this.header, `${bruker.name} fyller ut på vegne av ${aktor.name}`).toContainText(
-            new RegExp(`${navnIAppen(bruker)} ${FOR[this.sprak]} ${navnIAppen(aktor)}`, "i"),
+            new RegExp(`${etternavnIAppen(bruker)}.* ${FOR[this.sprak]} .*${etternavnIAppen(aktor)}`, "i"),
         );
     }
 }
