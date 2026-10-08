@@ -15,13 +15,20 @@ const TAGS = {
 class DecisionClient {
     /**
      * @param {string} baseUrl Base URL.
-     * @param {*} tokenGenerator Generates bearer tokens.
+     * @param {*} tokenGenerator Generates bearer tokens, or null for /decision,
+     * which only needs the subscription key.
+     * @param {string|null} [subscriptionKey] API management subscription key.
      */
-    constructor(baseUrl, tokenGenerator) {
+    constructor(baseUrl, tokenGenerator, subscriptionKey = null) {
         /**
          * Generates authentication tokens.
          */
         this.tokenGenerator = tokenGenerator;
+
+        /**
+         * API management subscription key, or null when not needed.
+         */
+        this.subscriptionKey = subscriptionKey;
 
         /**
          * Base API path.
@@ -64,8 +71,11 @@ class DecisionClient {
                 endpoint: `${this.FULL_PATH}/decision`,
                 action: TAGS.DecisionPost.action,
                 labels,
-                token: this.tokenGenerator.getToken(),
-                headers: { "Content-Type": contentType },
+                token: this.tokenGenerator?.getToken() ?? null,
+                headers: {
+                    "Content-Type": contentType,
+                    "Ocp-Apim-Subscription-Key": this.subscriptionKey,
+                },
             }),
         );
     }
@@ -90,6 +100,7 @@ class DecisionClient {
                 labels,
                 token: this.tokenGenerator.getToken(),
                 json: true,
+                headers: { "Ocp-Apim-Subscription-Key": this.subscriptionKey },
             }),
         );
     }

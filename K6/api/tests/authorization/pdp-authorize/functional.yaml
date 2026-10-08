@@ -30,6 +30,13 @@ test_definitions:
           secrets:
             - authorization-subscription-key-at22
 
+  - test_file: dagl-decision.js
+    contexts:
+      - environment: at22
+        test_run:
+          secrets:
+            - authorization-subscription-key-at22
+
   - test_file: dagl-deny.js
     contexts:
       - environment: yt01
