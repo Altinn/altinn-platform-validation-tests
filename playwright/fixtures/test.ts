@@ -1,8 +1,11 @@
 import { mergeTests } from "@playwright/test";
 
+import { apiFixture } from "./api.fixture";
+import { appFixture } from "./app.fixture";
 import { arbeidsflateFixture } from "./arbeidsflate.fixture";
 import { infoportalFixture } from "./infoportal.fixture";
 import { innloggingFixture } from "./innlogging.fixture";
+import { sesjonFixture } from "./sesjon.fixture";
 import { testbrukereFixture } from "./testbrukere.fixture";
 import { tilgangsstyringFixture } from "./tilgangsstyring.fixture";
 
@@ -14,6 +17,9 @@ export const test = mergeTests(
     infoportalFixture,
     innloggingFixture,
     testbrukereFixture,
+    apiFixture,
+    sesjonFixture,
+    appFixture,
 );
 
 export { expect } from "@playwright/test";

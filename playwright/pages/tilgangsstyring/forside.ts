@@ -1,9 +1,11 @@
 import { expect, Locator, Page } from "@playwright/test";
 
 import { TestUser } from "../../config/environment";
+import { Sprak } from "../../config/sprak";
 import { Cookiebanner } from "../felles/cookiebanner";
 import { Meny } from "../felles/meny";
 import { assertFlateUtlogget } from "../felles/utlogget";
+import { TilgangsstyringBrukere } from "./brukere";
 
 // Brukes også av `Innlogging`, så stien står ett sted.
 export const tilgangsstyringUrl = (tilgangsstyring: string) => `${tilgangsstyring}/accessmanagement/ui`;
@@ -21,9 +23,12 @@ export class TilgangsstyringForside {
     readonly fullmakterHosAndreLink: Locator;
     readonly samtykkeOgFullmaktsavtalerLink: Locator;
 
+    readonly brukere: TilgangsstyringBrukere;
+
     constructor(
         private page: Page,
         tilgangsstyring: string,
+        sprak: Sprak,
         readonly meny = new Meny(page),
         readonly cookiebanner = new Cookiebanner(page),
     ) {
@@ -38,6 +43,8 @@ export class TilgangsstyringForside {
         this.fullmakterLink = sidemenyLenkeTil("poa-overview");
         this.fullmakterHosAndreLink = sidemenyLenkeTil("received-from");
         this.samtykkeOgFullmaktsavtalerLink = sidemenyLenkeTil("consent/active");
+
+        this.brukere = new TilgangsstyringBrukere(page, sprak);
     }
 
     async navigateTo() {

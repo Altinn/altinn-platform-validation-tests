@@ -11,8 +11,10 @@ export class InfoportalForside {
     constructor(
         private page: Page,
         readonly url: string,
+        private sprak: Sprak,
         readonly cookiebanner = new Cookiebanner(page),
     ) {
+        // Infoportalen viser "Logg inn" før brukeren har valgt språk, så knappen matches på alle.
         this.loginButton = page.getByRole("button", { name: /logg inn|login/i }).first();
     }
 
@@ -53,11 +55,11 @@ export class InfoportalForside {
         await expect.poll(() => this.page.url()).toContain(new URL(this.url).origin);
     }
 
-    async assertSprak(sprak: Sprak) {
+    async assertSprak() {
         await this.assertOnPage();
         await expect(
-            this.page.getByText(sporsmaal[sprak]),
-            `Infoportalen viser "${sporsmaal[sprak]}"`
+            this.page.getByText(sporsmaal[this.sprak]),
+            `Infoportalen viser "${sporsmaal[this.sprak]}"`
         ).toBeVisible();
     }
 }

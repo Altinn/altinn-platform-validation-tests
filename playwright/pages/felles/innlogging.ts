@@ -1,6 +1,7 @@
 import { expect, Locator, Page } from "@playwright/test";
 
 import { requireEnv, TestUser, Urler } from "../../config/environment";
+import { Sprak } from "../../config/sprak";
 import { InfoportalForside } from "../infoportal/forside";
 import { tilgangsstyringUrl } from "../tilgangsstyring/forside";
 import { Meny } from "./meny";
@@ -17,6 +18,8 @@ const SESJONSCOOKIES = ["AltinnStudioRuntime", "altinnsession"];
  * Innloggingen går via en av de to hovedsidene, arbeidsflaten eller tilgangsstyring.
  * Om den går via ID-porten med TestID eller via Mockporten styres av `mockporten` i
  * projectet, siden TestID ikke finnes i prod.
+ *
+ * Språket er ikke valgt ennå ved innlogging, så tekstene her matches på alle språk.
  */
 export class Innlogging {
     private readonly meny: Meny;
@@ -40,9 +43,10 @@ export class Innlogging {
         private page: Page,
         private urler: Urler,
         private mockporten: boolean,
+        sprak: Sprak,
     ) {
         this.meny = new Meny(page);
-        this.infoportal = new InfoportalForside(page, urler.infoportal);
+        this.infoportal = new InfoportalForside(page, urler.infoportal, sprak);
 
         this.passwordField = page.getByLabel(/shared access password/i);
         this.mockportenPidField = page.getByLabel(/fødselsnummer/i);
@@ -78,10 +82,14 @@ export class Innlogging {
     /**
      * Logger inn fra Tilgangsstyring i infoportalens meny, som lander på
      * tilgangsstyring. Med Mockporten er det `goto` som bestemmer flaten.
+     *
+     * Tilgangsstyring legger selv på `openAccountMenu=true` når den sender brukeren til
+     * innlogging, og det er den som åpner aktørvelgeren etterpå. Mockporten-flyten går
+     * forbi det, så parameteren legges på her.
      */
     async loggInnViaTilgangsstyring(user: TestUser) {
         if (this.mockporten) {
-            await this.loggInnMedMockporten(tilgangsstyringUrl(this.urler.tilgangsstyring), user);
+            await this.loggInnMedMockporten(`${tilgangsstyringUrl(this.urler.tilgangsstyring)}?openAccountMenu=true`, user);
             return;
         }
 
