@@ -27,11 +27,13 @@ const TTD: Record<Sprak, string> = {
 
 // Appen viser navnet slik det står i Folkeregisteret, og rekkefølgen på delene er ikke alltid
 // den samme som i testdataene, så navnet matches med delene i hvilken som helst rekkefølge.
+// Mellomnavn kan være utelatt.
 function navnIAppen({ name }: TestUser): string {
     const rekkefolger = (deler: string[]): string[][] =>
         deler.length <= 1 ? [deler] : deler.flatMap((del, i) => rekkefolger([...deler.slice(0, i), ...deler.slice(i + 1)]).map((rest) => [del, ...rest]));
     const deler = name.split(" ").map((del) => del.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"));
-    return `(?:${rekkefolger(deler).map((r) => r.join(" ")).join("|")})`;
+    const varianter = deler.length > 2 ? [deler, [deler[0], deler.at(-1)!]] : [deler];
+    return `(?:${varianter.flatMap(rekkefolger).map((r) => r.join(" ")).join("|")})`;
 }
 
 /**
