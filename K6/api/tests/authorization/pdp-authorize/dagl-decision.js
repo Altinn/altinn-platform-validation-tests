@@ -1,3 +1,14 @@
+/**
+ * Load on the internal /decision endpoint, mainly to load test the audit log.
+ *
+ * Every single decision request is queued as an authorization event, so this
+ * fills the audit log queue with distinct requests: each row is its own
+ * organization and daglig leder, and every answer is expected to be Permit.
+ * Multi requests are not logged, and a request with a person identifier as
+ * subject fails before it is, so neither would add load to the audit log.
+ *
+ * Run from K6/, e.g. k6 run --vus 5 --iterations 100 --duration 1m api/tests/authorization/pdp-authorize/dagl-decision.js
+ */
 import exec from "k6/execution";
 
 import { buildAuthorizeRequest, buildXacmlJsonAttributeExternal } from "../../../../clients/authorization/builders.js";
