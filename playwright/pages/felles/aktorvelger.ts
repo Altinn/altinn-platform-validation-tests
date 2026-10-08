@@ -1,8 +1,7 @@
 import { expect, Locator, Page } from "@playwright/test";
 
-// Velgeren har søk når brukeren har flere aktører enn dette, undernivåene medregnet.
-// Fra AccountSelector i @altinn/altinn-components.
-const SOK_OVER_ANTALL_AKTORER = 5;
+import { Sprak } from "../../config/sprak";
+import { DIALOGPORTEN_INTERVALLER, DIALOGPORTEN_TIMEOUT } from "./navigasjon";
 
 /**
  * Aktørvelgeren som åpner seg etter innlogging når brukeren kan representere flere
@@ -11,60 +10,77 @@ const SOK_OVER_ANTALL_AKTORER = 5;
  */
 export class Aktorvelger {
     readonly dialog: Locator;
-    readonly searchBox: Locator;
-    // Knappen i headeren med aktøren brukeren står på nå, ved siden av "Meny".
+    // Knappen i headeren med aktøren brukeren står på nå, ved siden av "Meny". Headeren kan
+    // vises før brukeren har valgt språk, så menyknappen utelates på alle språk.
     readonly aktorKnapp: Locator;
 
-    constructor(private page: Page) {
+    constructor(private page: Page, readonly sprak: Sprak) {
         this.dialog = page.getByRole("dialog");
-        this.searchBox = this.dialog.getByRole("searchbox");
         this.aktorKnapp = page
             .getByRole("banner")
             .getByRole("button")
-            .filter({ hasNotText: /^(meny|menu)$/i });
+            .filter({ hasNotText: /^(meny|menu)$/i })
+            .first();
     }
 
     /**
-     * Åpner aktørvelgeren fra headeren og velger `navn`, også når det er aktøren
-     * brukeren allerede står på. Etter innlogging står brukeren ikke nødvendigvis på
-     * seg selv, for eksempel når andre har gitt brukeren fullmakt.
+     * Sørger for at brukeren står på `navn`, slik en bruker som ikke vet hvor mange aktører
+     * hen har, ville gjort: har aktørlisten åpnet seg av seg selv etter innlogging, velges
+     * `navn` der. Står brukeren allerede på `navn`, er det ingenting å velge; det gjelder også
+     * når brukeren bare har seg selv, og lista ikke dukker opp. Ellers åpnes lista fra
+     * headeren, og `navn` velges direkte. Lister med søk (flere enn fem aktører) støttes ikke ennå.
      *
-     * Klikket prøves på nytt til velgeren er åpen. Etter et språkbytte tegnes headeren
-     * på nytt, og et klikk før den er klar åpner ingenting.
+     * Prøves på nytt til brukeren står på `navn`. Rett etter innlogging kan lista åpne seg og
+     * lukke seg igjen, og etter et språkbytte tegnes headeren på nytt, så et klikk kan bomme.
      */
-    async velgAktorFraHeader(navn: string, antallAktorer: number) {
+    async velgAktorFraHeader(navn: string) {
         await expect(async () => {
-            await this.aktorKnapp.click();
-            await expect(this.dialog).toBeVisible({ timeout: 2_000 });
-        }, "Aktørvelgeren åpner seg").toPass({ timeout: 15_000 });
-        await this.velgIListen(navn, antallAktorer);
-        await expect(this.aktorKnapp, `Står på ${navn}`).toContainText(navn, { ignoreCase: true });
+            if (await this.dialog.isVisible()) {
+                await this.aktor(navn).click({ timeout: 2_000 });
+            } else if (!(await this.starPa(navn))) {
+                await this.aktorKnapp.click({ timeout: 2_000 });
+                await this.aktor(navn).click({ timeout: 2_000 });
+            }
+            await expect(this.dialog).toBeHidden({ timeout: 2_000 });
+            await expect(this.aktorKnapp).toContainText(navn, { ignoreCase: true, timeout: 2_000 });
+        }, `Står på ${navn}`).toPass({ timeout: 30_000 });
     }
 
     /**
-     * Velger `navn` i aktørvelgeren som åpner seg av seg selv etter innlogging. Det gjør
-     * den bare når brukeren har mer enn én aktør, ellers kommer den aldri.
+     * Som {@link velgAktorFraHeader}, men venter til `navn` er med i lista. Etter at
+     * brukeren har fått en ny fullmakt, kan det ta opptil et kvarter før aktøren
+     * vises, så siden lastes på nytt og lista åpnes igjen til den er der. Lista kan
+     * åpne seg av seg selv etter innlastingen, og da er knappen i headeren deaktivert.
      */
-    async velgAktor(navn: string, antallAktorer: number) {
-        expect(antallAktorer, "Brukeren har flere aktører, så aktørvelgeren åpner seg").toBeGreaterThan(1);
-        await expect(this.dialog, "Aktørvelgeren vises").toBeVisible();
-        await this.velgIListen(navn, antallAktorer);
+    async ventPaOgVelgAktorFraHeader(navn: string) {
+        await expect(async () => {
+            await this.page.reload();
+            await expect(this.dialog.or(this.aktorKnapp).first()).toBeVisible();
+            if (!(await this.dialog.isVisible())) {
+                await this.aktorKnapp.click();
+            }
+            await expect(this.aktor(navn)).toBeVisible({ timeout: 5_000 });
+        }, `${navn} er med i aktørlisten`).toPass({ timeout: DIALOGPORTEN_TIMEOUT, intervals: DIALOGPORTEN_INTERVALLER });
+        await this.velg(navn);
+    }
+
+    private async starPa(navn: string): Promise<boolean> {
+        const tekst = await this.aktorKnapp.innerText({ timeout: 2_000 });
+        return tekst.toLowerCase().includes(navn.toLowerCase());
     }
 
     /**
      * Navnet skrives med store bokstaver i lista, og menypunktet har med fødselsdato eller
      * org.nr, så det matches uten store og små bokstaver og uten å kreve hele navnet.
      */
-    private async velgIListen(navn: string, antallAktorer: number) {
-        if (antallAktorer > SOK_OVER_ANTALL_AKTORER) {
-            await this.searchBox.fill(navn);
-        }
-
+    private aktor(navn: string): Locator {
         const escaped = navn.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-        await this.dialog
-            .getByRole("menuitem", { name: new RegExp(escaped, "i") })
-            .first()
-            .click();
-        await expect(this.dialog, "Aktørvelgeren lukkes etter valget").toBeHidden();
+        return this.dialog.getByRole("menuitem", { name: new RegExp(escaped, "i") }).first();
+    }
+
+    private async velg(navn: string) {
+        await this.aktor(navn).click();
+        await expect(this.dialog, "Aktørlisten lukkes etter valget").toBeHidden();
+        await expect(this.aktorKnapp, `Står på ${navn}`).toContainText(navn, { ignoreCase: true });
     }
 }

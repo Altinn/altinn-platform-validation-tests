@@ -13,11 +13,6 @@ export function altinnToken(page: Page): Promise<string> {
     return cookie(page, "AltinnStudioRuntime");
 }
 
-/** Party id-en til aktøren som er valgt. */
-export function aktivAktorPartyId(page: Page): Promise<string> {
-    return cookie(page, "AltinnPartyId");
-}
-
 /** Party UUID-en til aktøren som er valgt. */
 export function aktivAktorUuid(page: Page): Promise<string> {
     return cookie(page, "AltinnPartyUuid");

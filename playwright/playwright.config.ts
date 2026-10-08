@@ -11,15 +11,20 @@ dotenv.config({
     quiet: true,
 });
 
-const bruksmoensterTestApp: Testapp = {
+const bruksmoensterTestApp = (sprak: Sprak): Testapp => ({
     id: "brukermonster-test-app",
-    visningsnavn: "Bruksmønster-test",
+    visningsnavn: {
+        [Sprak.Bokmaal]: "Bruksmønster-testtjeneste",
+        [Sprak.Nynorsk]: "Bruksmønster-testteneste",
+        [Sprak.Engelsk]: "Userpattern test service",
+    }[sprak],
+    visningsnavnITilgangspakke: "Bruksmønster-testtjeneste",
     tilgangspakke: {
         [Sprak.Bokmaal]: "Fritidsaktiviteter og friluftsliv",
         [Sprak.Nynorsk]: "Fritidsaktivitetar og friluftsliv",
         [Sprak.Engelsk]: "Leisure activities and outdoor life",
-    },
-};
+    }[sprak],
+});
 
 // Alt som skiller miljøene. Et miljø kjører bare testene som er tagget med det,
 // for eksempel { tag: ["@at23", "@tt02"] }.
@@ -58,9 +63,13 @@ const miljoer = {
             apps: "https://ttd.apps.altinn.no/ttd",
         },
     },
-} satisfies Record<string, { mockporten: boolean; testapp: Testapp; urler: Urler }>;
+} satisfies Record<string, { mockporten: boolean; testapp: (sprak: Sprak) => Testapp; urler: Urler }>;
 
 // Bare Chrome inntil videre; Firefox, Edge og Safari er skrudd av, se #619.
+// Større enn standardstørrelsen i devices (1280 × 720), så det er lettere å følge med når
+// testene debugges og deles.
+const skjerm = { width: 1920, height: 1080 };
+
 const nettlesere = {
     chromium: devices["Desktop Chrome"],
     // firefox: devices["Desktop Firefox"],
@@ -90,18 +99,18 @@ export default defineConfig<{
     timeout: 60000,
     expect: { timeout: 10_000 },
     use: {
-        trace: "on-first-retry",
+        trace: "on",
         video: "retain-on-failure",
     },
 
     // Ett project per miljø, nettleser og språk, for eksempel at23-chromium-nynorsk.
     // Scriptene i package.json velger miljø, og eventuelt bare bokmål.
-    projects: Object.entries(miljoer).flatMap(([miljo, options]) =>
+    projects: Object.entries(miljoer).flatMap(([miljo, { testapp, ...options }]) =>
         Object.entries(nettlesere).flatMap(([nettleser, device]) =>
             alleSprak.map((sprak) => ({
                 name: `${miljo}-${nettleser}-${sprak}`,
                 grep: new RegExp(`@${miljo}`),
-                use: { ...device, ...options, miljo, sprak },
+                use: { ...device, viewport: skjerm, ...options, testapp: testapp(sprak), miljo, sprak },
             })),
         ),
     ),

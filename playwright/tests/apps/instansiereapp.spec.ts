@@ -1,20 +1,24 @@
 import { etternavn } from "../../config/environment";
 import { expect, test } from "../../fixtures/test";
-import { antallAktorer } from "../../helpers/aktorer";
-import { slettAlleInstanser } from "../../helpers/instanser";
-import { merkSesjon } from "../../helpers/merkelapp";
 import { rettighetshaverUuid } from "../../helpers/rettighetshavere";
-import { aktivAktorPartyId, aktivAktorUuid, altinnToken } from "../../helpers/sesjonsdata";
+import { aktivAktorUuid, altinnToken } from "../../helpers/sesjonsdata";
+import { Instans } from "../../pages/apps/app";
+
+// Instansen person-A oppretter. Bare den slettes, så andre instanser person-A har, blir stående.
+let instans: Instans | undefined;
 
 // Settes før person-B legges til, så oppryddingen finner person-B selv om testen feiler rett etterpå.
 let kobling: { fra: string; navn: string; token: string } | undefined;
 
-// Sletter alle aktive instanser person-A har av appen, og person-B med tilgangspakken uansett.
+// Sletter instansen testen opprettet, og person-B med tilgangspakken uansett.
 test.afterEach(async ({ api, testapp, page }) => {
     try {
+        expect(instans, "Testen opprettet en instans").toBeDefined();
+        const { partyId, guid } = instans!;
+        instans = undefined;
         const token = await altinnToken(page);
-        const partyId = await aktivAktorPartyId(page);
-        await slettAlleInstanser(api, token, testapp.id, partyId);
+        const slettInstans = await api.apps.instances.DeleteInstance(token, testapp.id, partyId, guid, true);
+        expect(slettInstans.ok(), `Sletting av instans ${partyId}/${guid}: ${slettInstans.status()}`).toBe(true);
     } finally {
         expect(kobling, "Testen la til en bruker").toBeDefined();
         const { fra, navn, token } = kobling!;
@@ -27,7 +31,6 @@ test.afterEach(async ({ api, testapp, page }) => {
 
 test("Bruker instansierer app", { tag: ["@at23", "@tt02", "@prod"] }, async ({
     page,
-    api,
     innlogging,
     aktorvelger,
     nySesjon,
@@ -37,44 +40,40 @@ test("Bruker instansierer app", { tag: ["@at23", "@tt02", "@prod"] }, async ({
     sprak,
     app,
     testapp,
-    miljo,
 }) => {
+    // Innboksen kan bruke opptil et kvarter på å vise den nye aktøren og utkastet, se DIALOGPORTEN_TIMEOUT.
+    test.setTimeout(40 * 60_000);
     const [personA, personB] = testbrukere.reserver("privatPersonUtenVirksomhet", 2);
-    const sesjonB = await nySesjon();
-    await merkSesjon(page.context(), `Person-A · ${personA.name} · ${miljo}`, "#1f5fa8");
-    await merkSesjon(sesjonB.page.context(), `Person-B · ${personB.name} · ${miljo}`, "#b5531c");
+    console.log(`Person-A: ${personA.name}, person-B: ${personB.name}`);
 
-    const bInnlogget = test.step("Person-B logger inn i en egen sesjon, parallelt med person-A", async () => {
-        await sesjonB.innlogging.loggInnViaTilgangsstyring(personB);
-    });
-
-    // Feiler innloggingen, kastes feilen der testen venter på person-B.
-    bInnlogget.catch(() => {});
-
-    await test.step("Person-A logger inn via lenken til appen", async () => {
-        await innlogging.loggInnFraDyplenke(app.url, personA);
-    });
-
-    const opprettet = await test.step("Appen oppretter en instans for person-A", async () => {
-        await app.assertPaInstans();
-        await expect(app.presentationHeading).toContainText(app.navn);
-        await expect(app.hovedinnhold).toContainText("Testdepartementet");
-
-        const instans = app.aktivInstans();
-        await app.gaTilbakeTilInnboks();
-        return instans;
-    });
-
-    await test.step("Person-A går til Tilgangsstyring og velger seg selv som aktør", async () => {
-        await arbeidsflate.meny.gaTilTilgangsstyring();
+    await test.step("Person-A logger inn via Tilgangsstyring, velger seg selv som aktør og setter språk", async () => {
+        await innlogging.loggInnViaTilgangsstyring(personA);
+        await aktorvelger.velgAktorFraHeader(personA.name);
         await tilgangsstyring.meny.setLanguage(sprak);
 
         const tokenA = await altinnToken(page);
-        const aktorerA = await antallAktorer(api, tokenA);
-        await aktorvelger.velgAktorFraHeader(personA.name, aktorerA);
-
         const fra = await aktivAktorUuid(page);
         kobling = { fra, navn: personB.name, token: tokenA };
+    });
+
+    const opprettet = await test.step("Person-A går til appen, som oppretter en instans", async () => {
+        await app.navigateTo();
+        await app.assertPaInstans();
+        await expect(app.presentationHeading).toContainText(app.visningsnavn);
+        await expect(app.hovedinnhold).toContainText(app.tjenesteeier);
+
+        instans = app.aktivInstans();
+        return instans;
+    });
+
+    await test.step("Person-A ser instansen som utkast i innboksen", async () => {
+        await app.gaTilbakeTilInnboks();
+        await arbeidsflate.apneUtkast();
+        await arbeidsflate.ventPaDialog(opprettet);
+    });
+
+    await test.step("Person-A går til Tilgangsstyring", async () => {
+        await arbeidsflate.meny.gaTilTilgangsstyring();
     });
 
     await test.step("Person-A legger til person-B som ny bruker", async () => {
@@ -83,17 +82,33 @@ test("Bruker instansierer app", { tag: ["@at23", "@tt02", "@prod"] }, async ({
     });
 
     await test.step("Person-A gir person-B tilgangspakken som gir tilgang til appen", async () => {
-        const tilgangspakke = testapp.tilgangspakke[sprak];
+        const tilgangspakke = testapp.tilgangspakke;
         const pakke = await tilgangsstyring.brukere.apnePakkeDetaljer(personB.name, tilgangspakke);
         await pakke.giFullmakt();
         await pakke.assertHarFullmakt();
-        await pakke.assertInneholderApp(testapp.visningsnavn);
+        await pakke.assertInneholderApp(testapp.visningsnavnITilgangspakke);
         await pakke.lukk();
     });
 
-    await test.step("Person-B har tilgang til instansen til person-A", async () => {
-        await bInnlogget;
-        await sesjonB.app.gaTilInstans(opprettet);
+    const sesjonB = await test.step("Person-B logger inn via Tilgangsstyring, velger person-A som aktør, setter språk og går til innboksen", async () => {
+        const sesjon = await nySesjon();
+        await sesjon.innlogging.loggInnViaTilgangsstyring(personB);
+
+        await sesjon.aktorvelger.ventPaOgVelgAktorFraHeader(personA.name);
+        await sesjon.tilgangsstyring.meny.setLanguage(sprak);
+
+        // Aktøren B velger i Tilgangsstyring følger ikke alltid med til innboksen.
+        await sesjon.tilgangsstyring.meny.gaTilInnboks();
+        await sesjon.aktorvelger.ventPaOgVelgAktorFraHeader(personA.name);
+        return sesjon;
+    });
+
+    await test.step("Person-B åpner instansen til person-A fra utkastene i innboksen", async () => {
+        await sesjonB.arbeidsflate.apneUtkast();
+        await sesjonB.arbeidsflate.ventPaDialog(opprettet);
+        await sesjonB.arbeidsflate.dialogLink(opprettet).click();
+        await sesjonB.arbeidsflate.gaTilSkjemautfylling();
         await sesjonB.app.assertViserInstans(opprettet);
+        await sesjonB.app.assertPaVegneAv(personB, personA);
     });
 });

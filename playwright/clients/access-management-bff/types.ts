@@ -27,9 +27,3 @@ export type Connection = {
         partyId: number;
     };
 };
-
-export type AuthorizedParty = {
-    partyUuid: string;
-    name: string;
-    subunits: AuthorizedParty[] | null;
-};

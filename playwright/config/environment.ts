@@ -1,5 +1,3 @@
-import { Sprak } from "./sprak";
-
 /**
  * Hemmelighetene kommer fra miljøvariabler: lokalt fra .env, i Kubernetes fra
  * secrets. URLene ligger i miljøets project i playwright.config.ts, og testbrukerne
@@ -15,14 +13,16 @@ export type Urler = {
 };
 
 /**
- * En app fra ttd som testene bruker. Visningsnavnet og tilgangspakken er slik de står i
- * Tilgangsstyring, og pakkenavnet oversettes, ikke bare UI-teksten rundt.
+ * En app fra ttd som testene bruker, med tekstene på språket til projectet. Pakkenavnet
+ * oversettes i Tilgangsstyring, ikke bare UI-teksten rundt.
  */
 export type Testapp = {
     // Appens navn i urlen.
     id: string;
     visningsnavn: string;
-    tilgangspakke: Record<Sprak, string>;
+    // Tilgangsstyring viser tjenestene i pakken på bokmål uansett språk, fordi AM bare lagrer bokmål for dem. Meldt til teamet.
+    visningsnavnITilgangspakke: string;
+    tilgangspakke: string;
 };
 
 export type TestUser = {

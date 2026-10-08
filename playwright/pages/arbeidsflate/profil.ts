@@ -1,6 +1,7 @@
 import { expect, Locator, Page } from "@playwright/test";
 
 import { TestUser } from "../../config/environment";
+import { Sprak } from "../../config/sprak";
 import { Cookiebanner } from "../felles/cookiebanner";
 import { Meny } from "../felles/meny";
 import { assertFlateUtlogget } from "../felles/utlogget";
@@ -14,6 +15,7 @@ export class ArbeidsflateProfil {
     constructor(
         private page: Page,
         arbeidsflate: string,
+        readonly sprak: Sprak,
         readonly meny = new Meny(page),
         readonly cookiebanner = new Cookiebanner(page),
     ) {
