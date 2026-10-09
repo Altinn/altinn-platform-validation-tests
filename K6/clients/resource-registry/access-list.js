@@ -211,6 +211,10 @@ class AccessListClient {
     /**
      * Updates an access list using JSON Patch.
      *
+     * The endpoint consumes `application/json-patch+json` only and answers 415
+     * to a plain JSON content type, so the header is set here rather than
+     * through the `json` option.
+     *
      * @param {string} owner Resource owner.
      * @param {string} identifier Access list identifier.
      * @param {Array<JsonPatchOperation>} request Patch operations.
@@ -227,7 +231,7 @@ class AccessListClient {
                 action: TAGS.AccessListPatch.action,
                 labels,
                 token: this.tokenGenerator.getToken(),
-                json: true,
+                headers: { "Content-Type": "application/json-patch+json" },
             }),
         );
     }

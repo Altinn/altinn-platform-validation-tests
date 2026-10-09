@@ -1,0 +1,3 @@
+owner,ownerOrgNo,resourceId,actions
+ttd,991825827,k6-instancedelegation-test,open;publish;read;sign;subscribe;write
+ttd,991825827,devtest_gar_bruno-gar,read;write

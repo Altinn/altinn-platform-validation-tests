@@ -26,6 +26,7 @@ export function AccessListsDeleteResourceConnection(
             owner,
             identifier,
             resourceIdentifier,
+            {},
             labels,
         ),
         "AccessListsDeleteResourceConnection",

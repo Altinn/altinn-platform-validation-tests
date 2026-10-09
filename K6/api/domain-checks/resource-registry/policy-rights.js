@@ -8,11 +8,21 @@ import { PolicyRightsDTO } from "../../../clients/resource-registry/types.js";
  */
 
 /**
+ * What the resource and action checks read off a right, so they serve the v1
+ * PolicyRightsDTO and the v2 RightDto alike. Only the subject checks need the
+ * full v1 shape.
+ *
+ * @typedef {object} RightLike
+ * @property {Array<{value?: string|null}>|null} [resource] The resource attributes.
+ * @property {{value?: string|null}|null} [action] The action attribute.
+ */
+
+/**
  * The registry flattens a policy into one right per action, so a policy that
  * arrived intact answers with as many rights as it had actions. More rights than
  * that means the policy granted something it was not asked to.
  *
- * @param {Array<PolicyRightsDTO>|null} rights - The rights returned by the API.
+ * @param {Array<RightLike>|null|null} rights - The rights returned by the API.
  * @param {Array<string>} expectedActions - The actions the policy asked for.
  * @param {string} operation - Name of the operation, used in the check name and logs.
  * @returns {boolean} True if there is one right per action, false otherwise.
@@ -35,7 +45,7 @@ function CheckOneRightPerAction(rights, expectedActions, operation) {
  * Checks that every right is scoped to the resource that was asked about, so a
  * policy written against the wrong resource does not pass unnoticed.
  *
- * @param {Array<PolicyRightsDTO>|null} rights - The rights returned by the API.
+ * @param {Array<RightLike>|null|null} rights - The rights returned by the API.
  * @param {string} resourceId - The resource the rights were asked for.
  * @param {string} operation - Name of the operation, used in the check name and logs.
  * @returns {boolean} True if every right is for the resource, false otherwise.
@@ -61,7 +71,7 @@ function CheckRightsForResource(rights, resourceId, operation) {
 /**
  * Checks that the rights cover every action the policy asked for.
  *
- * @param {Array<PolicyRightsDTO>|null} rights - The rights returned by the API.
+ * @param {Array<RightLike>|null|null} rights - The rights returned by the API.
  * @param {Array<string>} expectedActions - The actions the policy asked for.
  * @param {string} operation - Name of the operation, used in the check name and logs.
  * @returns {boolean} True if every action is covered, false otherwise.
