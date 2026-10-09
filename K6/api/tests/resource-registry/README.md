@@ -37,8 +37,8 @@ One run instead of three also means one failure could cascade. The steps the res
 the members, the connection, and every ETag the conditional calls need) therefore end the iteration with
 `fail("cannot continue: …")` when they do not hold, the way the authentication and register tests do, so one root
 cause shows up as one failed check and one line in the log rather than a dozen failures downstream. The step labels
-still tell them apart in Grafana, and teardown deletes the list either way. Teardown goes to the client rather than the
-building blocks: it is not a test step, so a failed read there is logged, not checked.
+still tell them apart in Grafana, and teardown deletes the list either way, through the same building blocks under a
+teardown step label of its own.
 
 ### Not covered, and why
 
@@ -99,8 +99,11 @@ k6 run K6/api/tests/resource-registry/run-all.js
 k6 run K6/api/tests/resource-registry/access-list-lifecycle.js
 ```
 
-Every list a test creates has an identifier starting with `k6-`, and every teardown deletes the owner's `k6-` lists,
-so a run that failed halfway leaves nothing behind. After a run, `AccessListGetByOwner(ttd)` holds no `k6-` lists.
+Every list a test creates has an identifier of the form `k6-<run id>-<uuid>`, where the run id comes from `setup`.
+Teardown deletes the owner's lists with this run's id, so a run that failed halfway leaves nothing behind, and a
+scheduled run that overlaps with a manual or PR run does not delete a list the other is still using. It also deletes
+any `k6-` list older than an hour, which is a leftover from a run whose teardown never ran. After a run,
+`AccessListGetByOwner(ttd)` holds no `k6-` lists.
 
 ## Adding a test to this folder
 
@@ -116,5 +119,6 @@ so a run that failed halfway leaves nothing behind. After a run, `AccessListGetB
 3. Check content with the domain checks under
    [K6/api/domain-checks/resource-registry](../../domain-checks/resource-registry); add a check there rather than an
    inline `check` when the assertion says something about the domain.
-4. Create lists with `newIdentifier()` and end with a `teardown(data)` that calls `deleteTestListsOf(data.resources)`.
+4. Draw a run id with `newRunId()` in `setup`, create lists with `newIdentifier(data.runId)`, and end with a
+   `teardown(data)` that calls `deleteTestListsOf(data.resources, data.runId)`.
 5. Wire the test into `run-all.js` and `functional.yaml`, and add a row to the table above.

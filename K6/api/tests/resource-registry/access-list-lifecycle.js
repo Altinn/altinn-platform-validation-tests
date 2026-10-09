@@ -35,6 +35,7 @@ import {
     getOrganizations,
     getResources,
     newIdentifier,
+    newRunId,
 } from "./commons.js";
 
 const createLabel = { step: "Create and read an access list" };
@@ -71,13 +72,16 @@ const OTHER_OWNER = "digdir";
  * Reads the test data once: the resources and the organizations the
  * iterations pick from. The organizations come split by form, so a file
  * without one of the forms fails here rather than in the first iteration.
+ * Also draws the run id that goes into every identifier this run creates,
+ * so teardown can tell this run's lists from those of a run that overlaps.
  *
- * @returns {{resources: Array<import("./commons.js").Resource>, companies: Array<import("./commons.js").Organization>, soleProprietorships: Array<import("./commons.js").Organization>}} The test data.
+ * @returns {{runId: string, resources: Array<import("./commons.js").Resource>, companies: Array<import("./commons.js").Organization>, soleProprietorships: Array<import("./commons.js").Organization>}} The test data.
  */
 export function setup() {
     requireEnv(["BASE_URL", "ENVIRONMENT"]);
 
     return {
+        runId: newRunId(),
         resources: getResources(),
         companies: getOrganizations("AS"),
         soleProprietorships: getOrganizations("ENK"),
@@ -131,7 +135,7 @@ export default function (data) {
     // One resource per iteration, and the list is owned by whoever owns it.
     const { owner, ownerOrgNo, resourceId, actions } = getItemFromList(data.resources);
     const client = getAccessListClient(owner, ownerOrgNo);
-    const identifier = newIdentifier();
+    const identifier = newIdentifier(data.runId);
     const written = {
         owner,
         identifier,
@@ -356,13 +360,15 @@ export default function (data) {
 }
 
 /**
- * Deletes whatever lists the run left behind, for every owner in the test
- * data, so a failure halfway does not pile up lists in the environment.
+ * Deletes whatever lists this run left behind, for every owner in the test
+ * data, so a failure halfway does not pile up lists in the environment. Only
+ * this run's lists, by the run id in their identifier, and stale leftovers;
+ * a run that overlaps with this one keeps its list.
  *
  * @param {ReturnType<typeof setup>} data The test data read in setup.
  */
 export function teardown(data) {
-    const deleted = deleteTestListsOf(data.resources);
+    const deleted = deleteTestListsOf(data.resources, data.runId);
 
     if (deleted > 0) {
         console.warn(`teardown - deleted ${deleted} access list(s) the test left behind`);

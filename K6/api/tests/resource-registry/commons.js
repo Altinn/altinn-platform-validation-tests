@@ -170,12 +170,59 @@ export const getResourceV2Client = lazy(function () {
 });
 
 /**
- * A fresh, prefixed access list identifier.
+ * A fresh id for one run, for setup, so the lists a run creates can be told
+ * from the lists of a run that overlaps with it. Eight hex characters: short
+ * enough to read in a listing, and two runs an hour apart will not collide.
  *
+ * @returns {string} The run id.
+ */
+export function newRunId() {
+    return uuidv4().slice(0, 8);
+}
+
+/**
+ * The prefix of every list one run creates.
+ *
+ * @param {string} runId The run id from setup.
+ * @returns {string} The prefix.
+ */
+function runPrefix(runId) {
+    return `${IDENTIFIER_PREFIX}${runId}-`;
+}
+
+/**
+ * A fresh access list identifier for this run.
+ *
+ * @param {string} runId The run id from setup.
  * @returns {string} The identifier.
  */
-export function newIdentifier() {
-    return `${IDENTIFIER_PREFIX}${uuidv4()}`;
+export function newIdentifier(runId) {
+    return `${runPrefix(runId)}${uuidv4()}`;
+}
+
+/**
+ * How old a k6- list has to be before a teardown that did not create it
+ * deletes it. A run takes well under a minute, so a list this old is a
+ * leftover from a run whose teardown never ran, not a list another run is
+ * still using.
+ */
+const STALE_AFTER_MS = 60 * 60 * 1000;
+
+/**
+ * Whether a teardown for `runId` should delete a list: the run's own lists,
+ * and any k6- list old enough to be a leftover. The scheduled run and a
+ * manual or PR run overlap now and then, and each only deletes its own.
+ *
+ * @param {import("../../../clients/resource-registry/types.js").AccessListInfoDto} list A list of the owner.
+ * @param {string} runId The run id from setup.
+ * @returns {boolean} True when the list is this run's or a stale leftover.
+ */
+function isOursOrStale(list, runId) {
+    if (list.identifier.startsWith(runPrefix(runId))) {
+        return true;
+    }
+
+    return list.identifier.startsWith(IDENTIFIER_PREFIX) && Date.now() - Date.parse(list.createdAt) > STALE_AFTER_MS;
 }
 
 /**
@@ -220,14 +267,16 @@ export function getAllListsOfOwner(client, owner, query, labels) {
 }
 
 /**
- * Deletes an owner's k6- lists, for teardown, so a run that failed halfway
- * leaves nothing behind. Lists people made by hand are left alone.
+ * Deletes the k6- lists of an owner that this run made, and any k6- list old
+ * enough to be a leftover from a run whose teardown never ran. Lists another
+ * run is using right now and lists people made by hand are left alone.
  *
  * @param {string} owner Org code of the owner.
  * @param {string} ownerOrgNo Organization number of the owner.
+ * @param {string} runId The run id from setup.
  * @returns {number} How many lists were deleted.
  */
-export function deleteTestLists(owner, ownerOrgNo) {
+export function deleteTestLists(owner, ownerOrgNo, runId) {
     const client = getAccessListClient(owner, ownerOrgNo);
     const teardownLabel = { step: `Teardown - delete the k6- lists of ${owner}` };
     let deleted = 0;
@@ -239,7 +288,7 @@ export function deleteTestLists(owner, ownerOrgNo) {
             return;
         }
 
-        for (const list of lists.filter((item) => item.identifier.startsWith(IDENTIFIER_PREFIX))) {
+        for (const list of lists.filter((item) => isOursOrStale(item, runId))) {
             if (AccessListDelete(client, owner, list.identifier, null, teardownLabel).status === 200) {
                 deleted++;
             }
@@ -250,19 +299,20 @@ export function deleteTestLists(owner, ownerOrgNo) {
 }
 
 /**
- * Deletes the k6- lists of every owner in the resources, for a teardown that
- * gets the setup data.
+ * Deletes this run's lists, and stale leftovers, for every owner in the
+ * resources, for a teardown that gets the setup data.
  *
  * @param {Array<Resource>} resources The resources the run picked from.
+ * @param {string} runId The run id from setup.
  * @returns {number} How many lists were deleted.
  */
-export function deleteTestListsOf(resources) {
+export function deleteTestListsOf(resources, runId) {
     /** @type {Map<string, string>} */
     const owners = new Map(resources.map((resource) => [resource.owner, resource.ownerOrgNo]));
     let deleted = 0;
 
     for (const [owner, ownerOrgNo] of owners) {
-        deleted += deleteTestLists(owner, ownerOrgNo);
+        deleted += deleteTestLists(owner, ownerOrgNo, runId);
     }
 
     return deleted;
