@@ -54,13 +54,61 @@ function readRows(name) {
  * @returns {Array<Resource>} The resources.
  */
 export function getResources() {
-    /** @type {Array<{owner: string, ownerOrgNo: string, resourceId: string, actions: string}>} */
-    const rows = readRows("resources");
+    return toResources(readRows("resources"));
+}
 
+/**
+ * The resources whose access lists the registry enforces, for the test that
+ * checks a membership through the policy decision point. Kept apart from
+ * resources-<env>.csv, where a connection must grant nobody anything. For setup.
+ *
+ * @returns {Array<Resource>} The resources.
+ */
+export function getEnforcedResources() {
+    return toResources(readRows("access-list-enforced-resources"));
+}
+
+/**
+ * @param {Array<{owner: string, ownerOrgNo: string, resourceId: string, actions: string}>} rows Rows of a resources file.
+ * @returns {Array<Resource>} The rows, with the actions split.
+ */
+function toResources(rows) {
     return rows.map((row) => ({
         ...row,
         actions: String(row.actions).split(";").filter((action) => action !== ""),
     }));
+}
+
+/**
+ * One row of the authorization test data: an organization and its daglig
+ * leder, the person the policy decision point asks about.
+ *
+ * @typedef {object} OrganizationWithDailyManager
+ * @property {string} orgno Organization number.
+ * @property {string} ssn National identity number of the organization's daglig leder.
+ */
+
+/**
+ * Organizations with their daglig leder, from the pdp-authorize test data. The
+ * resource-registry organizations have no person attached, and the policies
+ * grant access to the daglig leder role, not to the organization itself, so a
+ * decision about an organization alone is always NotApplicable. For setup.
+ *
+ * @returns {Array<OrganizationWithDailyManager>} The organizations. Fails when there are fewer than two.
+ */
+export function getOrganizationsWithDailyManager() {
+    /** @type {Array<OrganizationWithDailyManager>} */
+    const rows = fetchTestData(
+        `authorization/pdp-authorize/orgs-dagl-${__ENV.ENVIRONMENT}.csv`,
+        true,
+        __ENV.TESTDATA_BRANCH || "main",
+    );
+
+    if (rows.length < 2) {
+        throw new Error(`Need at least two organizations in authorization/pdp-authorize/orgs-dagl-${__ENV.ENVIRONMENT}.csv`);
+    }
+
+    return rows;
 }
 
 /**
