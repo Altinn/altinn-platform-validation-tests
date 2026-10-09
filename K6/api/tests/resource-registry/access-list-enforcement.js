@@ -88,7 +88,7 @@ export default function (data) {
         description: "Created by the resource-registry access list enforcement test",
     };
 
-    group(createLabel.step, function () {
+    group("Create the access list for the resource owner", function () {
         const created = AccessListCreateOrUpdate(client, owner, identifier, new CreateAccessListBuilder()
             .withName(written.name)
             .withDescription(written.description)
@@ -99,7 +99,7 @@ export default function (data) {
         }
     });
 
-    group(connectLabel.step, function () {
+    group("Connect the resource and read it back", function () {
         // No action filter, so membership gives whatever the policy grants.
         AccessListsUpsertResourceConnection(client, owner, identifier, resourceId, new AccessListResourceConnectionBuilder().build(), null, connectLabel);
 
@@ -110,7 +110,7 @@ export default function (data) {
         }
     });
 
-    group(memberLabel.step, function () {
+    group("Add organization A as a member", function () {
         const added = AccessListAddMembers(client, owner, identifier, new AccessListMembersBuilder()
             .withOrganization(organizationA.orgno)
             .build(), memberLabel);
@@ -120,7 +120,7 @@ export default function (data) {
         }
     });
 
-    group(permitLabel.step, function () {
+    group("Daglig leder of organization A is permitted", function () {
         AuthorizePost(
             authorizeClient,
             buildDaglRequest(organizationA.ssn, organizationA.orgno, resourceId, action),
@@ -129,7 +129,7 @@ export default function (data) {
         );
     });
 
-    group(denyLabel.step, function () {
+    group("Daglig leder of organization B is denied", function () {
         AuthorizePost(
             authorizeClient,
             buildDaglRequest(organizationB.ssn, organizationB.orgno, resourceId, action),

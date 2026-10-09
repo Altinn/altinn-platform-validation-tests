@@ -9,84 +9,81 @@ run with `fail()`, so one root cause is one failure.
 
 | Test | Client | Methods | Environments |
 | --- | --- | --- | --- |
-| `access-list-lifecycle.js` | `AccessListClient` (enterprise token), `AccessListClient` (platform token), `AccessListMembershipsClient` | `AccessListUpsert` (create, update under `If-Match: *`, create-only refused with `If-None-Match: *`), `AccessListGet` and `AccessListGetMembers` (plain and 304 with `If-None-Match`), `AccessListGetByOwner` (plain, with `include=resource-actions`, and 403 for another owner), `AccessListAddMembers`, `AccessListReplaceMembers`, `AccessListRemoveMembers`, `AccessListUpsertResourceConnection` (200 with the current `If-Match`, unchanged ETag when repeated, 412 with a stale one), `AccessListGetResourceConnections`, `AccessListDeleteResourceConnection`, `AccessListMembershipsGetMemberships`, `AccessListGetByMember`, `AccessListDelete` (412 stale, 200 current, then 404) | at22, at23, tt02 |
+| `access-list-enforcement.js` | `AccessListClient` (enterprise token), `AuthorizeClient` | `AccessListUpsert`, `AccessListUpsertResourceConnection`, `AccessListGetResourceConnections`, `AccessListAddMembers`, `AccessListGetByOwner` and `AccessListDelete` in teardown, `AuthorizePost` | at22; tt02 in CI, see below |
 | `resource-v2-policy-rights.js` | `ResourceV2Client` | `ResourceV2GetPolicyRights` | at22, at23, tt02 |
 | `get-orgs.js` | `ResourceOwnerClient` | `ResourceOwnerGetOrgs` | healthcheck, every environment |
 | `get-updated-resources.js` | `ResourceClient` | `ResourceUpdated` | healthcheck, every environment |
 | `create-resource-and-policy.js` | `ResourceClient` | resource and policy writes | on purpose only, see below |
 
-`functional.yaml` runs the first two in at22, at23 and tt02. `healthcheck.yaml` runs the two public reads everywhere,
-including yt01 and prod. `run-all.js` runs everything except `create-resource-and-policy.js` once, for a local check
-after a change to something shared.
+`functional.yaml` runs the policy rights test in at22, at23 and tt02. `healthcheck.yaml` runs the two public reads
+everywhere, including yt01 and prod. `run-all.js` runs the read-only tests once, for a local check after a change to
+something shared.
 
-### Why one list per run
+### What the enforcement test checks
 
-Access lists are event-sourced in the registry. Deleting a list removes its state, members and connections for real,
-but every write the list ever saw stays in `resourceregistry.access_list_events`, and nothing deletes those rows. A
-scheduled test that creates and deletes lists therefore grows that table on every run, whatever it cleans up.
+The resource owner creates an access list, connects a resource whose access lists the registry enforces, and adds
+organization A. The policy decision point then permits A's daglig leder on behalf of A and denies B's daglig leder on
+behalf of B. Both people hold the role the policy grants, so the list is the only thing that tells them apart. The
+decision point answers 200 either way; Permit stands for the 200 and Deny for the 403 a service would give.
 
-The lifecycle test keeps that to one list per run by doing everything on the same list, in an order where every write
-happens once: create, update, add members, connect, replace, remove, disconnect, delete. That is nine events per run,
-measured from the ETag versions when the test was written (the ETag is `W/"<base64 of {"version":"N"}>"`, and N is
-the id of the list's last event). The steps that expect a refusal (412 on a stale or
-create-only header, 403 for another owner) and the repeated identical write add no events; the latter is checked, since
-a client that retries idempotent writes must not cost a version each time. The registry's own Bruno collection makes
-the same trade the other way, with one permanent list it never deletes.
+An organization alone is not a subject the policies grant anything to, so a decision about it is always
+NotApplicable. That is why the test asks about the daglig leder.
 
-One run instead of three also means one failure could cascade. The steps the rest of the run builds on (the create,
-the members, the connection, and every ETag the conditional calls need) therefore end the iteration with
-`fail("cannot continue: …")` when they do not hold, the way the authentication and register tests do, so one root
-cause shows up as one failed check and one line in the log rather than a dozen failures downstream. The step labels
-still tell them apart in Grafana, and teardown deletes the list either way, through the same building blocks under a
-teardown step label of its own.
+The decision point caches its answers for a while, and an organization can still be permitted shortly after the list
+it was on is deleted. The organizations are therefore split in two halves: A comes from the first and B from the
+second, so B has never been on a list in any run.
+
+Access lists are event-sourced in the registry, and every write stays in `resourceregistry.access_list_events` for
+good, whatever teardown deletes. A run of this test costs four events: create, connect, add the member, delete.
 
 ### Not covered, and why
 
 - `AccessListClient.AccessListPatch`: the registry has the endpoint but does not implement it. `UpdateAccessList`
   throws `NotImplementedException`, answers 501, and its remarks say to use PUT
   ([Altinn/altinn-resource-registry#879](https://github.com/Altinn/altinn-resource-registry/issues/879)). The
-  lifecycle test updates through `AccessListUpsert` instead. The client method sends `application/json-patch+json`,
-  which is what the endpoint consumes, so it is ready for the day it is implemented.
+  client method sends `application/json-patch+json`, which is what the endpoint consumes, so it is ready for the day
+  it is implemented.
 - `create-resource-and-policy.js` is not in `run-all.js` or any yaml. Deleting a resource leaves rows in
   `resourceregistry.resourcesubjects` behind, reported as
   [Altinn/altinn-resource-registry#848](https://github.com/Altinn/altinn-resource-registry/issues/848), so every run
   leaks. Start it by hand when needed.
 - yt01 and prod are out for the access list tests: they write, and the token generator does not issue for prod.
+- at23 is out for the enforcement test: there are no organizations with a daglig leder for at23 in the
+  authorization test data.
 
 ## Tokens
 
 - `AccessListClient` takes an enterprise token for the owner org with `altinn:resourceregistry/accesslist.read` and
-  `accesslist.write` for everything but `get-by-member`. The registry checks the token's org against the owner in the
-  path, so the tests can only touch the lists of the configured owner.
-- `get-by-member` and `memberships` are reserved for platform components and take a platform access token issued
-  for the `platform` org, sent in the `PlatformAccessToken` header. The registry answers 401 to a bearer token there,
-  whatever scopes it carries. `memberships` has its own client, `AccessListMembershipsClient`. `get-by-member` sits in
-  `AccessListClient` because the swagger has it under the Access List tag, so the tests build a second
-  `AccessListClient` on the platform token generator for that one call (`getAccessListPlatformClient` in `commons.js`),
-  the way the register tests keep one `RegisterClient` per token flavour.
+  `accesslist.write`. The registry checks the token's org against the owner in the path, so the tests can only touch
+  the lists of the configured owner.
+- `AuthorizeClient` is the shared one from `../authorization/authorize-client.js`: a personal token with the
+  authorize admin scope, and the `AUTHORIZATION_SUBSCRIPTION_KEY` the decision point sits behind.
 - `ResourceV2Client` takes no token; policy rights are public.
 
 ## Resources
 
-The resources the tests connect their lists to, one row per resource in `K6/testdata/resource-registry/resources-<env>.csv`,
-read in `setup` like the other test data. Each iteration picks one row with `getItemFromList`.
+Two files of resources, one row per resource, read in `setup`. Each iteration picks one row with `getItemFromList`.
+
+- `K6/testdata/resource-registry/resources-<env>.csv`: resources with access lists disabled. The v2 policy rights
+  test reads these.
+- `K6/testdata/resource-registry/access-list-enforced-resources-<env>.csv`: resources with access lists enabled. The
+  enforcement test reads these.
 
 | Column | What it is |
 | --- | --- |
 | `owner` | Org code that owns the resource and the lists the tests create; the enterprise token is issued for it. |
 | `ownerOrgNo` | Organization number in the enterprise token. |
-| `resourceId` | The resource. It has to be owned by `owner`, exist in the environment and have access lists disabled, so a connection made by a test grants nobody anything. |
-| `actions` | The actions its policy grants, separated by `;`. The lifecycle test uses them as action filters and the v2 policy rights test checks the decomposed policy against them. |
+| `resourceId` | The resource. It has to be owned by `owner` and exist in the environment. |
+| `actions` | The actions its policy grants, separated by `;`. The enforcement test asks about the first; the v2 policy rights test checks the decomposed policy against all of them. |
 
-Besides the files, the tests need `BASE_URL`, `ENVIRONMENT`, `TOKEN_GENERATOR_USERNAME` and `TOKEN_GENERATOR_PASSWORD`.
+Besides the files, the tests need `BASE_URL`, `ENVIRONMENT`, `TOKEN_GENERATOR_USERNAME` and `TOKEN_GENERATOR_PASSWORD`,
+and the enforcement test also `AUTHORIZATION_SUBSCRIPTION_KEY`.
 
 ## Test data
 
-The members are synthetic organizations from Tenor, enriched with their Altinn party from Register, in
-`K6/testdata/resource-registry/organizations-<env>.csv` with the columns `orgNo,partyId,partyUuid,unitType`. The
-lifecycle test adds two `AS` and one `ENK`, and looks the `ENK` up through the platform-component endpoints. How to
-regenerate the files is described in
-[K6/testdata/resource-registry/README.md](../../../testdata/resource-registry/README.md).
+The enforcement test reads organizations with their daglig leder from
+`K6/testdata/authorization/pdp-authorize/orgs-dagl-<env>.csv`, with the columns `orgno,ssn`. How the resource files
+are made is described in [K6/testdata/resource-registry/README.md](../../../testdata/resource-registry/README.md).
 
 The files are read from `main` over HTTP, so a change to them takes effect when it is merged. To run a test locally
 against data on another branch, set `TESTDATA_BRANCH=<branch>`.
@@ -94,9 +91,9 @@ against data on another branch, set `TESTDATA_BRANCH=<branch>`.
 ## Running locally
 
 ```powershell
-. .\.conf\at23.ps1
+. .\.conf\at22.ps1
 k6 run K6/api/tests/resource-registry/run-all.js
-k6 run K6/api/tests/resource-registry/access-list-lifecycle.js
+k6 run K6/api/tests/resource-registry/access-list-enforcement.js
 ```
 
 Every list a test creates has an identifier of the form `k6-<run id>-<uuid>`, where the run id comes from `setup`.
@@ -107,15 +104,16 @@ any `k6-` list older than an hour, which is a leftover from a run whose teardown
 
 ## Adding a test to this folder
 
-1. Put the client factory and any shared helper in `commons.js`; build clients with `lazy` (or cached per owner, as
-   `getAccessListClient(owner, ownerOrgNo)` is) so a VU builds them once. Read test data in `setup` and pass it on
-   through the data object; nothing should read a file per iteration.
+1. Put the client factory and any shared helper in `commons.js`; build clients and token generators with `lazy`
+   so a VU builds them once, and set the token generator options per call when the token depends on the row, as
+   `getAccessListClient(owner, ownerOrgNo)` does. The generator caches one token per set of options. Read test data
+   in `setup` and pass it on through the data object; nothing should read a file per iteration.
 2. Use the building blocks under [K6/api/building-blocks/resource-registry](../../building-blocks/resource-registry).
-   The five the lifecycle test conditions on a version (get, get members, upsert, upsert resource connection, delete)
-   return `{ value, etag, status }` and take an `options` argument with conditional `headers` and an `expectedStatus`,
-   so a call that should answer 304, 404 or 412 is still a building block call and does not count as a failed request
-   in the metrics (`withExpectedStatus` in `building-blocks/common/retry.js`). The rest return the body, as every other
-   building block does.
+   The versioned ones (get, get members, upsert, upsert resource connection, delete) return `{ value, etag, status }`
+   and take an `options` argument with conditional `headers` and an `expectedStatus`, so a call that should answer
+   304, 404 or 412 is still a building block call and does not count as a failed request in the metrics
+   (`withExpectedStatus` in `building-blocks/common/retry.js`). The rest return the body, as every other building
+   block does.
 3. Check content with the domain checks under
    [K6/api/domain-checks/resource-registry](../../domain-checks/resource-registry); add a check there rather than an
    inline `check` when the assertion says something about the domain.

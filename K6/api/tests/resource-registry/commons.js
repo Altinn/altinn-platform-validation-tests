@@ -2,14 +2,11 @@ import { group } from "k6";
 
 import {
     AccessListClient,
-    AccessListMembershipsClient,
     ResourceV2Client,
 } from "../../../clients/resource-registry/index.js";
 import {
     EnterpriseTokenBuilder,
     EnterpriseTokenGenerator,
-    PlatformTokenBuilder,
-    PlatformTokenGenerator,
     uuidv4,
 } from "../../../common-imports.js";
 import { fetchTestData, lazy } from "../../../helpers.js";
@@ -26,7 +23,7 @@ export const IDENTIFIER_PREFIX = "k6-";
  * Reads `K6/testdata/resource-registry/<name>-<env>.csv` from main, or from
  * TESTDATA_BRANCH when set. For setup only.
  *
- * @param {string} name File name without the environment suffix, e.g. "organizations".
+ * @param {string} name File name without the environment suffix, e.g. "resources".
  * @returns {Array<any>} The rows. Fails the test when the file is missing or empty.
  */
 function readRows(name) {
@@ -112,101 +109,49 @@ export function getOrganizationsWithDailyManager() {
 }
 
 /**
- * One row of organizations-<env>.csv: a Tenor organization with its Altinn party.
+ * The one access list client of the VU, and the token generator behind it.
  *
- * @typedef {object} Organization
- * @property {string} orgNo Organization number.
- * @property {string} partyId Altinn party id.
- * @property {string} partyUuid Altinn party uuid.
- * @property {"AS"|"ENK"} unitType Organization form, named as Register and Profile report it.
+ * @returns {[AccessListClient, EnterpriseTokenGenerator]} The client and its generator.
  */
+const getAccessListClientAndTokenGenerator = lazy(function () {
+    const tokenGenerator = new EnterpriseTokenGenerator();
 
-/**
- * The organizations to add as members, optionally only those of one form. For setup.
- *
- * @param {"AS"|"ENK"} [unitType] Keep only organizations of this form.
- * @returns {Array<Organization>} The organizations. Fails when there are none.
- */
-export function getOrganizations(unitType) {
-    /** @type {Array<Organization>} */
-    const rows = readRows("organizations");
-    const organizations = unitType ? rows.filter((row) => row.unitType === unitType) : rows;
+    /** @type {[AccessListClient, EnterpriseTokenGenerator]} */
+    const clients = [new AccessListClient(__ENV.BASE_URL, tokenGenerator), tokenGenerator];
 
-    if (organizations.length === 0) {
-        throw new Error(`No ${unitType ?? ""} organizations in resource-registry/organizations-${__ENV.ENVIRONMENT}.csv`);
-    }
-
-    return organizations;
-}
-
-/** @type {Map<string, AccessListClient>} */
-const accessListClients = new Map();
+    return clients;
+});
 
 /**
  * Client for the lists, their members and their resource connections of one
- * owner, with an enterprise token for that org. Built once per owner per VU.
+ * owner, with an enterprise token for that org.
+ *
+ * There is one client per VU. Each call points its token generator at the
+ * owner, and the generator caches a token per set of options, so switching
+ * between owners does not fetch a token more than once per owner.
  *
  * @param {string} owner Org code of the owner.
  * @param {string} ownerOrgNo Organization number of the owner.
- * @returns {AccessListClient} The client.
+ * @returns {AccessListClient} The client, with a token for the owner.
  */
 export function getAccessListClient(owner, ownerOrgNo) {
-    let client = accessListClients.get(owner);
+    const [client, tokenGenerator] = getAccessListClientAndTokenGenerator();
 
-    if (client === undefined) {
-        const tokenGenerator = new EnterpriseTokenGenerator(
-            new EnterpriseTokenBuilder()
-                .withEnvironment(__ENV.ENVIRONMENT)
-                .withTtl(3600)
-                .withOrganization(owner)
-                .withOrganizationNumber(ownerOrgNo)
-                .withScopes(CreateScopeString([
-                    AltinnScopes.RESOURCEREGISTRY.ACCESSLIST.READ,
-                    AltinnScopes.RESOURCEREGISTRY.ACCESSLIST.WRITE,
-                ]))
-                .build(),
-        );
-
-        client = new AccessListClient(__ENV.BASE_URL, tokenGenerator);
-        accessListClients.set(owner, client);
-    }
+    tokenGenerator.setTokenGeneratorOptions(
+        new EnterpriseTokenBuilder()
+            .withEnvironment(__ENV.ENVIRONMENT)
+            .withTtl(3600)
+            .withOrganization(owner)
+            .withOrganizationNumber(ownerOrgNo)
+            .withScopes(CreateScopeString([
+                AltinnScopes.RESOURCEREGISTRY.ACCESSLIST.READ,
+                AltinnScopes.RESOURCEREGISTRY.ACCESSLIST.WRITE,
+            ]))
+            .build(),
+    );
 
     return client;
 }
-
-/**
- * Platform access token for the two platform-component lookups. See the
- * README on tokens.
- *
- * @returns {PlatformTokenGenerator} The generator.
- */
-const getPlatformTokenGenerator = lazy(function () {
-    return new PlatformTokenGenerator(
-        new PlatformTokenBuilder()
-            .withEnvironment(__ENV.ENVIRONMENT)
-            .withOrganization("platform")
-            .withTtl(3600)
-            .build(),
-    );
-});
-
-/**
- * Client for the memberships query.
- *
- * @returns {AccessListMembershipsClient} The client.
- */
-export const getAccessListMembershipsClient = lazy(function () {
-    return new AccessListMembershipsClient(__ENV.BASE_URL, getPlatformTokenGenerator());
-});
-
-/**
- * Second AccessListClient, on the platform token, for get-by-member only.
- *
- * @returns {AccessListClient} The client.
- */
-export const getAccessListPlatformClient = lazy(function () {
-    return new AccessListClient(__ENV.BASE_URL, getPlatformTokenGenerator());
-});
 
 /**
  * Client for the v2 resource endpoints, which are public.
