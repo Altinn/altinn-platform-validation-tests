@@ -31,6 +31,7 @@ import {
     getAccessListClient,
     getAccessListMembershipsClient,
     getAccessListPlatformClient,
+    getAllListsOfOwner,
     getOrganizations,
     getResources,
     newIdentifier,
@@ -171,9 +172,7 @@ export default function (data) {
         AccessListDomainChecks.CheckAccessListInfo(read.value, written, "AccessListGet");
         etag = requireEtag(read, "AccessListGet");
 
-        const byOwner = AccessListGetByOwner(client, owner, null, null, createLabel);
-
-        AccessListDomainChecks.CheckContainsList(byOwner?.data, identifier, "AccessListGetByOwner");
+        AccessListDomainChecks.CheckContainsList(getAllListsOfOwner(client, owner, null, createLabel), identifier, "AccessListGetByOwner");
     });
 
     group("Update and create-only upsert", function () {
@@ -267,11 +266,11 @@ export default function (data) {
 
         AccessListDomainChecks.CheckResourceConnections(connections?.data, expected, "AccessListsGetResourceConnections");
 
-        const listing = AccessListGetByOwner(client, owner, withResourceActions, null, connectionLabel);
+        const lists = getAllListsOfOwner(client, owner, withResourceActions, connectionLabel);
 
-        AccessListDomainChecks.CheckContainsList(listing?.data, identifier, "AccessListGetByOwner with resource-actions included");
+        AccessListDomainChecks.CheckContainsList(lists, identifier, "AccessListGetByOwner with resource-actions included");
         AccessListDomainChecks.CheckResourceConnections(
-            listing?.data.find((list) => list.identifier === identifier)?.resourceConnections,
+            lists?.find((list) => list.identifier === identifier)?.resourceConnections,
             expected,
             "AccessListGetByOwner with resource-actions included",
         );
@@ -324,10 +323,10 @@ export default function (data) {
 
         AccessListDomainChecks.CheckResourceConnections(connections?.data, [], "AccessListsGetResourceConnections after delete");
 
-        const listing = AccessListGetByOwner(client, owner, withResourceActions, null, disconnectLabel);
+        const lists = getAllListsOfOwner(client, owner, withResourceActions, disconnectLabel);
 
         AccessListDomainChecks.CheckResourceConnections(
-            listing?.data.find((list) => list.identifier === identifier)?.resourceConnections ?? [],
+            lists?.find((list) => list.identifier === identifier)?.resourceConnections ?? [],
             [],
             "AccessListGetByOwner with resource-actions included after delete",
         );
@@ -352,9 +351,7 @@ export default function (data) {
 
         AccessListGet(client, owner, identifier, { expectedStatus: 404 }, deleteLabel);
 
-        const byOwner = AccessListGetByOwner(client, owner, null, null, deleteLabel);
-
-        AccessListDomainChecks.CheckDoesNotContainList(byOwner?.data, identifier, "AccessListGetByOwner after delete");
+        AccessListDomainChecks.CheckDoesNotContainList(getAllListsOfOwner(client, owner, null, deleteLabel), identifier, "AccessListGetByOwner after delete");
     });
 }
 

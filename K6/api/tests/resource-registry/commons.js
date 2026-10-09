@@ -1,3 +1,5 @@
+import { group } from "k6";
+
 import {
     AccessListClient,
     AccessListMembershipsClient,
@@ -13,6 +15,7 @@ import {
 import { fetchTestData, lazy } from "../../../helpers.js";
 import { AltinnScopes, CreateScopeString } from "../../../scopes.js";
 import { collectNextUrlPages } from "../../building-blocks/common/follow-next-url-pagination.js";
+import { AccessListDelete, AccessListGetByOwner } from "../../building-blocks/resource-registry/access-lists/index.js";
 
 /**
  * Prefix of every list the tests create, so teardown can tell them apart.
@@ -176,6 +179,47 @@ export function newIdentifier() {
 }
 
 /**
+ * Most pages to follow when reading an owner's lists. The registry pages by
+ * 20, so this covers an owner with up to 400 lists.
+ */
+const MAX_LIST_PAGES = 20;
+
+/**
+ * Reads every page of an owner's lists. The registry answers 20 lists per
+ * page, sorted by identifier, so a list the test just created can sit on any
+ * page, and a check on the first page alone passes or fails on how many lists
+ * the owner happens to have. The first page goes through the building block,
+ * which checks it; the rest follow `links.next` and are only logged when a
+ * page fails, since the walk is a means to the content checks and not the
+ * thing under test.
+ *
+ * @param {AccessListClient} client Client with a token for the owner.
+ * @param {string} owner Org code of the owner.
+ * @param {import("../../../clients/resource-registry/types.js").AccessListGetByOwnerQuery|null} query Optional query, e.g. with resource-actions included.
+ * @param {{[key: string]: string}|null} labels k6 request labels for the step.
+ * @returns {Array<import("../../../clients/resource-registry/types.js").AccessListInfoDto>|null} The lists on every page, or null when the first page did not come back.
+ */
+export function getAllListsOfOwner(client, owner, query, labels) {
+    const firstPage = AccessListGetByOwner(client, owner, query, null, labels);
+
+    if (firstPage === null) {
+        return null;
+    }
+
+    const rest = collectNextUrlPages(client.tokenGenerator.getToken(), firstPage.links?.next ?? null, MAX_LIST_PAGES, labels);
+
+    if (rest.failedUrl !== null) {
+        console.error(`getAllListsOfOwner - a page of the lists of ${owner} answered ${rest.failedStatus}: ${rest.failedUrl}`);
+    }
+
+    if (rest.repeatedUrl !== null) {
+        console.error(`getAllListsOfOwner - the lists of ${owner} handed out the same next link twice: ${rest.repeatedUrl}`);
+    }
+
+    return [firstPage, ...rest.pages].flatMap((page) => /** @type {Array<any>} */ (page.data ?? []));
+}
+
+/**
  * Deletes an owner's k6- lists, for teardown, so a run that failed halfway
  * leaves nothing behind. Lists people made by hand are left alone.
  *
@@ -185,39 +229,22 @@ export function newIdentifier() {
  */
 export function deleteTestLists(owner, ownerOrgNo) {
     const client = getAccessListClient(owner, ownerOrgNo);
-    const first = client.AccessListGetByOwner(owner);
-
-    if (first.status !== 200) {
-        console.error(`deleteTestLists - listing the lists of ${owner} answered ${first.status}: ${first.body}`);
-
-        return 0;
-    }
-
-    /** @type {import("../../../clients/resource-registry/types.js").AccessListInfoDtoPaginated} */
-    const firstPage = JSON.parse(String(first.body));
-    const rest = collectNextUrlPages(client.tokenGenerator.getToken(), firstPage.links?.next ?? null, 20);
-
-    if (rest.failedUrl !== null) {
-        console.error(`deleteTestLists - a page of the lists of ${owner} answered ${rest.failedStatus}: ${rest.failedUrl}`);
-    }
-
-    if (rest.repeatedUrl !== null) {
-        console.error(`deleteTestLists - the lists of ${owner} handed out the same next link twice: ${rest.repeatedUrl}`);
-    }
-
-    /** @type {Array<import("../../../clients/resource-registry/types.js").AccessListInfoDto>} */
-    const lists = [firstPage, ...rest.pages].flatMap((page) => /** @type {Array<any>} */ (page.data ?? []));
+    const teardownLabel = { step: `Teardown - delete the k6- lists of ${owner}` };
     let deleted = 0;
 
-    for (const list of lists.filter((item) => item.identifier.startsWith(IDENTIFIER_PREFIX))) {
-        const deletion = client.AccessListDelete(owner, list.identifier);
+    group(teardownLabel.step, function () {
+        const lists = getAllListsOfOwner(client, owner, null, teardownLabel);
 
-        if (deletion.status === 200) {
-            deleted++;
-        } else {
-            console.error(`deleteTestLists - deleting ${list.identifier} answered ${deletion.status}: ${deletion.body}`);
+        if (lists === null) {
+            return;
         }
-    }
+
+        for (const list of lists.filter((item) => item.identifier.startsWith(IDENTIFIER_PREFIX))) {
+            if (AccessListDelete(client, owner, list.identifier, null, teardownLabel).status === 200) {
+                deleted++;
+            }
+        }
+    });
 
     return deleted;
 }
