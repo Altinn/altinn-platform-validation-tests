@@ -16,9 +16,6 @@ const TAGS = {
     SubscriptionDelete: {
         action: "subscription-delete",
     },
-    SubscriptionValidate: {
-        action: "subscription-validate",
-    },
 };
 
 class SubscriptionClient {
@@ -123,27 +120,6 @@ class SubscriptionClient {
             requestParams({
                 endpoint: `${this.FULL_PATH}/{id}`,
                 action: TAGS.SubscriptionDelete.action,
-                labels,
-                token: this.tokenGenerator.getToken(),
-            }),
-        );
-    }
-
-    /**
-     * Validate a specific subscription.
-     *
-     * @param {number} id Subscription id.
-     * @param {{[key: string]: string}|null} [labels]
-     * Optional k6 request tags.
-     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
-     */
-    SubscriptionValidate(id, labels = null) {
-        return http.put(
-            `${this.FULL_PATH}/validate/${id}`,
-            null,
-            requestParams({
-                endpoint: `${this.FULL_PATH}/validate/{id}`,
-                action: TAGS.SubscriptionValidate.action,
                 labels,
                 token: this.tokenGenerator.getToken(),
             }),

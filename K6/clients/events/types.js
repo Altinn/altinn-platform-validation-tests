@@ -12,7 +12,7 @@
 
 /**
  * @typedef {object} CloudEvent
- * @property {CloudEventsSpecVersion|null} specVersion Specification version.
+ * @property {string|null} [specVersion] Specification version. Read-only.
  * @property {*} data Event payload.
  * @property {string|null} dataContentType Content type of the event payload.
  * @property {string|null} id Event identifier.
@@ -21,37 +21,9 @@
  * @property {string|null} subject Event subject.
  * @property {string|null} time Event timestamp.
  * @property {string|null} type Event type.
- * @property {CloudEventAttribute[]|null} extensionAttributes Extension attributes.
- * @property {boolean} isValid Whether the event is valid.
- */
-
-/**
- * @typedef {object} CloudEventAttribute
- * @property {CloudEventAttributeType|null} type Attribute type.
- * @property {string|null} name Attribute name.
- * @property {boolean} isRequired Whether the attribute is required.
- * @property {boolean} isExtension Whether the attribute is an extension attribute.
- */
-
-/**
- * @typedef {object} CloudEventAttributeType
- * @property {string|null} name Type name.
- * @property {Type|null} clrType CLR type metadata.
- */
-
-/**
- * @typedef {object} CloudEventsSpecVersion
- * @property {string|null} versionId Specification version identifier.
- * @property {CloudEventAttribute|null} idAttribute ID attribute.
- * @property {CloudEventAttribute|null} dataContentTypeAttribute Data content type attribute.
- * @property {CloudEventAttribute|null} dataSchemaAttribute Data schema attribute.
- * @property {CloudEventAttribute|null} sourceAttribute Source attribute.
- * @property {CloudEventAttribute|null} subjectAttribute Subject attribute.
- * @property {CloudEventAttribute|null} timeAttribute Time attribute.
- * @property {CloudEventAttribute|null} typeAttribute Type attribute.
- * @property {CloudEventAttribute[]|null} requiredAttributes Required attributes.
- * @property {CloudEventAttribute[]|null} optionalAttributes Optional attributes.
- * @property {CloudEventAttribute[]|null} allAttributes All attributes.
+ * @property {string|null} [resourceinstance] Identifier of the specific instance of the resource the event relates to.
+ * @property {string|null} [resource] URN uniquely identifying the resource the event relates to.
+ * @property {string|null} [alternativesubject] Alternative identifier for the subject of the event, e.g. a person or organisation number.
  */
 
 /**
@@ -61,18 +33,6 @@
  * @property {string|null} mediaType Media type.
  * @property {string|null} name Content type name.
  * @property {*[]|null} parameters Content type parameters.
- */
-
-/**
- * Represents CLR reflection metadata exposed by Swagger.
- *
- * This is intentionally kept minimal because the API exposes framework
- * reflection details that are not relevant when consuming the API from k6.
- *
- * @typedef {object} Type
- * @property {string|null} name Type name.
- * @property {string|null} fullName Fully qualified type name.
- * @property {string|null} namespace Type namespace.
  */
 
 /**
@@ -120,7 +80,7 @@
  * @property {string|null} resourceFilter Filter on resource.
  * @property {string|null} alternativeSubjectFilter Filter on alternative subject.
  * @property {string|null} typeFilter Filter for event type.
- * @property {boolean} [includeSubunits] Whether to include events for sub-units of the subject.
+ * @property {boolean} [includeSubunits] Whether to include events for sub-units of the subject. Only has an effect when subjectFilter identifies the main unit of the organisation.
  */
 
 /**
@@ -138,7 +98,7 @@
  * @property {string|null} createdBy User or organisation that created the subscription.
  * @property {string} created When the subscription was created.
  * @property {boolean} validated Whether the subscription has been validated.
- * @property {boolean} includeSubunits Whether to include events for sub-units of the subject.
+ * @property {boolean} includeSubunits Whether to include events for sub-units of the subject. Only has an effect when subjectFilter identifies the main unit of the organisation.
  */
 
 /**
