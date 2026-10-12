@@ -26,7 +26,7 @@ class EventsClient {
         /**
          * Base API path.
          */
-        this.BASE_PATH = "/events";
+        this.BASE_PATH = "/events/api/v1/events";
 
         /**
          * Fully-qualified API path.
