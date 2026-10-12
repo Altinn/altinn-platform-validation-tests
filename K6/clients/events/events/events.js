@@ -42,12 +42,12 @@ class EventsClient {
      * Posts a new CloudEvent.
      *
      * @param {CloudEvent} request CloudEvent payload.
+     * @param {string|null} [idempotencyKey] Optional GUID used to skip duplicate submissions.
      * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
-     * @param {string|null} [idempotencyKey] Optional GUID used to skip duplicate submissions.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
-    EventsCreate(request, labels = null, idempotencyKey = null) {
+    EventsCreate(request, idempotencyKey = null, labels = null) {
         return http.post(
             this.FULL_PATH,
             jsonBody(request),

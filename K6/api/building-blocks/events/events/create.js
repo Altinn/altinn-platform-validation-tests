@@ -12,21 +12,21 @@ import { withRetries } from "../../common/retry.js";
  *
  * @param {EventsClient} eventsClient Client for the Events API.
  * @param {CloudEvent} event CloudEvent payload.
- * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @param {string|null} [idempotencyKey] Optional GUID reused across retries to skip duplicate submissions.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {boolean} Whether the event was registered.
  */
 export function EventsCreate(
     eventsClient,
     event,
-    labels = null,
     idempotencyKey = null,
+    labels = null,
 ) {
     const res = withRetries(
         () => eventsClient.EventsCreate(
             event,
-            labels,
             idempotencyKey,
+            labels,
         ),
         "EventsCreate",
     );
