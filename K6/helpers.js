@@ -325,8 +325,12 @@ export function fetchTestData(
     failOnDataFetchingFailure = true,
     branch = "main",
 ) {
-    const testDataBaseUrl =
-        `https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/${branch}/K6/testdata`;
+    const LOCAL_TEST_DATA_BASE_URL = "http://127.0.0.1:8225"; // Don't forget to run: `npm run serve`.
+
+    const testDataBaseUrl = __ENV.USE_LOCAL_TEST_DATA === "true"
+        ? LOCAL_TEST_DATA_BASE_URL
+        : `https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/${branch}/K6/testdata`;
+
     const url = filename.startsWith("http")
         ? filename
         : `${testDataBaseUrl}/${filename}`;
