@@ -199,6 +199,11 @@ export const AltinnScopes = {
     REPORTEES: "altinn:reportees",
 
     RESOURCEREGISTRY: {
+        ACCESSLIST: {
+            READ: "altinn:resourceregistry/accesslist.read",
+            WRITE: "altinn:resourceregistry/accesslist.write"
+        },
+
         RESOURCE: {
             ADMIN: "altinn:resourceregistry/resource.admin",
             READ: "altinn:resourceregistry/resource.read",
