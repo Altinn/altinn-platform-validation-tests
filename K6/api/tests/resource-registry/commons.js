@@ -44,23 +44,30 @@ export function getEnforcedResources() {
 
 /**
  * An organization and its daglig leder, the person the policy decision point
- * asks about.
+ * asks about. The policies grant access to the daglig leder role, not to the
+ * organization itself, so a decision about an organization alone is always
+ * NotApplicable.
  *
  * @typedef {object} OrganizationWithDailyManager
  * @property {string} orgno Organization number.
  * @property {string} ssn National identity number of the organization's daglig leder.
+ * @property {"member"|"outsider"} role Whether the test puts the organization on the list.
  */
 
 /**
- * Organizations with their daglig leder, from the pdp-authorize test data. The
- * policies grant access to the daglig leder role, not to the organization
- * itself, so a decision about an organization alone is always NotApplicable.
- * For setup.
+ * The organizations the enforcement test puts on the list, and the ones it
+ * keeps off. For setup.
  *
- * @returns {Array<OrganizationWithDailyManager>} The organizations.
+ * @returns {{members: Array<OrganizationWithDailyManager>, outsiders: Array<OrganizationWithDailyManager>}} The organizations.
  */
-export function getOrganizationsWithDailyManager() {
-    return fetchTestData(`authorization/pdp-authorize/orgs-dagl-${__ENV.ENVIRONMENT}.csv`);
+export function getAccessListOrganizations() {
+    /** @type {Array<OrganizationWithDailyManager>} */
+    const rows = fetchTestData(`resource-registry/access-list-organizations-${__ENV.ENVIRONMENT}.csv`);
+
+    return {
+        members: rows.filter((row) => row.role === "member"),
+        outsiders: rows.filter((row) => row.role === "outsider"),
+    };
 }
 
 /**

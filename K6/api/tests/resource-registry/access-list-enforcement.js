@@ -15,8 +15,8 @@ import { buildDaglRequest } from "../authorization/pdp-authorize/common-function
 import {
     deleteTestLists,
     getAccessListClient,
+    getAccessListOrganizations,
     getEnforcedResources,
-    getOrganizationsWithDailyManager,
     newIdentifier,
 } from "./commons.js";
 
@@ -31,25 +31,20 @@ export const options = getOptions([createLabel, connectLabel, memberLabel, permi
 /**
  * Reads the test data once.
  *
- * The organizations are split in two halves: members come from the first and
- * outsiders from the second. The decision point caches its answers for a
- * while, so an organization that was a member in a run a few minutes ago can
- * still be permitted after that run deleted its list. Keeping outsiders out of
- * the member half means organization B has never been on a list, and its Deny
- * says something about this run.
+ * Members and outsiders are separate rows in the test data. The decision point
+ * caches its answers for a while, so an organization that was a member in a
+ * run a few minutes ago can still be permitted after that run deleted its
+ * list. An outsider is never put on a list, so its Deny says something about
+ * this run.
  *
  * @returns {{resources: Array<import("./commons.js").Resource>, members: Array<import("./commons.js").OrganizationWithDailyManager>, outsiders: Array<import("./commons.js").OrganizationWithDailyManager>}} The test data.
  */
 export function setup() {
     requireEnv(["BASE_URL", "ENVIRONMENT", "AUTHORIZATION_SUBSCRIPTION_KEY"]);
 
-    const organizations = getOrganizationsWithDailyManager();
-    const half = Math.ceil(organizations.length / 2);
-
     return {
         resources: getEnforcedResources(),
-        members: organizations.slice(0, half),
-        outsiders: organizations.slice(half),
+        ...getAccessListOrganizations(),
     };
 }
 
