@@ -152,23 +152,13 @@ export function newRunId() {
 }
 
 /**
- * The prefix of every list one run creates.
- *
- * @param {string} runId The run id from setup.
- * @returns {string} The prefix.
- */
-function runPrefix(runId) {
-    return `${IDENTIFIER_PREFIX}${runId}-`;
-}
-
-/**
  * A fresh access list identifier for this run.
  *
  * @param {string} runId The run id from setup.
  * @returns {string} The identifier.
  */
 export function newIdentifier(runId) {
-    return `${runPrefix(runId)}${uuidv4()}`;
+    return `${IDENTIFIER_PREFIX}${runId}-${uuidv4()}`;
 }
 
 /**
@@ -189,7 +179,7 @@ const STALE_AFTER_MS = 60 * 60 * 1000;
  * @returns {boolean} True when the list is this run's or a stale leftover.
  */
 function isOursOrStale(list, runId) {
-    if (list.identifier.startsWith(runPrefix(runId))) {
+    if (list.identifier.startsWith(`${IDENTIFIER_PREFIX}${runId}-`)) {
         return true;
     }
 
