@@ -13,12 +13,11 @@ import { AccessListDomainChecks } from "../../domain-checks/resource-registry/ac
 import { getAuthorizeClient } from "../authorization/authorize-client.js";
 import { buildDaglRequest } from "../authorization/pdp-authorize/common-functions.js";
 import {
-    deleteTestListsOf,
+    deleteTestLists,
     getAccessListClient,
     getEnforcedResources,
     getOrganizationsWithDailyManager,
     newIdentifier,
-    newRunId,
 } from "./commons.js";
 
 const createLabel = { step: "Create the access list for the resource owner" };
@@ -30,7 +29,7 @@ const denyLabel = { step: "Daglig leder of organization B is denied" };
 export const options = getOptions([createLabel, connectLabel, memberLabel, permitLabel, denyLabel]);
 
 /**
- * Reads the test data once and draws the run id for the list identifiers.
+ * Reads the test data once.
  *
  * The organizations are split in two halves: members come from the first and
  * outsiders from the second. The decision point caches its answers for a
@@ -39,7 +38,7 @@ export const options = getOptions([createLabel, connectLabel, memberLabel, permi
  * the member half means organization B has never been on a list, and its Deny
  * says something about this run.
  *
- * @returns {{runId: string, resources: Array<import("./commons.js").Resource>, members: Array<import("./commons.js").OrganizationWithDailyManager>, outsiders: Array<import("./commons.js").OrganizationWithDailyManager>}} The test data.
+ * @returns {{resources: Array<import("./commons.js").Resource>, members: Array<import("./commons.js").OrganizationWithDailyManager>, outsiders: Array<import("./commons.js").OrganizationWithDailyManager>}} The test data.
  */
 export function setup() {
     requireEnv(["BASE_URL", "ENVIRONMENT", "AUTHORIZATION_SUBSCRIPTION_KEY"]);
@@ -48,7 +47,6 @@ export function setup() {
     const half = Math.ceil(organizations.length / 2);
 
     return {
-        runId: newRunId(),
         resources: getEnforcedResources(),
         members: organizations.slice(0, half),
         outsiders: organizations.slice(half),
@@ -80,7 +78,7 @@ export default function (data) {
     const organizationB = getItemFromList(data.outsiders);
     const client = getAccessListClient(owner, ownerOrgNo);
     const [authorizeClient] = getAuthorizeClient();
-    const identifier = newIdentifier(data.runId);
+    const identifier = newIdentifier();
     const written = {
         owner,
         identifier,
@@ -140,12 +138,12 @@ export default function (data) {
 }
 
 /**
- * Deletes the list this run created, and stale k6- leftovers.
+ * Deletes every k6- list of the resource owners.
  *
  * @param {ReturnType<typeof setup>} data The test data read in setup.
  */
 export function teardown(data) {
-    const deleted = deleteTestListsOf(data.resources, data.runId);
+    const deleted = deleteTestLists(data.resources);
 
     if (deleted > 0) {
         console.info(`teardown - deleted ${deleted} access list(s)`);
