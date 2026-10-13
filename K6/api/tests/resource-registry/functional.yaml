@@ -1,0 +1,16 @@
+namespace: resource-registry
+base_dir: K6/api/tests/resource-registry
+test_definitions:
+  # at22 and tt02 only: those are the environments with enforced resources and
+  # organizations in the test data. The pdp sits behind API management, so it
+  # needs the subscription key.
+  - test_file: access-list-enforcement.js
+    contexts:
+      - environment: at22
+        test_run:
+          secrets:
+            - authorization-subscription-key-at22
+      - environment: tt02
+        test_run:
+          secrets:
+            - authorization-subscription-key-tt02

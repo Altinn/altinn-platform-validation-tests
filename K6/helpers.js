@@ -267,6 +267,18 @@ export function requireEnv(vars) {
 }
 
 /**
+ * @param {Array<string>|null|undefined} left One list of strings.
+ * @param {Array<string>|null|undefined} right Another.
+ * @returns {boolean} True when both hold the same strings, in any order.
+ */
+export function sameSet(left, right) {
+    const a = [...(left ?? [])].sort();
+    const b = [...(right ?? [])].sort();
+
+    return a.length === b.length && a.every((value, index) => value === b[index]);
+}
+
+/**
  * Picks a specified number of unique random items from a list.
  * Each selected item is removed from the pool before the next pick,
  * ensuring no duplicates are returned.

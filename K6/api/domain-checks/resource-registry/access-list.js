@@ -5,20 +5,9 @@ import {
     AccessListMembershipDtoAggregateVersionVersionedPaginated,
     AccessListResourceConnectionDto,
 } from "../../../clients/resource-registry/types.js";
+import { sameSet } from "../../../helpers.js";
 
 const ORGANIZATION_IDENTIFIER = "urn:altinn:organization:identifier-no";
-
-/**
- * @param {Array<string>|null|undefined} left One list of strings.
- * @param {Array<string>|null|undefined} right Another.
- * @returns {boolean} True when both hold the same strings, in any order.
- */
-function sameSet(left, right) {
-    const a = [...(left ?? [])].sort();
-    const b = [...(right ?? [])].sort();
-
-    return a.length === b.length && a.every((value, index) => value === b[index]);
-}
 
 /**
  * @param {import("../../../clients/resource-registry/types.js").AccessListMembershipDto} member A member.
