@@ -49,9 +49,12 @@ import {
 // none of its own, but the delegation endpoint rejects ttd for the same reason.
 //
 // So these are real orgcodes, picked to stay away from the recognisable public
-// authorities: digdir and its own Digdir Labs test organisation first, then
-// three smaller ones. Delegating in a test environment on behalf of, say,
-// Skatteetaten is the thing worth avoiding.
+// authorities: digdir first, then three smaller ones. Delegating in a test
+// environment on behalf of, say, Skatteetaten is the thing worth avoiding.
+//
+// ddlabs (Digdir Labs) used to be here. Its organisation number in the org list
+// was changed without notice on 2026-10-12 (Altinn/altinn-cdn#326), which broke
+// every delegation it made, so it was dropped rather than chased.
 //
 // Being in the org list is not enough on its own either: the org also has to
 // exist as a party in the environment, and most of the 107 published ones do
@@ -67,21 +70,17 @@ import {
 /** @type {{[environment: string]: Array<ServiceOwner>}} */
 const SERVICE_OWNERS_BY_ENVIRONMENT = {
     at22: [
-        { orgcode: "ddlabs", orgno: "310797510", name: "Digdir Labs" },
         { orgcode: "bits", orgno: "916960190", name: "BITS AS" },
         { orgcode: "din", orgno: "984195796", name: "DIN" },
         { orgcode: "kv", orgno: "971040238", name: "KV" },
     ],
     // Not the same set: which orgs exist as parties differs per environment, and
-    // bits, din and kv are not parties in at23. Seven orgs are, and dropping brg
-    // and skd leaves exactly these four alongside digdir.
+    // bits, din and kv are not parties in at23.
     //
-    // nsm is here to make up the five, not because it is any less recognisable
-    // than the two left out - at23 simply has nothing else to reach five with.
-    // Four service owners would exercise the same thing, so drop it if having a
-    // security authority in the fixture reads worse than the shorter list.
+    // nsm is here to make up the numbers, not because it is any less recognisable
+    // than brg and skd, which were left out. Drop it if having a security
+    // authority in the fixture reads worse than the shorter list.
     at23: [
-        { orgcode: "ddlabs", orgno: "310797510", name: "Digdir Labs" },
         { orgcode: "staf", orgno: "921627009", name: "Statsforvalterens fellestjenester" },
         { orgcode: "slk", orgno: "960885406", name: "Statens Lånekasse for utdanning" },
         { orgcode: "nsm", orgno: "985165262", name: "Nasjonal sikkerhetsmyndighet" },
