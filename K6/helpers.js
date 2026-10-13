@@ -314,7 +314,7 @@ export function pickUnique(list, count) {
  *
  * @param {string} filename File name under the test data directory, or an absolute URL.
  * @param {boolean} failOnDataFetchingFailure Whether the test should fail when fetching fails.
- * @param {string} branch Branch to read test data from. Defaults to TESTDATA_BRANCH, or "main" when it is not set.
+ * @param {string} branch Branch to read test data from. Defaults to "main".
  * The shape depends on the file the caller asked for, which is why this says
  * `any` rather than a union nobody could narrow: a caller reads the columns its
  * own fixture has.
@@ -323,7 +323,7 @@ export function pickUnique(list, count) {
 export function fetchTestData(
     filename,
     failOnDataFetchingFailure = true,
-    branch = __ENV.TESTDATA_BRANCH || "main",
+    branch = "main",
 ) {
     const LOCAL_TEST_DATA_BASE_URL = "http://127.0.0.1:8225"; // Don't forget to run: `npm run serve`.
 
