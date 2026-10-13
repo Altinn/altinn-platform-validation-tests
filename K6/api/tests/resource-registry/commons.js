@@ -218,7 +218,7 @@ const MAX_LIST_PAGES = 20;
  * @returns {Array<import("../../../clients/resource-registry/types.js").AccessListInfoDto>|null} The lists on every page, or null when the first page did not come back.
  */
 export function getAllListsOfOwner(client, owner, query, labels) {
-    const firstPage = AccessListGetByOwner(client, owner, query, null, labels);
+    const firstPage = AccessListGetByOwner(client, owner, query, labels);
 
     if (firstPage === null) {
         return null;
@@ -260,7 +260,7 @@ export function deleteTestLists(owner, ownerOrgNo, runId) {
         }
 
         for (const list of lists.filter((item) => isOursOrStale(item, runId))) {
-            if (AccessListDelete(client, owner, list.identifier, null, teardownLabel).status === 200) {
+            if (AccessListDelete(client, owner, list.identifier, teardownLabel) !== null) {
                 deleted++;
             }
         }

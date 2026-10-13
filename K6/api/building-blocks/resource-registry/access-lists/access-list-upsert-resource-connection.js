@@ -2,29 +2,18 @@ import { check } from "k6";
 
 import { AccessListClient } from "../../../../clients/resource-registry/index.js";
 import { AccessListResourceConnectionWithVersionDto, UpsertAccessListResourceConnectionDto } from "../../../../clients/resource-registry/types.js";
-import { withExpectedStatus, withRetries } from "../../common/retry.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
- * Creates or updates a resource connection on an access list.
- *
- * A versioned operation: the response carries the list's version as an ETag,
- * and `options` can condition the call on one (`If-Match`, `If-None-Match`,
- * as declared on this operation in the swagger) and say what status that
- * should produce, 304 when nothing changed or 412 when the precondition
- * failed. Without options this is a plain call that expects 200. The expected
- * status is marked as expected for this one call, so a 412 a test asks for
- * does not count as a failed request.
+ * Creates or updates a resource connection.
  *
  * @param {AccessListClient} accessListClient Client for the Access List API.
  * @param {string} owner Resource owner.
  * @param {string} identifier Access list identifier.
  * @param {string} resourceIdentifier Resource identifier.
  * @param {UpsertAccessListResourceConnectionDto} request Resource connection payload.
- * @param {{headers?: {[key: string]: string}|null, expectedStatus?: number}|null} [options]
- * Conditional request headers and the status the call has to answer with. Defaults to no headers and 200.
  * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
- * @returns {{value: AccessListResourceConnectionWithVersionDto|null, etag: string|null, status: number}} The resource connection as `value`
- * when the response had a body, the ETag header of the response, and the status it answered with.
+ * @returns {AccessListResourceConnectionWithVersionDto|null} Parsed response body, or null when the call failed.
  */
 export function AccessListsUpsertResourceConnection(
     accessListClient,
@@ -32,47 +21,48 @@ export function AccessListsUpsertResourceConnection(
     identifier,
     resourceIdentifier,
     request,
-    options = null,
     labels = null,
 ) {
-    const expectedStatus = options?.expectedStatus ?? 200;
-    const res = withExpectedStatus(expectedStatus, () => withRetries(
-        () => accessListClient.AccessListUpsertResourceConnection(owner, identifier, resourceIdentifier, request, options?.headers ?? {}, labels),
+    const res = withRetries(
+        () => accessListClient.AccessListUpsertResourceConnection(
+            owner,
+            identifier,
+            resourceIdentifier,
+            request,
+            {},
+            labels,
+        ),
         "AccessListsUpsertResourceConnection",
-    ));
+    );
 
     /** @type {AccessListResourceConnectionWithVersionDto|null} */
-    let connection = null;
-    const etag = res.headers["Etag"] ?? res.headers["ETag"] ?? null;
+    let resourceConnection = null;
 
     const succeed = check(res, {
-        [`AccessListsUpsertResourceConnection - status code is ${expectedStatus}`]: (r) =>
-            r.status === expectedStatus,
+        "AccessListsUpsertResourceConnection - status code is 200": (r) =>
+            r.status === 200,
     });
 
     if (!succeed) {
         console.log(res.status);
         console.log(res.body);
-        return { value: connection, etag, status: res.status };
+        return resourceConnection;
     }
 
-    // 304 and 412 carry no body; only a 200 has something to parse.
-    if (res.status === 200) {
-        check(res, {
-            "AccessListsUpsertResourceConnection - body is valid": (r) => {
-                try {
-                    connection = JSON.parse(r.body);
+    check(res, {
+        "AccessListsUpsertResourceConnection - body is valid": (r) => {
+            try {
+                resourceConnection = JSON.parse(r.body);
 
-                    return true;
-                } catch (err) {
-                    console.log("Unable to parse response body");
-                    console.log(r.body);
+                return true;
+            } catch (err) {
+                console.log("Unable to parse response body");
+                console.log(r.body);
 
-                    return false;
-                }
-            },
-        });
-    }
+                return false;
+            }
+        },
+    });
 
-    return { value: connection, etag, status: res.status };
+    return resourceConnection;
 }

@@ -92,16 +92,16 @@ export default function (data) {
         const created = AccessListCreateOrUpdate(client, owner, identifier, new CreateAccessListBuilder()
             .withName(written.name)
             .withDescription(written.description)
-            .build(), null, createLabel);
+            .build(), createLabel);
 
-        if (!AccessListDomainChecks.CheckAccessListInfo(created.value, written, "AccessListCreateOrUpdate")) {
+        if (!AccessListDomainChecks.CheckAccessListInfo(created, written, "AccessListCreateOrUpdate")) {
             fail("cannot continue: the access list was not created as written");
         }
     });
 
     group("Connect the resource and read it back", function () {
         // No action filter, so membership gives whatever the policy grants.
-        AccessListsUpsertResourceConnection(client, owner, identifier, resourceId, new AccessListResourceConnectionBuilder().build(), null, connectLabel);
+        AccessListsUpsertResourceConnection(client, owner, identifier, resourceId, new AccessListResourceConnectionBuilder().build(), connectLabel);
 
         const connections = AccessListsGetResourceConnections(client, owner, identifier, null, connectLabel);
 

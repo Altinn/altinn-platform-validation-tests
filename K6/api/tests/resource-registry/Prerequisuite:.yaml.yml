@@ -1,0 +1,19 @@
+Prerequisuite:
+- Velg en tilfeldig virksomhet A (tilfeldig fra organizations-at22.csv) og ressurs: (tilfeldig fra resources-at22.csv)
+
+Testscenario:
+1. Opprett tilgangsliste for tjenesteeier (basert på testdata fra resources-at22)
+2. Sjekk at tilgangslisten er opprettet og at den inneholder riktig ressurs 
+3. Legg til "member" / Virksomhet A på tilgangslisten
+4. Autentiser med virksmohet A for ressurs (testdata fra resources-at22) - PDP - sjekk atrespons gir Permit
+5. Du får 200 ok
+6. Autentiser med virksomhet B (tilfeldig fra organizations-at22.csv) og kall på ressurs (testdata fra resources-at22) - sjeek at respons gir Deny
+7. Du får 403 forbidden
+
+Teardown:
+- Slett tilgangslisten
+
+Info:
+- Lag en helt ny test fra scratch som kjører dette scenariet. Ikke legg til i eksisterende test.
+
+
