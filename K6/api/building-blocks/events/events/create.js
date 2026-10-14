@@ -7,26 +7,29 @@ import { withRetries } from "../../common/retry.js";
 /**
  * Posts a new CloudEvent.
  *
+ * The API answers 200 with an empty body, so a caller that needs the event id
+ * sets `id` on the event itself.
+ *
  * @param {EventsClient} eventsClient Client for the Events API.
  * @param {CloudEvent} event CloudEvent payload.
+ * @param {string|null} [idempotencyKey] Optional GUID reused across retries to skip duplicate submissions.
  * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
- * @returns {string|null} Created event identifier.
+ * @returns {boolean} Whether the event was registered.
  */
 export function EventsCreate(
     eventsClient,
     event,
+    idempotencyKey = null,
     labels = null,
 ) {
     const res = withRetries(
         () => eventsClient.EventsCreate(
             event,
+            idempotencyKey,
             labels,
         ),
         "EventsCreate",
     );
-
-    /** @type {string|null} */
-    let eventId = null;
 
     const succeed = check(res, {
         "EventsCreate - status code is 200": (r) =>
@@ -36,23 +39,7 @@ export function EventsCreate(
     if (!succeed) {
         console.log(res.status);
         console.log(res.body);
-        return eventId;
     }
 
-    check(res, {
-        "EventsCreate - body is valid": (r) => {
-            try {
-                eventId = JSON.parse(r.body);
-
-                return true;
-            } catch (err) {
-                console.log("Unable to parse response body");
-                console.log(r.body);
-
-                return false;
-            }
-        },
-    });
-
-    return eventId;
+    return succeed;
 }
