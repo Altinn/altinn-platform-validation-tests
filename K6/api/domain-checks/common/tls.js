@@ -1,5 +1,8 @@
+import { URL } from "https://jslib.k6.io/url/1.0.0/index.js";
 import { check } from "k6";
 import tls from "k6/x/tls";
+
+import { requireEnv } from "../../../helpers.js";
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 
@@ -36,6 +39,21 @@ export function certExpiryWarningDays() {
     }
 
     return parsed;
+}
+
+/**
+ * Reads the domains to check out of the well-known base URL env vars, such as
+ * BASE_URL and AM_UI_BASE_URL, which every environment's deploy-environments
+ * config map sets. Fails when one is missing, since a run that checks nothing
+ * reads as a pass.
+ *
+ * @param {string[]} names - Env vars holding a base URL.
+ * @returns {string[]} The host name of each, in the same order.
+ */
+export function domainsFromEnv(names) {
+    const urls = requireEnv(names);
+
+    return names.map((name) => new URL(urls[name]).hostname);
 }
 
 /**
