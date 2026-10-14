@@ -1,0 +1,18 @@
+namespace: resource-registry
+base_dir: K6/api/tests/resource-registry
+test_definitions:
+  # The pdp sits behind API management, so it needs the subscription key.
+  - test_file: access-list-enforcement.js
+    contexts:
+      - environment: at22
+        test_run:
+          secrets:
+            - authorization-subscription-key-at22
+      - environment: at23
+        test_run:
+          secrets:
+            - authorization-subscription-key-at23
+      - environment: tt02
+        test_run:
+          secrets:
+            - authorization-subscription-key-tt02
