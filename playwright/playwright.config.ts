@@ -99,7 +99,7 @@ export default defineConfig<{
     timeout: 60000,
     expect: { timeout: 10_000 },
     use: {
-        trace: "on",
+        trace: "on-first-retry",
         video: "retain-on-failure",
     },
 
