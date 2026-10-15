@@ -10,8 +10,10 @@
         ]
     },
     "include": [
+        "clients/**/*.ts",
         "config/**/*.ts",
         "fixtures/**/*.ts",
+        "helpers/**/*.ts",
         "pages/**/*.ts",
         "tests/**/*.ts",
         "playwright.config.ts"

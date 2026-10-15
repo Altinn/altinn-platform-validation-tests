@@ -2,7 +2,7 @@ import { expect, Locator, Page } from "@playwright/test";
 
 import { Sprak } from "../../config/sprak";
 
-export class Meny {
+export class MenyPom {
     readonly menuButton: Locator;
     readonly menuItems: Locator;
 

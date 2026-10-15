@@ -4,7 +4,7 @@ import { test } from "../../fixtures/test";
 // må være kommet opp før "vises ikke" sjekkes, siden banneret rendres tidlig og "vises
 // ikke" er sant også på en tom side.
 
-test("Godtatt på arbeidsflate gjelder på alle flater", { tag: ["@at23", "@prod"] }, async ({
+test("Godtatt på arbeidsflate gjelder på alle flater", { tag: ["@at23", "@tt02", "@prod"] }, async ({
     innlogging,
     user,
     arbeidsflate,
@@ -32,7 +32,7 @@ test("Godtatt på arbeidsflate gjelder på alle flater", { tag: ["@at23", "@prod
     });
 });
 
-test("Avslått på profilen gjelder på alle flater", { tag: ["@at23", "@prod"] }, async ({
+test("Avslått på profilen gjelder på alle flater", { tag: ["@at23", "@tt02", "@prod"] }, async ({
     innlogging,
     user,
     arbeidsflate,
@@ -61,6 +61,7 @@ test("Avslått på profilen gjelder på alle flater", { tag: ["@at23", "@prod"] 
     });
 });
 
+// Tilgangsstyring mangler banneret i prod.
 test("Godtatt på tilgangsstyring gjelder på alle flater", { tag: ["@at23", "@tt02"] }, async ({
     innlogging,
     user,

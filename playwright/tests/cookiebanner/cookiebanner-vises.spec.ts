@@ -1,8 +1,6 @@
 import { test } from "../../fixtures/test";
 
-// Arbeidsflaten har banneret skrudd av i tt02, og tilgangsstyring mangler det i prod.
-
-test("Cookiebanneret vises på arbeidsflate for en ny sesjon", { tag: ["@at23", "@prod"] }, async ({
+test("Cookiebanneret vises på arbeidsflate for en ny sesjon", { tag: ["@at23", "@tt02", "@prod"] }, async ({
     innlogging,
     user,
     arbeidsflate,
@@ -12,7 +10,7 @@ test("Cookiebanneret vises på arbeidsflate for en ny sesjon", { tag: ["@at23", 
     await arbeidsflate.cookiebanner.assertVisible();
 });
 
-test("Cookiebanneret vises på profilen for en ny sesjon", { tag: ["@at23", "@prod"] }, async ({
+test("Cookiebanneret vises på profilen for en ny sesjon", { tag: ["@at23", "@tt02", "@prod"] }, async ({
     innlogging,
     user,
     arbeidsflate,
@@ -24,6 +22,7 @@ test("Cookiebanneret vises på profilen for en ny sesjon", { tag: ["@at23", "@pr
     await arbeidsflateProfil.cookiebanner.assertVisible();
 });
 
+// Tilgangsstyring mangler banneret i prod.
 test("Cookiebanneret vises på tilgangsstyring for en ny sesjon", { tag: ["@at23", "@tt02"] }, async ({
     innlogging,
     user,

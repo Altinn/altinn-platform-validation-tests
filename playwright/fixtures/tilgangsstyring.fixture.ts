@@ -2,17 +2,17 @@ import { test as base } from "@playwright/test";
 
 import { Urler } from "../config/environment";
 import { Sprak } from "../config/sprak";
-import { TilgangsstyringForside } from "../pages/tilgangsstyring/forside";
+import { TilgangsstyringForsidePom } from "../pages/tilgangsstyring/forside";
 
 export const tilgangsstyringFixture = base.extend<{
-    tilgangsstyring: TilgangsstyringForside;
+    tilgangsstyring: TilgangsstyringForsidePom;
     urler: Urler;
     sprak: Sprak;
 }>({
     urler: [{} as Urler, { option: true }],
-    sprak: [Sprak.Bokmaal, { option: true }],
+    sprak: ["" as Sprak, { option: true }],
 
-    tilgangsstyring: async ({ page, urler }, use) => {
-        await use(new TilgangsstyringForside(page, urler.tilgangsstyring));
+    tilgangsstyring: async ({ page, urler, sprak }, use) => {
+        await use(new TilgangsstyringForsidePom(page, urler.tilgangsstyring, sprak));
     },
 });

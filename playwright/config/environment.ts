@@ -8,12 +8,29 @@ export type Urler = {
     tilgangsstyring: string;
     infoportal: string;
     platform: string;
+    // Appene til ttd, den eneste virksomheten testene bruker apper fra: {apps}/{app}.
+    apps: string;
+};
+
+/**
+ * En app fra ttd som testene bruker, med tekstene på språket til projectet. Pakkenavnet
+ * oversettes i Tilgangsstyring, ikke bare UI-teksten rundt.
+ */
+export type TestAppConfig = {
+    // Appens navn i urlen.
+    id: string;
+    visningsnavn: string;
+    tilgangspakke: string;
 };
 
 export type TestUser = {
     pid: string;
     name: string;
 };
+
+export function etternavn(user: TestUser): string {
+    return user.name.split(" ").at(-1)!;
+}
 
 export function requireEnv(name: string): string {
     const value = process.env[name];

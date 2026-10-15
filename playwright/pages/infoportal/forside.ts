@@ -2,17 +2,19 @@ import { expect, Locator, Page } from "@playwright/test";
 
 import { TestUser } from "../../config/environment";
 import { Sprak } from "../../config/sprak";
-import { Cookiebanner } from "../felles/cookiebanner";
+import { CookiebannerPom } from "../felles/cookiebanner";
 import { REDIRECT_TIMEOUT } from "../felles/navigasjon";
 
-export class InfoportalForside {
+export class InfoportalForsidePom {
     readonly loginButton: Locator;
 
     constructor(
         private page: Page,
         readonly url: string,
-        readonly cookiebanner = new Cookiebanner(page),
+        private sprak: Sprak,
+        readonly cookiebanner = new CookiebannerPom(page),
     ) {
+        // Infoportalen viser "Logg inn" før brukeren har valgt språk, så knappen matches på alle.
         this.loginButton = page.getByRole("button", { name: /logg inn|login/i }).first();
     }
 
@@ -53,11 +55,11 @@ export class InfoportalForside {
         await expect.poll(() => this.page.url()).toContain(new URL(this.url).origin);
     }
 
-    async assertSprak(sprak: Sprak) {
+    async assertSprak() {
         await this.assertOnPage();
         await expect(
-            this.page.getByText(sporsmaal[sprak]),
-            `Infoportalen viser "${sporsmaal[sprak]}"`
+            this.page.getByText(sporsmaal[this.sprak]),
+            `Infoportalen viser "${sporsmaal[this.sprak]}"`
         ).toBeVisible();
     }
 }
