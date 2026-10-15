@@ -34,4 +34,18 @@ export class ArbeidsflateForside {
 
         await expect(this.utkastLink, "Innboksens sidemeny vises").toBeVisible();
     }
+
+    /**
+     * At minst én dialog med den gitte tittelen vises i innboksen. Hver
+     * dialog rendres som en lenke med tittelen som tekst. `.first()` siden en
+     * app-instans sin tittel er satt av appen selv og ikke unik per instans —
+     * gjentatte testkjøringer kan derfor ha lagt igjen flere instanser med
+     * samme tittel, uten at det betyr noe galt.
+     */
+    async assertDialogVisible(tittel: string) {
+        await expect(
+            this.page.getByRole("link", { name: tittel }).first(),
+            `Dialogen "${tittel}" vises i innboksen`
+        ).toBeVisible();
+    }
 }
