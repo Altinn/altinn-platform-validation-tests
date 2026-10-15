@@ -1,14 +1,16 @@
 import { expect, Locator, Page } from "@playwright/test";
 
 import { TestUser } from "../../config/environment";
-import { Cookiebanner } from "../felles/cookiebanner";
-import { Meny } from "../felles/meny";
+import { Sprak } from "../../config/sprak";
+import { CookiebannerPom } from "../felles/cookiebanner";
+import { MenyPom } from "../felles/meny";
 import { assertFlateUtlogget } from "../felles/utlogget";
+import { TilgangsstyringBrukerePom } from "./brukere";
 
-// Brukes også av `Innlogging`, så stien står ett sted.
+// Brukes også av `InnloggingPom`, så stien står ett sted.
 export const tilgangsstyringUrl = (tilgangsstyring: string) => `${tilgangsstyring}/accessmanagement/ui`;
 
-export class TilgangsstyringForside {
+export class TilgangsstyringForsidePom {
     readonly url: string;
 
     // Lenkene i sidemenyen finnes på href, som er den samme uansett språk. Navnet
@@ -21,11 +23,14 @@ export class TilgangsstyringForside {
     readonly fullmakterHosAndreLink: Locator;
     readonly samtykkeOgFullmaktsavtalerLink: Locator;
 
+    readonly brukere: TilgangsstyringBrukerePom;
+
     constructor(
         private page: Page,
         tilgangsstyring: string,
-        readonly meny = new Meny(page),
-        readonly cookiebanner = new Cookiebanner(page),
+        sprak: Sprak,
+        readonly meny = new MenyPom(page),
+        readonly cookiebanner = new CookiebannerPom(page),
     ) {
         this.url = tilgangsstyringUrl(tilgangsstyring);
 
@@ -38,6 +43,8 @@ export class TilgangsstyringForside {
         this.fullmakterLink = sidemenyLenkeTil("poa-overview");
         this.fullmakterHosAndreLink = sidemenyLenkeTil("received-from");
         this.samtykkeOgFullmaktsavtalerLink = sidemenyLenkeTil("consent/active");
+
+        this.brukere = new TilgangsstyringBrukerePom(page, sprak);
     }
 
     async navigateTo() {

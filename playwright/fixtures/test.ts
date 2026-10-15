@@ -9,7 +9,6 @@ import { sesjonFixture } from "./sesjon.fixture";
 import { testbrukereFixture } from "./testbrukere.fixture";
 import { tilgangsstyringFixture } from "./tilgangsstyring.fixture";
 
-
 // Det eneste stedet testene importerer fra. urler, sprak, mockporten og miljo
 // settes av projectene i playwright.config.ts.
 export const test = mergeTests(

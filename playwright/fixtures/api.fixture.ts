@@ -1,21 +1,15 @@
 import { test as base } from "@playwright/test";
 
-import { AppsApiClient } from "../clients/apps";
-import { StorageApiClient } from "../clients/storage";
+import { ApiClient } from "../clients";
 import { Urler } from "../config/environment";
 
 export const apiFixture = base.extend<{
-    appsApi: AppsApiClient;
-    storageApi: StorageApiClient;
+    api: ApiClient;
     urler: Urler;
 }>({
     urler: [{} as Urler, { option: true }],
 
-    appsApi: async ({ request, urler }, use) => {
-        await use(new AppsApiClient(request, urler.apps));
-    },
-
-    storageApi: async ({ request, urler }, use) => {
-        await use(new StorageApiClient(request, urler.platform));
+    api: async ({ request, urler }, use) => {
+        await use(new ApiClient(request, urler));
     },
 });

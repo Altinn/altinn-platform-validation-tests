@@ -2,8 +2,6 @@ import { APIRequestContext, APIResponse } from "@playwright/test";
 
 // Klienten henter ikke token selv; den tas imot per kall, så testen bestemmer hvem som kaller.
 export class InstancesClient {
-    // baseUrl er {org}-delen av stien, for eksempel https://ttd.apps.at23.altinn.cloud/ttd,
-    // siden testene bare bruker apper fra ttd.
     constructor(
         private readonly request: APIRequestContext,
         private readonly baseUrl: string,

@@ -1,92 +1,185 @@
 import { etternavn } from "../../config/environment";
-import { Sprak } from "../../config/sprak";
 import { expect, test } from "../../fixtures/test";
-import { App, Instans } from "../../pages/apps/app";
+import { rettighetshaverUuid } from "../../helpers/rettighetshavere";
+import { aktivAktorUuid, altinnToken } from "../../helpers/sesjonsdata";
+import { Instans } from "../../pages/apps/app";
 
-// Pakkenavnet oversettes også, ikke bare UI-teksten rundt, se brukere.ts.
-const FRITIDSAKTIVITETER_OG_FRILUFTSLIV: Record<Sprak, string> = {
-    [Sprak.Bokmaal]: "Fritidsaktiviteter og friluftsliv",
-    [Sprak.Nynorsk]: "Fritidsaktivitetar og friluftsliv",
-    [Sprak.Engelsk]: "Leisure activities and outdoor life",
-};
+// Instansen person-A oppretter. Bare den slettes, så andre instanser person-A har, blir stående.
+let instans: Instans | undefined;
 
-// Instansen testen opprettet, med sluttbrukertokenet som kan slette den. Én per worker,
-// siden hver worker laster fila på nytt og kjører testene sine etter hverandre.
-let instans: (Instans & { token: string }) | undefined;
+// Settes før person-B legges til, så oppryddingen finner person-B selv om testen feiler rett etterpå.
+let kobling: { fra: string; navn: string; token: string } | undefined;
 
-// Hard-slett instansen, så testkjøringene ikke fyller opp innboksen til testbrukeren.
-test.afterEach(async ({ appsApi, testapp }) => {
-    if (!instans) {
-        return;
+// Sletter instansen testen opprettet, og person-B med tilgangspakken uansett.
+test.afterEach(async ({ api, testAppConfig, page }) => {
+    try {
+        expect(instans, "Testen opprettet en instans").toBeDefined();
+        const { partyId, guid } = instans!;
+        instans = undefined;
+        const token = await altinnToken(page);
+        const slettInstans = await api.apps.instances.DeleteInstance(token, testAppConfig.id, partyId, guid, true);
+        expect(slettInstans.ok(), `Sletting av instans ${partyId}/${guid}: ${slettInstans.status()}`).toBe(true);
+    } finally {
+        expect(kobling, "Testen la til en bruker").toBeDefined();
+        const { fra, navn, token } = kobling!;
+        kobling = undefined;
+        const til = await rettighetshaverUuid(api, token, fra, navn);
+        const slettBruker = await api.accessManagementBff.connection.RevokeRightHolder(token, { party: fra, from: fra, to: til });
+        expect(slettBruker.ok(), `Sletting av bruker ${til} hos ${fra}: ${slettBruker.status()}`).toBe(true);
     }
-    const { partyId, guid, token } = instans;
-    instans = undefined;
-
-    const response = await appsApi.instances.DeleteInstance(
-        token, testapp, partyId, guid, true,
-    );
-    expect(response.ok(), `Sletting av instans ${partyId}/${guid}: ${response.status()}`).toBe(true);
 });
 
-test("Bruker instansierer app", { tag: ["@at23"] }, async ({
+test("Bruker instansierer app og gir tilgang, med direktenavigasjon til appen", { tag: ["@at23", "@tt02", "@prod"] }, async ({
+    page,
+    innlogging,
+    aktorvelger,
+    nySesjon,
+    testbrukere,
+    tilgangsstyring,
+    sprak,
+    app,
+    testAppConfig,
+}) => {
+    const [personA, personB] = testbrukere.reserver("privatPersonUtenVirksomhet", 2);
+    console.log(`Person-A: ${personA.name}, person-B: ${personB.name}`);
+
+    await test.step("Person-A logger inn via Tilgangsstyring, velger seg selv som aktør og setter språk", async () => {
+        await innlogging.loggInnViaTilgangsstyring(personA);
+        await aktorvelger.velgAktorFraHeader(personA.name);
+        await tilgangsstyring.meny.setLanguage(sprak);
+
+        const tokenA = await altinnToken(page);
+        const fra = await aktivAktorUuid(page);
+        kobling = { fra, navn: personB.name, token: tokenA };
+    });
+
+    const opprettet = await test.step("Person-A går til appen, som oppretter en instans", async () => {
+        await app.navigateTo();
+        await app.assertPaInstans();
+        await expect(app.presentationHeading).toContainText(app.visningsnavn);
+        await expect(app.hovedinnhold).toContainText(app.tjenesteeier);
+
+        instans = app.aktivInstans();
+        return instans;
+    });
+
+    await test.step("Person-A går til Tilgangsstyring", async () => {
+        await tilgangsstyring.navigateTo();
+    });
+
+    await test.step("Person-A legger til person-B som ny bruker", async () => {
+        await tilgangsstyring.brukereLink.click();
+        await tilgangsstyring.brukere.leggTilNyBruker(personB.pid, etternavn(personB));
+    });
+
+    await test.step("Person-A gir person-B tilgangspakken som gir tilgang til appen", async () => {
+        const tilgangspakke = testAppConfig.tilgangspakke;
+        const pakke = await tilgangsstyring.brukere.apnePakkeDetaljer(personB.name, tilgangspakke);
+        await pakke.giFullmakt();
+        await pakke.assertHarFullmakt();
+        // Tjenestene i pakken vises alltid på bokmål, se #696. Det går så lenge testene bare kjører på bokmål.
+        await pakke.assertInneholderApp(testAppConfig.visningsnavn);
+        await pakke.lukk();
+    });
+
+    const sesjonB = await test.step("Person-B logger inn via Tilgangsstyring, velger person-A som aktør og setter språk", async () => {
+        const sesjon = await nySesjon();
+        await sesjon.innlogging.loggInnViaTilgangsstyring(personB);
+        await sesjon.aktorvelger.ventPaOgVelgAktorFraHeader(personA.name);
+        await sesjon.tilgangsstyring.meny.setLanguage(sprak);
+        return sesjon;
+    });
+
+    await test.step("Person-B går rett til instansen til person-A i appen", async () => {
+        await sesjonB.app.gaTilInstans(opprettet);
+        await sesjonB.app.assertViserInstans(opprettet);
+        await sesjonB.app.assertPaVegneAv(personB, personA);
+    });
+});
+
+// Hele flyten via innboksen. Skrudd av fordi innboksen viser en ny fullmakt først etter rundt
+// 12 minutter, se #695.
+test.fixme("Bruker instansierer app", { tag: ["@at23", "@tt02", "@prod"] }, async ({
+    page,
     innlogging,
     aktorvelger,
     nySesjon,
     testbrukere,
     arbeidsflate,
-    brukere,
     tilgangsstyring,
     sprak,
-    urler,
     app,
+    testAppConfig,
 }) => {
-    // A oppretter instansen og gir B tilgangspakken; B åpner instansen på vegne av A.
+    // Innboksen kan bruke opptil et kvarter på å vise den nye aktøren og utkastet, se DIALOGPORTEN_TIMEOUT.
+    test.setTimeout(40 * 60_000);
     const [personA, personB] = testbrukere.reserver("privatPersonUtenVirksomhet", 2);
+    console.log(`Person-A: ${personA.name}, person-B: ${personB.name}`);
 
-    await test.step("Privatperson navigerer til appen", async () => {
-        await app.navigateTo();
-        await innlogging.loggInnMedTestId(personA);
-    });
-
-    await test.step("Verifisere bruker får instansiert appen", async () => {
-        // Har A fått fullmakt fra andre testbrukere i tidligere kjøringer, spør appen
-        // hvem A vil sende inn for. Da velger A seg selv.
-        await app.velgAktorHvisSpurt(personA.name);
-        await expect(app.presentationHeading).toContainText(app.navn);
-        await expect(app.hovedinnhold).toContainText("Testdepartementet");
-
-        instans = { ...app.aktivInstans(), token: await innlogging.altinnToken() };
-
-        await app.gaTilbakeTilInnboks();
-    });
-
-    await test.step("Delegere tilgangspakke til person-B", async () => {
-        await arbeidsflate.meny.gaTilTilgangsstyring();
-        // Tilgangsstyring vises på språket i brukerens profil, ikke projectets. Tekstene
-        // i brukere.ts og pakkenavnet følger projectet, så språket må settes først.
-        await tilgangsstyring.meny.setLanguage(sprak);
-        // Fullmakten skal gis fra A selv, ikke fra en aktør A tidligere har fått fullmakt fra.
+    await test.step("Person-A logger inn via Tilgangsstyring, velger seg selv som aktør og setter språk", async () => {
+        await innlogging.loggInnViaTilgangsstyring(personA);
         await aktorvelger.velgAktorFraHeader(personA.name);
+        await tilgangsstyring.meny.setLanguage(sprak);
+
+        const tokenA = await altinnToken(page);
+        const fra = await aktivAktorUuid(page);
+        kobling = { fra, navn: personB.name, token: tokenA };
+    });
+
+    const opprettet = await test.step("Person-A går til appen, som oppretter en instans", async () => {
+        await app.navigateTo();
+        await app.assertPaInstans();
+        await expect(app.presentationHeading).toContainText(app.visningsnavn);
+        await expect(app.hovedinnhold).toContainText(app.tjenesteeier);
+
+        instans = app.aktivInstans();
+        return instans;
+    });
+
+    await test.step("Person-A ser instansen som utkast i innboksen", async () => {
+        await app.gaTilbakeTilInnboks();
+        await arbeidsflate.apneUtkast();
+        await arbeidsflate.ventPaDialog(opprettet);
+    });
+
+    await test.step("Person-A går til Tilgangsstyring", async () => {
+        await arbeidsflate.meny.gaTilTilgangsstyring();
+    });
+
+    await test.step("Person-A legger til person-B som ny bruker", async () => {
         await tilgangsstyring.brukereLink.click();
-        await brukere.leggTilNyBruker(personB.pid, etternavn(personB));
-
-        const tilgangspakke = FRITIDSAKTIVITETER_OG_FRILUFTSLIV[sprak];
-        await brukere.giFullmaktForTilgangspakke(personB.name, tilgangspakke);
-        await brukere.assertHarTilgangspakke(personB.name, tilgangspakke);
-        await brukere.assertTilgangspakkeInneholderApp(personB.name, tilgangspakke, "Bruksmønster-test");
+        await tilgangsstyring.brukere.leggTilNyBruker(personB.pid, etternavn(personB));
     });
 
-    // B får sin egen nettleserøkt, så ingenting fra A sin innlogging følger med.
-    const sesjonB = await nySesjon();
-
-    await test.step("Person-B logger inn i en ny sesjon og velger bruker A som aktør", async () => {
-        await sesjonB.innlogging.loggInnViaTilgangsstyring(personB);
-        await sesjonB.aktorvelger.velgAktor(personA.name);
+    await test.step("Person-A gir person-B tilgangspakken som gir tilgang til appen", async () => {
+        const tilgangspakke = testAppConfig.tilgangspakke;
+        const pakke = await tilgangsstyring.brukere.apnePakkeDetaljer(personB.name, tilgangspakke);
+        await pakke.giFullmakt();
+        await pakke.assertHarFullmakt();
+        // Tjenestene i pakken vises alltid på bokmål, se #696. Det går så lenge testene bare kjører på bokmål.
+        await pakke.assertInneholderApp(testAppConfig.visningsnavn);
+        await pakke.lukk();
     });
 
-    await test.step("Verifisere person-B har tilgang til instansen", async () => {
-        const appB = new App(sesjonB.page, urler.apps, app.navn);
-        await appB.gaTilInstans(instans!);
-        await appB.assertViserInstans(instans!);
+    const sesjonB = await test.step("Person-B logger inn via Tilgangsstyring, velger person-A som aktør, setter språk og går til innboksen", async () => {
+        const sesjon = await nySesjon();
+        await sesjon.innlogging.loggInnViaTilgangsstyring(personB);
+
+        await sesjon.aktorvelger.ventPaOgVelgAktorFraHeader(personA.name);
+        await sesjon.tilgangsstyring.meny.setLanguage(sprak);
+
+        // Aktøren B velger i Tilgangsstyring følger ikke alltid med til innboksen.
+        await sesjon.tilgangsstyring.meny.gaTilInnboks();
+        await sesjon.aktorvelger.ventPaOgVelgAktorFraHeader(personA.name);
+        return sesjon;
+    });
+
+    await test.step("Person-B åpner instansen til person-A fra utkastene i innboksen", async () => {
+        await sesjonB.arbeidsflate.apneUtkast();
+        await sesjonB.arbeidsflate.ventPaDialog(opprettet);
+        await sesjonB.arbeidsflate.dialogLink(opprettet).click();
+        await sesjonB.arbeidsflate.gaTilSkjemautfylling();
+        await sesjonB.app.assertViserInstans(opprettet);
+        await sesjonB.app.assertPaVegneAv(personB, personA);
     });
 });

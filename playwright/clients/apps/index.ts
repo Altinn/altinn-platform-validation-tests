@@ -3,9 +3,14 @@ import { APIRequestContext } from "@playwright/test";
 import { InstancesClient } from "./instances";
 
 export class AppsApiClient {
-    readonly instances: InstancesClient;
+    private _instances?: InstancesClient;
 
-    constructor(request: APIRequestContext, baseUrl: string) {
-        this.instances = new InstancesClient(request, baseUrl);
+    constructor(
+        private readonly request: APIRequestContext,
+        private readonly baseUrl: string,
+    ) {}
+
+    get instances(): InstancesClient {
+        return (this._instances ??= new InstancesClient(this.request, this.baseUrl));
     }
 }

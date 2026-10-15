@@ -19,6 +19,6 @@ test("Brukerens språkvalg fra profilen vises i infoportalen", { tag: ["@at23", 
     });
 
     await test.step(`Infoportalen viser innhold på ${sprak}`, async () => {
-        await infoportal.assertSprak(sprak);
+        await infoportal.assertSprak();
     });
 });

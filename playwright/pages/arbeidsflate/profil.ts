@@ -1,11 +1,12 @@
 import { expect, Locator, Page } from "@playwright/test";
 
 import { TestUser } from "../../config/environment";
-import { Cookiebanner } from "../felles/cookiebanner";
-import { Meny } from "../felles/meny";
+import { Sprak } from "../../config/sprak";
+import { CookiebannerPom } from "../felles/cookiebanner";
+import { MenyPom } from "../felles/meny";
 import { assertFlateUtlogget } from "../felles/utlogget";
 
-export class ArbeidsflateProfil {
+export class ArbeidsflateProfilPom {
     readonly url: string;
 
     // Lagrede søk i profilens sidemeny. href-en er språkuavhengig.
@@ -14,8 +15,9 @@ export class ArbeidsflateProfil {
     constructor(
         private page: Page,
         arbeidsflate: string,
-        readonly meny = new Meny(page),
-        readonly cookiebanner = new Cookiebanner(page),
+        readonly sprak: Sprak,
+        readonly meny = new MenyPom(page),
+        readonly cookiebanner = new CookiebannerPom(page),
     ) {
         this.url = `${arbeidsflate}/profile`;
 

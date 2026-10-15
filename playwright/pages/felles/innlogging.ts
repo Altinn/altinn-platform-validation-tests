@@ -1,9 +1,11 @@
 import { expect, Locator, Page } from "@playwright/test";
 
 import { requireEnv, TestUser, Urler } from "../../config/environment";
-import { InfoportalForside } from "../infoportal/forside";
+import { Sprak } from "../../config/sprak";
+import { InfoportalForsidePom } from "../infoportal/forside";
 import { tilgangsstyringUrl } from "../tilgangsstyring/forside";
-import { Meny } from "./meny";
+import { AktorvelgerPom } from "./aktorvelger";
+import { MenyPom } from "./meny";
 import { REDIRECT_TIMEOUT } from "./navigasjon";
 
 /**
@@ -17,11 +19,14 @@ const SESJONSCOOKIES = ["AltinnStudioRuntime", "altinnsession"];
  * Innloggingen går via en av de to hovedsidene, arbeidsflaten eller tilgangsstyring.
  * Om den går via ID-porten med TestID eller via Mockporten styres av `mockporten` i
  * projectet, siden TestID ikke finnes i prod.
+ *
+ * Språket er ikke valgt ennå ved innlogging, så tekstene her matches på alle språk.
  */
-export class Innlogging {
-    private readonly meny: Meny;
+export class InnloggingPom {
+    private readonly meny: MenyPom;
     // Innloggingen via arbeidsflaten starter på infoportalens "Logg inn"-knapp.
-    private readonly infoportal: InfoportalForside;
+    private readonly infoportal: InfoportalForsidePom;
+    private readonly aktorvelger: AktorvelgerPom;
 
     // Mockporten
     readonly passwordField: Locator;
@@ -40,9 +45,11 @@ export class Innlogging {
         private page: Page,
         private urler: Urler,
         private mockporten: boolean,
+        sprak: Sprak,
     ) {
-        this.meny = new Meny(page);
-        this.infoportal = new InfoportalForside(page, urler.infoportal);
+        this.meny = new MenyPom(page);
+        this.infoportal = new InfoportalForsidePom(page, urler.infoportal, sprak);
+        this.aktorvelger = new AktorvelgerPom(page, sprak);
 
         this.passwordField = page.getByLabel(/shared access password/i);
         this.mockportenPidField = page.getByLabel(/fødselsnummer/i);
@@ -78,16 +85,22 @@ export class Innlogging {
     /**
      * Logger inn fra Tilgangsstyring i infoportalens meny, som lander på
      * tilgangsstyring. Med Mockporten er det `goto` som bestemmer flaten.
+     *
+     * Tilgangsstyring legger selv på `openAccountMenu=true` når den sender brukeren til
+     * innlogging, og det er den som åpner aktørvelgeren etterpå. Mockporten-flyten går
+     * forbi det, så parameteren legges på her. Kan brukeren representere andre, velges
+     * brukeren selv, så menyen ikke står låst.
      */
     async loggInnViaTilgangsstyring(user: TestUser) {
         if (this.mockporten) {
-            await this.loggInnMedMockporten(tilgangsstyringUrl(this.urler.tilgangsstyring), user);
-            return;
+            await this.loggInnMedMockporten(`${tilgangsstyringUrl(this.urler.tilgangsstyring)}?openAccountMenu=true`, user);
+        } else {
+            await this.page.goto(this.urler.infoportal);
+            await this.meny.gaTilTilgangsstyring();
+            await this.loggInnMedTestId(user);
         }
 
-        await this.page.goto(this.urler.infoportal);
-        await this.meny.gaTilTilgangsstyring();
-        await this.loggInnMedTestId(user);
+        await this.aktorvelger.velgSegSelvEtterInnlogging(user.name);
     }
 
     /**
@@ -108,7 +121,7 @@ export class Innlogging {
      * Fortsetter fra ID-portens valg av innloggingsmetode. Sjekker at valget er der
      * først, så en redirect som ikke kommer fram feiler her og ikke på klikket.
      */
-    public async loggInnMedTestId(user: TestUser) {
+    private async loggInnMedTestId(user: TestUser) {
         await expect(this.testIdHoytNivaaLink, "Er på ID-porten").toBeVisible({
             timeout: REDIRECT_TIMEOUT,
         });
@@ -132,19 +145,6 @@ export class Innlogging {
         await this.passwordField.fill(requireEnv("TEST_IDP_PASSWORD"));
         await this.mockportenPidField.fill(user.pid);
         await this.testUserLoginButton.click();
-    }
-
-    /**
-     * Altinn-tokenet til den innloggede brukeren, fra `AltinnStudioRuntime`-cookien.
-     * Brukes som sluttbrukertoken mot API-ene.
-     */
-    async altinnToken(): Promise<string> {
-        const token = (await this.page.context().cookies())
-            .find((cookie) => cookie.name === "AltinnStudioRuntime")?.value;
-        if (!token) {
-            throw new Error("Fant ikke AltinnStudioRuntime-cookien; er brukeren logget inn?");
-        }
-        return token;
     }
 
     /**
@@ -174,5 +174,9 @@ export class Innlogging {
                 },
             )
             .toEqual([]);
+
+        // Cookiene er borte før ID-porten har sendt brukeren videre til infoportalen, og en
+        // navigering før det avbrytes av den redirecten.
+        await this.page.waitForURL(`${this.urler.infoportal}/**`, { timeout: REDIRECT_TIMEOUT });
     }
 }

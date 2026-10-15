@@ -12,14 +12,24 @@ export type Urler = {
     apps: string;
 };
 
+/**
+ * En app fra ttd som testene bruker, med tekstene på språket til projectet. Pakkenavnet
+ * oversettes i Tilgangsstyring, ikke bare UI-teksten rundt.
+ */
+export type TestAppConfig = {
+    // Appens navn i urlen.
+    id: string;
+    visningsnavn: string;
+    tilgangspakke: string;
+};
+
 export type TestUser = {
     pid: string;
     name: string;
 };
 
-// Etternavnet, slik Tilgangsstyring vil ha det når en ny bruker legges til.
 export function etternavn(user: TestUser): string {
-    return user.name.trim().split(/\s+/).at(-1)!.toUpperCase();
+    return user.name.split(" ").at(-1)!;
 }
 
 export function requireEnv(name: string): string {

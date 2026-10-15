@@ -1,5 +1,5 @@
 import { test as base } from "@playwright/test";
-import { mkdirSync, readFileSync, rmSync, writeFileSync } from "fs";
+import { mkdirSync, readFileSync, writeFileSync } from "fs";
 import path from "path";
 
 import { TestUser } from "../config/environment";
@@ -18,18 +18,9 @@ function lesTestbrukere(gruppe: string, miljo: string): TestUser[] {
     });
 }
 
-// Fila kan være slettet siden vi prøvde å opprette den, fordi en annen test frigav brukeren.
-function reservertAv(fil: string): string | undefined {
-    try {
-        return readFileSync(fil, "utf8");
-    } catch {
-        return undefined;
-    }
-}
-
-// Første ledige bruker reserveres med en fil som bare kan opprettes én gang, så to tester
-// som kjører samtidig aldri får samme bruker. Overlever reservasjonen en krasj, finner
-// retryen den igjen. Brukere testen allerede har fått, hoppes over.
+// Første ledige bruker i lista reserveres med en fil som bare kan opprettes én gang, så to tester
+// som kjører samtidig aldri får samme bruker. Reservasjonen blir stående resten av kjøringen,
+// så ingen bruker brukes to ganger, heller ikke av en retry.
 function reserverTestbruker(
     brukere: TestUser[],
     katalog: string,
@@ -44,9 +35,7 @@ function reserverTestbruker(
             writeFileSync(fil, testId, { flag: "wx" });
             return bruker;
         } catch {
-            if (reservertAv(fil) === testId) {
-                return bruker;
-            }
+            // Reservert av en annen test.
         }
     }
 
@@ -55,7 +44,7 @@ function reserverTestbruker(
 
 /**
  * Reserverer testbrukere for én test. Reservasjonene gjelder på tvers av grupper, siden
- * de er per fødselsnummer, og frigis samlet når testen er ferdig.
+ * de er per fødselsnummer, og frigis ikke før neste kjøring.
  */
 export class Testbrukere {
     private readonly reservert = new Set<string>();
@@ -66,8 +55,9 @@ export class Testbrukere {
         private readonly testId: string,
     ) {}
 
+    // Brukerne stokkes, så testene ikke bruker de samme brukerne kjøring etter kjøring.
     reserver(gruppe: string, antall: number): TestUser[] {
-        const brukere = lesTestbrukere(gruppe, this.miljo);
+        const brukere = lesTestbrukere(gruppe, this.miljo).sort(() => Math.random() - 0.5);
 
         return Array.from({ length: antall }, () => {
             const bruker = reserverTestbruker(brukere, this.katalog, this.testId, this.reservert);
@@ -81,13 +71,6 @@ export class Testbrukere {
             return bruker;
         });
     }
-
-    frigi() {
-        for (const pid of this.reservert) {
-            rmSync(path.join(this.katalog, pid), { force: true });
-        }
-        this.reservert.clear();
-    }
 }
 
 export const testbrukereFixture = base.extend<{
@@ -97,19 +80,18 @@ export const testbrukereFixture = base.extend<{
 }>({
     miljo: ["", { option: true }],
 
-    // Ingen test deler bruker, og dermed sesjon, med en annen. Brukerne frigis når testen
-    // er ferdig, så neste test kan bruke dem. Playwright tømmer output-mappa ved start,
-    // så reservasjonene gjelder én kjøring.
+    // Ingen bruker brukes av mer enn én test per kjøring. Innboksen cacher aktørlisten til en
+    // bruker i 12 minutter, så en bruker som kommer tilbake, ser ikke nye fullmakter.
+    // Playwright tømmer output-mappa ved start, så reservasjonene gjelder én kjøring.
     testbrukere: async ({ miljo }, use, testInfo) => {
         const katalog = path.join(testInfo.project.outputDir, ".testbrukere", miljo);
-        const testbrukere = new Testbrukere(miljo, katalog, testInfo.testId);
-        await use(testbrukere);
-        testbrukere.frigi();
+        await use(new Testbrukere(miljo, katalog, testInfo.testId));
     },
 
     // Snarvei for testene som bare trenger én privatperson.
     user: async ({ testbrukere }, use) => {
         const [bruker] = testbrukere.reserver("privatPersonUtenVirksomhet", 1);
+        console.log(`Testbruker: ${bruker.name}`);
         await use(bruker);
     },
 });
