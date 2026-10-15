@@ -33,7 +33,7 @@ local jobs = [
     environment: 'prod',
     reportUrl:
       'https://jolly-plant-033965703.7.azurestaticapps.net',
-    slackWebhookEnabled: false,
+    slackWebhookEnabled: true,
   },
 ];
 
