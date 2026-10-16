@@ -462,7 +462,6 @@ export const AltinnValidationProblemDetails = undefined;
 
 export const ForwardCorrespondenceRequestExt = undefined;
 export const ActorTypeExt = undefined;
-export const PerformedByExt = undefined;
 export const AttachmentDataLocationTypeExt = undefined;
 export const AttachmentStatusExt = undefined;
 export const BaseCorrespondenceExt = undefined;
@@ -498,5 +497,6 @@ export const NotificationRecipientExt = undefined;
 export const NotificationStatusDetailsExt = undefined;
 export const NotificationStatusExt = undefined;
 export const NotificationTemplateExt = undefined;
+export const PerformedByExt = undefined;
 export const ProblemDetails = undefined;
 export const ReferenceTypeExt = undefined;

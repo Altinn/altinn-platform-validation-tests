@@ -54,7 +54,7 @@
  * @property {string|null} [code]
  * @property {string|null} [traceId]
  * @property {Array<ProblemDetails_Error>|null} [validationErrors]
- * @property {{[key: string]: Array<string>}} errors
+ * @property {{[key: string]: Array<string>}} [errors]
  */
 
 /**
@@ -68,24 +68,15 @@
 /**
  * ProblemDetails returned on 409 Conflict, with the offending conflict(s).
  *
- * @typedef {object} ConflictProblemDetails
- * @property {string|null} [type]
- * @property {string|null} [title]
- * @property {number|null} [status]
- * @property {string|null} [detail]
- * @property {string|null} [instance]
- * @property {string|null} [statusDescription]
- * @property {string|null} [code]
- * @property {string|null} [traceId]
- * @property {Array<ProblemDetails_Error>|null} [validationErrors]
- * @property {{[key: string]: Array<string>}} [errors]
- * @property {Array<ProblemDetailsConflict>|null} [conflicts] The conflicts that caused the 409, e.g. DP.CFL-00000.
+ * @typedef {ProblemDetails & {conflicts?: Array<ProblemDetailsConflict>|null}} ConflictProblemDetails
  */
 
 /**
  * @typedef {object} ProblemDetailsConflict
  * @property {string} [code] The conflict code, e.g. DP.CFL-00000.
  * @property {string} [title]
+ * @property {string} [idempotentKey] Set on DP.CFL-00001 and DP.CFL-00002.
+ * @property {string} [dialogId] Set on DP.CFL-00002.
  */
 
 /**
