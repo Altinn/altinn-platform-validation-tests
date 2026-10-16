@@ -54,7 +54,7 @@
  * @property {string|null} [code]
  * @property {string|null} [traceId]
  * @property {Array<ProblemDetails_Error>|null} [validationErrors]
- * @property {{[key: string]: Array<string>}} errors
+ * @property {{[key: string]: Array<string>}} [errors]
  */
 
 /**
@@ -63,6 +63,20 @@
  * @property {string|null} [code]
  * @property {string|null} [detail]
  * @property {Array<string>|null} [paths]
+ */
+
+/**
+ * ProblemDetails returned on 409 Conflict, with the offending conflict(s).
+ *
+ * @typedef {ProblemDetails & {conflicts?: Array<ProblemDetailsConflict>|null}} ConflictProblemDetails
+ */
+
+/**
+ * @typedef {object} ProblemDetailsConflict
+ * @property {string} [code] The conflict code, e.g. DP.CFL-00000.
+ * @property {string} [title]
+ * @property {string} [idempotentKey] Set on DP.CFL-00001 and DP.CFL-00002.
+ * @property {string} [dialogId] Set on DP.CFL-00002.
  */
 
 /**
@@ -680,7 +694,9 @@ export const DialogsEntities_DialogStatus = undefined;
 export const DigdirDomainDialogportenApplicationCommon_Link = undefined;
 export const Http_HttpVerb = undefined;
 export const PaginatedListOfV1EndUserDialogsQueriesSearch_Dialog = undefined;
+export const ConflictProblemDetails = undefined;
 export const ProblemDetails = undefined;
+export const ProblemDetailsConflict = undefined;
 export const ProblemDetails_Error = undefined;
 export const V1AccessManagementQueriesGetParties_AuthorizedParty = undefined;
 export const V1AccessManagementQueriesGetParties_Parties = undefined;
