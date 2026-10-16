@@ -66,6 +66,29 @@
  */
 
 /**
+ * ProblemDetails returned on 409 Conflict, with the offending conflict(s).
+ *
+ * @typedef {object} ConflictProblemDetails
+ * @property {string|null} [type]
+ * @property {string|null} [title]
+ * @property {number|null} [status]
+ * @property {string|null} [detail]
+ * @property {string|null} [instance]
+ * @property {string|null} [statusDescription]
+ * @property {string|null} [code]
+ * @property {string|null} [traceId]
+ * @property {Array<ProblemDetails_Error>|null} [validationErrors]
+ * @property {{[key: string]: Array<string>}} [errors]
+ * @property {Array<ProblemDetailsConflict>|null} [conflicts] The conflicts that caused the 409, e.g. DP.CFL-00000.
+ */
+
+/**
+ * @typedef {object} ProblemDetailsConflict
+ * @property {string} [code] The conflict code, e.g. DP.CFL-00000.
+ * @property {string} [title]
+ */
+
+/**
  * @typedef {object} V1AccessManagementQueriesGetParties_AuthorizedParty
  * @property {string} party The party identifier in URN format
  * @property {string} partyUuid The UUID for the party.
@@ -680,7 +703,9 @@ export const DialogsEntities_DialogStatus = undefined;
 export const DigdirDomainDialogportenApplicationCommon_Link = undefined;
 export const Http_HttpVerb = undefined;
 export const PaginatedListOfV1EndUserDialogsQueriesSearch_Dialog = undefined;
+export const ConflictProblemDetails = undefined;
 export const ProblemDetails = undefined;
+export const ProblemDetailsConflict = undefined;
 export const ProblemDetails_Error = undefined;
 export const V1AccessManagementQueriesGetParties_AuthorizedParty = undefined;
 export const V1AccessManagementQueriesGetParties_Parties = undefined;

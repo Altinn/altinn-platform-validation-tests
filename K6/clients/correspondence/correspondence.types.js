@@ -56,7 +56,7 @@
  * @property {InitializeCorrespondenceNotificationExt} notification
  * @property {boolean|null} [ignoreReservation] Specifies whether the correspondence can override reservation against digital communication in KRR. This field only applies to recipients who are persons with person numbers (both default and custom recipients). It has no effect for organization recipients or email/sms recipients through custom recipients.
  * @property {boolean} isConfirmationNeeded Specifies whether reading the correspondence needs to be confirmed by the recipient
- * @property {boolean} [allowForwarding] Whether the recipient may forward the correspondence.
+ * @property {boolean} [allowForwarding] Whether the recipient may forward the correspondence. Defaults to false.
  * @property {boolean} isConfidential Specifies whether the correspondence is confidential
  */
 
@@ -108,7 +108,7 @@
  * @property {InitializeCorrespondenceNotificationExt} notification
  * @property {boolean|null} [ignoreReservation] Specifies whether the correspondence can override reservation against digital communication in KRR. This field only applies to recipients who are persons with person numbers (both default and custom recipients). It has no effect for organization recipients or email/sms recipients through custom recipients.
  * @property {boolean} isConfirmationNeeded Specifies whether reading the correspondence needs to be confirmed by the recipient
- * @property {boolean} [allowForwarding] Whether the recipient may forward the correspondence.
+ * @property {boolean} [allowForwarding] Whether the recipient may forward the correspondence. Defaults to false.
  * @property {boolean} isConfidential Specifies whether the correspondence is confidential
  * @property {string|null} [recipient] The recipient of the correspondence.
  * @property {string} correspondenceId Unique Id for this correspondence
@@ -149,7 +149,7 @@
  * @property {InitializeCorrespondenceNotificationExt} notification
  * @property {boolean|null} [ignoreReservation] Specifies whether the correspondence can override reservation against digital communication in KRR. This field only applies to recipients who are persons with person numbers (both default and custom recipients). It has no effect for organization recipients or email/sms recipients through custom recipients.
  * @property {boolean} isConfirmationNeeded Specifies whether reading the correspondence needs to be confirmed by the recipient
- * @property {boolean} [allowForwarding] Whether the recipient may forward the correspondence.
+ * @property {boolean} [allowForwarding] Whether the recipient may forward the correspondence. Defaults to false.
  * @property {boolean} isConfidential Specifies whether the correspondence is confidential
  * @property {string|null} [recipient] The recipient of the correspondence.
  * @property {string} correspondenceId Unique Id for this correspondence
@@ -178,6 +178,21 @@
  * @property {CorrespondenceStatusExt} status
  * @property {string|null} [statusText] Correspondence Status Text description
  * @property {string} statusChanged Timestamp for when this Correspondence Status Event occurred
+ * @property {PerformedByExt} [performedBy] The actor that performed the activity.
+ */
+
+/**
+ * The actor that performed the activity.
+ *
+ * @typedef {object} PerformedByExt
+ * @property {ActorTypeExt} [actorType] The type of actor that performed the activity.
+ * @property {string|null} [actorName] The name of the actor.
+ */
+
+/**
+ * The type of actor that performed a correspondence status event.
+ *
+ * @typedef {"PartyRepresentative"|"ServiceOwner"} ActorTypeExt
  */
 
 /**
@@ -442,9 +457,12 @@ export const AltinnValidationProblemDetails = undefined;
  * @typedef {object} ForwardCorrespondenceRequestExt
  * @property {string|null} forwardTo Recipient email address.
  * @property {string|null} [forwardingText] Optional text accompanying the forwarded correspondence.
+ * @property {boolean} [includeAttachments] Whether to include the attachments in the forwarded correspondence.
  */
 
 export const ForwardCorrespondenceRequestExt = undefined;
+export const ActorTypeExt = undefined;
+export const PerformedByExt = undefined;
 export const AttachmentDataLocationTypeExt = undefined;
 export const AttachmentStatusExt = undefined;
 export const BaseCorrespondenceExt = undefined;

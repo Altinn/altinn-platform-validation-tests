@@ -77,6 +77,29 @@
  */
 
 /**
+ * ProblemDetails returned on 409 Conflict, with the offending conflict(s).
+ *
+ * @typedef {object} ConflictProblemDetails
+ * @property {string|null} [type]
+ * @property {string|null} [title]
+ * @property {number|null} [status]
+ * @property {string|null} [detail]
+ * @property {string|null} [instance]
+ * @property {string|null} [statusDescription]
+ * @property {string|null} [code]
+ * @property {string|null} [traceId]
+ * @property {Array<ProblemDetails_Error>|null} [validationErrors]
+ * @property {{[key: string]: Array<string>}} [errors]
+ * @property {Array<ProblemDetailsConflict>|null} [conflicts] The conflicts that caused the 409, e.g. DP.CFL-00000.
+ */
+
+/**
+ * @typedef {object} ProblemDetailsConflict
+ * @property {string} [code] The conflict code, e.g. DP.CFL-00000.
+ * @property {string} [title]
+ */
+
+/**
  * @typedef {object} V1CommonContent_ContentValue
  * @property {Array<V1CommonLocalizations_Localization>|null} [value] A list of localizations for the content.
  * @property {string} mediaType Media type of the content, this can also indicate that the content is embeddable.
@@ -1122,7 +1145,9 @@ export const Http_HttpVerb = undefined;
 export const JsonPatchOperations_Operation = undefined;
 export const PaginatedListOfV1ServiceOwnerDialogsQueriesSearchEndUserContext_DialogEndUserContextItem = undefined;
 export const PaginatedListOfV1ServiceOwnerDialogsQueriesSearch_Dialog = undefined;
+export const ConflictProblemDetails = undefined;
 export const ProblemDetails = undefined;
+export const ProblemDetailsConflict = undefined;
 export const ProblemDetails_Error = undefined;
 export const V1CommonContent_ContentValue = undefined;
 export const V1CommonIdentifierLookup_IdentifierLookupServiceOwner = undefined;
