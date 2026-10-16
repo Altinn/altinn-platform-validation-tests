@@ -5,9 +5,6 @@ import { ValidatePersonInput } from "../common/common.types.js";
 import { CreateRightHolderQuery, DeleteReporteeConnectionQuery, GetRightHoldersQuery, GetSimplifiedConnectionsQuery } from "./connection.types.js";
 
 const TAGS = {
-    GetReporteeRightHolders: {
-        action: "get-reportee-right-holders",
-    },
     DeleteReporteeConnection: {
         action: "delete-reportee-connection",
     },
@@ -53,25 +50,6 @@ class ConnectionClient {
 
     static get TAGS() {
         return TAGS;
-    }
-
-    /**
-     * Gets the right holders of a reportee.
-     *
-     * @param {number} partyId Party id of the reportee.
-     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
-     */
-    GetReporteeRightHolders(partyId, labels = null) {
-        return http.get(
-            `${this.FULL_PATH}/reportee/${partyId}/rightholders`,
-            requestParams({
-                endpoint: `${this.FULL_PATH}/reportee/{partyId}/rightholders`,
-                action: TAGS.GetReporteeRightHolders.action,
-                labels,
-                token: this.tokenGenerator.getToken(),
-            }),
-        );
     }
 
     /**
