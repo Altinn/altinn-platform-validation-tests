@@ -6,12 +6,6 @@ const TAGS = {
     GetOrganization: {
         action: "get-organization",
     },
-    GetParty: {
-        action: "get-party",
-    },
-    GetUser: {
-        action: "get-user",
-    },
     GetPartyForAuthenticatedUser: {
         action: "get-party-for-authenticated-user",
     },
@@ -60,44 +54,6 @@ class LookupClient {
             requestParams({
                 endpoint: `${this.FULL_PATH}/org/{orgNummer}`,
                 action: TAGS.GetOrganization.action,
-                labels,
-                token: this.tokenGenerator.getToken(),
-            }),
-        );
-    }
-
-    /**
-     * Looks up a party by party UUID.
-     *
-     * @param {string} uuid Party UUID.
-     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
-     */
-    GetParty(uuid, labels = null) {
-        return http.get(
-            `${this.FULL_PATH}/party/${uuid}`,
-            requestParams({
-                endpoint: `${this.FULL_PATH}/party/{uuid}`,
-                action: TAGS.GetParty.action,
-                labels,
-                token: this.tokenGenerator.getToken(),
-            }),
-        );
-    }
-
-    /**
-     * Looks up a user profile by user UUID.
-     *
-     * @param {string} uuid User UUID.
-     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
-     */
-    GetUser(uuid, labels = null) {
-        return http.get(
-            `${this.FULL_PATH}/user/${uuid}`,
-            requestParams({
-                endpoint: `${this.FULL_PATH}/user/{uuid}`,
-                action: TAGS.GetUser.action,
                 labels,
                 token: this.tokenGenerator.getToken(),
             }),
