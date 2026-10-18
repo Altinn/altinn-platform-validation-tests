@@ -109,13 +109,15 @@ class ResourceClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     ResourceExport(labels = null) {
+        // The endpoint is public, so the client may be built without a token
+        // generator. That is what lets this run without one.
         return http.get(
             `${this.FULL_PATH}/export`,
             requestParams({
                 endpoint: `${this.FULL_PATH}/export`,
                 action: TAGS.ResourceExport.action,
                 labels,
-                token: this.tokenGenerator.getToken(),
+                token: this.tokenGenerator?.getToken() ?? null,
                 accept: "application/xml+rdf",
             }),
         );
