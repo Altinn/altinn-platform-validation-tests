@@ -29,7 +29,7 @@ local jobs = [
   },
   {
     name: 'playwright-prod',
-    schedule: '*/15 * * * *',
+    schedule: '*/5 * * * *',
     environment: 'prod',
     reportUrl:
       'https://jolly-plant-033965703.7.azurestaticapps.net',
