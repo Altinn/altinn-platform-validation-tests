@@ -29,10 +29,9 @@ test.afterEach(async ({ api, testAppConfig, page }) => {
     }
 });
 
-test("Bruker instansierer app og gir tilgang, med direktenavigasjon til appen", { tag: ["@at23", "@tt02"] }, async ({
+test("Bruker instansierer app og gir tilgang, med direktenavigasjon til appen", { tag: ["@at23", "@tt02", "@prod"] }, async ({
     page,
     innlogging,
-    aktorvelger,
     nySesjon,
     testbrukere,
     tilgangsstyring,
@@ -45,7 +44,6 @@ test("Bruker instansierer app og gir tilgang, med direktenavigasjon til appen", 
 
     await test.step("Person-A logger inn via Tilgangsstyring, velger seg selv som aktør og setter språk", async () => {
         await innlogging.loggInnViaTilgangsstyring(personA);
-        await aktorvelger.velgAktorFraHeader(personA.name);
         await tilgangsstyring.meny.setLanguage(sprak);
 
         const tokenA = await altinnToken(page);
@@ -84,8 +82,7 @@ test("Bruker instansierer app og gir tilgang, med direktenavigasjon til appen", 
 
     const sesjonB = await test.step("Person-B logger inn via Tilgangsstyring, velger person-A som aktør og setter språk", async () => {
         const sesjon = await nySesjon();
-        await sesjon.innlogging.loggInnViaTilgangsstyring(personB);
-        await sesjon.aktorvelger.ventPaOgVelgAktorFraHeader(personA.name);
+        await sesjon.innlogging.loggInnViaTilgangsstyring(personB, personA.name);
         await sesjon.tilgangsstyring.meny.setLanguage(sprak);
         return sesjon;
     });
@@ -102,7 +99,6 @@ test("Bruker instansierer app og gir tilgang, med direktenavigasjon til appen", 
 test.fixme("Bruker instansierer app", { tag: ["@at23", "@tt02", "@prod"] }, async ({
     page,
     innlogging,
-    aktorvelger,
     nySesjon,
     testbrukere,
     arbeidsflate,
@@ -118,7 +114,6 @@ test.fixme("Bruker instansierer app", { tag: ["@at23", "@tt02", "@prod"] }, asyn
 
     await test.step("Person-A logger inn via Tilgangsstyring, velger seg selv som aktør og setter språk", async () => {
         await innlogging.loggInnViaTilgangsstyring(personA);
-        await aktorvelger.velgAktorFraHeader(personA.name);
         await tilgangsstyring.meny.setLanguage(sprak);
 
         const tokenA = await altinnToken(page);
@@ -163,9 +158,7 @@ test.fixme("Bruker instansierer app", { tag: ["@at23", "@tt02", "@prod"] }, asyn
 
     const sesjonB = await test.step("Person-B logger inn via Tilgangsstyring, velger person-A som aktør, setter språk og går til innboksen", async () => {
         const sesjon = await nySesjon();
-        await sesjon.innlogging.loggInnViaTilgangsstyring(personB);
-
-        await sesjon.aktorvelger.ventPaOgVelgAktorFraHeader(personA.name);
+        await sesjon.innlogging.loggInnViaTilgangsstyring(personB, personA.name);
         await sesjon.tilgangsstyring.meny.setLanguage(sprak);
 
         // Aktøren B velger i Tilgangsstyring følger ikke alltid med til innboksen.

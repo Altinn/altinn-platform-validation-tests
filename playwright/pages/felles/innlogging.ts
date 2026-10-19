@@ -88,10 +88,10 @@ export class InnloggingPom {
      *
      * Tilgangsstyring legger selv på `openAccountMenu=true` når den sender brukeren til
      * innlogging, og det er den som åpner aktørvelgeren etterpå. Mockporten-flyten går
-     * forbi det, så parameteren legges på her. Kan brukeren representere andre, velges
-     * brukeren selv, så menyen ikke står låst.
+     * forbi det, så parameteren legges på her. Etter innloggingen velges `aktor`, som er
+     * brukeren selv hvis ikke noe annet er gitt, så menyen ikke står låst.
      */
-    async loggInnViaTilgangsstyring(user: TestUser) {
+    async loggInnViaTilgangsstyring(user: TestUser, aktor = user.name) {
         if (this.mockporten) {
             await this.loggInnMedMockporten(`${tilgangsstyringUrl(this.urler.tilgangsstyring)}?openAccountMenu=true`, user);
         } else {
@@ -100,7 +100,7 @@ export class InnloggingPom {
             await this.loggInnMedTestId(user);
         }
 
-        await this.aktorvelger.velgSegSelvEtterInnlogging(user.name);
+        await this.aktorvelger.velgAktorEtterInnlogging(aktor);
     }
 
     /**
