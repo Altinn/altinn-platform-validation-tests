@@ -2,7 +2,7 @@
   "openapi": "3.0.0",
   "info": {
     "title": "Dialogporten",
-    "description": "Dialogporten API description for both enduser and serviceowner users, as well as open metadata information for public key material.<br><br>All operations* described within this document require authentication and authorization. Read more at <a href=\"https://docs.altinn.studio/en/dialogporten/user-guides/authenticating/\">https://docs.altinn.studio/en/dialogporten/user-guides/authenticating/</a><br><br><strong>All GET operations* and POST operations may return or contain, respectively, personal identifiable information (national identity numbers and names).</strong><br><br>For more information about this product, see <a href=\"https://docs.altinn.studio/en/dialogporten\">https://docs.altinn.studio/en/dialogporten</a><br><br><em>* Except the metadata APIs",
+    "description": "Dialogporten API description for both enduser and serviceowner users, as well as open metadata information for public key material.<br><br>All operations* described within this document require authentication and authorization. Read more at <a href=\"https://docs.altinn.studio/en/dialogporten/user-guides/authenticating/\">https://docs.altinn.studio/en/dialogporten/user-guides/authenticating/</a><br><br><strong>All GET operations* and POST operations may return or contain, respectively, personal identifiable information (national identity numbers and names).</strong><br><br>For more information about this product, see <a href=\"https://docs.altinn.studio/en/dialogporten\">https://docs.altinn.studio/en/dialogporten</a><br><br><em>* Except the metadata APIs\n### About HTTP 409 Conflict\n\nAll `409 Conflict` responses in Dialogporten\nwill contain a RFC 9457 compliant ProblemDetails in the response body.\nThe ProblemDetails will contain the offending conflict(s), along with \nany extra fields necessary to describe the conflict(s).\nThese extra fields are not visible in the specification for 409 responses.\nPlease refer to this table to learn what extra fields each conflict has:\n\n| Code | Description | Extra fields |\n| --- | --- | --- |\n<a id=\"DP.CFL-00000\">DP.CFL-00000</a> | The request conflicted with a concurrent operation. Please try again. | \n<a id=\"DP.CFL-00001\">DP.CFL-00001</a> | Idempotent key already exist. | idempotentKey (String)\n<a id=\"DP.CFL-00002\">DP.CFL-00002</a> | Idempotent Key caused a dialog id conflict. | dialogId (Guid), idempotentKey (String)",
     "version": "v1"
   },
   "servers": [
@@ -285,11 +285,11 @@
             }
           },
           "409": {
-            "description": "Conflict occurred while processing the request.",
+            "description": "[DP.CFL-00000](#DP.CFL-00000)",
             "content": {
               "application/problem+json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
+                  "$ref": "#/components/schemas/ConflictProblemDetails"
                 }
               }
             }
@@ -424,11 +424,11 @@
             }
           },
           "409": {
-            "description": "Conflict occurred while processing the request.",
+            "description": "[DP.CFL-00000](#DP.CFL-00000)",
             "content": {
               "application/problem+json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
+                  "$ref": "#/components/schemas/ConflictProblemDetails"
                 }
               }
             }
@@ -585,11 +585,11 @@
             }
           },
           "409": {
-            "description": "Conflict occurred while processing the request.",
+            "description": "[DP.CFL-00000](#DP.CFL-00000)",
             "content": {
               "application/problem+json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
+                  "$ref": "#/components/schemas/ConflictProblemDetails"
                 }
               }
             }
@@ -727,11 +727,11 @@
             }
           },
           "409": {
-            "description": "Conflict occurred while processing the request.",
+            "description": "[DP.CFL-00000](#DP.CFL-00000)",
             "content": {
               "application/problem+json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
+                  "$ref": "#/components/schemas/ConflictProblemDetails"
                 }
               }
             }
@@ -998,11 +998,11 @@
             }
           },
           "409": {
-            "description": "Conflict occurred while processing the request.",
+            "description": "One of: \n- [DP.CFL-00000](#DP.CFL-00000)\n- [DP.CFL-00001](#DP.CFL-00001)",
             "content": {
               "application/problem+json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
+                  "$ref": "#/components/schemas/ConflictProblemDetails"
                 }
               }
             }
@@ -1512,11 +1512,11 @@
             }
           },
           "409": {
-            "description": "Conflict occurred while processing the request.",
+            "description": "[DP.CFL-00000](#DP.CFL-00000)",
             "content": {
               "application/problem+json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
+                  "$ref": "#/components/schemas/ConflictProblemDetails"
                 }
               }
             }
@@ -2017,11 +2017,11 @@
             }
           },
           "409": {
-            "description": "Dialog with IdempotentKey 01941821-ffca-73a1-9335-435a882be014 has already been created.",
+            "description": "One of: \n- [DP.CFL-00000](#DP.CFL-00000)\n- [DP.CFL-00001](#DP.CFL-00001)\n- [DP.CFL-00002](#DP.CFL-00002)",
             "content": {
               "application/problem+json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
+                  "$ref": "#/components/schemas/ConflictProblemDetails"
                 }
               }
             }
@@ -2417,11 +2417,11 @@
             }
           },
           "409": {
-            "description": "Conflict occurred while processing the request.",
+            "description": "One of: \n- [DP.CFL-00000](#DP.CFL-00000)\n- [DP.CFL-00001](#DP.CFL-00001)",
             "content": {
               "application/problem+json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
+                  "$ref": "#/components/schemas/ConflictProblemDetails"
                 }
               }
             }
@@ -2901,11 +2901,11 @@
             }
           },
           "409": {
-            "description": "Conflict occurred while processing the request.",
+            "description": "One of: \n- [DP.CFL-00000](#DP.CFL-00000)\n- [DP.CFL-00001](#DP.CFL-00001)",
             "content": {
               "application/problem+json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
+                  "$ref": "#/components/schemas/ConflictProblemDetails"
                 }
               }
             }
@@ -3039,11 +3039,11 @@
             }
           },
           "409": {
-            "description": "Conflict occurred while processing the request.",
+            "description": "[DP.CFL-00000](#DP.CFL-00000)",
             "content": {
               "application/problem+json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
+                  "$ref": "#/components/schemas/ConflictProblemDetails"
                 }
               }
             }
@@ -3320,11 +3320,11 @@
             }
           },
           "409": {
-            "description": "Conflict occurred while processing the request.",
+            "description": "[DP.CFL-00000](#DP.CFL-00000)",
             "content": {
               "application/problem+json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
+                  "$ref": "#/components/schemas/ConflictProblemDetails"
                 }
               }
             }
@@ -3441,11 +3441,11 @@
             }
           },
           "409": {
-            "description": "Conflict occurred while processing the request.",
+            "description": "[DP.CFL-00000](#DP.CFL-00000)",
             "content": {
               "application/problem+json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
+                  "$ref": "#/components/schemas/ConflictProblemDetails"
                 }
               }
             }
@@ -3561,11 +3561,11 @@
             }
           },
           "409": {
-            "description": "Conflict occurred while processing the request.",
+            "description": "[DP.CFL-00000](#DP.CFL-00000)",
             "content": {
               "application/problem+json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
+                  "$ref": "#/components/schemas/ConflictProblemDetails"
                 }
               }
             }
@@ -4128,11 +4128,11 @@
             }
           },
           "409": {
-            "description": "Conflict occurred while processing the request.",
+            "description": "[DP.CFL-00000](#DP.CFL-00000)",
             "content": {
               "application/problem+json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
+                  "$ref": "#/components/schemas/ConflictProblemDetails"
                 }
               }
             }
@@ -4265,11 +4265,11 @@
             }
           },
           "409": {
-            "description": "Conflict occurred while processing the request.",
+            "description": "[DP.CFL-00000](#DP.CFL-00000)",
             "content": {
               "application/problem+json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
+                  "$ref": "#/components/schemas/ConflictProblemDetails"
                 }
               }
             }
@@ -5846,6 +5846,84 @@
             "items": {
               "type": "string"
             }
+          }
+        }
+      },
+      "ConflictProblemDetails": {
+        "type": "object",
+        "additionalProperties": {
+          "nullable": true
+        },
+        "properties": {
+          "traceId": {
+            "type": "string",
+            "nullable": true
+          },
+          "statusDescription": {
+            "type": "string",
+            "nullable": true
+          },
+          "code": {
+            "type": "string",
+            "nullable": true
+          },
+          "validationErrors": {
+            "type": "array",
+            "nullable": true,
+            "items": {
+              "$ref": "#/components/schemas/ProblemDetails_Error"
+            }
+          },
+          "errors": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "type": {
+            "type": "string",
+            "nullable": true
+          },
+          "title": {
+            "type": "string",
+            "nullable": true
+          },
+          "status": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "detail": {
+            "type": "string",
+            "nullable": true
+          },
+          "instance": {
+            "type": "string",
+            "nullable": true
+          },
+          "conflicts": {
+            "type": "array",
+            "nullable": true,
+            "items": {
+              "$ref": "#/components/schemas/ProblemDetailsConflict"
+            }
+          }
+        }
+      },
+      "ProblemDetailsConflict": {
+        "type": "object",
+        "additionalProperties": {
+          "nullable": true
+        },
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
           }
         }
       },
