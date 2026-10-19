@@ -20,12 +20,12 @@ import { GetActiveConsents } from "../../../building-blocks/access-management-bf
 import { GetInstanceDelegationCheck } from "../../../building-blocks/access-management-bff/instance/index.js";
 import { GetInstanceDelegations } from "../../../building-blocks/access-management-bff/instance/index.js";
 import { CreateInstanceRights } from "../../../building-blocks/access-management-bff/instance/index.js";
-import { GetParty } from "../../../building-blocks/access-management-bff/lookup/index.js";
+import { GetPartyForAuthenticatedUser } from "../../../building-blocks/access-management-bff/lookup/index.js";
 import { GetResource } from "../../../building-blocks/access-management-bff/resource/index.js";
 import { GetRolePermissions } from "../../../building-blocks/access-management-bff/role/index.js";
 import { GetRightsMeta } from "../../../building-blocks/access-management-bff/single-right/index.js";
 import { GetPendingSystemUsers } from "../../../building-blocks/access-management-bff/system-user/index.js";
-import { GetActorList, GetActorListOld, GetIsAdmin, GetIsClientAdmin, GetIsCompanyProfileAdmin, GetIsInstanceAdmin, GetReportee, GetUserProfile } from "../../../building-blocks/access-management-bff/user/index.js";
+import { GetActorListOld, GetFavorites, GetIsAdmin, GetIsClientAdmin, GetIsCompanyProfileAdmin, GetIsInstanceAdmin, GetReportee, GetUserProfile } from "../../../building-blocks/access-management-bff/user/index.js";
 import { GetAllDialogsForPartyCheckForDialogId, GetAndVerifyDialogById } from "../../../building-blocks/dialogporten/graphql/index.js";
 import { CreateDialog } from "../../../building-blocks/dialogporten/serviceowner/index.js";
 import { getClients, getDialogportenOpts, getFromTo, getInstanceDelegationBody, getTokenOpts, SERVICE_OWNER_ORG_NO } from "./commons.js";
@@ -182,14 +182,14 @@ export default function (data) {
     // Open access management after creating the dialog.
     // Call every bff endpoint that the browser uses when navigating from arbeidsflate/del og gi tilgang
     group(group1Label, function () {
-        GetParty(lookupApiClient, from.partyUuid, getLookupPartyUserLabel);
+        GetPartyForAuthenticatedUser(lookupApiClient, getLookupPartyUserLabel);
         GetIsCompanyProfileAdmin(userApiClient, from.orgUuid, getIsCompanyProfileAdminLabel);
         GetReportee(userApiClient, from.partyUuid, getReporteeLabel);
         GetUserProfile(userApiClient, getProfileLabel);
         GetIsAdmin(userApiClient, from.orgUuid, getIsAdminLabel);
         GetIsClientAdmin(userApiClient, from.orgUuid, getIsClientAdminLabel);
         GetActorListOld(userApiClient, getActorListOldLabel);
-        GetActorList(userApiClient, getActorListFavoritesLabel);
+        GetFavorites(userApiClient, getActorListFavoritesLabel);
         GetRolePermissions(
             roleApiClient,
             new GetRolePermissionsQueryBuilder()
