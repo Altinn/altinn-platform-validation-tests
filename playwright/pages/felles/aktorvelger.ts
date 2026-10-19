@@ -51,9 +51,10 @@ export class AktorvelgerPom {
     /**
      * Tilgangsstyring åpner aktørlisten etter innlogging når brukeren kan representere flere
      * enn seg selv, og menyen er låst til noe er valgt. Venter til siden har avgjort om lista
-     * åpner seg, og velger i så fall brukeren selv.
+     * åpner seg, og velger `navn` der. Mangler `navn` i lista, som rett etter en ny fullmakt,
+     * går det via {@link ventPaOgVelgAktorFraHeader}.
      */
-    async velgSegSelvEtterInnlogging(navn: string) {
+    async velgAktorEtterInnlogging(navn: string) {
         const menyKlar = this.page
             .getByRole("banner")
             .getByRole("button", { name: /^(meny|menu)$/i })
@@ -61,8 +62,17 @@ export class AktorvelgerPom {
         await expect(this.dialog.or(menyKlar).first(), "Aktørlisten eller menyen er klar")
             .toBeVisible({ timeout: REDIRECT_TIMEOUT });
 
+        // Lista kan lukke seg igjen like etter at den har åpnet seg, og da blir menyen klar.
         if (await this.dialog.isVisible()) {
+            await this.sok(navn);
+            await expect(this.dialog.getByRole("menuitem").or(menyKlar).first(), "Aktørlisten eller menyen er klar")
+                .toBeVisible();
+        }
+
+        if ((await this.aktor(navn).isVisible()) || (await this.starPa(navn))) {
             await this.velgAktorFraHeader(navn);
+        } else {
+            await this.ventPaOgVelgAktorFraHeader(navn);
         }
     }
 
