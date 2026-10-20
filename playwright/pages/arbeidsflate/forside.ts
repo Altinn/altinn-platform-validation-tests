@@ -19,6 +19,7 @@ export class ArbeidsflateForsidePom {
     // Utkast-lenken i sidemenyen finnes bare på innboksen, og href-en er den
     // samme uansett språk.
     readonly utkastLink: Locator;
+    readonly sendtLink: Locator;
     readonly gaTilSkjemautfyllingLink: Locator;
 
     /**
@@ -37,6 +38,7 @@ export class ArbeidsflateForsidePom {
         readonly cookiebanner = new CookiebannerPom(page),
     ) {
         this.utkastLink = page.getByRole("complementary").locator("a[href=\"/drafts\"]");
+        this.sendtLink = page.getByRole("complementary").locator("a[href=\"/sent\"]");
         this.gaTilSkjemautfyllingLink = page.getByRole("link", { name: GA_TIL_SKJEMAUTFYLLING[sprak] });
     }
 
@@ -47,6 +49,10 @@ export class ArbeidsflateForsidePom {
 
     async apneUtkast() {
         await this.utkastLink.click();
+    }
+
+    async apneSendt() {
+        await this.sendtLink.click();
     }
 
     /**
