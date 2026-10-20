@@ -2,6 +2,8 @@ import { ActivityLogQueryBuilder } from "../../../../../clients/access-managemen
 import { getOptions } from "../../../../../helpers.js";
 import { PersonalTokenGenerator } from "../../../../../token-generator.js";
 import { EndUserBuildingBlocks } from "../../../../building-blocks/access-management/enduser/index.js";
+import { ActivityLogDomainChecks } from "../../../../domain-checks/access-management/enduser/activity-log.js";
+import { PaginationDomainChecks } from "../../../../domain-checks/common/pagination.js";
 import { getClients, useNextUser } from "./common.js";
 
 export { setup } from "./common.js";
@@ -16,7 +18,12 @@ export const options = getOptions([getActivityLogToLabel, getActivityLogFromLabe
 
 /**
  * Reads the first page of an organization's request activity log, both
- * directions, as the daglig leder does when opening the log in the portal.
+ * directions, as the daglig leder does when opening the log in the portal, and
+ * checks that every entry is valid and belongs to the organization on the side
+ * the direction asks for.
+ *
+ * Every test organization has received requests (To) and none has sent
+ * one (From), so only `To` is required to hold entries.
  *
  * @param {import("./common.js").ActivityLogSetupData} data Setup data.
  */
@@ -24,18 +31,29 @@ export default function (data) {
     const user = useNextUser(data);
     const client = getClients().request;
 
-    /** @type {Array<{direction: "To"|"From", label: {[key: string]: string}}>} */
+    /** @type {Array<{direction: "To"|"From", label: {[key: string]: string}, expectEntries: boolean}>} */
     const views = [
-        { direction: "To", label: getActivityLogToLabel },
-        { direction: "From", label: getActivityLogFromLabel },
+        { direction: "To", label: getActivityLogToLabel, expectEntries: true },
+        { direction: "From", label: getActivityLogFromLabel, expectEntries: false },
     ];
 
-    for (const { direction, label } of views) {
+    for (const { direction, label, expectEntries } of views) {
         const query = new ActivityLogQueryBuilder()
             .withParty(user.orgUuid)
             .withDirection(direction)
             .build();
 
-        EndUserBuildingBlocks.ActivityLog.GetActivityLog(client, query, label);
+        const log = EndUserBuildingBlocks.ActivityLog.GetActivityLog(client, query, label);
+        if (log === null) {
+            continue;
+        }
+
+        const operation = `GetActivityLog request ${direction}`;
+        PaginationDomainChecks.CheckPaginatedShape(log, operation);
+        if (expectEntries) {
+            PaginationDomainChecks.CheckPaginatedNotEmpty(log, operation);
+        }
+        ActivityLogDomainChecks.CheckEntriesValid(log, operation);
+        ActivityLogDomainChecks.CheckEntriesMatchDirection(log, user.orgUuid, direction, operation);
     }
 }

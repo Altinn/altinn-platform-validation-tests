@@ -27,7 +27,8 @@ const TAGS = {
 class ActivityLogClient {
     /**
      * @param {string} baseUrl Base URL, e.g. https://platform.at22.altinn.cloud
-     * @param {*} tokenGenerator Generates bearer tokens.
+     * @param {*} tokenGenerator Generates bearer tokens. May be null for a
+     * client that only reads `types` and `filter/fields`, which need no token.
      * @param {ActivityLogArea} area The area whose activity log to read.
      */
     constructor(baseUrl, tokenGenerator, area) {

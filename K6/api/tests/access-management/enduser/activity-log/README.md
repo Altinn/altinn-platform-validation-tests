@@ -10,8 +10,21 @@ under `/accessmanagement/api/v2/enduser/<area>/activitylog`:
 | --- | --- |
 | `GET /activitylog` | `get-<area>-activity-log.js`: reads the first page of an organization's log, direction `To` and `From` |
 | `GET /activitylog/filter/{field}` | `get-<area>-activity-log-filter-values.js`: lists the values of one filter field, a new field each iteration |
-| `GET /activitylog/types` | `get-activity-log-metadata.js` (all areas, no token) |
-| `GET /activitylog/filter/fields` | `get-activity-log-metadata.js` (all areas, no token) |
+| `GET /activitylog/types` | `get-activity-log-metadata.js` (all areas, no token or token generator credentials) |
+| `GET /activitylog/filter/fields` | `get-activity-log-metadata.js` (all areas, no token or token generator credentials) |
+
+## What is checked
+
+Besides status 200 and a parseable body (the building blocks), the tests check the content with
+[`domain-checks/access-management/enduser/activity-log.js`](../../../../domain-checks/access-management/enduser/activity-log.js)
+and [`domain-checks/common/pagination.js`](../../../../domain-checks/common/pagination.js):
+
+- **Log:** `data` is a list, every entry has `id`, `when` and a valid `type`, `subtype` and `trigger`,
+  and every entry belongs to the organization on the side the direction asks for (`toId` with `To`,
+  `fromId` with `From`). Where the test data guarantees entries (see below), the list must not be empty.
+- **Filter values:** `data` is a list and every value has an `id`.
+- **Filter fields:** each area offers exactly the fields it is expected to.
+- **Types:** each area lists at least one type, each with an `id` and a valid `type`.
 
 ## Test data
 
@@ -19,6 +32,20 @@ The tests reuse the "be om tilgang" users in
 [`testdata/access-management/enduser/request/<env>.csv`](../../../../../testdata/access-management/enduser/request/):
 each row is an organization (`orgUuid`) and its daglig leder (`pid`, `partyUuid`), who reads the
 organization's log with an `altinn:portal/enduser` token.
+
+What their logs hold, from a scan of every user in yt01 (198) and at22 (197) in October 2026:
+
+| Log | Has entries | Typical size |
+| --- | --- | --- |
+| `connections` `From` | all users | 10–40 entries |
+| `connections` `To` | about 80% | 0–1 entries |
+| `request` `To` | all users | 20–50 entries |
+| `request` `From` | none | empty |
+| `maskinporten` `To` and `From` | none | empty |
+
+So `connections` `From` and `request` `To` are required to hold entries, and the maskinporten test
+measures the empty answer. None of the logs spans more than one page, so the numbers are a best case;
+organizations with long logs would give a more realistic picture.
 
 ## Where it runs
 

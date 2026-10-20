@@ -43,6 +43,22 @@ export const getClients = lazy(function () {
 });
 
 /**
+ * Creates and caches one activity log client per area for the endpoints that
+ * need no token, `types` and `filter/fields`. Kept apart from
+ * {@link getClients} so reading them needs no token generator credentials.
+ *
+ * @returns {{connections: ActivityLogClient, request: ActivityLogClient, maskinporten: ActivityLogClient}}
+ * The clients, keyed by area.
+ */
+export const getMetadataClients = lazy(function () {
+    return {
+        connections: new ActivityLogClient(__ENV.BASE_URL, null, ActivityLogArea.CONNECTIONS),
+        request: new ActivityLogClient(__ENV.BASE_URL, null, ActivityLogArea.REQUEST),
+        maskinporten: new ActivityLogClient(__ENV.BASE_URL, null, ActivityLogArea.MASKINPORTEN),
+    };
+});
+
+/**
  * Builds personal-token options for a user. The activity log is read through
  * the same portal scope the Altinn UI uses.
  *
@@ -80,7 +96,7 @@ export function setup() {
 
     const users = fetchTestData(`access-management/enduser/request/${__ENV.ENVIRONMENT}.csv`);
 
-    const clients = getClients();
+    const clients = getMetadataClients();
     /** @type {{[area: string]: string[]}} */
     const filterFields = {};
     for (const area of Object.values(ActivityLogArea)) {

@@ -135,22 +135,17 @@ export const ActivityLogArea = {
 };
 
 /**
- * The fields the activity log can list filter values for, as returned by
- * `GET /activitylog/filter/fields`.
+ * The fields each area can list filter values for, as its
+ * `GET /activitylog/filter/fields` returns them. The Swagger lists all nine
+ * for every area, but `request` and `maskinporten` support fewer.
  *
- * @type {Array<ActivityLogFilterField>}
+ * @type {{[area in ActivityLogArea]: Array<ActivityLogFilterField>}}
  */
-export const ActivityLogFilterFields = [
-    "From",
-    "To",
-    "Via",
-    "By",
-    "Role",
-    "Package",
-    "Resource",
-    "Source",
-    "ActivityType",
-];
+export const ActivityLogFilterFieldsByArea = {
+    connections: ["From", "To", "Via", "By", "Role", "Package", "Resource", "Source", "ActivityType"],
+    request: ["From", "To", "By", "Package", "Resource", "Source", "ActivityType"],
+    maskinporten: ["From", "To", "By", "Resource", "Source", "ActivityType"],
+};
 
 export const ActivityLogDirection = undefined;
 export const ActivityLogFilterField = undefined;

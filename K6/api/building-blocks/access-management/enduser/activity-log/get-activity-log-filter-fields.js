@@ -2,7 +2,7 @@ import { check } from "k6";
 
 import { ActivityLogFilterField } from "../../../../../clients/access-management/enduser/activity-log/activity-log.types.js";
 import { ActivityLogClient } from "../../../../../clients/access-management/enduser/activity-log/index.js";
-import { withRetries } from "../../../common/retry.js";
+import { sentTraceparent, withRetries } from "../../../common/retry.js";
 
 /**
  * Retrieves the fields the activity log can be filtered on.
@@ -30,7 +30,8 @@ export function GetActivityLogFilterFields(
     });
 
     if (!succeed) {
-        console.log(res.status);
+        const traceparent = sentTraceparent(res);
+        console.log(`GetActivityLogFilterFields - status ${res.status}${traceparent ? `, traceparent ${traceparent}` : ""}`);
         console.log(res.body);
         return body;
     }

@@ -2,7 +2,7 @@ import { check } from "k6";
 
 import { ActivityLogDtoPaginatedResult, ActivityLogQuery } from "../../../../../clients/access-management/enduser/activity-log/activity-log.types.js";
 import { ActivityLogClient } from "../../../../../clients/access-management/enduser/activity-log/index.js";
-import { withRetries } from "../../../common/retry.js";
+import { sentTraceparent, withRetries } from "../../../common/retry.js";
 
 /**
  * Retrieves a page of the activity log of a party.
@@ -33,7 +33,8 @@ export function GetActivityLog(
     });
 
     if (!succeed) {
-        console.log(res.status);
+        const traceparent = sentTraceparent(res);
+        console.log(`GetActivityLog - status ${res.status}${traceparent ? `, traceparent ${traceparent}` : ""}`);
         console.log(res.body);
         return body;
     }
