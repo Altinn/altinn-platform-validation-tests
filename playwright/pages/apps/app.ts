@@ -126,7 +126,6 @@ export class AppPom {
     async assertKvittering({ partyId, guid }: Instans) {
         await expect(this.page, "Appen står på kvitteringen").toHaveURL(
             (url) => url.href.includes(`${INSTANS}${partyId}/${guid}${KVITTERING}`),
-            { timeout: 20_000 },
         );
         await expect(this.hovedinnhold, "Kvitteringen viser referansenummeret").toContainText(guid.split("-").at(-1)!);
     }
