@@ -8,4 +8,3 @@ test_definitions:
           type: smoke
           enabled: true
           config_file: ../conf.json
-      - environment: at23
