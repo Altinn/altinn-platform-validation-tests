@@ -49,6 +49,25 @@ const DELAY_SECONDS = 1;
 const MAX_DELAY_SECONDS = 8;
 
 /**
+ * The `traceparent` header the request was sent with, if any. It is only there
+ * when the run sets `TRACE_CALL`, and lets the failed request be found in the
+ * logs of the service it went to.
+ *
+ * @param {import("k6/http").RefinedResponse<"text">} res The response to the request.
+ * @returns {string|null} The header value, or null when the request had none.
+ */
+function sentTraceparent(res) {
+    const headers = res.request?.headers ?? {};
+    const key = Object.keys(headers).find((name) => name.toLowerCase() === "traceparent");
+    if (key === undefined) {
+        return null;
+    }
+
+    const value = headers[key];
+    return Array.isArray(value) ? value[0] : `${value}`;
+}
+
+/**
  * Sends a request and retries it while it fails transiently.
  *
  * Any response that is not in `TRANSIENT_STATUSES` is returned as it is, so the
@@ -76,10 +95,13 @@ export function withRetries(sendRequest, label) {
             MAX_DELAY_SECONDS,
         );
 
+        const traceparent = sentTraceparent(res);
+
         console.warn(
             `${label} - transient failure (status ${res.status}` +
                 `${res.error_code ? `, error_code ${res.error_code}` : ""}` +
-                `${res.error ? `, ${res.error}` : ""}). ` +
+                `${res.error ? `, ${res.error}` : ""}` +
+                `${traceparent ? `, traceparent ${traceparent}` : ""}). ` +
                 `Retrying in ${delay}s (retry ${retry} of ${RETRIES}).`,
         );
 

@@ -1,0 +1,59 @@
+# Runs on a schedule in yt01 and at22. Set enabled: false under yt01 to pause it there.
+namespace: access-management
+base_dir: K6/api/tests/access-management/enduser/activity-log
+test_definitions:
+  - test_file: get-activity-log-metadata.js
+    contexts:
+      - environment: yt01
+        test_type:
+          type: functional
+          enabled: true
+      - environment: at22
+
+  - test_file: get-connections-activity-log.js
+    contexts:
+      - environment: yt01
+        test_type:
+          type: functional
+          enabled: true
+      - environment: at22
+
+  - test_file: get-connections-activity-log-filter-values.js
+    contexts:
+      - environment: yt01
+        test_type:
+          type: functional
+          enabled: true
+      - environment: at22
+
+  - test_file: get-request-activity-log.js
+    contexts:
+      - environment: yt01
+        test_type:
+          type: functional
+          enabled: true
+      - environment: at22
+
+  - test_file: get-request-activity-log-filter-values.js
+    contexts:
+      - environment: yt01
+        test_type:
+          type: functional
+          enabled: true
+      - environment: at22
+
+  - test_file: get-maskinporten-activity-log.js
+    contexts:
+      - environment: yt01
+        test_type:
+          type: functional
+          enabled: true
+      - environment: at22
+
+  - test_file: get-maskinporten-activity-log-filter-values.js
+    contexts:
+      - environment: yt01
+        test_type:
+          type: functional
+          enabled: true
+      - environment: at22
