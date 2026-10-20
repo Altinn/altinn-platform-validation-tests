@@ -100,9 +100,8 @@ export class AppPom {
     }
 
     /**
-     * Slår opp `bruker` i personoppslaget, som er obligatorisk. Oppslaget går mot
-     * Folkeregisteret, og "Fjern" vises først når det har funnet personen. Navnefeltet
-     * står tomt, siden appen bare binder fødselsnummeret til datamodellen.
+     * Slår opp `bruker` i personoppslaget, som er obligatorisk. Appen slår opp i Altinn
+     * Register, og "Fjern" vises først når oppslaget har funnet personen.
      */
     async fyllUtPersonoppslag(bruker: TestUser) {
         const tekster = PERSONOPPSLAG[this.sprak];
