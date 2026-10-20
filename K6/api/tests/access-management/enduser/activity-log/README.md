@@ -26,9 +26,7 @@ The activity log is deployed to **at22** and **yt01** (at23 and tt02 answer 404)
 
 - `functional.yaml` and `smoke.yaml` run on a schedule in yt01 and at22. To pause yt01, for example
   while another team loads data there, set `enabled: false` under its context.
-- `breakpoint.yaml` points at yt01, like the other performance tests. Start a run from GitHub Actions with
-  **access-management - run ad-hoc k6 breakpoint test**: pick a `testId` (e.g.
-  `yt01-get-connections-activity-log-break`), the target VUs and how long to ramp up to them.
+- `breakpoint.yaml` points at yt01, like the other access-management breakpoint configs.
 - yt01 uses the users in `request/yt01.csv`; their tokens are accepted in yt01 already.
 
 ## Running locally

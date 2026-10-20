@@ -1,4 +1,3 @@
-# Run ad hoc with the "access-management - run ad-hoc k6 breakpoint test" workflow.
 namespace: access-management
 base_dir: K6/api/tests/access-management/enduser/activity-log
 test_definitions:
