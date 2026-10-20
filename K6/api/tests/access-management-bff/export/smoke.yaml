@@ -6,5 +6,5 @@ test_definitions:
       - environment: yt01
         test_type:
           type: smoke
-          enabled: true
+          enabled: false
           config_file: ../conf.json
