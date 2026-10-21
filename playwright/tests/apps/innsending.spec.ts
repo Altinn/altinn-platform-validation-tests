@@ -14,7 +14,7 @@ test.afterEach(async ({ api, testAppConfig, page }) => {
 });
 
 // Bruksmønster A, se #702.
-test("Bruker logger inn fra altinn.no, sender inn app via dyplenke og ser innsendingen i innboksen", { tag: ["@at23", "@tt02"] }, async ({
+test("Bruker logger inn fra altinn.no, sender inn app via dyplenke og ser innsendingen i innboksen", { tag: ["@at23", "@tt02", "@prod"] }, async ({
     innlogging,
     user,
     arbeidsflate,
