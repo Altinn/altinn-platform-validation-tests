@@ -5,7 +5,7 @@ import { InstansiationInstance } from "./apps.types.js";
 
 const TAGS = {
     PostSimplified: {
-        action: "post-simplified",
+        action: "create-instance",
     },
 };
 

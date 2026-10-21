@@ -4,7 +4,7 @@ import { requestParams } from "../common/request.js";
 
 const TAGS = {
     NextElement: {
-        action: "next-element",
+        action: "move-process-to-next-element",
     },
 };
 
