@@ -1,11 +1,11 @@
-import { check, fail, group } from "k6";
+import { fail, group } from "k6";
 
 import { InstancesClient, ProcessClient } from "../../../clients/apps/index.js";
 import { getItemFromList } from "../../../helpers.js";
 import { AltinnScopes } from "../../../scopes.js";
 import { AuthenticationBuildingBlocks } from "../../authentication-imports.js";
 import { NextElement, PostSimplified } from "../../building-blocks/apps/index.js";
-import { readClaims } from "../../domain-checks/common/jwt.js";
+import { AppProcessDomainChecks } from "../../domain-checks/apps/process.js";
 import { fetchSystemUserToken, getClients } from "../authentication/system-user-token/commons.js";
 
 export { setup, teardown } from "../authentication/system-user-token/commons.js";
@@ -38,13 +38,9 @@ export default async function (data) {
 
     const altinnToken = AuthenticationBuildingBlocks.ExchangeToken(clients.authenticationClient, "maskinporten", { token: systemUserToken });
 
-    console.log(`Maskinporten token: ${JSON.stringify(readClaims(systemUserToken), null, 2)}`);
-
     if (!altinnToken) {
         fail("cannot call the app: the system user token could not be exchanged for an Altinn token");
     }
-
-    console.log(`Altinn token: ${JSON.stringify(readClaims(altinnToken), null, 2)}`);
 
     const tokenGenerator = { getToken: () => altinnToken };
     const instancesClient = new InstancesClient(APPS_URL, tokenGenerator);
@@ -52,19 +48,16 @@ export default async function (data) {
 
     group("As a system user, I can submit an instance of an app", function () {
         const request = {
-            instanceOwner: { organisationNumber: arranged.customer.orgNo },
+            instanceOwner: { partyId: arranged.customer.orgPartyId },
             prefill: {
                 property1: "Sendt inn av systembruker",
                 property2: arranged.systemUserId,
             },
         };
 
-        console.log(`orgNo=${arranged.customer.orgNo} ${arranged.customer.role} fnr=${arranged.customer.userPid} systemUserId=${arranged.systemUserId}`);
-        console.log(`POST ${APPS_URL}/${ORG}/${APP}/instances/create ${JSON.stringify(request)}`);
+        console.log(`orgNo=${arranged.customer.orgNo} orgPartyId=${arranged.customer.orgPartyId} ${arranged.customer.role} fnr=${arranged.customer.userPid} systemUserId=${arranged.systemUserId}`);
 
         const instance = PostSimplified(instancesClient, ORG, APP, request);
-
-        console.log(`PostSimplified: ${JSON.stringify(instance, null, 2)}`);
 
         if (!instance?.id) {
             fail("cannot submit: the app did not create an instance");
@@ -75,10 +68,6 @@ export default async function (data) {
 
         const processState = NextElement(processClient, ORG, APP, instanceOwnerPartyId, instanceGuid);
 
-        console.log(`NextElement: ${JSON.stringify(processState, null, 2)}`);
-
-        check(processState, {
-            "the instance is submitted": (state) => Boolean(state?.ended),
-        });
+        AppProcessDomainChecks.CheckInstanceSubmitted(processState);
     });
 }
