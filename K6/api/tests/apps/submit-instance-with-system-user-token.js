@@ -5,6 +5,7 @@ import { getItemFromList } from "../../../helpers.js";
 import { AltinnScopes } from "../../../scopes.js";
 import { AuthenticationBuildingBlocks } from "../../authentication-imports.js";
 import { NextElement, PostSimplified } from "../../building-blocks/apps/index.js";
+import { readClaims } from "../../domain-checks/common/jwt.js";
 import { fetchSystemUserToken, getClients } from "../authentication/system-user-token/commons.js";
 
 export { setup, teardown } from "../authentication/system-user-token/commons.js";
@@ -37,9 +38,13 @@ export default async function (data) {
 
     const altinnToken = AuthenticationBuildingBlocks.ExchangeToken(clients.authenticationClient, "maskinporten", { token: systemUserToken });
 
+    console.log(`Maskinporten token: ${JSON.stringify(readClaims(systemUserToken), null, 2)}`);
+
     if (!altinnToken) {
         fail("cannot call the app: the system user token could not be exchanged for an Altinn token");
     }
+
+    console.log(`Altinn token: ${JSON.stringify(readClaims(altinnToken), null, 2)}`);
 
     const tokenGenerator = { getToken: () => altinnToken };
     const instancesClient = new InstancesClient(APPS_URL, tokenGenerator);
