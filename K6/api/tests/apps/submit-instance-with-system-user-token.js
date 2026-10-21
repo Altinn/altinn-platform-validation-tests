@@ -1,13 +1,13 @@
 import { check, fail, group } from "k6";
 
-import { DataClient, InstancesClient, ProcessClient } from "../../../../clients/apps/index.js";
-import { getItemFromList } from "../../../../helpers.js";
-import { AltinnScopes } from "../../../../scopes.js";
-import { AuthenticationBuildingBlocks } from "../../../authentication-imports.js";
-import { NextElement, PostSimplified, Put } from "../../../building-blocks/apps/index.js";
-import { fetchSystemUserToken, getClients } from "./commons.js";
+import { DataClient, InstancesClient, ProcessClient } from "../../../clients/apps/index.js";
+import { getItemFromList } from "../../../helpers.js";
+import { AltinnScopes } from "../../../scopes.js";
+import { AuthenticationBuildingBlocks } from "../../authentication-imports.js";
+import { NextElement, PostSimplified, Put } from "../../building-blocks/apps/index.js";
+import { fetchSystemUserToken, getClients } from "../authentication/system-user-token/commons.js";
 
-export { setup, teardown } from "./commons.js";
+export { setup, teardown } from "../authentication/system-user-token/commons.js";
 
 const randomize = (__ENV.RANDOMIZE ?? "true") === "true";
 
@@ -23,7 +23,7 @@ const APP = "brukermonster-test-app";
  * system user setup arranges has jordbruk on the customer, so it gets in on the
  * system user obligation alone.
  *
- * @param {ReturnType<typeof import("./commons.js").setup>} data The arranged system users from setup.
+ * @param {ReturnType<typeof import("../authentication/system-user-token/commons.js").setup>} data The arranged system users from setup.
  */
 export default async function (data) {
     // Empty outside tt02, where setup has nothing to arrange. See its comment.
