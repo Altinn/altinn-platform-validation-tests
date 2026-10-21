@@ -55,6 +55,7 @@ export default async function (data) {
         });
 
         console.log(`orgNo=${arranged.customer.orgNo} ${arranged.customer.role} fnr=${arranged.customer.userPid} systemUserId=${arranged.systemUserId} instance=${instance?.id}`);
+        console.log(`PostSimplified: ${JSON.stringify(instance, null, 2)}`);
 
         if (!instance?.id) {
             fail("cannot submit: the app did not create an instance");
@@ -64,6 +65,8 @@ export default async function (data) {
         const instanceGuid = instance.id.split("/")[1];
 
         const processState = NextElement(processClient, ORG, APP, instanceOwnerPartyId, instanceGuid);
+
+        console.log(`NextElement: ${JSON.stringify(processState, null, 2)}`);
 
         check(processState, {
             "the instance is submitted": (state) => Boolean(state?.ended),
