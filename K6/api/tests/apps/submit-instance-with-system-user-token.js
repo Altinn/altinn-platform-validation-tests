@@ -46,15 +46,19 @@ export default async function (data) {
     const processClient = new ProcessClient(APPS_URL, tokenGenerator);
 
     group("As a system user, I can submit an instance of an app", function () {
-        const instance = PostSimplified(instancesClient, ORG, APP, {
+        const request = {
             instanceOwner: { organisationNumber: arranged.customer.orgNo },
             prefill: {
                 property1: "Sendt inn av systembruker",
                 property2: arranged.systemUserId,
             },
-        });
+        };
 
-        console.log(`orgNo=${arranged.customer.orgNo} ${arranged.customer.role} fnr=${arranged.customer.userPid} systemUserId=${arranged.systemUserId} instance=${instance?.id}`);
+        console.log(`orgNo=${arranged.customer.orgNo} ${arranged.customer.role} fnr=${arranged.customer.userPid} systemUserId=${arranged.systemUserId}`);
+        console.log(`POST ${APPS_URL}/${ORG}/${APP}/instances/create ${JSON.stringify(request)}`);
+
+        const instance = PostSimplified(instancesClient, ORG, APP, request);
+
         console.log(`PostSimplified: ${JSON.stringify(instance, null, 2)}`);
 
         if (!instance?.id) {
