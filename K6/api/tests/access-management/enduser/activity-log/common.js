@@ -1,9 +1,8 @@
 import { fail } from "k6";
-import exec from "k6/execution";
 
 import { ActivityLogArea, ActivityLogClient } from "../../../../../clients/access-management/enduser/activity-log/index.js";
 import { PersonalTokenBuilder, PersonalTokenGenerator } from "../../../../../common-imports.js";
-import { fetchTestData, getItemFromList, getNumberOfVUs, lazy, requireEnv, segmentData } from "../../../../../helpers.js";
+import { fetchTestData, getItemFromList, lazy, requireEnv } from "../../../../../helpers.js";
 import { AltinnScopes, CreateScopeString } from "../../../../../scopes.js";
 import { EndUserBuildingBlocks } from "../../../../building-blocks/access-management/enduser/index.js";
 
@@ -18,10 +17,17 @@ import { EndUserBuildingBlocks } from "../../../../building-blocks/access-manage
 
 /**
  * @typedef {object} ActivityLogSetupData
- * @property {ActivityLogUser[][]} users Users, one slice per VU.
+ * @property {ActivityLogUser[]} users The users whose organizations' logs are read.
  * @property {{[area: string]: string[]}} filterFields The fields each area
  * can be filtered on, as its `filter/fields` endpoint lists them.
  */
+
+/**
+ * Environments where testdataGeneration/activity-log-data.js has filled the
+ * activity log of the organizations in activity-log/<env>.csv. Elsewhere the
+ * tests fall back to the "be om tilgang" users, whose logs are small.
+ */
+const FILLED_ENVIRONMENTS = ["yt01"];
 
 /**
  * Creates and caches one activity log client per area, sharing one
@@ -84,17 +90,23 @@ export function getTokenOpts(pid = null, partyUuid = null) {
 /**
  * k6 setup stage.
  *
- * Reuses the "be om tilgang" users: each row is an organization and its daglig
- * leder, who may read the organization's activity log. Also asks each area
- * which fields it can be filtered on, since that differs per area (e.g.
- * maskinporten has no `Package` filter).
+ * Each row is an organization and its daglig leder, who may read the
+ * organization's activity log: the organizations whose logs were filled where
+ * there are any (see {@link FILLED_ENVIRONMENTS}), the "be om tilgang" users
+ * elsewhere. Also asks each area which fields it can be filtered on, since that
+ * differs per area (e.g. maskinporten has no `Package` filter).
  *
- * @returns {ActivityLogSetupData} Users split per VU, and the filter fields per area.
+ * The users are not split per VU: the tests only read, so several VUs reading
+ * the same organization's log at once is fine, and a run can use more VUs than
+ * there are organizations.
+ *
+ * @returns {ActivityLogSetupData} The users, and the filter fields per area.
  */
 export function setup() {
     requireEnv(["ENVIRONMENT", "BASE_URL"]);
 
-    const users = fetchTestData(`access-management/enduser/request/${__ENV.ENVIRONMENT}.csv`);
+    const folder = FILLED_ENVIRONMENTS.includes(__ENV.ENVIRONMENT) ? "activity-log" : "request";
+    const users = fetchTestData(`access-management/enduser/${folder}/${__ENV.ENVIRONMENT}.csv`);
 
     const clients = getMetadataClients();
     /** @type {{[area: string]: string[]}} */
@@ -111,23 +123,19 @@ export function setup() {
     }
 
     return {
-        users: segmentData(users, getNumberOfVUs()),
+        users,
         filterFields,
     };
 }
 
 /**
- * Draws this iteration's user from the VU's slice and points the token
- * generator at them.
+ * Draws this iteration's user and points the token generator at them.
  *
  * @param {ActivityLogSetupData} data Setup data.
  * @returns {ActivityLogUser} The user to act as.
  */
 export function useNextUser(data) {
-    const user = getItemFromList(
-        data.users[exec.vu.idInTest - 1],
-        (__ENV.RANDOMIZE ?? "true") === "true",
-    );
+    const user = getItemFromList(data.users, (__ENV.RANDOMIZE ?? "true") === "true");
     getClients().tokenGenerator.setTokenGeneratorOptions(getTokenOpts(user.pid, user.partyUuid));
     return user;
 }

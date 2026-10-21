@@ -28,12 +28,20 @@ and [`domain-checks/common/pagination.js`](../../../../domain-checks/common/pagi
 
 ## Test data
 
-The tests reuse the "be om tilgang" users in
-[`testdata/access-management/enduser/request/<env>.csv`](../../../../../testdata/access-management/enduser/request/):
-each row is an organization (`orgUuid`) and its daglig leder (`pid`, `partyUuid`), who reads the
-organization's log with an `altinn:portal/enduser` token.
+Each row is an organization (`orgUuid`) and its daglig leder (`pid`, `partyUuid`), who reads the
+organization's log with an `altinn:portal/enduser` token. The tests only read, so the rows are not split
+per VU, and a run can use more VUs than there are rows.
 
-What their logs hold, from a scan of every user in yt01 (198) and at22 (197) in October 2026:
+**yt01** reads
+[`testdata/access-management/enduser/activity-log/yt01.csv`](../../../../../testdata/access-management/enduser/activity-log/yt01.csv):
+10 organizations whose logs were filled by
+[`testdataGeneration/activity-log-data.js`](testdataGeneration/activity-log-data.js) on 2026-10-21
+(10 organizations × 15 rounds). Each holds about 160–190 `connections` `From` entries (one about 1000),
+125–150 `request` `To` and 30 `maskinporten` `From`, so the first two span more than one page of 100.
+
+**Elsewhere** (at22) the tests read the "be om tilgang" users in
+[`testdata/access-management/enduser/request/<env>.csv`](../../../../../testdata/access-management/enduser/request/).
+What their logs held in a scan of every user in October 2026:
 
 | Log | Has entries | Typical size |
 | --- | --- | --- |
@@ -43,9 +51,24 @@ What their logs hold, from a scan of every user in yt01 (198) and at22 (197) in 
 | `request` `From` | none | empty |
 | `maskinporten` `To` and `From` | none | empty |
 
-So `connections` `From` and `request` `To` are required to hold entries, and the maskinporten test
-measures the empty answer. None of the logs spans more than one page, so the numbers are a best case;
-organizations with long logs would give a more realistic picture.
+So `connections` `From` and `request` `To` are required to hold entries in every environment.
+
+### Filling more logs
+
+[`testdataGeneration/activity-log-data.js`](testdataGeneration/activity-log-data.js) gives a set of
+organizations a round of events per iteration (roles, access packages, package requests that are
+approved, rejected and withdrawn, maskinporten suppliers) and removes everything it created, so only the
+log entries remain. It writes data, so agree with the team before running it, and start with
+`ORGS=1 ROUNDS=1`:
+
+```sh
+ENVIRONMENT=yt01 BASE_URL=https://platform.yt01.altinn.cloud ORGS=10 ROUNDS=15 \
+  k6 run K6/api/tests/access-management/enduser/activity-log/testdataGeneration/activity-log-data.js
+```
+
+The teardown prints the organizations as csv for `activity-log/<env>.csv`. It covers 11 of the 39
+activity types `GET …/activitylog/types` lists; resources, client delegations, instances and draft
+requests are not generated yet.
 
 ## Where it runs
 
@@ -71,13 +94,12 @@ k6 run K6/api/tests/access-management/enduser/activity-log/run-all.js
 # one test, 10 VUs for 5 minutes
 k6 run --vus 10 --duration 5m K6/api/tests/access-management/enduser/activity-log/get-connections-activity-log.js
 
-# breakpoint style: ramp up to 50 VUs over 10 minutes. BREAKPOINT_STAGE_TARGET must match the
-# target, since setup() splits the users into that many slices; without it every VU but the first
-# finds an empty slice and fails.
-BREAKPOINT_STAGE_TARGET=50 k6 run --stage 10m:50 K6/api/tests/access-management/enduser/activity-log/get-request-activity-log-filter-values.js
+# breakpoint style: ramp up to 50 VUs over 10 minutes
+k6 run --stage 10m:50 K6/api/tests/access-management/enduser/activity-log/get-request-activity-log-filter-values.js
 ```
 
-`RANDOMIZE=false` walks the users in order instead of picking them at random. `TRACE_CALL=true` adds a
+`RANDOMIZE=false` walks the users in order instead of picking them at random. Until the yt01 csv is on
+`main`, run `npm run serve` and set `USE_LOCAL_TEST_DATA=true` to read it from your checkout. `TRACE_CALL=true` adds a
 `traceparent` header so a slow request can be found in the service's logs.
 
 ## Known differences from the Swagger
