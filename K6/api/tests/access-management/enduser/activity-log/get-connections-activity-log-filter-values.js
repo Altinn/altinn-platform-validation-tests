@@ -1,7 +1,6 @@
 import { ActivityLogFilterField } from "../../../../../clients/access-management/enduser/activity-log/activity-log.types.js";
 import { ActivityLogQueryBuilder } from "../../../../../clients/access-management/enduser/activity-log/index.js";
 import { getOptions } from "../../../../../helpers.js";
-import { PersonalTokenGenerator } from "../../../../../token-generator.js";
 import { EndUserBuildingBlocks } from "../../../../building-blocks/access-management/enduser/index.js";
 import { ActivityLogDomainChecks } from "../../../../domain-checks/access-management/enduser/activity-log.js";
 import { PaginationDomainChecks } from "../../../../domain-checks/common/pagination.js";
@@ -11,10 +10,9 @@ export { setup } from "./common.js";
 
 // Labels for different actions
 const getFilterValuesLabel = { step: "Get connections activity log filter values" };
-const tokenGeneratorLabel = { token_generator: PersonalTokenGenerator.TAGS.getToken.token_generator };
 
 // get k6 options
-export const options = getOptions([getFilterValuesLabel, tokenGeneratorLabel]);
+export const options = getOptions([getFilterValuesLabel]);
 
 /**
  * Lists the values one field of an organization's connections activity log can be

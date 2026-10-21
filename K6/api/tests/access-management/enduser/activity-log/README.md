@@ -101,11 +101,3 @@ k6 run --stage 10m:50 K6/api/tests/access-management/enduser/activity-log/get-re
 `RANDOMIZE=false` walks the users in order instead of picking them at random. Until the yt01 csv is on
 `main`, run `npm run serve` and set `USE_LOCAL_TEST_DATA=true` to read it from your checkout. `TRACE_CALL=true` adds a
 `traceparent` header so a slow request can be found in the service's logs.
-
-## Known differences from the Swagger
-
-- The Swagger calls the query parameters `Party`, `Direction`, etc. The client sends them in camelCase
-  (`party`, `direction`), like the other enduser clients; the API accepts both.
-- `direction` is marked optional, but without it `request` answers 400 and the other areas 403.
-- The filter fields differ per area (`request` has no `Via`/`Role`, `maskinporten` has no
-  `Via`/`Role`/`Package`), so the filter-value tests read them from `filter/fields` in `setup()`.

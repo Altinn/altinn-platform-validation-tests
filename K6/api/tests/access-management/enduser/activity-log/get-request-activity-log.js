@@ -1,6 +1,5 @@
 import { ActivityLogQueryBuilder } from "../../../../../clients/access-management/enduser/activity-log/index.js";
 import { getOptions } from "../../../../../helpers.js";
-import { PersonalTokenGenerator } from "../../../../../token-generator.js";
 import { EndUserBuildingBlocks } from "../../../../building-blocks/access-management/enduser/index.js";
 import { ActivityLogDomainChecks } from "../../../../domain-checks/access-management/enduser/activity-log.js";
 import { PaginationDomainChecks } from "../../../../domain-checks/common/pagination.js";
@@ -11,10 +10,9 @@ export { setup } from "./common.js";
 // Labels for different actions
 const getActivityLogToLabel = { step: "Get request activity log to" };
 const getActivityLogFromLabel = { step: "Get request activity log from" };
-const tokenGeneratorLabel = { token_generator: PersonalTokenGenerator.TAGS.getToken.token_generator };
 
 // get k6 options
-export const options = getOptions([getActivityLogToLabel, getActivityLogFromLabel, tokenGeneratorLabel]);
+export const options = getOptions([getActivityLogToLabel, getActivityLogFromLabel]);
 
 /**
  * Reads the first page of an organization's request activity log, both
