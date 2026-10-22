@@ -66,6 +66,18 @@ export class ArbeidsflateForsidePom {
         }, `Instansen ${instans.guid} står i lista`).toPass({ timeout: DIALOGPORTEN_TIMEOUT, intervals: DIALOGPORTEN_INTERVALLER });
     }
 
+    /**
+     * Dialogen for `instans` står i lista innen 3 sekunder. Som `ventPaDialog`, men for når
+     * dialogen skal være der med en gang: lista lastes på nytt i tilfelle Dialogporten
+     * er litt etter, men uten den lange `DIALOGPORTEN_TIMEOUT`.
+     */
+    async assertDialog(instans: Instans) {
+        await expect(async () => {
+            await this.page.reload();
+            await expect(this.dialogLink(instans)).toBeVisible({ timeout: 1_000 });
+        }, `Instansen ${instans.guid} står i lista`).toPass({ timeout: 15_000, intervals: [1000] });
+    }
+
     async navigateTo() {
         await this.page.goto(this.url, { waitUntil: "commit" });
     }

@@ -46,6 +46,6 @@ test("Bruker logger inn fra altinn.no, sender inn app via dyplenke og ser innsen
     await test.step("Bruker går tilbake til innboksen og ser innsendingen under Sendt", async () => {
         await app.gaTilbakeTilInnboks();
         await arbeidsflate.apneSendt();
-        await arbeidsflate.ventPaDialog(opprettet);
+        await arbeidsflate.assertDialog(opprettet);
     });
 });
