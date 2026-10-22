@@ -28,7 +28,7 @@ test.afterEach(async ({ api, testAppConfig, page }) => {
     }
 });
 
-test("Bruker instansierer app og gir tilgang, med direktenavigasjon til appen", { tag: ["@at23", "@tt02", "@prod"] }, async ({
+test("Bruker instansierer app og gir tilgang, med direktenavigasjon til appen", { tag: ["@at23", "@tt02"] }, async ({
     page,
     innlogging,
     nySesjon,
@@ -95,7 +95,7 @@ test("Bruker instansierer app og gir tilgang, med direktenavigasjon til appen", 
 
 // Hele flyten via innboksen. Skrudd av fordi innboksen viser en ny fullmakt først etter rundt
 // 12 minutter, se #695.
-test.fixme("Bruker instansierer app", { tag: ["@at23", "@tt02", "@prod"] }, async ({
+test.fixme("Bruker instansierer app", { tag: ["@at23", "@tt02"] }, async ({
     page,
     innlogging,
     nySesjon,
