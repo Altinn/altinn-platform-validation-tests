@@ -21,9 +21,7 @@ test("Bruker logger inn fra altinn.no, sender inn app via dyplenke og ser innsen
     app,
 }) => {
     await test.step("Bruker åpner altinn.no, logger inn og lander i innboksen", async () => {
-        // await innlogging.loggInnViaArbeidsflate(user);
         await innlogging.loggInnFraDyplenke(app.url, user);
-        // await arbeidsflate.assertLoggedIn();
         await app.assertLoggedIn(user);
     });
 
