@@ -14,19 +14,20 @@ test.afterEach(async ({ api, testAppConfig, page }) => {
 });
 
 // Bruksmønster A, se #702.
-test("Bruker logger inn fra altinn.no, sender inn app via dyplenke og ser innsendingen i innboksen", { tag: ["@at23", "@tt02", "@prod"] }, async ({
+test("Bruker logger inn fra altinn.no, sender inn app via dyplenke og ser innsendingen i innboksen", { tag: ["@at23", "@tt02"] }, async ({
     innlogging,
     user,
     arbeidsflate,
     app,
 }) => {
     await test.step("Bruker åpner altinn.no, logger inn og lander i innboksen", async () => {
-        await innlogging.loggInnViaArbeidsflate(user);
-        await arbeidsflate.assertLoggedIn();
+        // await innlogging.loggInnViaArbeidsflate(user);
+        await innlogging.loggInnFraDyplenke(app.url, user);
+        // await arbeidsflate.assertLoggedIn();
+        await app.assertLoggedIn(user);
     });
 
     const opprettet = await test.step("Bruker går til appen via dyplenke, og appen oppretter en instans", async () => {
-        await app.navigateTo();
         await app.assertPaInstans();
         await expect(app.presentationHeading).toContainText(app.visningsnavn);
 

@@ -62,6 +62,7 @@ export class AppPom {
     readonly nesteButton: Locator;
     readonly sendInnButton: Locator;
     readonly header: Locator;
+    readonly id: string;
     readonly url: string;
     readonly tjenesteeier: string;
     readonly visningsnavn: string;
@@ -73,7 +74,8 @@ export class AppPom {
         private sprak: Sprak,
     ) {
         this.visningsnavn = testAppConfig.visningsnavn;
-        this.url = `${appsUrl}/${testAppConfig.id}/`;
+        this.id = testAppConfig.id;
+        this.url = `${appsUrl}/${this.id}/`;
         this.tjenesteeier = TTD[sprak];
         this.presentationHeading = page.getByTestId("presentation-heading");
         this.hovedinnhold = page.locator("#main-content");
@@ -149,7 +151,17 @@ export class AppPom {
 
     /** Appen har opprettet instansen og står på den. */
     async assertPaInstans() {
-        await expect(this.page, "Appen har opprettet instansen").toHaveURL((url) => url.href.includes(INSTANS), { timeout: 20_000 });
+        await expect(this.page, "Appen har opprettet instansen").toHaveURL((url) => url.href.includes(INSTANS));
+    }
+
+    /**
+     * `bruker` er innlogget i appen: appen er lastet, og headeren viser navnet til brukeren.
+     * En utlogget bruker sendes til innloggingen og kommer aldri hit.
+     */
+    async assertLoggedIn(bruker: TestUser) {
+        await expect(this.page, "Står i appen").toHaveURL((url) => url.href.includes(this.id));
+        await expect(this.presentationHeading, "Appen er lastet").toContainText(this.visningsnavn);
+        await expect(this.header, `Headeren viser ${bruker.name}`).toContainText(new RegExp(etternavnIAppen(bruker), "i"));
     }
 
     /** Headeren viser at `bruker` fyller ut på vegne av `aktor`: "<bruker> for <aktør>". */
