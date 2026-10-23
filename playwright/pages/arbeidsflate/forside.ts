@@ -2,6 +2,7 @@ import { expect, Locator, Page } from "@playwright/test";
 
 import { TestUser } from "../../config/environment";
 import { Sprak } from "../../config/sprak";
+import { Melding } from "../../helpers/meldinger";
 import { Instans } from "../apps/app";
 import { CookiebannerPom } from "../felles/cookiebanner";
 import { MenyPom } from "../felles/meny";
@@ -14,6 +15,24 @@ const GA_TIL_SKJEMAUTFYLLING: Record<Sprak, string> = {
     [Sprak.Nynorsk]: "Gå til skjemautfylling",
     [Sprak.Engelsk]: "Go to form completion",
 };
+// Fra altinn-correspondence (CreateDialogRequestMapper), som legger bekreftelsen på dialogen.
+const BEKREFT: Record<Sprak, string> = {
+    [Sprak.Bokmaal]: "Bekreft",
+    [Sprak.Nynorsk]: "Bekreft",
+    [Sprak.Engelsk]: "Confirm",
+};
+// Fra dialogporten-frontend (packages/frontend/src/i18n/resources).
+const AKTIVITETSLOGG: Record<Sprak, string> = {
+    [Sprak.Bokmaal]: "Aktivitetslogg",
+    [Sprak.Nynorsk]: "Aktivitetslogg",
+    [Sprak.Engelsk]: "Activity log",
+};
+// activity.status.correspondence_opened, uten "{actor}" foran.
+const APNET_MELDINGEN: Record<Sprak, string> = {
+    [Sprak.Bokmaal]: "åpnet meldingen.",
+    [Sprak.Nynorsk]: "opna meldinga.",
+    [Sprak.Engelsk]: "opened the message.",
+};
 
 export class ArbeidsflateForsidePom {
     // Utkast-lenken i sidemenyen finnes bare på innboksen, og href-en er den
@@ -22,12 +41,23 @@ export class ArbeidsflateForsidePom {
     readonly sendtLink: Locator;
     readonly gaTilSkjemautfyllingLink: Locator;
 
+    // Dialogsiden, /inbox/{dialogId}.
+    readonly dialog: Locator;
+    readonly bekreftButton: Locator;
+    readonly aktivitetsloggButton: Locator;
+    readonly aktivitetslogg: Locator;
+
     /**
      * Lenken til dialogen for `instans` i lista. Dialog-id-en er guid-en til instansen med et
      * nytt tidsstempel foran (ToVersion7 i altinn-dialogporten-adapter), så siste ledd er likt.
      */
     dialogLink({ guid }: Instans): Locator {
         return this.page.getByRole("main").locator(`a[href*="${guid.split("-").at(-1)}"]`);
+    }
+
+    /** Lenken til dialogen for `melding` i lista, funnet på den unike tittelen. */
+    meldingLink({ tittel }: Melding): Locator {
+        return this.page.getByRole("main").getByRole("link", { name: tittel });
     }
 
     constructor(
@@ -40,6 +70,10 @@ export class ArbeidsflateForsidePom {
         this.utkastLink = page.getByRole("complementary").locator("a[href=\"/drafts\"]");
         this.sendtLink = page.getByRole("complementary").locator("a[href=\"/sent\"]");
         this.gaTilSkjemautfyllingLink = page.getByRole("link", { name: GA_TIL_SKJEMAUTFYLLING[sprak] });
+        this.dialog = page.getByRole("main").getByRole("article");
+        this.bekreftButton = this.dialog.getByRole("button", { name: BEKREFT[sprak], exact: true });
+        this.aktivitetsloggButton = this.dialog.getByRole("button", { name: AKTIVITETSLOGG[sprak], exact: true });
+        this.aktivitetslogg = page.getByRole("dialog");
     }
 
     /** Åpner instansen i appen fra dialogsiden i innboksen. */
@@ -76,6 +110,48 @@ export class ArbeidsflateForsidePom {
             await this.page.reload();
             await expect(this.dialogLink(instans)).toBeVisible({ timeout: 1_000 });
         }, `Instansen ${instans.guid} står i lista`).toPass({ timeout: 15_000, intervals: [1000] });
+    }
+
+    /**
+     * Venter til `melding` står i lista. Correspondence publiserer meldingen og Dialogporten
+     * lager dialogen etter at den er sendt, så lista lastes på nytt til den er der. I at23 tok
+     * det rundt ett sekund.
+     */
+    async ventPaMelding(melding: Melding) {
+        await expect(async () => {
+            await this.page.reload();
+            await expect(this.meldingLink(melding)).toBeVisible({ timeout: 3_000 });
+        }, `Meldingen "${melding.tittel}" står i lista`).toPass({ timeout: 60_000, intervals: [2_000] });
+    }
+
+    async apneMelding(melding: Melding) {
+        await this.meldingLink(melding).click();
+    }
+
+    /**
+     * Dialogsiden viser `melding` med innholdet. Innholdet hentes fra Correspondence først når
+     * dialogen er åpnet (front channel embed), så det kan komme noen sekunder etter tittelen.
+     */
+    async assertViserMelding(melding: Melding) {
+        await expect(this.dialog.getByRole("heading", { level: 2 }).first(), "Dialogen for meldingen er åpnet").toHaveText(melding.tittel);
+        await expect(this.dialog, "Innholdet i meldingen er hentet fra Correspondence").toContainText(melding.tekst, { timeout: 20_000 });
+    }
+
+    async bekreftMelding() {
+        await this.bekreftButton.click();
+    }
+
+    /** "Bekreft" forsvinner når innboksen har tatt imot bekreftelsen. */
+    async assertMeldingBekreftet() {
+        await expect(this.bekreftButton, "Meldingen er bekreftet").toBeHidden();
+    }
+
+    /** Aktivitetsloggen på dialogsiden viser at `bruker` har åpnet meldingen. */
+    async assertMeldingApnetAv(bruker: TestUser) {
+        await this.aktivitetsloggButton.click();
+        await expect(this.aktivitetslogg, `${bruker.name} står som den som åpnet meldingen`).toContainText(
+            `${bruker.name} ${APNET_MELDINGEN[this.sprak]}`,
+        );
     }
 
     async navigateTo() {
