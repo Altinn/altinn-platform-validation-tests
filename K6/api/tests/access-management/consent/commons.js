@@ -57,7 +57,7 @@ export function getConsenteeOrgs(env) {
 }
 
 /**
- * A person that approves consents. Only the at22 file has userId and partyId so far.
+ * A person that approves consents.
  *
  * @typedef {object} ConsenterPerson
  * @property {string} ssn National identity number.
