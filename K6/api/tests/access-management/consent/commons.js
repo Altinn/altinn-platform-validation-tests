@@ -16,7 +16,7 @@ import { AltinnScopes, CreateScopeString } from "../../../../scopes.js";
  * Test data folder (one folder per use case, one file per environment):
  * K6/testdata/access-management/consent
  * - consentee-orgs/<env>.csv       (header: orgNo)
- * - consenter-persons/<env>.csv    (header: ssn,partyUuid)
+ * - consenter-persons/<env>.csv    (header: ssn,partyUuid,userId,partyId)
  * - lookup/<env>.csv               (header: Pid,Org,ConsentId)
  */
 
@@ -57,10 +57,20 @@ export function getConsenteeOrgs(env) {
 }
 
 /**
+ * A person that approves consents.
+ *
+ * @typedef {object} ConsenterPerson
+ * @property {string} ssn National identity number.
+ * @property {string} partyUuid
+ * @property {string} userId
+ * @property {string} partyId
+ */
+
+/**
  * The persons that approve the consents.
  *
  * @param {string} env - Environment, e.g. "yt01".
- * @returns {Array<{ssn: string, partyUuid: string}>} The consenter persons.
+ * @returns {Array<ConsenterPerson>} The consenter persons.
  */
 export function getConsenterPersons(env) {
     return fetchTestData(`access-management/consent/consenter-persons/${env}.csv`);
@@ -224,20 +234,23 @@ export function getEventsTokenOpts(orgNo = undefined) {
 /**
  * Token options for acting as the person giving a consent.
  *
- * Called without a party uuid to build the generator, and with one per iteration
+ * Called without a person to build the generator, and with one per iteration
  * to point it at the person that iteration drew.
  *
- * @param {string} [partyUuid] - The consenter, or undefined to leave the token without one.
+ * @param {ConsenterPerson} [person] - The consenter, or undefined to leave the token without one.
  * @returns Options to hand to setTokenGeneratorOptions.
  */
-export function getConsenterTokenOpts(partyUuid = undefined) {
+export function getConsenterTokenOpts(person = undefined) {
     const builder = new PersonalTokenBuilder()
         .withEnvironment(__ENV.ENVIRONMENT)
         .withTtl(3600)
         .withScopes(CreateScopeString([AltinnScopes.PORTAL.ENDUSER]));
 
-    if (partyUuid !== undefined) {
-        builder.withPartyUuid(partyUuid);
+    if (person !== undefined) {
+        builder
+            .withPartyUuid(person.partyUuid)
+            .withUserId(person.userId)
+            .withPartyId(person.partyId);
     }
 
     return builder.build();
