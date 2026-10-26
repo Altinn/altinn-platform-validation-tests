@@ -1,40 +1,86 @@
 /*
 Copyright © 2026 NAME HERE <EMAIL ADDRESS>
-
 */
 package cmd
 
 import (
-	"fmt"
+	"strings"
 
 	"github.com/spf13/cobra"
 )
 
-// facilitatorOrgnrCmd represents the facilitatorOrgnr command
-var facilitatorOrgnrCmd = &cobra.Command{
-	Use:   "facilitatorOrgnr",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
+type facilitatorOrgnrOptions struct {
+	rolle      string
+	antall     int
+	dagl       bool
+	register   bool
+	jsonOutput bool
+	env        string
+}
 
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
-	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("facilitatorOrgnr called")
-	},
+func newFacilitatorOrgnrCmd() *cobra.Command {
+	opts := &facilitatorOrgnrOptions{}
+
+	cmd := &cobra.Command{
+		Use:   "facilitator-orgnr",
+		Short: "Hent facilitator-orgnr fra Tenor i bulk",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			return runFacilitatorOrgnr(opts)
+		},
+	}
+
+	cmd.Flags().StringVarP(
+		&opts.rolle,
+		"rolle",
+		"r",
+		"revisor",
+		strings.Join(roller, " | "),
+	)
+
+	cmd.Flags().IntVarP(
+		&opts.antall,
+		"antall",
+		"n",
+		10,
+		"Antall unike facilitator-orgnr som hentes",
+	)
+
+	cmd.Flags().BoolVar(
+		&opts.dagl,
+		"dagl",
+		false,
+		"Slå også opp daglig leder for hver facilitator",
+	)
+
+	cmd.Flags().BoolVar(
+		&opts.register,
+		"register",
+		false,
+		"Berik med Altinn-ID-er fra Register (impliserer JSON)",
+	)
+
+	cmd.Flags().BoolVar(
+		&opts.jsonOutput,
+		"json",
+		false,
+		"Skriv ut som JSON",
+	)
+
+	cmd.Flags().StringVar(
+		&opts.env,
+		"env",
+		"tt02",
+		"Miljø for env-fil: tt02, at22, at23",
+	)
+
+	return cmd
+}
+
+func runFacilitatorOrgnr(opts *facilitatorOrgnrOptions) error {
+	// Implement the actual logic here.
+	return nil
 }
 
 func init() {
-	tenorCmd.AddCommand(facilitatorOrgnrCmd)
-
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// facilitatorOrgnrCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// facilitatorOrgnrCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	tenorCmd.AddCommand(newFacilitatorOrgnrCmd())
 }

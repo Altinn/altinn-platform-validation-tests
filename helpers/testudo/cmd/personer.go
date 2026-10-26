@@ -1,40 +1,65 @@
 /*
 Copyright © 2026 NAME HERE <EMAIL ADDRESS>
-
 */
 package cmd
 
 import (
-	"fmt"
-
 	"github.com/spf13/cobra"
 )
 
-// personerCmd represents the personer command
-var personerCmd = &cobra.Command{
-	Use:   "personer",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
+type personerOptions struct {
+	antall     int
+	kql        string
+	navn       bool
+	register   bool
+	jsonOutput bool
+	env        string
+}
 
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
-	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("personer called")
-	},
+func newPersonerCmd() *cobra.Command {
+	opts := &personerOptions{}
+
+	cmd := &cobra.Command{
+		Use:   "personer",
+		Short: "Hent testpersoner fra Tenor",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			return runPersoner(opts)
+		},
+	}
+
+	cmd.Flags().IntVarP(
+		&opts.antall, "antall", "n", 1,
+		"Antall personer som hentes",
+	)
+	cmd.Flags().StringVar(
+		&opts.kql, "kql", "",
+		"Egendefinert KQL (default: bosatt + myndig)",
+	)
+	cmd.Flags().BoolVar(
+		&opts.navn, "navn", false,
+		"Skriv ut navn (fornavn etternavn) ved siden av fnr",
+	)
+	cmd.Flags().BoolVar(
+		&opts.register, "register", false,
+		"Berik med Altinn-ID-er fra Register (impliserer JSON)",
+	)
+	cmd.Flags().BoolVar(
+		&opts.jsonOutput, "json", false,
+		"Skriv ut full kildedata som JSON",
+	)
+	cmd.Flags().StringVar(
+		&opts.env, "env", "tt02",
+		"Miljø for env-fil: tt02, at22, at23",
+	)
+
+	return cmd
+}
+
+func runPersoner(opts *personerOptions) error {
+	// Implement the actual logic here.
+	return nil
 }
 
 func init() {
-	tenorCmd.AddCommand(personerCmd)
-
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// personerCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// personerCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	tenorCmd.AddCommand(newPersonerCmd())
 }

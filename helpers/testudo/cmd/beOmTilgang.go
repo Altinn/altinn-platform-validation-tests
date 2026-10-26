@@ -1,40 +1,52 @@
 /*
 Copyright © 2026 NAME HERE <EMAIL ADDRESS>
-
 */
 package cmd
 
 import (
-	"fmt"
-
 	"github.com/spf13/cobra"
 )
 
-// beOmTilgangCmd represents the beOmTilgang command
-var beOmTilgangCmd = &cobra.Command{
-	Use:   "beOmTilgang",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
+type beOmTilgangOptions struct {
+	antall int
+	ut     string
+	env    string
+}
 
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
-	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("beOmTilgang called")
-	},
+func newBeOmTilgangCmd() *cobra.Command {
+	opts := &beOmTilgangOptions{}
+
+	cmd := &cobra.Command{
+		Use:   "be-om-tilgang",
+		Short: "Hent virksomheter fra Tenor og skriv resultatet til JSON",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			return runBeOmTilgang(opts)
+		},
+	}
+
+	cmd.Flags().IntVarP(
+		&opts.antall, "antall", "n", 200,
+		"Antall virksomheter i output",
+	)
+
+	cmd.Flags().StringVar(
+		&opts.ut, "ut", defaultOutput,
+		"Fil JSON-resultatet skrives til",
+	)
+
+	cmd.Flags().StringVar(
+		&opts.env, "env", "tt02",
+		"Miljø for env-fil: tt02, at22, at23",
+	)
+
+	return cmd
+}
+
+func runBeOmTilgang(opts *beOmTilgangOptions) error {
+	// Implement the actual logic here.
+	return nil
 }
 
 func init() {
-	tenorCmd.AddCommand(beOmTilgangCmd)
-
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// beOmTilgangCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// beOmTilgangCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	tenorCmd.AddCommand(newBeOmTilgangCmd())
 }

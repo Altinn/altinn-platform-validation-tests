@@ -1,32 +1,66 @@
 /*
 Copyright © 2026 NAME HERE <EMAIL ADDRESS>
-
 */
 package cmd
 
 import (
-	"fmt"
-
 	"github.com/spf13/cobra"
 )
 
-// virksomheterCmd represents the virksomheter command
-var virksomheterCmd = &cobra.Command{
-	Use:   "virksomheter",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
+type virksomheterOptions struct {
+	antall     int
+	kql        string
+	register   bool
+	jsonOutput bool
+	env        string
+}
 
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
-	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("virksomheter called")
-	},
+func newVirksomheterCmd() *cobra.Command {
+	opts := &virksomheterOptions{}
+
+	cmd := &cobra.Command{
+		Use:   "virksomheter",
+		Short: "Hent virksomheter fra Tenor i bulk",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			if opts.register {
+				opts.jsonOutput = true
+			}
+
+			return runVirksomheter(opts)
+		},
+	}
+
+	cmd.Flags().IntVarP(
+		&opts.antall, "antall", "n", 10,
+		"Antall virksomheter som hentes",
+	)
+	cmd.Flags().StringVar(
+		&opts.kql, "kql", "organisasjonsform.kode:AS",
+		"Egendefinert KQL",
+	)
+	cmd.Flags().BoolVar(
+		&opts.register, "register", false,
+		"Berik med Altinn-ID-er fra Register (impliserer JSON)",
+	)
+	cmd.Flags().BoolVar(
+		&opts.jsonOutput, "json", false,
+		"Skriv ut som JSON",
+	)
+	cmd.Flags().StringVar(
+		&opts.env, "env", "tt02",
+		"Miljø for env-fil: tt02, at22, at23",
+	)
+
+	return cmd
+}
+
+func runVirksomheter(opts *virksomheterOptions) error {
+	// Implement the actual logic here.
+	return nil
 }
 
 func init() {
-	tenorCmd.AddCommand(virksomheterCmd)
+	tenorCmd.AddCommand(newVirksomheterCmd())
 
 	// Here you will define your flags and configuration settings.
 

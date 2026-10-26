@@ -1,40 +1,77 @@
 /*
 Copyright © 2026 NAME HERE <EMAIL ADDRESS>
-
 */
 package cmd
 
 import (
-	"fmt"
+	"strings"
 
 	"github.com/spf13/cobra"
 )
 
-// pakkeholdereCmd represents the pakkeholdere command
-var pakkeholdereCmd = &cobra.Command{
-	Use:   "pakkeholdere",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
+type pakkeholdereOptions struct {
+	miljo      string
+	antall     int
+	org        string
+	pakke      string
+	jsonOutput bool
+}
 
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
-	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("pakkeholdere called")
-	},
+func newPakkeholdereCmd() *cobra.Command {
+	opts := &pakkeholdereOptions{}
+
+	cmd := &cobra.Command{
+		Use:   "pakkeholdere",
+		Short: "Bygg en virksomhet der mange brukere har samme tilgangspakke (altinn-auth#829)",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			return runPakkeholdere(opts)
+		},
+	}
+
+	cmd.Flags().StringVar(
+		&opts.miljo,
+		"env",
+		"at23",
+		strings.Join(miljoer, " | "),
+	)
+
+	cmd.Flags().IntVarP(
+		&opts.antall,
+		"antall",
+		"n",
+		10,
+		"Antall brukere som skal ha hovedpakken",
+	)
+
+	cmd.Flags().StringVar(
+		&opts.org,
+		"org",
+		"",
+		"Bruk denne virksomheten i stedet for å finne en ny",
+	)
+
+	cmd.Flags().StringVar(
+		&opts.pakke,
+		"pakke",
+		"",
+		"Gi bare denne pakken, til samtlige brukere, i stedet for trappa i FORDELING. Tar kort navn eller full urn.",
+	)
+
+	cmd.Flags().BoolVar(
+		&opts.jsonOutput,
+		"json",
+		false,
+		"Skriv ut resultatet som JSON",
+	)
+
+	return cmd
+}
+
+func runPakkeholdere(opts *pakkeholdereOptions) error {
+	// Implement the actual logic here.
+	return nil
 }
 
 func init() {
-	tenorCmd.AddCommand(pakkeholdereCmd)
-
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// pakkeholdereCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// pakkeholdereCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	tenorCmd.AddCommand(newPakkeholdereCmd())
 }
