@@ -64,7 +64,7 @@ export default function (data) {
 
     group(groupLabel, function () {
         // Steg 1: Virksomhet B legger til Bruker A som connection (Bs token).
-        tokenGenerator.setTokenGeneratorOptions(getEnduserOpts(b.pid, b.partyUuid));
+        tokenGenerator.setTokenGeneratorOptions(getEnduserOpts(b));
         CreateConnection(
             connectionsApiClient,
             new CreateConnectionQueryBuilder()
@@ -75,7 +75,7 @@ export default function (data) {
         );
 
         // Steg 2: Bruker A ber om tilgangspakken for Virksomhet B (As token).
-        tokenGenerator.setTokenGeneratorOptions(getEnduserOpts(a.pid, a.partyUuid));
+        tokenGenerator.setTokenGeneratorOptions(getEnduserOpts(a));
         const request = CreatePackageRequest(
             requestApiClient,
             a.partyUuid,
@@ -85,7 +85,7 @@ export default function (data) {
         );
 
         // Steg 3: Bruker B lister mottatte forespørsler og godkjenner den nye
-        tokenGenerator.setTokenGeneratorOptions(getEnduserOpts(b.pid, b.partyUuid));
+        tokenGenerator.setTokenGeneratorOptions(getEnduserOpts(b));
         const received = GetReceivedRequests(
             requestApiClient,
             new ReceivedRequestsQueryBuilder()
