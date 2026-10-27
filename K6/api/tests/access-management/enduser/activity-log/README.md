@@ -9,7 +9,8 @@ under `/accessmanagement/api/v2/enduser/<area>/activitylog`:
 | Endpoint | Test |
 | --- | --- |
 | `GET /activitylog` | `get-<area>-activity-log-to.js` and `get-<area>-activity-log-from.js`: read the first page of an organization's log in one direction |
-| `GET /activitylog/filter/{field}` | `get-<area>-activity-log-filter-values.js`: lists the values of one filter field, a new field each iteration |
+| `GET /activitylog` with `typeId`, `after` and `before` | `get-<area>-activity-log-filtered.js`: reads the log filtered on one activity type and the last 90 days, a new type each iteration |
+| `GET /activitylog/filter/{field}`, with and without `term` | `get-<area>-activity-log-filter-values.js`: lists the values of one filter field, then searches them with `term`, a new field each iteration |
 | `GET /activitylog/types` | `get-<area>-activity-log-metadata.js` (no token or token generator credentials) |
 | `GET /activitylog/filter/fields` | `get-<area>-activity-log-metadata.js` (no token or token generator credentials) |
 
@@ -22,11 +23,18 @@ and [`domain-checks/common/pagination.js`](../../../../domain-checks/common/pagi
 - **Log:** `data` is a list, every entry has `id`, `when` and a valid `type`, `subtype` and `trigger`,
   and every entry belongs to the organization on the side the direction asks for (`toId` with `To`,
   `fromId` with `From`). Where the test data guarantees entries (see below), the list must not be empty.
-- **Filter values:** `data` is a list and every value has an `id`.
+- **Filtered log:** as for the log, and every entry is of the filtered type (a type without a status
+  covers its entries in any status) and inside the `after`/`before` window.
+- **Filter values:** `data` is a list and every value has an `id`. A `term` search only returns values
+  whose name contains the term, ignoring case, and returns the value the term was taken from.
 - **Filter fields:** each area offers exactly the fields it is expected to.
 - **Types:** each area lists at least one type, each with an `id` and a valid `type`.
 
 ## Test data
+
+The filtered and filter-value tests read the direction the test data holds entries in: `From` for
+`connections` and `maskinporten`, `To` for `request`. Reading the other direction would measure an empty
+log. The filtered tests pick among the activity types the generated data holds.
 
 Each row is an organization (`orgUuid`) and its daglig leder (`pid`, `partyUuid`), who reads the
 organization's log with an `altinn:portal/enduser` token. The tests only read, so the rows are not split

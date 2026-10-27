@@ -1,5 +1,6 @@
 import { fail } from "k6";
 
+import { ActivityTypeDto } from "../../../../../clients/access-management/enduser/activity-log/activity-log.types.js";
 import { ActivityLogArea, ActivityLogClient } from "../../../../../clients/access-management/enduser/activity-log/index.js";
 import { PersonalTokenBuilder, PersonalTokenGenerator } from "../../../../../common-imports.js";
 import { fetchTestData, getItemFromList, lazy, requireEnv } from "../../../../../helpers.js";
@@ -20,6 +21,15 @@ import { EndUserBuildingBlocks } from "../../../../building-blocks/access-manage
  * @property {ActivityLogUser[]} users The users whose organizations' logs are read.
  * @property {{[area: string]: string[]}} filterFields The fields each area
  * can be filtered on, as its `filter/fields` endpoint lists them.
+ * @property {{[area: string]: ActivityTypeDto[]}} types The activity types
+ * each area can hold, as its `types` endpoint lists them.
+ */
+
+/**
+ * An activity type, told apart by what its entries carry: `[type, subtype,
+ * trigger, status]`.
+ *
+ * @typedef {[string, string|null, string, string|null]} ActivityTypeKey
  */
 
 /**
@@ -94,13 +104,14 @@ export function getTokenOpts(pid = null, partyUuid = null) {
  * organization's activity log: the organizations whose logs were filled where
  * there are any (see {@link FILLED_ENVIRONMENTS}), the "be om tilgang" users
  * elsewhere. Also asks each area which fields it can be filtered on, since that
- * differs per area (e.g. maskinporten has no `Package` filter).
+ * differs per area (e.g. maskinporten has no `Package` filter), and which
+ * activity types it holds, whose ids the tests filter on.
  *
  * The users are not split per VU: the tests only read, so several VUs reading
  * the same organization's log at once is fine, and a run can use more VUs than
  * there are organizations.
  *
- * @returns {ActivityLogSetupData} The users, and the filter fields per area.
+ * @returns {ActivityLogSetupData} The users, and the filter fields and types per area.
  */
 export function setup() {
     requireEnv(["ENVIRONMENT", "BASE_URL"]);
@@ -111,7 +122,14 @@ export function setup() {
     const clients = getMetadataClients();
     /** @type {{[area: string]: string[]}} */
     const filterFields = {};
+    /** @type {{[area: string]: ActivityTypeDto[]}} */
+    const types = {};
     for (const area of Object.values(ActivityLogArea)) {
+        types[area] = EndUserBuildingBlocks.ActivityLog.GetActivityLogTypes(
+            clients[area],
+            { action: "fetch-activity-log-types" },
+        ) ?? [];
+
         filterFields[area] = EndUserBuildingBlocks.ActivityLog.GetActivityLogFilterFields(
             clients[area],
             { action: "fetch-activity-log-filter-fields" },
@@ -125,6 +143,7 @@ export function setup() {
     return {
         users,
         filterFields,
+        types,
     };
 }
 
@@ -138,4 +157,31 @@ export function useNextUser(data) {
     const user = getItemFromList(data.users, (__ENV.RANDOMIZE ?? "true") === "true");
     getClients().tokenGenerator.setTokenGeneratorOptions(getTokenOpts(user.pid, user.partyUuid));
     return user;
+}
+
+/**
+ * Picks the activity types of an area that match the given keys, so a test
+ * can filter on the types its test data holds rather than on all of them,
+ * most of which would come back empty.
+ *
+ * @param {ActivityTypeDto[]} types The area's types, from setup.
+ * @param {ActivityTypeKey[]} keys The types to pick.
+ * @returns {ActivityTypeDto[]} The matching types.
+ */
+export function pickTypes(types, keys) {
+    return types.filter((type) => keys.some(([kind, subtype, trigger, status]) =>
+        type.type === kind && type.subtype === subtype && type.trigger === trigger && type.status === status));
+}
+
+/**
+ * The window the filtered tests read: the last 90 days, as the portal's period
+ * filter would ask for it.
+ *
+ * @returns {{after: string, before: string}} Start and end, ISO date-time.
+ */
+export function lastNinetyDays() {
+    const before = new Date();
+    const after = new Date(before.getTime() - 90 * 24 * 60 * 60 * 1000);
+
+    return { after: after.toISOString(), before: before.toISOString() };
 }

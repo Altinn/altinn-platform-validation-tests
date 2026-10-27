@@ -46,6 +46,18 @@ class ActivityLogQueryBuilder {
     }
 
     /**
+     * Optional filter on activity types, by the ids `GET /activitylog/types`
+     * lists. Several ids match an entry of any of them.
+     *
+     * @param {Array<string>} typeId Activity type UUIDs.
+     * @returns {ActivityLogQueryBuilder} This builder, for chaining.
+     */
+    withTypeId(typeId) {
+        this.query.typeId = typeId;
+        return this;
+    }
+
+    /**
      * Optional filter on who performed the activity.
      *
      * @param {Array<string>} by Party UUIDs.

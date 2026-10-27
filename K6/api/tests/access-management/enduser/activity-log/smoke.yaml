@@ -50,6 +50,14 @@ test_definitions:
           enabled: true
       - environment: at22
 
+  - test_file: get-connections-activity-log-filtered.js
+    contexts:
+      - environment: yt01
+        test_type:
+          type: smoke
+          enabled: true
+      - environment: at22
+
   - test_file: get-request-activity-log-to.js
     contexts:
       - environment: yt01
@@ -74,6 +82,14 @@ test_definitions:
           enabled: true
       - environment: at22
 
+  - test_file: get-request-activity-log-filtered.js
+    contexts:
+      - environment: yt01
+        test_type:
+          type: smoke
+          enabled: true
+      - environment: at22
+
   - test_file: get-maskinporten-activity-log-to.js
     contexts:
       - environment: yt01
@@ -91,6 +107,14 @@ test_definitions:
       - environment: at22
 
   - test_file: get-maskinporten-activity-log-filter-values.js
+    contexts:
+      - environment: yt01
+        test_type:
+          type: smoke
+          enabled: true
+      - environment: at22
+
+  - test_file: get-maskinporten-activity-log-filtered.js
     contexts:
       - environment: yt01
         test_type:

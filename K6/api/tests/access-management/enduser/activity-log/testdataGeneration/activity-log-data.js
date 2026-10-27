@@ -68,8 +68,9 @@ import { getTokenOpts } from "../common.js";
 const ORGS = __ENV.ORGS ? parseInt(__ENV.ORGS) : 10;
 const ROUNDS = __ENV.ROUNDS ? parseInt(__ENV.ROUNDS) : 15;
 
-// This writes data, so it only runs in the test environments.
-const ALLOWED_ENVIRONMENTS = ["at22", "at23", "yt01"];
+// This writes data, so it only runs in the test environments. tt02 is shared
+// with service owners, so agree with the team before running it there.
+const ALLOWED_ENVIRONMENTS = ["at22", "at23", "tt02", "yt01"];
 
 const labels = {
     addPerson: { step: "1. Add partner person" },
@@ -135,7 +136,7 @@ const getClients = lazy(function () {
  * filled, and the partners, who are added, delegated to and request access.
  * Keeping the two apart means no VU's partner is another VU's target.
  *
- * @returns {{targets: User[], partners: User[], packages: string[]}} The plan.
+ * @returns {{targets: User[], partners: User[], packages: string[], hasActivityLog: boolean}} The plan.
  */
 export function setup() {
     if (!ALLOWED_ENVIRONMENTS.includes(__ENV.ENVIRONMENT)) {
@@ -151,10 +152,19 @@ export function setup() {
         fail(`Need at least 4 assignable access packages, got ${packages.length}`);
     }
 
+    // Where the activity log is not deployed yet the events are still written,
+    // but there is no log to count them in at the end.
+    const hasActivityLog = new ActivityLogClient(__ENV.BASE_URL, null, ActivityLogArea.CONNECTIONS)
+        .GetActivityLogTypes({ action: "probe-activity-log" }).status === 200;
+    if (!hasActivityLog) {
+        console.warn(`The activity log is not deployed in ${__ENV.ENVIRONMENT}; the events are written, but not counted`);
+    }
+
     return {
         targets: users.slice(0, ORGS),
         partners: users.slice(ORGS),
         packages,
+        hasActivityLog,
     };
 }
 
@@ -170,7 +180,7 @@ function actAs(user) {
 /**
  * One round of events for this VU's target organization.
  *
- * @param {{targets: User[], partners: User[], packages: string[]}} data The plan from setup.
+ * @param {{targets: User[], partners: User[], packages: string[], hasActivityLog: boolean}} data The plan from setup.
  */
 export default function (data) {
     const clients = getClients();
@@ -293,7 +303,7 @@ export default function (data) {
         }
     });
 
-    if (round === ROUNDS - 1) {
+    if (round === ROUNDS - 1 && data.hasActivityLog) {
         logActivityLogSize(target);
     }
 }

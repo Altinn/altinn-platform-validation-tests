@@ -1,6 +1,6 @@
 import { check } from "k6";
 
-import { ActivityLogArea, ActivityLogDirection, ActivityLogDtoPaginatedResult, ActivityLogFilterFieldsByArea, ActivityLogFilterValueDtoPaginatedResult, ActivityTypeDto } from "../../../../clients/access-management/enduser/activity-log/activity-log.types.js";
+import { ActivityLogArea, ActivityLogDirection, ActivityLogDto, ActivityLogDtoPaginatedResult, ActivityLogFilterFieldsByArea, ActivityLogFilterValueDtoPaginatedResult, ActivityTypeDto } from "../../../../clients/access-management/enduser/activity-log/activity-log.types.js";
 
 const TYPES = ["Assignment", "Delegation", "Request"];
 const SUBTYPES = ["Package", "Resource", "Instance"];
@@ -128,10 +128,107 @@ function CheckActivityTypes(types, area) {
     return success;
 }
 
+/**
+ * Checks that every entry is of one of the activity types the log was filtered
+ * on with `typeId`. A type without a status matches its entries in any status:
+ * "Forespørsel om tilgangspakke oppdatert" covers approved, rejected and
+ * withdrawn alike.
+ *
+ * @param {ActivityLogDtoPaginatedResult|null} log - The page of the activity log.
+ * @param {Array<ActivityTypeDto>} types - The types the log was filtered on.
+ * @param {string} operation - Name of the call being checked, used in the check name.
+ * @returns {boolean} True if every entry is of one of the types, false otherwise.
+ */
+function CheckEntriesMatchTypes(log, types, operation) {
+    /**
+     * @param {ActivityLogDto} entry The entry to check.
+     * @param {ActivityTypeDto} type The type to check it against.
+     * @returns {boolean} True if the entry is of the type.
+     */
+    const matches = (entry, type) =>
+        entry.type === type.type &&
+        entry.subtype === type.subtype &&
+        entry.trigger === type.trigger &&
+        (type.status === null || entry.status === type.status);
+    const others = (log?.data ?? []).filter((entry) => !types.some((type) => matches(entry, type)));
+
+    const success = check(log, {
+        [`CheckEntriesMatchTypes - ${operation} only lists entries of the filtered types`]: () =>
+            others.length === 0,
+    });
+
+    if (!success) {
+        console.error(`CheckEntriesMatchTypes - ${operation} expected ${JSON.stringify(types.map((type) => type.name))}, got: ${JSON.stringify(others.slice(0, 3))}`);
+    }
+
+    return success;
+}
+
+/**
+ * Checks that every entry happened inside the window the log was filtered on,
+ * from `after` (inclusive) to `before` (exclusive).
+ *
+ * @param {ActivityLogDtoPaginatedResult|null} log - The page of the activity log.
+ * @param {string} after - Start of the window, ISO date-time.
+ * @param {string} before - End of the window, ISO date-time.
+ * @param {string} operation - Name of the call being checked, used in the check name.
+ * @returns {boolean} True if every entry is inside the window, false otherwise.
+ */
+function CheckEntriesWithinWindow(log, after, before, operation) {
+    const from = Date.parse(after);
+    const to = Date.parse(before);
+    const outside = (log?.data ?? []).filter((entry) => {
+        const when = Date.parse(entry?.when);
+        return !(when >= from && when < to);
+    });
+
+    const success = check(log, {
+        [`CheckEntriesWithinWindow - ${operation} only lists entries between after and before`]: () =>
+            outside.length === 0,
+    });
+
+    if (!success) {
+        console.error(`CheckEntriesWithinWindow - ${operation} expected ${after} - ${before}, got: ${JSON.stringify(outside.slice(0, 3).map((entry) => entry?.when))}`);
+    }
+
+    return success;
+}
+
+/**
+ * Checks that every filter value a `term` search returned has the term in its
+ * name, ignoring case, and that the value the term was taken from is among them.
+ *
+ * @param {ActivityLogFilterValueDtoPaginatedResult|null} values - The filter values the search returned.
+ * @param {string} term - The term searched for.
+ * @param {string} expectedId - Id of the value the term was taken from.
+ * @param {string} operation - Name of the call being checked, used in the check name.
+ * @returns {boolean} True if the search returned what it should, false otherwise.
+ */
+function CheckFilterValuesMatchTerm(values, term, expectedId, operation) {
+    const data = values?.data ?? [];
+    const withoutTerm = data.filter((value) => !(value?.name ?? "").toLowerCase().includes(term.toLowerCase()));
+
+    const success = check(values, {
+        [`CheckFilterValuesMatchTerm - ${operation} only lists values containing the term`]: () =>
+            withoutTerm.length === 0,
+        [`CheckFilterValuesMatchTerm - ${operation} lists the value the term was taken from`]: () =>
+            data.some((value) => value?.id === expectedId),
+    });
+
+    if (!success) {
+        console.error(`CheckFilterValuesMatchTerm - ${operation} term "${term}", expected id ${expectedId}, got: ${JSON.stringify(data.slice(0, 5))}`);
+    }
+
+    return success;
+}
+
 export const ActivityLogDomainChecks = {
     CheckActivityTypes,
     CheckEntriesMatchDirection,
+    CheckEntriesMatchTypes,
     CheckEntriesValid,
+    CheckEntriesWithinWindow,
     CheckFilterFields,
     CheckFilterValuesHaveIds,
+    CheckFilterValuesMatchTerm,
 };

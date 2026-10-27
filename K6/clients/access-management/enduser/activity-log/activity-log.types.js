@@ -153,6 +153,7 @@ export const ActivityLogFilterValueOrder = undefined;
 export const ActivityLogType = undefined;
 export const ActivityLogQuery = undefined;
 export const ActivityLogFilterValuesQuery = undefined;
+export const ActivityLogDto = undefined;
 export const ActivityLogDtoPaginatedResult = undefined;
 export const ActivityLogFilterValueDtoPaginatedResult = undefined;
 export const ActivityTypeDto = undefined;
