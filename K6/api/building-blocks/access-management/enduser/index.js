@@ -1,3 +1,7 @@
+import { GetActivityLog } from "./activity-log/get-activity-log.js";
+import { GetActivityLogFilterFields } from "./activity-log/get-activity-log-filter-fields.js";
+import { GetActivityLogFilterValues } from "./activity-log/get-activity-log-filter-values.js";
+import { GetActivityLogTypes } from "./activity-log/get-activity-log-types.js";
 import { CreateAccessPackage } from "./connections/create-access-package.js";
 import { CreateConnection } from "./connections/create-connection.js";
 import { CreateInstanceRights } from "./connections/create-instance-rights.js";
@@ -23,6 +27,12 @@ import { UpdateInstanceRights } from "./connections/update-instance-rights.js";
 import { UpdateResourceRights } from "./connections/update-resource-rights.js";
 
 export const EndUserBuildingBlocks = {
+    ActivityLog: {
+        GetActivityLog,
+        GetActivityLogFilterFields,
+        GetActivityLogFilterValues,
+        GetActivityLogTypes,
+    },
     Connections: {
         CreateAccessPackage,
         CreateConnection,
