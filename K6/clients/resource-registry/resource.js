@@ -96,9 +96,6 @@ class ResourceClient {
                 endpoint: `${this.FULL_PATH}/resourcelist`,
                 action: TAGS.ResourceGetResourceList.action,
                 labels,
-                // The endpoint is public, so the client may be built without a
-                // token generator.
-                token: this.tokenGenerator?.getToken() || null,
             }),
         );
     }
@@ -117,9 +114,6 @@ class ResourceClient {
                 endpoint: `${this.FULL_PATH}/export`,
                 action: TAGS.ResourceExport.action,
                 labels,
-                // The endpoint is public, so the client may be built without a
-                // token generator.
-                token: this.tokenGenerator?.getToken() || null,
                 accept: "application/xml+rdf",
             }),
         );
