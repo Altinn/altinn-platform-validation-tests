@@ -10,8 +10,8 @@ under `/accessmanagement/api/v2/enduser/<area>/activitylog`:
 | --- | --- |
 | `GET /activitylog` | `get-<area>-activity-log.js`: reads the first page of an organization's log, direction `To` and `From` |
 | `GET /activitylog/filter/{field}` | `get-<area>-activity-log-filter-values.js`: lists the values of one filter field, a new field each iteration |
-| `GET /activitylog/types` | `get-activity-log-metadata.js` (all areas, no token or token generator credentials) |
-| `GET /activitylog/filter/fields` | `get-activity-log-metadata.js` (all areas, no token or token generator credentials) |
+| `GET /activitylog/types` | `get-<area>-activity-log-metadata.js` (no token or token generator credentials) |
+| `GET /activitylog/filter/fields` | `get-<area>-activity-log-metadata.js` (no token or token generator credentials) |
 
 ## What is checked
 

@@ -2,7 +2,23 @@
 namespace: access-management
 base_dir: K6/api/tests/access-management/enduser/activity-log
 test_definitions:
-  - test_file: get-activity-log-metadata.js
+  - test_file: get-connections-activity-log-metadata.js
+    contexts:
+      - environment: yt01
+        test_type:
+          type: smoke
+          enabled: true
+      - environment: at22
+
+  - test_file: get-request-activity-log-metadata.js
+    contexts:
+      - environment: yt01
+        test_type:
+          type: smoke
+          enabled: true
+      - environment: at22
+
+  - test_file: get-maskinporten-activity-log-metadata.js
     contexts:
       - environment: yt01
         test_type:
