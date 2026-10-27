@@ -28,7 +28,7 @@ test.afterEach(async ({ api, testAppConfig, page }) => {
     }
 });
 
-test("Bruker instansierer app og gir tilgang, med direktenavigasjon til appen", { tag: ["@at23", "@tt02"] }, async ({
+test("Bruker instansierer app og gir tilgang, med direktenavigasjon til appen", { tag: ["@at23", "@tt02", "@prod"] }, async ({
     page,
     innlogging,
     nySesjon,
