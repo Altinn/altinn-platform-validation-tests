@@ -37,7 +37,7 @@ import { EndUserBuildingBlocks } from "../../../../building-blocks/access-manage
  * activity log of the organizations in activity-log/<env>.csv. Elsewhere the
  * tests fall back to the "be om tilgang" users, whose logs are small.
  */
-const FILLED_ENVIRONMENTS = ["yt01"];
+const FILLED_ENVIRONMENTS = ["at22", "at23", "yt01"];
 
 /**
  * Creates and caches one activity log client per area, sharing one

@@ -1,4 +1,4 @@
-# Runs on a schedule in yt01 and at22. Set enabled: false under yt01 to pause it there.
+# Runs on a schedule in yt01, at22 and at23. Set enabled: false under yt01 to pause it there.
 namespace: access-management
 base_dir: K6/api/tests/access-management/enduser/activity-log
 test_definitions:
@@ -9,6 +9,7 @@ test_definitions:
           type: functional
           enabled: true
       - environment: at22
+      - environment: at23
 
   - test_file: get-request-activity-log-metadata.js
     contexts:
@@ -17,6 +18,7 @@ test_definitions:
           type: functional
           enabled: true
       - environment: at22
+      - environment: at23
 
   - test_file: get-maskinporten-activity-log-metadata.js
     contexts:
@@ -25,6 +27,7 @@ test_definitions:
           type: functional
           enabled: true
       - environment: at22
+      - environment: at23
 
   - test_file: get-connections-activity-log-to.js
     contexts:
@@ -33,6 +36,7 @@ test_definitions:
           type: functional
           enabled: true
       - environment: at22
+      - environment: at23
 
   - test_file: get-connections-activity-log-from.js
     contexts:
@@ -41,6 +45,7 @@ test_definitions:
           type: functional
           enabled: true
       - environment: at22
+      - environment: at23
 
   - test_file: get-connections-activity-log-filter-values.js
     contexts:
@@ -49,6 +54,7 @@ test_definitions:
           type: functional
           enabled: true
       - environment: at22
+      - environment: at23
 
   - test_file: get-connections-activity-log-filtered.js
     contexts:
@@ -57,6 +63,7 @@ test_definitions:
           type: functional
           enabled: true
       - environment: at22
+      - environment: at23
 
   - test_file: get-request-activity-log-to.js
     contexts:
@@ -65,6 +72,7 @@ test_definitions:
           type: functional
           enabled: true
       - environment: at22
+      - environment: at23
 
   - test_file: get-request-activity-log-from.js
     contexts:
@@ -73,6 +81,7 @@ test_definitions:
           type: functional
           enabled: true
       - environment: at22
+      - environment: at23
 
   - test_file: get-request-activity-log-filter-values.js
     contexts:
@@ -81,6 +90,7 @@ test_definitions:
           type: functional
           enabled: true
       - environment: at22
+      - environment: at23
 
   - test_file: get-request-activity-log-filtered.js
     contexts:
@@ -89,6 +99,7 @@ test_definitions:
           type: functional
           enabled: true
       - environment: at22
+      - environment: at23
 
   - test_file: get-maskinporten-activity-log-to.js
     contexts:
@@ -97,6 +108,7 @@ test_definitions:
           type: functional
           enabled: true
       - environment: at22
+      - environment: at23
 
   - test_file: get-maskinporten-activity-log-from.js
     contexts:
@@ -105,6 +117,7 @@ test_definitions:
           type: functional
           enabled: true
       - environment: at22
+      - environment: at23
 
   - test_file: get-maskinporten-activity-log-filter-values.js
     contexts:
@@ -113,6 +126,7 @@ test_definitions:
           type: functional
           enabled: true
       - environment: at22
+      - environment: at23
 
   - test_file: get-maskinporten-activity-log-filtered.js
     contexts:
@@ -121,3 +135,4 @@ test_definitions:
           type: functional
           enabled: true
       - environment: at22
+      - environment: at23
