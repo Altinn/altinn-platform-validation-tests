@@ -6,8 +6,10 @@ package cmd
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/spf13/cobra"
+	"github.com/subosito/gotenv"
 )
 
 // tenorCmd represents the tenor command
@@ -25,8 +27,44 @@ to quickly create a Cobra application.`,
 	},
 }
 
+// frontendEnvFil er .env-filen i altinn-access-management-frontend, som
+// inntil videre er der Maskinporten-nøklene ligger. Stien er relativ til
+// helpers/testudo, med repoene ved siden av hverandre.
+const frontendEnvFil = "../../../altinn-access-management-frontend/playwright/config/.env"
+
+var envFil string
+
+// nyTenorKlient lager en Tenor-klient med Maskinporten-token, med
+// MASKINPORTEN_CLIENT_ID og MASKINPORTEN_JWK fra envFil. Variabler som er satt
+// i miljøet går foran filen.
+func nyTenorKlient() (*TenorClient, error) {
+	fil, err := gotenv.Read(envFil)
+	if err != nil {
+		return nil, fmt.Errorf("les env-fil %s: %w", envFil, err)
+	}
+	cfg, err := MaskinportenConfigFra(func(k string) string {
+		if v, ok := os.LookupEnv(k); ok {
+			return v
+		}
+		return fil[k]
+	})
+	if err != nil {
+		return nil, err
+	}
+	mp, err := NewMaskinportenClient(cfg, tenorScope)
+	if err != nil {
+		return nil, err
+	}
+	return NewTenorClient(mp), nil
+}
+
 func init() {
 	rootCmd.AddCommand(tenorCmd)
+
+	tenorCmd.PersistentFlags().StringVar(
+		&envFil, "env-fil", frontendEnvFil,
+		"Env-fil med MASKINPORTEN_CLIENT_ID og MASKINPORTEN_JWK",
+	)
 
 	// Here you will define your flags and configuration settings.
 
