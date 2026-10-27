@@ -8,7 +8,7 @@ under `/accessmanagement/api/v2/enduser/<area>/activitylog`:
 
 | Endpoint | Test |
 | --- | --- |
-| `GET /activitylog` | `get-<area>-activity-log.js`: reads the first page of an organization's log, direction `To` and `From` |
+| `GET /activitylog` | `get-<area>-activity-log-to.js` and `get-<area>-activity-log-from.js`: read the first page of an organization's log in one direction |
 | `GET /activitylog/filter/{field}` | `get-<area>-activity-log-filter-values.js`: lists the values of one filter field, a new field each iteration |
 | `GET /activitylog/types` | `get-<area>-activity-log-metadata.js` (no token or token generator credentials) |
 | `GET /activitylog/filter/fields` | `get-<area>-activity-log-metadata.js` (no token or token generator credentials) |
@@ -92,7 +92,7 @@ export BASE_URL=https://platform.at22.altinn.cloud
 k6 run K6/api/tests/access-management/enduser/activity-log/run-all.js
 
 # one test, 10 VUs for 5 minutes
-k6 run --vus 10 --duration 5m K6/api/tests/access-management/enduser/activity-log/get-connections-activity-log.js
+k6 run --vus 10 --duration 5m K6/api/tests/access-management/enduser/activity-log/get-connections-activity-log-from.js
 
 # breakpoint style: ramp up to 50 VUs over 10 minutes
 k6 run --stage 10m:50 K6/api/tests/access-management/enduser/activity-log/get-request-activity-log-filter-values.js

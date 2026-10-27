@@ -26,7 +26,15 @@ test_definitions:
           enabled: true
       - environment: at22
 
-  - test_file: get-connections-activity-log.js
+  - test_file: get-connections-activity-log-to.js
+    contexts:
+      - environment: yt01
+        test_type:
+          type: functional
+          enabled: true
+      - environment: at22
+
+  - test_file: get-connections-activity-log-from.js
     contexts:
       - environment: yt01
         test_type:
@@ -42,7 +50,15 @@ test_definitions:
           enabled: true
       - environment: at22
 
-  - test_file: get-request-activity-log.js
+  - test_file: get-request-activity-log-to.js
+    contexts:
+      - environment: yt01
+        test_type:
+          type: functional
+          enabled: true
+      - environment: at22
+
+  - test_file: get-request-activity-log-from.js
     contexts:
       - environment: yt01
         test_type:
@@ -58,7 +74,15 @@ test_definitions:
           enabled: true
       - environment: at22
 
-  - test_file: get-maskinporten-activity-log.js
+  - test_file: get-maskinporten-activity-log-to.js
+    contexts:
+      - environment: yt01
+        test_type:
+          type: functional
+          enabled: true
+      - environment: at22
+
+  - test_file: get-maskinporten-activity-log-from.js
     contexts:
       - environment: yt01
         test_type:

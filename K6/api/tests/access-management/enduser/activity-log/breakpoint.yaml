@@ -1,7 +1,17 @@
 namespace: access-management
 base_dir: K6/api/tests/access-management/enduser/activity-log
 test_definitions:
-  - test_file: get-connections-activity-log.js
+  - test_file: get-connections-activity-log-to.js
+    contexts:
+      - environment: yt01
+        test_run:
+          env:
+            - name: BREAKPOINT_STAGE_DURATION
+              value: "10m"
+            - name: BREAKPOINT_STAGE_TARGET
+              value: 100
+
+  - test_file: get-connections-activity-log-from.js
     contexts:
       - environment: yt01
         test_run:
@@ -21,7 +31,17 @@ test_definitions:
             - name: BREAKPOINT_STAGE_TARGET
               value: 100
 
-  - test_file: get-request-activity-log.js
+  - test_file: get-request-activity-log-to.js
+    contexts:
+      - environment: yt01
+        test_run:
+          env:
+            - name: BREAKPOINT_STAGE_DURATION
+              value: "10m"
+            - name: BREAKPOINT_STAGE_TARGET
+              value: 100
+
+  - test_file: get-request-activity-log-from.js
     contexts:
       - environment: yt01
         test_run:
@@ -41,7 +61,17 @@ test_definitions:
             - name: BREAKPOINT_STAGE_TARGET
               value: 100
 
-  - test_file: get-maskinporten-activity-log.js
+  - test_file: get-maskinporten-activity-log-to.js
+    contexts:
+      - environment: yt01
+        test_run:
+          env:
+            - name: BREAKPOINT_STAGE_DURATION
+              value: "10m"
+            - name: BREAKPOINT_STAGE_TARGET
+              value: 100
+
+  - test_file: get-maskinporten-activity-log-from.js
     contexts:
       - environment: yt01
         test_run:
