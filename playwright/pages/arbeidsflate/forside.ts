@@ -166,7 +166,7 @@ export class ArbeidsflateForsidePom {
         await expect(async () => {
             await this.page.reload();
             await this.aktivitetsloggButton.click();
-            await expect(this.aktivitetslogg).toContainText(tekst, { timeout: 1_000 });
+            await expect(this.aktivitetslogg).toContainText(tekst, { ignoreCase: true, timeout: 1_000 });
         }, `Aktivitetsloggen viser "${tekst}"`).toPass({ timeout: 15_000, intervals: [2_000] });
     }
 
