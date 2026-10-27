@@ -35,6 +35,10 @@ function subjectStatements(rdf, iri) {
 }
 
 /**
+ * Escapes only backslash and quote. A value with a line break or a tab is
+ * written as \n, \t or a """ literal, and would fail the check even though the
+ * export is right. No stored contact point has one today.
+ *
  * @param {string} value - The literal value.
  * @returns {string} The value as a Turtle string literal.
  */
@@ -44,7 +48,9 @@ function turtleLiteral(value) {
 
 /**
  * The contact page the way the registry writes it: an absolute http(s) URL,
- * normalised like .NET does, or null when it is not one.
+ * normalised mostly like .NET does, or null when it is not one. The URL here
+ * follows the browser standard, which differs from .NET on percent-escaping and
+ * international domain names.
  *
  * @param {string|null} contactPage - The stored contact page.
  * @returns {string|null} The IRI, or null when the export skips it.
@@ -101,13 +107,22 @@ function expectedContactPointStatements(contactPoint) {
  * @returns {boolean} True if every contact point is exported as stored, false otherwise.
  */
 function CheckContactPointsExported(rdf, resources, operation) {
+    if (rdf === null || resources === null) {
+        check(rdf, {
+            "CheckContactPointsExported - Every stored contact point is exported as a cv:ContactPoint": () => false,
+        });
+        console.error(`CheckContactPointsExported - nothing to compare, ${rdf === null ? "the export" : "the resource list"} did not come back`);
+
+        return false;
+    }
+
     /** @type {Array<string>} */
     const wrong = [];
     let compared = 0;
 
     for (const resource of resources ?? []) {
         const serviceIri = `${SERVICE_IRI_BASE}${resource.identifier}`;
-        const service = subjectStatements(rdf ?? "", serviceIri);
+        const service = subjectStatements(rdf, serviceIri);
 
         if (service === null) {
             continue;
@@ -120,7 +135,7 @@ function CheckContactPointsExported(rdf, resources, operation) {
 
             const contactPointIri = `${serviceIri}/contactpoint/${index}`;
             const expected = expectedContactPointStatements(contactPoint);
-            const exported = subjectStatements(/** @type {string} */ (rdf), contactPointIri);
+            const exported = subjectStatements(rdf, contactPointIri);
             const linked = service.includes(`<${contactPointIri}>`);
 
             if (expected.length === 0) {

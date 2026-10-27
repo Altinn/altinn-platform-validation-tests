@@ -31,7 +31,9 @@ export default function () {
     const resourceClient = getResourceClient();
 
     const rdf = ResourceExport(resourceClient);
-    const resources = ResourceGetResourceList(resourceClient);
+    // The export also holds migrated apps, such as app_nav_a2-4596-1 in at22,
+    // and the list leaves them out unless asked for.
+    const resources = ResourceGetResourceList(resourceClient, { includeMigratedApps: true });
 
     RdfExportDomainChecks.CheckContactPointsExported(rdf, resources, "ResourceExport");
 }
