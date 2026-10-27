@@ -2,7 +2,7 @@
   "openapi": "3.0.0",
   "info": {
     "title": "Dialogporten",
-    "description": "Dialogporten API description for both enduser and serviceowner users, as well as open metadata information for public key material.<br><br>All operations* described within this document require authentication and authorization. Read more at <a href=\"https://docs.altinn.studio/en/dialogporten/user-guides/authenticating/\">https://docs.altinn.studio/en/dialogporten/user-guides/authenticating/</a><br><br><strong>All GET operations* and POST operations may return or contain, respectively, personal identifiable information (national identity numbers and names).</strong><br><br>For more information about this product, see <a href=\"https://docs.altinn.studio/en/dialogporten\">https://docs.altinn.studio/en/dialogporten</a><br><br><em>* Except the metadata APIs",
+    "description": "Dialogporten API description for both enduser and serviceowner users, as well as open metadata information for public key material.<br><br>All operations* described within this document require authentication and authorization. Read more at <a href=\"https://docs.altinn.studio/en/dialogporten/user-guides/authenticating/\">https://docs.altinn.studio/en/dialogporten/user-guides/authenticating/</a><br><br><strong>All GET operations* and POST operations may return or contain, respectively, personal identifiable information (national identity numbers and names).</strong><br><br>For more information about this product, see <a href=\"https://docs.altinn.studio/en/dialogporten\">https://docs.altinn.studio/en/dialogporten</a><br><br><em>* Except the metadata APIs\n### About HTTP 409 Conflict\n\nAll `409 Conflict` responses in Dialogporten\nwill contain a RFC 9457 compliant ProblemDetails in the response body.\nThe ProblemDetails will contain the offending conflict(s), along with \nany extra fields necessary to describe the conflict(s).\nThese extra fields are not visible in the specification for 409 responses.\nPlease refer to this table to learn what extra fields each conflict has:\n\n| Code | Description | Extra fields |\n| --- | --- | --- |\n<a id=\"DP.CFL-00000\">DP.CFL-00000</a> | The request conflicted with a concurrent operation. Please try again. | \n<a id=\"DP.CFL-00001\">DP.CFL-00001</a> | Idempotent key already exist. | idempotentKey (String)\n<a id=\"DP.CFL-00002\">DP.CFL-00002</a> | Idempotent Key caused a dialog id conflict. | dialogId (Guid), idempotentKey (String)",
     "version": "v1"
   },
   "servers": [
@@ -285,11 +285,11 @@
             }
           },
           "409": {
-            "description": "Conflict occurred while processing the request.",
+            "description": "[DP.CFL-00000](#DP.CFL-00000)",
             "content": {
               "application/problem+json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
+                  "$ref": "#/components/schemas/ConflictProblemDetails"
                 }
               }
             }
@@ -424,11 +424,11 @@
             }
           },
           "409": {
-            "description": "Conflict occurred while processing the request.",
+            "description": "[DP.CFL-00000](#DP.CFL-00000)",
             "content": {
               "application/problem+json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
+                  "$ref": "#/components/schemas/ConflictProblemDetails"
                 }
               }
             }
@@ -585,11 +585,11 @@
             }
           },
           "409": {
-            "description": "Conflict occurred while processing the request.",
+            "description": "[DP.CFL-00000](#DP.CFL-00000)",
             "content": {
               "application/problem+json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
+                  "$ref": "#/components/schemas/ConflictProblemDetails"
                 }
               }
             }
@@ -727,11 +727,11 @@
             }
           },
           "409": {
-            "description": "Conflict occurred while processing the request.",
+            "description": "[DP.CFL-00000](#DP.CFL-00000)",
             "content": {
               "application/problem+json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
+                  "$ref": "#/components/schemas/ConflictProblemDetails"
                 }
               }
             }
@@ -998,11 +998,11 @@
             }
           },
           "409": {
-            "description": "Conflict occurred while processing the request.",
+            "description": "One of: \n- [DP.CFL-00000](#DP.CFL-00000)\n- [DP.CFL-00001](#DP.CFL-00001)",
             "content": {
               "application/problem+json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
+                  "$ref": "#/components/schemas/ConflictProblemDetails"
                 }
               }
             }
@@ -1415,7 +1415,7 @@
           "Serviceowner"
         ],
         "summary": "Adds an activity to a dialog's activity history",
-        "description": "The activity is created with the given configuration.\n\nOptimistic concurrency control is implemented using the If-Match header. Supply the Revision value from the GetDialog endpoint to ensure that the dialog is not modified/deleted by another request in the meantime.",
+        "description": "The activity is created with the given configuration.\n\nCreating an activity does not count as a content change, \nso it leaves the end user's system labels untouched; a dialog in 'Bin' or 'Archive' stays there.\n\nOptimistic concurrency control is implemented using the If-Match header. Supply the Revision value from the GetDialog endpoint to ensure that the dialog is not modified/deleted by another request in the meantime.",
         "operationId": "V1ServiceOwnerDialogsCommandsCreateActivity_DialogActivity",
         "parameters": [
           {
@@ -1512,11 +1512,11 @@
             }
           },
           "409": {
-            "description": "Conflict occurred while processing the request.",
+            "description": "[DP.CFL-00000](#DP.CFL-00000)",
             "content": {
               "application/problem+json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
+                  "$ref": "#/components/schemas/ConflictProblemDetails"
                 }
               }
             }
@@ -2017,11 +2017,11 @@
             }
           },
           "409": {
-            "description": "Dialog with IdempotentKey 01941821-ffca-73a1-9335-435a882be014 has already been created.",
+            "description": "One of: \n- [DP.CFL-00000](#DP.CFL-00000)\n- [DP.CFL-00001](#DP.CFL-00001)\n- [DP.CFL-00002](#DP.CFL-00002)",
             "content": {
               "application/problem+json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
+                  "$ref": "#/components/schemas/ConflictProblemDetails"
                 }
               }
             }
@@ -2417,11 +2417,11 @@
             }
           },
           "409": {
-            "description": "Conflict occurred while processing the request.",
+            "description": "One of: \n- [DP.CFL-00000](#DP.CFL-00000)\n- [DP.CFL-00001](#DP.CFL-00001)",
             "content": {
               "application/problem+json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
+                  "$ref": "#/components/schemas/ConflictProblemDetails"
                 }
               }
             }
@@ -2814,7 +2814,7 @@
           "Serviceowner"
         ],
         "summary": "Replaces a dialog",
-        "description": "Replaces a given dialog with the supplied model.\n\nOptimistic concurrency control is implemented using the If-Match header. Supply the Revision value from the GetDialog endpoint to ensure that the dialog is not modified/deleted by another request in the meantime.",
+        "description": "Replaces a given dialog with the supplied model.\n\nIf the update changes the dialog's content (transmissions, content, attachments, GUI/API actions, status or extended status), \nany end user system label of 'Bin' or 'Archive' is reset to 'Default', moving the dialog back to the inbox. \nChanges to other fields leave the end user's system labels untouched. \nThis reset is suppressed for silent updates.\n\nOptimistic concurrency control is implemented using the If-Match header. Supply the Revision value from the GetDialog endpoint to ensure that the dialog is not modified/deleted by another request in the meantime.",
         "operationId": "V1ServiceOwnerDialogsCommandsUpdate_Dialog",
         "parameters": [
           {
@@ -2901,11 +2901,11 @@
             }
           },
           "409": {
-            "description": "Conflict occurred while processing the request.",
+            "description": "One of: \n- [DP.CFL-00000](#DP.CFL-00000)\n- [DP.CFL-00001](#DP.CFL-00001)",
             "content": {
               "application/problem+json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
+                  "$ref": "#/components/schemas/ConflictProblemDetails"
                 }
               }
             }
@@ -3039,11 +3039,11 @@
             }
           },
           "409": {
-            "description": "Conflict occurred while processing the request.",
+            "description": "[DP.CFL-00000](#DP.CFL-00000)",
             "content": {
               "application/problem+json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
+                  "$ref": "#/components/schemas/ConflictProblemDetails"
                 }
               }
             }
@@ -3320,11 +3320,11 @@
             }
           },
           "409": {
-            "description": "Conflict occurred while processing the request.",
+            "description": "[DP.CFL-00000](#DP.CFL-00000)",
             "content": {
               "application/problem+json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
+                  "$ref": "#/components/schemas/ConflictProblemDetails"
                 }
               }
             }
@@ -3441,11 +3441,11 @@
             }
           },
           "409": {
-            "description": "Conflict occurred while processing the request.",
+            "description": "[DP.CFL-00000](#DP.CFL-00000)",
             "content": {
               "application/problem+json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
+                  "$ref": "#/components/schemas/ConflictProblemDetails"
                 }
               }
             }
@@ -3561,11 +3561,11 @@
             }
           },
           "409": {
-            "description": "Conflict occurred while processing the request.",
+            "description": "[DP.CFL-00000](#DP.CFL-00000)",
             "content": {
               "application/problem+json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
+                  "$ref": "#/components/schemas/ConflictProblemDetails"
                 }
               }
             }
@@ -4128,11 +4128,11 @@
             }
           },
           "409": {
-            "description": "Conflict occurred while processing the request.",
+            "description": "[DP.CFL-00000](#DP.CFL-00000)",
             "content": {
               "application/problem+json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
+                  "$ref": "#/components/schemas/ConflictProblemDetails"
                 }
               }
             }
@@ -4265,11 +4265,11 @@
             }
           },
           "409": {
-            "description": "Conflict occurred while processing the request.",
+            "description": "[DP.CFL-00000](#DP.CFL-00000)",
             "content": {
               "application/problem+json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
+                  "$ref": "#/components/schemas/ConflictProblemDetails"
                 }
               }
             }
@@ -5849,6 +5849,84 @@
           }
         }
       },
+      "ConflictProblemDetails": {
+        "type": "object",
+        "additionalProperties": {
+          "nullable": true
+        },
+        "properties": {
+          "traceId": {
+            "type": "string",
+            "nullable": true
+          },
+          "statusDescription": {
+            "type": "string",
+            "nullable": true
+          },
+          "code": {
+            "type": "string",
+            "nullable": true
+          },
+          "validationErrors": {
+            "type": "array",
+            "nullable": true,
+            "items": {
+              "$ref": "#/components/schemas/ProblemDetails_Error"
+            }
+          },
+          "errors": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "type": {
+            "type": "string",
+            "nullable": true
+          },
+          "title": {
+            "type": "string",
+            "nullable": true
+          },
+          "status": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "detail": {
+            "type": "string",
+            "nullable": true
+          },
+          "instance": {
+            "type": "string",
+            "nullable": true
+          },
+          "conflicts": {
+            "type": "array",
+            "nullable": true,
+            "items": {
+              "$ref": "#/components/schemas/ProblemDetailsConflict"
+            }
+          }
+        }
+      },
+      "ProblemDetailsConflict": {
+        "type": "object",
+        "additionalProperties": {
+          "nullable": true
+        },
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          }
+        }
+      },
       "V1ServiceOwnerServiceOwnerContextCommandsCreateServiceOwnerLabel_ServiceOwnerLabelRequest": {
         "type": "object",
         "additionalProperties": false,
@@ -6153,16 +6231,21 @@
           },
           "parties": {
             "type": "array",
-            "description": "The parties access is evaluated on behalf of. Access is granted if the end user has access to the\neffective resource for at least one of the parties.",
+            "description": "Other parties than the dialog's that access is evaluated on behalf of, each at its own party and without\naccess restriction. Access is granted if the end user has access to the effective resource for at least\none of the parties, or if any of \"dialogPartyChecks\" permits.",
             "nullable": true,
             "example": "urn:altinn:organization:identifier-no:912345678",
             "items": {
               "type": "string"
             }
           },
-          "includeDialogParty": {
-            "type": "boolean",
-            "description": "Whether the dialog's own party is included in the evaluation in addition to \"parties\"."
+          "dialogPartyChecks": {
+            "type": "array",
+            "description": "**Experimental:** This is part of an experimental feature that may change or be removed without a major version bump. See https://github.com/Altinn/dialogporten/issues/3978 for details.\n\nChecks evaluated on behalf of the dialog's own party. Access is granted if any check, or any entry in\n\"parties\", permits. Empty when the dialog's party is not evaluated.",
+            "nullable": true,
+            "items": {
+              "$ref": "#/components/schemas/V1ServiceOwnerDialogsQueriesSearchTransmissions_DialogPartyCheck"
+            },
+            "x-experimental": true
           },
           "action": {
             "type": "string",
@@ -6186,6 +6269,54 @@
           }
         },
         "x-experimental": true
+      },
+      "V1ServiceOwnerDialogsQueriesSearchTransmissions_DialogPartyCheck": {
+        "type": "object",
+        "description": "**Experimental:** This is part of an experimental feature that may change or be removed without a major version bump. See https://github.com/Altinn/dialogporten/issues/3978 for details.",
+        "additionalProperties": false,
+        "properties": {
+          "accessRestriction": {
+            "description": "Restricts how the end user's access at the dialog's party must have been obtained for this check to grant\naccess: \"none\" accepts all access, \"directAndHierarchy\" only access that does not pass through another\norganization, and \"clientDelegation\" only client delegations made through the organization in \"viaParty\".",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/DialogsEntitiesAuthorizationContexts_DialogPartyCheckAccessRestriction"
+              }
+            ]
+          },
+          "viaParty": {
+            "type": "string",
+            "description": "The organization the end user's access must have been client delegated through. Only set when\n\"accessRestriction\" is \"clientDelegation\".",
+            "nullable": true,
+            "example": "urn:altinn:organization:identifier-no:912345678"
+          },
+          "serviceResource": {
+            "type": "string",
+            "description": "The service resource evaluated for this check instead of the context's. Null when not overridden.",
+            "nullable": true,
+            "example": "urn:altinn:resource:some-other-service-identifier"
+          },
+          "action": {
+            "type": "string",
+            "description": "The XACML action evaluated for this check instead of the context's. Null when not overridden.",
+            "nullable": true,
+            "example": "readall"
+          }
+        },
+        "x-experimental": true
+      },
+      "DialogsEntitiesAuthorizationContexts_DialogPartyCheckAccessRestriction": {
+        "type": "string",
+        "description": "",
+        "x-enumNames": [
+          "None",
+          "DirectAndHierarchy",
+          "ClientDelegation"
+        ],
+        "enum": [
+          "None",
+          "DirectAndHierarchy",
+          "ClientDelegation"
+        ]
       },
       "DialogsEntitiesAuthorizationContexts_AuthorizationContextUnauthorizedPresentation": {
         "type": "string",
@@ -7155,16 +7286,21 @@
           },
           "parties": {
             "type": "array",
-            "description": "The parties access is evaluated on behalf of. Access is granted if the end user has access to the\neffective resource for at least one of the parties.",
+            "description": "Other parties than the dialog's that access is evaluated on behalf of, each at its own party and without\naccess restriction. Access is granted if the end user has access to the effective resource for at least\none of the parties, or if any of \"dialogPartyChecks\" permits.",
             "nullable": true,
             "example": "urn:altinn:organization:identifier-no:912345678",
             "items": {
               "type": "string"
             }
           },
-          "includeDialogParty": {
-            "type": "boolean",
-            "description": "Whether the dialog's own party is included in the evaluation in addition to \"parties\"."
+          "dialogPartyChecks": {
+            "type": "array",
+            "description": "**Experimental:** This is part of an experimental feature that may change or be removed without a major version bump. See https://github.com/Altinn/dialogporten/issues/3978 for details.\n\nChecks evaluated on behalf of the dialog's own party. Access is granted if any check, or any entry in\n\"parties\", permits. Empty when the dialog's party is not evaluated.",
+            "nullable": true,
+            "items": {
+              "$ref": "#/components/schemas/V1ServiceOwnerDialogsQueriesGetTransmission_DialogPartyCheck"
+            },
+            "x-experimental": true
           },
           "action": {
             "type": "string",
@@ -7185,6 +7321,40 @@
                 "$ref": "#/components/schemas/DialogsEntitiesAuthorizationContexts_AuthorizationContextUnauthorizedPresentation"
               }
             ]
+          }
+        },
+        "x-experimental": true
+      },
+      "V1ServiceOwnerDialogsQueriesGetTransmission_DialogPartyCheck": {
+        "type": "object",
+        "description": "**Experimental:** This is part of an experimental feature that may change or be removed without a major version bump. See https://github.com/Altinn/dialogporten/issues/3978 for details.",
+        "additionalProperties": false,
+        "properties": {
+          "accessRestriction": {
+            "description": "Restricts how the end user's access at the dialog's party must have been obtained for this check to grant\naccess: \"none\" accepts all access, \"directAndHierarchy\" only access that does not pass through another\norganization, and \"clientDelegation\" only client delegations made through the organization in \"viaParty\".",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/DialogsEntitiesAuthorizationContexts_DialogPartyCheckAccessRestriction"
+              }
+            ]
+          },
+          "viaParty": {
+            "type": "string",
+            "description": "The organization the end user's access must have been client delegated through. Only set when\n\"accessRestriction\" is \"clientDelegation\".",
+            "nullable": true,
+            "example": "urn:altinn:organization:identifier-no:912345678"
+          },
+          "serviceResource": {
+            "type": "string",
+            "description": "The service resource evaluated for this check instead of the context's. Null when not overridden.",
+            "nullable": true,
+            "example": "urn:altinn:resource:some-other-service-identifier"
+          },
+          "action": {
+            "type": "string",
+            "description": "The XACML action evaluated for this check instead of the context's. Null when not overridden.",
+            "nullable": true,
+            "example": "readall"
           }
         },
         "x-experimental": true
@@ -7834,16 +8004,21 @@
           },
           "parties": {
             "type": "array",
-            "description": "The parties access is evaluated on behalf of. Access is granted if the end user has access to the\neffective resource for at least one of the parties.",
+            "description": "Other parties than the dialog's that access is evaluated on behalf of, each at its own party and without\naccess restriction. Access is granted if the end user has access to the effective resource for at least\none of the parties, or if any of \"dialogPartyChecks\" permits.",
             "nullable": true,
             "example": "urn:altinn:organization:identifier-no:912345678",
             "items": {
               "type": "string"
             }
           },
-          "includeDialogParty": {
-            "type": "boolean",
-            "description": "Whether the dialog's own party is included in the evaluation in addition to \"parties\"."
+          "dialogPartyChecks": {
+            "type": "array",
+            "description": "**Experimental:** This is part of an experimental feature that may change or be removed without a major version bump. See https://github.com/Altinn/dialogporten/issues/3978 for details.\n\nChecks evaluated on behalf of the dialog's own party. Access is granted if any check, or any entry in\n\"parties\", permits. Empty when the dialog's party is not evaluated.",
+            "nullable": true,
+            "items": {
+              "$ref": "#/components/schemas/V1ServiceOwnerDialogsQueriesGet_DialogPartyCheck"
+            },
+            "x-experimental": true
           },
           "action": {
             "type": "string",
@@ -7864,6 +8039,40 @@
                 "$ref": "#/components/schemas/DialogsEntitiesAuthorizationContexts_AuthorizationContextUnauthorizedPresentation"
               }
             ]
+          }
+        },
+        "x-experimental": true
+      },
+      "V1ServiceOwnerDialogsQueriesGet_DialogPartyCheck": {
+        "type": "object",
+        "description": "**Experimental:** This is part of an experimental feature that may change or be removed without a major version bump. See https://github.com/Altinn/dialogporten/issues/3978 for details.",
+        "additionalProperties": false,
+        "properties": {
+          "accessRestriction": {
+            "description": "Restricts how the end user's access at the dialog's party must have been obtained for this check to grant\naccess: \"none\" accepts all access, \"directAndHierarchy\" only access that does not pass through another\norganization, and \"clientDelegation\" only client delegations made through the organization in \"viaParty\".",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/DialogsEntitiesAuthorizationContexts_DialogPartyCheckAccessRestriction"
+              }
+            ]
+          },
+          "viaParty": {
+            "type": "string",
+            "description": "The organization the end user's access must have been client delegated through. Only set when\n\"accessRestriction\" is \"clientDelegation\".",
+            "nullable": true,
+            "example": "urn:altinn:organization:identifier-no:912345678"
+          },
+          "serviceResource": {
+            "type": "string",
+            "description": "The service resource evaluated for this check instead of the context's. Null when not overridden.",
+            "nullable": true,
+            "example": "urn:altinn:resource:some-other-service-identifier"
+          },
+          "action": {
+            "type": "string",
+            "description": "The XACML action evaluated for this check instead of the context's. Null when not overridden.",
+            "nullable": true,
+            "example": "readall"
           }
         },
         "x-experimental": true
@@ -8620,16 +8829,21 @@
           },
           "parties": {
             "type": "array",
-            "description": "The parties to evaluate access on behalf of. Access is granted if the end user has access to the\neffective resource for at least one of the parties. Must contain at least one party unless\n\"includeDialogParty\" is true.",
+            "description": "Other parties than the dialog's to evaluate access on behalf of, each at its own party and without access\nrestriction. Access is granted if the end user has access to the effective resource for at least one of\nthe parties, or if any of \"dialogPartyChecks\" permits. Cannot contain the dialog's own party; use a\n\"dialogPartyChecks\" entry with access restriction \"None\" for that. Together with \"dialogPartyChecks\", at\nleast 1 and at most 4 entries.",
             "nullable": true,
             "example": "urn:altinn:organization:identifier-no:912345678",
             "items": {
               "type": "string"
             }
           },
-          "includeDialogParty": {
-            "type": "boolean",
-            "description": "Whether the dialog's own party is included in the evaluation in addition to \"parties\"."
+          "dialogPartyChecks": {
+            "type": "array",
+            "description": "**Experimental:** This is part of an experimental feature that may change or be removed without a major version bump. See https://github.com/Altinn/dialogporten/issues/3978 for details.\n\nChecks evaluated on behalf of the dialog's own party. Access is granted if any check, or any entry in\n\"parties\", permits. An empty list means the dialog's party is not evaluated. Together with \"parties\",\nat least 1 and at most 4 entries.",
+            "nullable": true,
+            "items": {
+              "$ref": "#/components/schemas/V1CommonAuthorizationContexts_DialogPartyCheck"
+            },
+            "x-experimental": true
           },
           "action": {
             "type": "string",
@@ -8650,6 +8864,40 @@
                 "$ref": "#/components/schemas/DialogsEntitiesAuthorizationContexts_AuthorizationContextUnauthorizedPresentation"
               }
             ]
+          }
+        },
+        "x-experimental": true
+      },
+      "V1CommonAuthorizationContexts_DialogPartyCheck": {
+        "type": "object",
+        "description": "**Experimental:** This is part of an experimental feature that may change or be removed without a major version bump. See https://github.com/Altinn/dialogporten/issues/3978 for details.",
+        "additionalProperties": false,
+        "properties": {
+          "accessRestriction": {
+            "description": "Required. Restricts how the end user's access at the dialog's party must have been obtained for this\ncheck to grant access: \"none\" accepts all access, \"directAndHierarchy\" only access that does not pass\nthrough another organization (direct grants, ER roles and their role mappings at the dialog party, and\ninheritance from its main unit), and \"clientDelegation\" only client delegations made through the\norganization given in \"viaParty\".",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/DialogsEntitiesAuthorizationContexts_DialogPartyCheckAccessRestriction"
+              }
+            ]
+          },
+          "viaParty": {
+            "type": "string",
+            "description": "The organization the end user's access must have been client delegated through. Required when\n\"accessRestriction\" is \"clientDelegation\", and not allowed otherwise. Cannot be the dialog's own party.",
+            "nullable": true,
+            "example": "urn:altinn:organization:identifier-no:912345678"
+          },
+          "serviceResource": {
+            "type": "string",
+            "description": "A service resource to evaluate for this check instead of the context's. If omitted, the context's\n\"serviceResource\" is used, or the dialog's own service resource if the context sets none. The same rules\napply as for the context's \"serviceResource\", including that the service owner must have access to it.\nThe context's \"additionalResourceAttribute\", if any, is layered on the resulting resource.",
+            "nullable": true,
+            "example": "urn:altinn:resource:some-other-service-identifier"
+          },
+          "action": {
+            "type": "string",
+            "description": "The XACML action to evaluate for this check instead of the context's. If omitted, the context's \"action\"\nis used, or \"read\" if the context sets none.",
+            "nullable": true,
+            "example": "readall"
           }
         },
         "x-experimental": true

@@ -79,7 +79,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
       }
     },
     "/orders/email": {
@@ -136,7 +141,12 @@
             }
           }
         },
-        "deprecated": true
+        "deprecated": true,
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
       }
     },
     "/orders/{id}/notifications/email": {
@@ -179,7 +189,12 @@
             "description": "No order matching the provided ID was found."
           }
         },
-        "deprecated": true
+        "deprecated": true,
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
       }
     },
     "/future/orders": {
@@ -256,7 +271,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
       }
     },
     "/future/orders/instant": {
@@ -323,7 +343,12 @@
             }
           }
         },
-        "deprecated": true
+        "deprecated": true,
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
       }
     },
     "/future/orders/instant/sms": {
@@ -389,7 +414,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
       }
     },
     "/future/orders/instant/email": {
@@ -455,30 +485,38 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
       }
     },
     "/future/log": {
       "get": {
         "tags": [
-          "Notification Log"
+          "NotificationLog"
         ],
-        "summary": "Retrieves notification log entries filtered by dialog identifier, transmission identifier, or both.",
+        "summary": "Retrieves notification log entries based on the provided Dialogporten identifiers.",
         "parameters": [
           {
-            "name": "DialogId",
+            "name": "dialogId",
             "in": "query",
             "description": "The Dialogporten dialog identifier to filter by.",
+            "required": true,
             "schema": {
-              "type": "string"
+              "type": "string",
+              "format": "uuid"
             }
           },
           {
-            "name": "TransmissionId",
+            "name": "transmissionId",
             "in": "query",
             "description": "The Dialogporten transmission identifier to filter by.",
             "schema": {
-              "type": "string"
+              "type": "string",
+              "format": "uuid"
             }
           }
         ],
@@ -522,7 +560,89 @@
               }
             }
           }
-        }
+        },
+        "deprecated": true,
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/future/enduser/log": {
+      "get": {
+        "tags": [
+          "NotificationLog"
+        ],
+        "summary": "Gives end users access to their own notification log entries based on the provided\r\nDialogporten identifiers.",
+        "description": "End users identified with the help of ID-porten will be using this endpoint\r\n            indirectly when looking at the activity log of a dialog in the portal. This is currently the\r\n            only way to access this endpoint and the data it provides.",
+        "parameters": [
+          {
+            "name": "dialogId",
+            "in": "query",
+            "description": "The Dialogporten dialog identifier to filter by.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "transmissionId",
+            "in": "query",
+            "description": "The Dialogporten transmission identifier to filter by.",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "401": {
+            "description": "Caller is unauthorized"
+          },
+          "403": {
+            "description": "Caller is not authorized to access the requested resource"
+          },
+          "200": {
+            "description": "Notification log entries matching the provided identifiers were retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/NotificationLogSummaryExt"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "One or more query parameters are invalid",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AltinnProblemDetails"
+                }
+              }
+            }
+          },
+          "499": {
+            "description": "Request terminated - The client disconnected or cancelled the request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AltinnProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
       }
     },
     "/orders/{id}": {
@@ -565,7 +685,12 @@
             "description": "No order matching the provided ID was found."
           }
         },
-        "deprecated": true
+        "deprecated": true,
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
       }
     },
     "/orders": {
@@ -603,7 +728,12 @@
             }
           }
         },
-        "deprecated": true
+        "deprecated": true,
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
       },
       "post": {
         "tags": [
@@ -658,7 +788,12 @@
             }
           }
         },
-        "deprecated": true
+        "deprecated": true,
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
       }
     },
     "/orders/{id}/status": {
@@ -701,7 +836,12 @@
             "description": "No order matching the provided ID was found."
           }
         },
-        "deprecated": true
+        "deprecated": true,
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
       }
     },
     "/orders/{id}/cancel": {
@@ -747,7 +887,12 @@
             "description": "The order cannot be cancelled due to current processing status."
           }
         },
-        "deprecated": true
+        "deprecated": true,
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
       }
     },
     "/future/shipment/{id}": {
@@ -805,7 +950,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
       }
     },
     "/orders/sms": {
@@ -862,7 +1012,12 @@
             }
           }
         },
-        "deprecated": true
+        "deprecated": true,
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
       }
     },
     "/orders/{id}/notifications/sms": {
@@ -905,7 +1060,12 @@
             "description": "No order matching the provided ID was found."
           }
         },
-        "deprecated": true
+        "deprecated": true,
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
       }
     },
     "/future/shipment/feed": {
@@ -979,7 +1139,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
       }
     }
   },
@@ -1019,6 +1184,9 @@
           "statusDescription": {
             "type": "string",
             "nullable": true
+          },
+          "source": {
+            "$ref": "#/components/schemas/AltinnProblemDetails"
           }
         },
         "additionalProperties": {}
@@ -1387,6 +1555,7 @@
               "SMS_Failed_RecipientNotIdentified",
               "SMS_Failed_Rejected",
               "SMS_Failed_TTL",
+              "SMS_Failed_ContentTooLarge",
               "Email_New",
               "Email_Sending",
               "Email_Succeeded",
@@ -1402,7 +1571,8 @@
               "Email_Failed_Quarantined",
               "Email_Failed_TTL",
               "Email_Failed_InvalidSasUrl",
-              "Email_Failed_PayloadTooLarge"
+              "Email_Failed_PayloadTooLarge",
+              "Email_Failed_ContentTooLarge"
             ],
             "type": "string",
             "description": "Gets the current lifecycle status of the entity.",
@@ -1628,6 +1798,7 @@
               "SMS_Failed_RecipientNotIdentified",
               "SMS_Failed_Rejected",
               "SMS_Failed_TTL",
+              "SMS_Failed_ContentTooLarge",
               "Email_New",
               "Email_Sending",
               "Email_Succeeded",
@@ -1643,7 +1814,8 @@
               "Email_Failed_Quarantined",
               "Email_Failed_TTL",
               "Email_Failed_InvalidSasUrl",
-              "Email_Failed_PayloadTooLarge"
+              "Email_Failed_PayloadTooLarge",
+              "Email_Failed_ContentTooLarge"
             ],
             "type": "string",
             "description": "Represents the lifecycle status of orders and individual notifications."
@@ -2785,6 +2957,7 @@
               "SMS_Failed_RecipientNotIdentified",
               "SMS_Failed_Rejected",
               "SMS_Failed_TTL",
+              "SMS_Failed_ContentTooLarge",
               "Email_New",
               "Email_Sending",
               "Email_Succeeded",
@@ -2800,7 +2973,8 @@
               "Email_Failed_Quarantined",
               "Email_Failed_TTL",
               "Email_Failed_InvalidSasUrl",
-              "Email_Failed_PayloadTooLarge"
+              "Email_Failed_PayloadTooLarge",
+              "Email_Failed_ContentTooLarge"
             ],
             "type": "string",
             "description": "Gets the current lifecycle status of the order."
@@ -2856,6 +3030,7 @@
               "SMS_Failed_RecipientNotIdentified",
               "SMS_Failed_Rejected",
               "SMS_Failed_TTL",
+              "SMS_Failed_ContentTooLarge",
               "Email_New",
               "Email_Sending",
               "Email_Succeeded",
@@ -2871,7 +3046,8 @@
               "Email_Failed_Quarantined",
               "Email_Failed_TTL",
               "Email_Failed_InvalidSasUrl",
-              "Email_Failed_PayloadTooLarge"
+              "Email_Failed_PayloadTooLarge",
+              "Email_Failed_ContentTooLarge"
             ],
             "type": "string",
             "description": "Gets the current status of the processing lifecycle."
@@ -2922,6 +3098,14 @@
         },
         "additionalProperties": {}
       }
+    },
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "description": "JWT Authorization header using the Bearer scheme.",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
     }
   },
   "tags": [
@@ -2940,10 +3124,6 @@
     {
       "name": "Instant Orders",
       "description": "Create and immediately send a notification to a single recipient"
-    },
-    {
-      "name": "Notification Log",
-      "description": "Retrieves notification log entries filtered by dialog identifier, transmission identifier, or both"
     }
   ]
 }

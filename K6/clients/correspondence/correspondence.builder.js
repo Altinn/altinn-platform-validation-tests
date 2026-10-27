@@ -714,6 +714,15 @@ class ForwardCorrespondenceRequestBuilder {
     }
 
     /**
+     * @param {boolean} includeAttachments Whether to include the attachments in the forwarded correspondence.
+     * @returns {ForwardCorrespondenceRequestBuilder} This builder, for chaining.
+     */
+    withIncludeAttachments(includeAttachments) {
+        this.request.includeAttachments = includeAttachments;
+        return this;
+    }
+
+    /**
      * @returns {ForwardCorrespondenceRequestExt} The built payload.
      */
     build() {

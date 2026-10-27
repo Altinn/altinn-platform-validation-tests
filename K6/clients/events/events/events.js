@@ -26,7 +26,7 @@ class EventsClient {
         /**
          * Base API path.
          */
-        this.BASE_PATH = "/events";
+        this.BASE_PATH = "/events/api/v1/events";
 
         /**
          * Fully-qualified API path.
@@ -42,11 +42,12 @@ class EventsClient {
      * Posts a new CloudEvent.
      *
      * @param {CloudEvent} request CloudEvent payload.
+     * @param {string|null} [idempotencyKey] Optional GUID used to skip duplicate submissions.
      * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
-    EventsCreate(request, labels = null) {
+    EventsCreate(request, idempotencyKey = null, labels = null) {
         return http.post(
             this.FULL_PATH,
             jsonBody(request),
@@ -56,7 +57,10 @@ class EventsClient {
                 labels,
                 token: this.tokenGenerator.getToken(),
                 accept: null,
-                headers: { "Content-Type": "application/cloudevents+json" },
+                headers: {
+                    "Content-Type": "application/cloudevents+json",
+                    "Idempotency-Key": idempotencyKey,
+                },
             }),
         );
     }

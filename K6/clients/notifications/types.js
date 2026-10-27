@@ -209,6 +209,7 @@
  * "SMS_Failed_RecipientNotIdentified"|
  * "SMS_Failed_Rejected"|
  * "SMS_Failed_TTL"|
+ * "SMS_Failed_ContentTooLarge"|
  * "Email_New"|
  * "Email_Sending"|
  * "Email_Succeeded"|
@@ -224,7 +225,8 @@
  * "Email_Failed_Quarantined"|
  * "Email_Failed_TTL"|
  * "Email_Failed_InvalidSasUrl"|
- * "Email_Failed_PayloadTooLarge"} NotificationStatus
+ * "Email_Failed_PayloadTooLarge"|
+ * "Email_Failed_ContentTooLarge"} NotificationStatus
  */
 
 /**
@@ -267,6 +269,21 @@
  * @property {number|null} seq Sequence number to start fetching status feed entries from.
  * @property {number|null} pageSize Number of items to return in one page.
  * @property {StatusOrderBy|null} orderBy Order in which status feed entries should be returned.
+ */
+
+/**
+ * Represents a notification log summary returned by the API.
+ *
+ * @typedef {object} NotificationLogSummaryExt
+ * @property {string} notificationId Identifier of the email or SMS notification this log entry was derived from.
+ * @property {string|null} [dialogId] Dialogporten dialog identifier associated with this notification.
+ * @property {string|null} [transmissionId] Dialogporten transmission identifier associated with this notification.
+ * @property {string|null} type Notification order type, e.g. `Notification`, `Reminder`, `Instant` or `Composed`.
+ * @property {string|null} channel Notification channel, `Email` or `Sms`.
+ * @property {string|null} destination Email address or mobile number the notification was sent to.
+ * @property {string|null} status Delivery result status at the time the log entry was created.
+ * @property {string} requestedSendTime When the order requested the notifications to be sent.
+ * @property {string} lastUpdateTime When the notification status was last updated.
  */
 
 /**
@@ -345,6 +362,7 @@ export const InstantNotificationOrderRequestExt = undefined;
 export const InstantNotificationOrderResponseExt = undefined;
 export const InstantSmsNotificationOrderRequestExt = undefined;
 export const NotificationDeliveryManifestExt = undefined;
+export const NotificationLogSummaryExt = undefined;
 export const NotificationOrderChainRequestExt = undefined;
 export const NotificationOrderChainResponseExt = undefined;
 export const NotificationRecipientExt = undefined;

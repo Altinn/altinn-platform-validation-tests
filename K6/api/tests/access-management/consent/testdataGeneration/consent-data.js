@@ -37,7 +37,7 @@ export const options = {
  * Plans one consent per iteration, so the default function can request and
  * approve exactly the rows the teardown prints.
  *
- * @returns {Array<{consentId: string, pid: string, orgNo: string, partyUuid: string}>} The consents to generate.
+ * @returns {Array<{consentId: string, pid: string, orgNo: string, person: import("../commons.js").ConsenterPerson}>} The consents to generate.
  */
 export function setup() {
     requireEnv(["ENVIRONMENT", "BASE_URL", "AM_UI_BASE_URL"]);
@@ -56,7 +56,7 @@ export function setup() {
             consentId: uuidv4(),
             pid: String(person.ssn),
             orgNo: String(org.orgNo),
-            partyUuid: person.partyUuid,
+            person: person,
         });
     }
 
@@ -72,7 +72,7 @@ export function setup() {
  * iteration and the teardown prints them as csv. The checks are here so a run
  * that silently produced nothing is not mistaken for one that produced data.
  *
- * @param {Array<{consentId: string, pid: string, orgNo: string, partyUuid: string}>} rows The consents planned in setup.
+ * @param {Array<{consentId: string, pid: string, orgNo: string, person: import("../commons.js").ConsenterPerson}>} rows The consents planned in setup.
  */
 export default function (rows) {
     const [clients, consenteeTokenGenerator, consenterTokenGenerator] = getClients();
@@ -81,7 +81,7 @@ export default function (rows) {
     const row = rows[exec.scenario.iterationInTest];
 
     consenteeTokenGenerator.setTokenGeneratorOptions(getConsenteeTokenOpts(row.orgNo));
-    consenterTokenGenerator.setTokenGeneratorOptions(getConsenterTokenOpts(row.partyUuid));
+    consenterTokenGenerator.setTokenGeneratorOptions(getConsenterTokenOpts(row.person));
 
     group("Request and approve a consent, so it can be looked up later", function () {
         const from = personUrn(row.pid);

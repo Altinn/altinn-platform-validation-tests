@@ -12,9 +12,6 @@ const TAGS = {
     GetActorListOld: {
         action: "get-actor-list-old",
     },
-    GetActorList: {
-        action: "get-actor-list",
-    },
     GetFavorites: {
         action: "get-favorites",
     },
@@ -26,9 +23,6 @@ const TAGS = {
     },
     GetReportee: {
         action: "get-reportee",
-    },
-    GetReporteeList: {
-        action: "get-reportee-list",
     },
     GetIsAdmin: {
         action: "get-is-admin",
@@ -138,24 +132,6 @@ class UserClient {
     }
 
     /**
-     * Gets the actor list of the authenticated user.
-     *
-     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
-     */
-    GetActorList(labels = null) {
-        return http.get(
-            `${this.FULL_PATH}/actorlist`,
-            requestParams({
-                endpoint: `${this.FULL_PATH}/actorlist`,
-                action: TAGS.GetActorList.action,
-                labels,
-                token: this.tokenGenerator.getToken(),
-            }),
-        );
-    }
-
-    /**
      * Gets the favourite actors of the authenticated user.
      *
      * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
@@ -226,25 +202,6 @@ class UserClient {
             requestParams({
                 endpoint: `${this.FULL_PATH}/reportee/{partyUuid}`,
                 action: TAGS.GetReportee.action,
-                labels,
-                token: this.tokenGenerator.getToken(),
-            }),
-        );
-    }
-
-    /**
-     * Gets the right holders of a reportee of the authenticated user.
-     *
-     * @param {string} partyUuid Party UUID of the reportee.
-     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
-     */
-    GetReporteeList(partyUuid, labels = null) {
-        return http.get(
-            `${this.FULL_PATH}/reporteelist/${partyUuid}`,
-            requestParams({
-                endpoint: `${this.FULL_PATH}/reporteelist/{partyUuid}`,
-                action: TAGS.GetReporteeList.action,
                 labels,
                 token: this.tokenGenerator.getToken(),
             }),

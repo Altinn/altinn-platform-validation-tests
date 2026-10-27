@@ -267,6 +267,18 @@ export function requireEnv(vars) {
 }
 
 /**
+ * @param {Array<string>|null|undefined} left One list of strings.
+ * @param {Array<string>|null|undefined} right Another.
+ * @returns {boolean} True when both hold the same strings, in any order.
+ */
+export function sameSet(left, right) {
+    const a = [...(left ?? [])].sort();
+    const b = [...(right ?? [])].sort();
+
+    return a.length === b.length && a.every((value, index) => value === b[index]);
+}
+
+/**
  * Picks a specified number of unique random items from a list.
  * Each selected item is removed from the pool before the next pick,
  * ensuring no duplicates are returned.
@@ -325,8 +337,12 @@ export function fetchTestData(
     failOnDataFetchingFailure = true,
     branch = "main",
 ) {
-    const testDataBaseUrl =
-        `https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/${branch}/K6/testdata`;
+    const LOCAL_TEST_DATA_BASE_URL = "http://127.0.0.1:8225"; // Don't forget to run: `npm run serve`.
+
+    const testDataBaseUrl = __ENV.USE_LOCAL_TEST_DATA === "true"
+        ? LOCAL_TEST_DATA_BASE_URL
+        : `https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/${branch}/K6/testdata`;
+
     const url = filename.startsWith("http")
         ? filename
         : `${testDataBaseUrl}/${filename}`;

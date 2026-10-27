@@ -1,6 +1,6 @@
 import { expect, Page } from "@playwright/test";
 
-export class Cookiebanner {
+export class CookiebannerPom {
 
     constructor(private page: Page) { }
 

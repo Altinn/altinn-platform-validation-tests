@@ -45,12 +45,12 @@ class AppClient {
      * Inserts a new event.
      *
      * @param {AppCloudEventRequestModel} request Event payload.
+     * @param {string|null} [idempotencyKey] Optional GUID used to skip duplicate submissions.
      * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
-     * @param {string|null} [idempotencyKey] Optional GUID used to skip duplicate submissions.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
-    AppCreate(request, labels = null, idempotencyKey = null) {
+    AppCreate(request, idempotencyKey = null, labels = null) {
         return http.post(
             this.FULL_PATH,
             jsonBody(request),

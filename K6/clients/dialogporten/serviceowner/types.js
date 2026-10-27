@@ -65,7 +65,7 @@
  * @property {string|null} [code]
  * @property {string|null} [traceId]
  * @property {Array<ProblemDetails_Error>|null} [validationErrors]
- * @property {{[key: string]: Array<string>}} errors
+ * @property {{[key: string]: Array<string>}} [errors]
  */
 
 /**
@@ -74,6 +74,20 @@
  * @property {string|null} [code]
  * @property {string|null} [detail]
  * @property {Array<string>|null} [paths]
+ */
+
+/**
+ * ProblemDetails returned on 409 Conflict, with the offending conflict(s).
+ *
+ * @typedef {ProblemDetails & {conflicts?: Array<ProblemDetailsConflict>|null}} ConflictProblemDetails
+ */
+
+/**
+ * @typedef {object} ProblemDetailsConflict
+ * @property {string} [code] The conflict code, e.g. DP.CFL-00000.
+ * @property {string} [title]
+ * @property {string} [idempotentKey] Set on DP.CFL-00001 and DP.CFL-00002.
+ * @property {string} [dialogId] Set on DP.CFL-00002.
  */
 
 /**
@@ -1061,15 +1075,59 @@
  * @typedef {object} V1CommonAuthorizationContexts_AuthorizationContext
  * @property {string|null} [serviceResource] A service resource that overrides the dialog's own service resource in the authorization evaluation, referring to another service policy. The service owner must have access to the referenced resource. When set, the dialog's instance reference no longer applies to the evaluation of this entity.
  * @property {string|null} [additionalResourceAttribute] An additional resource attribute to be matched within the effective service policy, e.g. a task or subresource. Cannot contain a service resource reference; use "serviceResource" for that. References to an app ("urn:altinn:app") or an organization ("urn:altinn:org") are not allowed either; both are derived from the effective service resource.
- * @property {Array<string>|null} [parties] The parties to evaluate access on behalf of. Access is granted if the end user has access to the effective resource for at least one of the parties. Must contain at least one party unless "includeDialogParty" is true.
- * @property {boolean} includeDialogParty Whether the dialog's own party is included in the evaluation in addition to "parties".
+ * @property {Array<string>|null} [parties] Other parties than the dialog's to evaluate access on behalf of, each at its own party and without access restriction. Access is granted if the end user has access to the effective resource for at least one of the parties, or if any of "dialogPartyChecks" permits. Cannot contain the dialog's own party; use a "dialogPartyChecks" entry with access restriction "None" for that. Together with "dialogPartyChecks", at least 1 and at most 4 entries.
+ * @property {Array<V1CommonAuthorizationContexts_DialogPartyCheck>|null} [dialogPartyChecks] Checks evaluated on behalf of the dialog's own party. Access is granted if any check, or any entry in "parties", permits. An empty list means the dialog's party is not evaluated. Together with "parties", at least 1 and at most 4 entries.
  * @property {string|null} [action] The XACML action to evaluate. Optional; defaults to "read" if not supplied.
  * @property {string|null} [tokenRef] An optional reference identifying this context in the dialog token. When the end user is authorized for this context, the dialog token's "e" claim lists this value instead of the id of the entity carrying the context, allowing the service owner to recognize the grant without tracking Dialogporten entity ids. The same value may be shared by multiple entities in one dialog to form an OR-group: authorization for any entity in the group adds the shared value to "e", so a recipient validating that value cannot distinguish which individual entity was authorized. Only group entities that intentionally share access semantics. Token references are scoped to a dialog; recipients must also validate the token's dialog id ("i"). Maximum 50 characters.
  * @property {DialogsEntitiesAuthorizationContexts_AuthorizationContextUnauthorizedPresentation} unauthorizedPresentation Required. Controls how the entity is presented to end users that fail the authorization check: "disabled" keeps the entity visible but masks its URLs and embedded content references, while "excluded" removes it from the collection it belongs to entirely, leaving only its id and creation time in the sibling "excluded" list (e.g. "excludedTransmissions" beside "transmissions").
  */
 
 /**
+ * **Experimental:** This is part of an experimental feature that may change or be removed without a major version bump. See https://github.com/Altinn/dialogporten/issues/3978 for details.
+ *
+ * @typedef {object} V1CommonAuthorizationContexts_DialogPartyCheck
+ * @property {DialogsEntitiesAuthorizationContexts_DialogPartyCheckAccessRestriction} accessRestriction Required. Restricts how the end user's access at the dialog's party must have been obtained for this check to grant access: "none" accepts all access, "directAndHierarchy" only access that does not pass through another organization (direct grants, ER roles and their role mappings at the dialog party, and inheritance from its main unit), and "clientDelegation" only client delegations made through the organization given in "viaParty".
+ * @property {string|null} [viaParty] The organization the end user's access must have been client delegated through. Required when "accessRestriction" is "clientDelegation", and not allowed otherwise. Cannot be the dialog's own party.
+ * @property {string|null} [serviceResource] A service resource to evaluate for this check instead of the context's. If omitted, the context's "serviceResource" is used, or the dialog's own service resource if the context sets none. The same rules apply as for the context's "serviceResource", including that the service owner must have access to it. The context's "additionalResourceAttribute", if any, is layered on the resulting resource.
+ * @property {string|null} [action] The XACML action to evaluate for this check instead of the context's. If omitted, the context's "action" is used, or "read" if the context sets none.
+ */
+
+/**
  * @typedef {"Disabled"|"Excluded"} DialogsEntitiesAuthorizationContexts_AuthorizationContextUnauthorizedPresentation
+ */
+
+/**
+ * @typedef {"None"|"DirectAndHierarchy"|"ClientDelegation"} DialogsEntitiesAuthorizationContexts_DialogPartyCheckAccessRestriction
+ */
+
+/**
+ * **Experimental:** This is part of an experimental feature that may change or be removed without a major version bump. See https://github.com/Altinn/dialogporten/issues/3978 for details.
+ *
+ * @typedef {object} V1ServiceOwnerDialogsQueriesGetTransmission_DialogPartyCheck
+ * @property {DialogsEntitiesAuthorizationContexts_DialogPartyCheckAccessRestriction} accessRestriction Restricts how the end user's access at the dialog's party must have been obtained for this check to grant access: "none" accepts all access, "directAndHierarchy" only access that does not pass through another organization, and "clientDelegation" only client delegations made through the organization in "viaParty".
+ * @property {string|null} [viaParty] The organization the end user's access must have been client delegated through. Only set when "accessRestriction" is "clientDelegation".
+ * @property {string|null} [serviceResource] The service resource evaluated for this check instead of the context's. Null when not overridden.
+ * @property {string|null} [action] The XACML action evaluated for this check instead of the context's. Null when not overridden.
+ */
+
+/**
+ * **Experimental:** This is part of an experimental feature that may change or be removed without a major version bump. See https://github.com/Altinn/dialogporten/issues/3978 for details.
+ *
+ * @typedef {object} V1ServiceOwnerDialogsQueriesGet_DialogPartyCheck
+ * @property {DialogsEntitiesAuthorizationContexts_DialogPartyCheckAccessRestriction} accessRestriction Restricts how the end user's access at the dialog's party must have been obtained for this check to grant access: "none" accepts all access, "directAndHierarchy" only access that does not pass through another organization, and "clientDelegation" only client delegations made through the organization in "viaParty".
+ * @property {string|null} [viaParty] The organization the end user's access must have been client delegated through. Only set when "accessRestriction" is "clientDelegation".
+ * @property {string|null} [serviceResource] The service resource evaluated for this check instead of the context's. Null when not overridden.
+ * @property {string|null} [action] The XACML action evaluated for this check instead of the context's. Null when not overridden.
+ */
+
+/**
+ * **Experimental:** This is part of an experimental feature that may change or be removed without a major version bump. See https://github.com/Altinn/dialogporten/issues/3978 for details.
+ *
+ * @typedef {object} V1ServiceOwnerDialogsQueriesSearchTransmissions_DialogPartyCheck
+ * @property {DialogsEntitiesAuthorizationContexts_DialogPartyCheckAccessRestriction} accessRestriction Restricts how the end user's access at the dialog's party must have been obtained for this check to grant access: "none" accepts all access, "directAndHierarchy" only access that does not pass through another organization, and "clientDelegation" only client delegations made through the organization in "viaParty".
+ * @property {string|null} [viaParty] The organization the end user's access must have been client delegated through. Only set when "accessRestriction" is "clientDelegation".
+ * @property {string|null} [serviceResource] The service resource evaluated for this check instead of the context's. Null when not overridden.
+ * @property {string|null} [action] The XACML action evaluated for this check instead of the context's. Null when not overridden.
  */
 
 /**
@@ -1078,8 +1136,8 @@
  * @typedef {object} V1ServiceOwnerDialogsQueriesGetTransmission_AuthorizationContext
  * @property {string|null} [serviceResource] A service resource that overrides the dialog's own service resource in the authorization evaluation, referring to another service policy.
  * @property {string|null} [additionalResourceAttribute] An additional resource attribute to be matched within the effective service policy, e.g. a task or subresource.
- * @property {Array<string>|null} [parties] The parties access is evaluated on behalf of. Access is granted if the end user has access to the effective resource for at least one of the parties.
- * @property {boolean} includeDialogParty Whether the dialog's own party is included in the evaluation in addition to "parties".
+ * @property {Array<string>|null} [parties] Other parties than the dialog's that access is evaluated on behalf of, each at its own party and without access restriction. Access is granted if the end user has access to the effective resource for at least one of the parties, or if any of "dialogPartyChecks" permits.
+ * @property {Array<V1ServiceOwnerDialogsQueriesGetTransmission_DialogPartyCheck>|null} [dialogPartyChecks] Checks evaluated on behalf of the dialog's own party. Access is granted if any check, or any entry in "parties", permits. Empty when the dialog's party is not evaluated.
  * @property {string|null} [action] The XACML action to evaluate. Null when not overridden; the effective action is then "read".
  * @property {string|null} [tokenRef] The service owner supplied reference identifying this context in the dialog token's "e" claim, if any. Null when the carrying entity's id is used instead. Sharing a value between entities in one dialog forms an OR-group: authorization for any group member adds the shared value to "e". Recipients must also validate the token's dialog id ("i").
  * @property {DialogsEntitiesAuthorizationContexts_AuthorizationContextUnauthorizedPresentation} unauthorizedPresentation Controls how the entity is presented to end users that fail the authorization check: "disabled" keeps the entity visible but masks its URLs and embedded content references, while "excluded" removes it from the collection it belongs to entirely, leaving only its id and creation time in the sibling "excluded" list (e.g. "excludedTransmissions" beside "transmissions").
@@ -1091,8 +1149,8 @@
  * @typedef {object} V1ServiceOwnerDialogsQueriesGet_AuthorizationContext
  * @property {string|null} [serviceResource] A service resource that overrides the dialog's own service resource in the authorization evaluation, referring to another service policy.
  * @property {string|null} [additionalResourceAttribute] An additional resource attribute to be matched within the effective service policy, e.g. a task or subresource.
- * @property {Array<string>|null} [parties] The parties access is evaluated on behalf of. Access is granted if the end user has access to the effective resource for at least one of the parties.
- * @property {boolean} includeDialogParty Whether the dialog's own party is included in the evaluation in addition to "parties".
+ * @property {Array<string>|null} [parties] Other parties than the dialog's that access is evaluated on behalf of, each at its own party and without access restriction. Access is granted if the end user has access to the effective resource for at least one of the parties, or if any of "dialogPartyChecks" permits.
+ * @property {Array<V1ServiceOwnerDialogsQueriesGet_DialogPartyCheck>|null} [dialogPartyChecks] Checks evaluated on behalf of the dialog's own party. Access is granted if any check, or any entry in "parties", permits. Empty when the dialog's party is not evaluated.
  * @property {string|null} [action] The XACML action to evaluate. Null when not overridden; the effective action is then "read".
  * @property {string|null} [tokenRef] The service owner supplied reference identifying this context in the dialog token's "e" claim, if any. Null when the carrying entity's id is used instead. Sharing a value between entities in one dialog forms an OR-group: authorization for any group member adds the shared value to "e". Recipients must also validate the token's dialog id ("i").
  * @property {DialogsEntitiesAuthorizationContexts_AuthorizationContextUnauthorizedPresentation} unauthorizedPresentation Controls how the entity is presented to end users that fail the authorization check: "disabled" keeps the entity visible but masks its URLs and embedded content references, while "excluded" removes it from the collection it belongs to entirely, leaving only its id and creation time in the sibling "excluded" list (e.g. "excludedTransmissions" beside "transmissions").
@@ -1104,8 +1162,8 @@
  * @typedef {object} V1ServiceOwnerDialogsQueriesSearchTransmissions_AuthorizationContext
  * @property {string|null} [serviceResource] A service resource that overrides the dialog's own service resource in the authorization evaluation, referring to another service policy.
  * @property {string|null} [additionalResourceAttribute] An additional resource attribute to be matched within the effective service policy, e.g. a task or subresource.
- * @property {Array<string>|null} [parties] The parties access is evaluated on behalf of. Access is granted if the end user has access to the effective resource for at least one of the parties.
- * @property {boolean} includeDialogParty Whether the dialog's own party is included in the evaluation in addition to "parties".
+ * @property {Array<string>|null} [parties] Other parties than the dialog's that access is evaluated on behalf of, each at its own party and without access restriction. Access is granted if the end user has access to the effective resource for at least one of the parties, or if any of "dialogPartyChecks" permits.
+ * @property {Array<V1ServiceOwnerDialogsQueriesSearchTransmissions_DialogPartyCheck>|null} [dialogPartyChecks] Checks evaluated on behalf of the dialog's own party. Access is granted if any check, or any entry in "parties", permits. Empty when the dialog's party is not evaluated.
  * @property {string|null} [action] The XACML action to evaluate. Null when not overridden; the effective action is then "read".
  * @property {string|null} [tokenRef] The service owner supplied reference identifying this context in the dialog token's "e" claim, if any. Null when the carrying entity's id is used instead. Sharing a value between entities in one dialog forms an OR-group: authorization for any group member adds the shared value to "e". Recipients must also validate the token's dialog id ("i").
  * @property {DialogsEntitiesAuthorizationContexts_AuthorizationContextUnauthorizedPresentation} unauthorizedPresentation Controls how the entity is presented to end users that fail the authorization check: "disabled" keeps the entity visible but masks its URLs and embedded content references, while "excluded" removes it from the collection it belongs to entirely, leaving only its id and creation time in the sibling "excluded" list (e.g. "excludedTransmissions" beside "transmissions").
@@ -1122,7 +1180,9 @@ export const Http_HttpVerb = undefined;
 export const JsonPatchOperations_Operation = undefined;
 export const PaginatedListOfV1ServiceOwnerDialogsQueriesSearchEndUserContext_DialogEndUserContextItem = undefined;
 export const PaginatedListOfV1ServiceOwnerDialogsQueriesSearch_Dialog = undefined;
+export const ConflictProblemDetails = undefined;
 export const ProblemDetails = undefined;
+export const ProblemDetailsConflict = undefined;
 export const ProblemDetails_Error = undefined;
 export const V1CommonContent_ContentValue = undefined;
 export const V1CommonIdentifierLookup_IdentifierLookupServiceOwner = undefined;
@@ -1227,3 +1287,8 @@ export const DialogsEntitiesAuthorizationContexts_AuthorizationContextUnauthoriz
 export const V1ServiceOwnerDialogsQueriesGetTransmission_AuthorizationContext = undefined;
 export const V1ServiceOwnerDialogsQueriesGet_AuthorizationContext = undefined;
 export const V1ServiceOwnerDialogsQueriesSearchTransmissions_AuthorizationContext = undefined;
+export const V1CommonAuthorizationContexts_DialogPartyCheck = undefined;
+export const DialogsEntitiesAuthorizationContexts_DialogPartyCheckAccessRestriction = undefined;
+export const V1ServiceOwnerDialogsQueriesGetTransmission_DialogPartyCheck = undefined;
+export const V1ServiceOwnerDialogsQueriesGet_DialogPartyCheck = undefined;
+export const V1ServiceOwnerDialogsQueriesSearchTransmissions_DialogPartyCheck = undefined;

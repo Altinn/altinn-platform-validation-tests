@@ -8,6 +8,7 @@ import { AltinnScopes, CreateScopeString } from "../../../../scopes.js";
 import { AuthenticationClient, CreateRequestSystemUserBuilder, RequestSystemUserBuildingBlocks, RequestSystemUserClient, SystemUserBuildingBlocks, SystemUserClient, SystemUserRequestDomainChecks } from "../../../authentication-imports.js";
 import { DeleteSystemUser } from "../../../building-blocks/access-management-bff/system-user/index.js";
 import { ApproveSystemUserRequest, GetSystemUserRequest } from "../../../building-blocks/access-management-bff/system-user-request/index.js";
+import { deleteRequest } from "../commons.js";
 
 /**
  * Whether to draw a random customer rather than walk the list.
@@ -178,7 +179,7 @@ export function setup() {
         const customerMayApprove = SystemUserRequestDomainChecks.CheckUserMayApprove(requestToApprove);
 
         if (!readyToApprove || !customerMayApprove) {
-            RequestSystemUserBuildingBlocks.VendorDelete(apiClients.vendor.requestSystemUserClient, createdRequest?.id);
+            deleteRequest(apiClients.vendor.requestSystemUserClient, createdRequest?.id);
 
             fail("cannot ask for a system user token: the system user request was not there for the customer to approve");
         }
@@ -186,7 +187,7 @@ export function setup() {
         const approved = ApproveSystemUserRequest(apiClients.approver.bffRequestClient, Number(customer.orgPartyId), createdRequest?.id);
 
         if (!SystemUserRequestDomainChecks.CheckRequestApproved(approved)) {
-            RequestSystemUserBuildingBlocks.VendorDelete(apiClients.vendor.requestSystemUserClient, createdRequest?.id);
+            deleteRequest(apiClients.vendor.requestSystemUserClient, createdRequest?.id);
 
             fail("cannot ask for a system user token: the customer did not approve the system user request");
         }

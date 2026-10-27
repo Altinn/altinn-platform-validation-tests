@@ -9,21 +9,21 @@ import { withRetries } from "../../common/retry.js";
  *
  * @param {AppClient} appClient Client for the App API.
  * @param {AppCloudEventRequestModel} request Event payload.
- * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @param {string|null} [idempotencyKey] Optional GUID reused across retries to skip duplicate submissions.
+ * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {string|null} Created event identifier.
  */
 export function AppCreate(
     appClient,
     request,
-    labels = null,
     idempotencyKey = null,
+    labels = null,
 ) {
     const res = withRetries(
         () => appClient.AppCreate(
             request,
-            labels,
             idempotencyKey,
+            labels,
         ),
         "AppCreate",
     );

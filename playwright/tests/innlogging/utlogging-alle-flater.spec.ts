@@ -9,9 +9,7 @@ import { test } from "../../fixtures/test";
 // Ikke i prod: der logger testene inn via Mockporten, og utloggingen derfra lander
 // på en feilside.
 
-// Skrudd av til arbeidsflaten logger ut ordentlig: den kan vise brukeren som
-// innlogget etter utlogging. https://github.com/Altinn/dialogporten-frontend/issues/4683
-test.fixme("Bruker er utlogget på alle flater etter utlogging fra arbeidsflate", { tag: ["@at23", "@tt02"] }, async ({
+test("Bruker er utlogget på alle flater etter utlogging fra arbeidsflate", { tag: ["@at23", "@tt02"] }, async ({
     innlogging,
     user,
     arbeidsflate,
@@ -43,9 +41,7 @@ test.fixme("Bruker er utlogget på alle flater etter utlogging fra arbeidsflate"
     });
 });
 
-// Skrudd av til arbeidsflaten logger ut ordentlig: den kan vise brukeren som
-// innlogget etter utlogging. https://github.com/Altinn/dialogporten-frontend/issues/4683
-test.fixme("Bruker er utlogget på alle flater etter utlogging fra profilen", { tag: ["@at23", "@tt02"] }, async ({
+test("Bruker er utlogget på alle flater etter utlogging fra profilen", { tag: ["@at23", "@tt02"] }, async ({
     innlogging,
     user,
     arbeidsflate,

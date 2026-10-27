@@ -26,6 +26,7 @@ export function AccessListsGetResourceConnections(
             owner,
             identifier,
             query,
+            {},
             labels,
         ),
         "AccessListsGetResourceConnections",
