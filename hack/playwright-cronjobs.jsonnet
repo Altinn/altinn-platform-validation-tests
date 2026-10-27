@@ -174,6 +174,11 @@ local cronJob(
 
     envFrom: [
       {
+        configMapRef: {
+          name: 'deploy-environments-' + environment,
+        },
+      },
+      {
         secretRef: {
           name: 'playwright-user-' + environment,
         },
