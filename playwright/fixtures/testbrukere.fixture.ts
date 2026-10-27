@@ -8,15 +8,9 @@ import { TestUser } from "../config/environment";
 const testdata =
     process.env.TEST_DATA_PATH ?? path.join(__dirname, "..", "testdata");
 
-// Navnekolonnene kommer fra Register.
-const KOLONNER = "pid,name,first_name,middle_name,last_name";
-
 function lesTestbrukere(gruppe: string, miljo: string): TestUser[] {
     const fil = path.join(testdata, gruppe, `${miljo}.csv`);
-    const [header, ...rader] = readFileSync(fil, "utf8").trim().split(/\r?\n/);
-    if (header !== KOLONNER) {
-        throw new Error(`${fil} må ha kolonnene ${KOLONNER}, men har ${header}.`);
-    }
+    const [, ...rader] = readFileSync(fil, "utf8").trim().split(/\r?\n/);
 
     return rader.map((rad) => {
         const [pid, name, firstName, middleName, lastName] = rad.split(",");
