@@ -16,3 +16,9 @@ test_definitions:
         test_run:
           secrets:
             - authorization-subscription-key-tt02
+  # Contact points came into the export with Altinn/altinn-auth#4582. Add tt02,
+  # yt01 and prod once it is released there.
+  - test_file: export-contact-points.js
+    contexts:
+      - environment: at22
+      - environment: at23

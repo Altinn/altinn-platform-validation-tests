@@ -1,3 +1,4 @@
+import runExportContactPoints, { setup as setupExportContactPoints } from "./export-contact-points.js";
 import runGetOrgs, { setup as setupGetOrgs } from "./get-orgs.js";
 import runGetUpdatedResources, { setup as setupGetUpdatedResources } from "./get-updated-resources.js";
 
@@ -10,6 +11,7 @@ export function setup() {
     return {
         getUpdatedResources: setupGetUpdatedResources(),
         getOrgs: setupGetOrgs(),
+        exportContactPoints: setupExportContactPoints(),
     };
 }
 
@@ -28,4 +30,5 @@ export function setup() {
 export default function () {
     runGetUpdatedResources();
     runGetOrgs();
+    runExportContactPoints();
 }
