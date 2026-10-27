@@ -2,7 +2,7 @@ import { expect, Page } from "@playwright/test";
 import { randomUUID } from "crypto";
 
 import { ApiClient } from "../clients";
-import { CorrespondenceDetails, InitializedCorrespondences } from "../clients/correspondence";
+import { InitializedCorrespondences } from "../clients/correspondence";
 import { TestUser } from "../config/environment";
 import { aktivAktorUuid, brukerIder } from "./sesjonsdata";
 
@@ -50,14 +50,6 @@ export async function sendMelding(api: ApiClient, miljo: string, mottaker: TestU
 
     const { correspondences }: InitializedCorrespondences = await response.json();
     return { id: correspondences[0].correspondenceId, ...melding };
-}
-
-/** Statusene meldingen har vært gjennom, som tjenesteeieren ser dem: Published, Read, Confirmed og så videre. */
-export async function meldingsstatuser(api: ApiClient, miljo: string, { id }: Melding): Promise<string[]> {
-    const response = await api.correspondence.GetCorrespondenceDetails(await tjenesteeierToken(api, miljo), id);
-    expect(response.ok(), `Henting av melding ${id}: ${response.status()}`).toBe(true);
-    const detaljer: CorrespondenceDetails = await response.json();
-    return detaljer.statusHistory.map(({ status }) => status);
 }
 
 /**

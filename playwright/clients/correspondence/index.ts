@@ -25,17 +25,6 @@ export class CorrespondenceApiClient {
     }
 
     /**
-     * Meldingen med statushistorikken, for avsender og mottaker.
-     *
-     * GET /correspondence/api/v1/correspondence/{correspondenceId}/details
-     */
-    GetCorrespondenceDetails(token: string, correspondenceId: string): Promise<APIResponse> {
-        return this.request.get(`${this.path}/${correspondenceId}/details`, {
-            headers: { Authorization: `Bearer ${token}` },
-        });
-    }
-
-    /**
      * Sletter meldingen for godt. Avsenderen kan bare slette før meldingen er publisert, og
      * mottakeren først når den er bekreftet, hvis den krever det.
      *
@@ -72,9 +61,4 @@ export type InitializeCorrespondences = {
 
 export type InitializedCorrespondences = {
     correspondences: { correspondenceId: string; status: string; recipient: string }[];
-};
-
-export type CorrespondenceDetails = {
-    status: string;
-    statusHistory: { status: string; statusChanged: string }[];
 };

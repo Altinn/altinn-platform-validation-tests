@@ -27,11 +27,16 @@ const AKTIVITETSLOGG: Record<Sprak, string> = {
     [Sprak.Nynorsk]: "Aktivitetslogg",
     [Sprak.Engelsk]: "Activity log",
 };
-// activity.status.correspondence_opened, uten "{actor}" foran.
+// activity.status.correspondence_opened og correspondence_confirmed, uten "{actor}" foran.
 const APNET_MELDINGEN: Record<Sprak, string> = {
     [Sprak.Bokmaal]: "åpnet meldingen.",
     [Sprak.Nynorsk]: "opna meldinga.",
     [Sprak.Engelsk]: "opened the message.",
+};
+const BEKREFTET_MELDINGEN: Record<Sprak, string> = {
+    [Sprak.Bokmaal]: "bekreftet meldingen.",
+    [Sprak.Nynorsk]: "stadfesta meldinga.",
+    [Sprak.Engelsk]: "confirmed the message.",
 };
 
 export class ArbeidsflateForsidePom {
@@ -141,17 +146,28 @@ export class ArbeidsflateForsidePom {
         await this.bekreftButton.click();
     }
 
-    /** "Bekreft" forsvinner når innboksen har tatt imot bekreftelsen. */
-    async assertMeldingBekreftet() {
+    /**
+     * "Bekreft" forsvinner når innboksen har tatt imot bekreftelsen, og aktivitetsloggen viser at
+     * `bruker` har bekreftet meldingen når Correspondence har registrert det. Det tar noen
+     * sekunder, og først da kan meldingen slettes.
+     */
+    async assertMeldingBekreftetAv(bruker: TestUser) {
         await expect(this.bekreftButton, "Meldingen er bekreftet").toBeHidden();
+        await this.assertIAktivitetsloggen(`${bruker.name} ${BEKREFTET_MELDINGEN[this.sprak]}`);
     }
 
     /** Aktivitetsloggen på dialogsiden viser at `bruker` har åpnet meldingen. */
     async assertMeldingApnetAv(bruker: TestUser) {
-        await this.aktivitetsloggButton.click();
-        await expect(this.aktivitetslogg, `${bruker.name} står som den som åpnet meldingen`).toContainText(
-            `${bruker.name} ${APNET_MELDINGEN[this.sprak]}`,
-        );
+        await this.assertIAktivitetsloggen(`${bruker.name} ${APNET_MELDINGEN[this.sprak]}`);
+    }
+
+    /** Aktivitetsloggen oppdaterer seg ikke selv, så dialogsiden lastes på nytt til `tekst` står der. */
+    private async assertIAktivitetsloggen(tekst: string) {
+        await expect(async () => {
+            await this.page.reload();
+            await this.aktivitetsloggButton.click();
+            await expect(this.aktivitetslogg).toContainText(tekst, { timeout: 1_000 });
+        }, `Aktivitetsloggen viser "${tekst}"`).toPass({ timeout: 15_000, intervals: [2_000] });
     }
 
     async navigateTo() {
