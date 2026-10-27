@@ -179,8 +179,8 @@ local cronJob(
         },
       },
       {
-        configMapRef: {
-          name: 'deploy-environments-' + environment,
+        secretRef: {
+          name: 'token-generator-creds',  // TODO: This won't work in prod..
         },
       },
     ],
