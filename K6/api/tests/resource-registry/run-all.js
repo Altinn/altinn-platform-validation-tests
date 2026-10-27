@@ -1,3 +1,4 @@
+import runExportContactPoints, { setup as setupExportContactPoints } from "./export-contact-points.js";
 import runGetOrgs, { setup as setupGetOrgs } from "./get-orgs.js";
 import runGetUpdatedResources, { setup as setupGetUpdatedResources } from "./get-updated-resources.js";
 
@@ -10,6 +11,7 @@ export function setup() {
     return {
         getUpdatedResources: setupGetUpdatedResources(),
         getOrgs: setupGetOrgs(),
+        exportContactPoints: setupExportContactPoints(),
     };
 }
 
@@ -24,8 +26,12 @@ export function setup() {
  * test therefore leaks a couple of rows, so it has to be started on purpose
  * rather than swept along by a run of everything. Wire it back in here once #848
  * is fixed.
+ *
+ * export-contact-points.js fails in every environment Altinn/altinn-auth#4582
+ * has not reached yet, which on writing is everything but at22 and at23.
  */
 export default function () {
     runGetUpdatedResources();
     runGetOrgs();
+    runExportContactPoints();
 }

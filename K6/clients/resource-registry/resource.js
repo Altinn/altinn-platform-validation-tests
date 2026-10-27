@@ -96,7 +96,6 @@ class ResourceClient {
                 endpoint: `${this.FULL_PATH}/resourcelist`,
                 action: TAGS.ResourceGetResourceList.action,
                 labels,
-                token: this.tokenGenerator.getToken(),
             }),
         );
     }
@@ -115,7 +114,6 @@ class ResourceClient {
                 endpoint: `${this.FULL_PATH}/export`,
                 action: TAGS.ResourceExport.action,
                 labels,
-                token: this.tokenGenerator.getToken(),
                 accept: "application/xml+rdf",
             }),
         );
