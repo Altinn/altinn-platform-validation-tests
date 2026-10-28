@@ -51,10 +51,30 @@ npx -y @azure/static-web-apps-cli deploy \
 if [ -n "${SLACK_WEBHOOK_URL:-}" ]; then
     echo "Sending Slack notification..."
 
+    # Bare testtitler, ikke feilmeldinger: de kan inneholde testdata fra prod.
+    payload=$(METRICS_EXIT="$metrics_exit" PLAYWRIGHT_EXIT="$playwright_exit" ENVIRONMENT="$ENVIRONMENT" REPORT_URL="$REPORT_URL" node -e '
+const { METRICS_EXIT, PLAYWRIGHT_EXIT, ENVIRONMENT, REPORT_URL } = process.env;
+if (METRICS_EXIT !== "53") {
+    console.log(JSON.stringify({ text: `:warning: Playwright *${ENVIRONMENT}*: kjøringen kom ikke i gang (exit ${PLAYWRIGHT_EXIT}). Rapporten er tom, sjekk poddloggen.` }));
+    process.exit(0);
+}
+const report = JSON.parse(require("fs").readFileSync("test-results.json", "utf8"));
+const failed = [];
+const walk = (suite, path) => {
+    for (const child of suite.suites ?? []) walk(child, [...path, child.title]);
+    for (const spec of suite.specs ?? []) if (!spec.ok) failed.push([...path, spec.title].join(" › "));
+};
+report.suites.forEach(suite => walk(suite, [suite.title]));
+const { expected, unexpected, flaky } = report.stats;
+const list = failed.slice(0, 10).map(title => `• ${title}`).join("\n");
+const more = failed.length > 10 ? `\n…og ${failed.length - 10} til` : "";
+console.log(JSON.stringify({ text: `:red_circle: Playwright *${ENVIRONMENT}*: ${unexpected} av ${expected + unexpected + flaky} tester feilet\n${list}${more}\nRapport: ${REPORT_URL}` }));
+')
+
     curl \
         -s -X POST "$SLACK_WEBHOOK_URL" \
         -H 'Content-type: application/json' \
-        --data "{\"text\":\"Playwright tests failed, report in: $REPORT_URL\"}"
+        --data "$payload"
 fi
 
 
