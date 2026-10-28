@@ -42,4 +42,6 @@ jobs:
         working-directory: "playwright"
         env:
           TEST_IDP_PASSWORD: ${{ secrets.TEST_IDP_PASSWORD }}
+          TOKEN_GENERATOR_USERNAME: ${{ secrets.TOKEN_GENERATOR_USERNAME }}
+          TOKEN_GENERATOR_PASSWORD: ${{ secrets.TOKEN_GENERATOR_PASSWORD }}
         run: "npm run test:at23:flaky"
