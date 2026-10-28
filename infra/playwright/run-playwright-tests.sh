@@ -61,11 +61,11 @@ if (METRICS_EXIT !== "53") {
 }
 const report = JSON.parse(require("fs").readFileSync("test-results.json", "utf8"));
 const failed = [];
-const walk = (suite, path) => {
-    for (const child of suite.suites ?? []) walk(child, [...path, child.title]);
-    for (const spec of suite.specs ?? []) if (!spec.ok) failed.push([...path, spec.title].join(" › "));
+const walk = suite => {
+    for (const child of suite.suites ?? []) walk(child);
+    for (const spec of suite.specs ?? []) if (!spec.ok) failed.push(spec.title);
 };
-report.suites.forEach(suite => walk(suite, [suite.title]));
+report.suites.forEach(walk);
 const { expected, unexpected, flaky } = report.stats;
 const list = failed.slice(0, 10).map(title => `• ${title}`).join("\n");
 const more = failed.length > 10 ? `\n…og ${failed.length - 10} til` : "";
