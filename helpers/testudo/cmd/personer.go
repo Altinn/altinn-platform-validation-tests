@@ -22,6 +22,31 @@ type personerOptions struct {
 	register   bool
 	jsonOutput bool
 	env        string
+	utskrift   utskriftValg
+}
+
+// standardPersonKolonner er CSV-kolonnene uten --kolonner.
+var standardPersonKolonner = []string{"ssn", "userId", "userPartyId", "userPartyUuid"}
+
+// personKolonner er kolonnene en person kan skrives ut med i CSV.
+var personKolonner = []kolonne[PersonMedAltinn]{
+	{navn: "ssn", verdi: func(p PersonMedAltinn) string { return p.Foedselsnummer }},
+	{navn: "userId", register: true, verdi: func(p PersonMedAltinn) string { return brukerID(p.Altinn) }},
+	{navn: "userPartyId", register: true, verdi: func(p PersonMedAltinn) string { return partyID(p.Altinn) }},
+	{navn: "userPartyUuid", register: true, verdi: func(p PersonMedAltinn) string { return partyUUID(p.Altinn) }},
+	// Etternavnet fra Register når det finnes, ellers fra Tenor.
+	{navn: "lastName", verdi: func(p PersonMedAltinn) string {
+		if p.Altinn != nil && p.Altinn.LastName != "" {
+			return p.Altinn.LastName
+		}
+		return p.Etternavn
+	}},
+	{navn: "firstName", verdi: func(p PersonMedAltinn) string {
+		if p.Altinn != nil && p.Altinn.FirstName != "" {
+			return p.Altinn.FirstName
+		}
+		return p.Fornavn
+	}},
 }
 
 func newPersonerCmd() *cobra.Command {
@@ -33,6 +58,9 @@ func newPersonerCmd() *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			if opts.antall < 1 {
 				return fmt.Errorf("%w: --antall må være minst 1", ErrInvalid)
+			}
+			if err := validerUtskrift(opts.utskrift, opts.jsonOutput, opts.register, personKolonner, standardPersonKolonner); err != nil {
+				return err
 			}
 			// Register settes opp før Tenor, så feil i konfigurasjonen kommer
 			// før vi henter noe.
@@ -47,7 +75,10 @@ func newPersonerCmd() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			return runPersoner(cmd.Context(), c, reg, cmd.OutOrStdout(), cmd.ErrOrStderr(), opts)
+			logg := cmd.ErrOrStderr()
+			return medUtFil(opts.utskrift.ut, cmd.OutOrStdout(), logg, func(ut io.Writer) error {
+				return runPersoner(cmd.Context(), c, reg, ut, logg, opts)
+			})
 		},
 	}
 
@@ -75,6 +106,7 @@ func newPersonerCmd() *cobra.Command {
 		&opts.env, "env", "tt02",
 		"Miljø for env-fil: tt02, at22, at23",
 	)
+	leggTilUtskriftFlagg(cmd, &opts.utskrift, standardPersonKolonner)
 
 	return cmd
 }
@@ -156,10 +188,19 @@ type PersonMedAltinn struct {
 
 // runPersoner skriver personene til ut og meldinger til logg, som i
 // TS-versjonen: fnr per linje, fnr og navn med --navn, eller JSON med --json.
-// Med --register skrives JSON der hver person har parten fra Register (reg).
+// Med --register får hver person parten fra Register (reg). Med --format csv
+// skrives de valgte kolonnene.
 func runPersoner(ctx context.Context, c *TenorClient, reg *RegisterClient, ut, logg io.Writer, opts *personerOptions) error {
 	if opts.register && reg == nil {
 		return fmt.Errorf("%w: --register krever en Register-klient", ErrInvalid)
+	}
+	format := opts.utskrift.effektivtFormat(opts.jsonOutput, opts.register)
+	var kolonner []kolonne[PersonMedAltinn]
+	if format == formatCSV {
+		var err error
+		if kolonner, err = velgKolonner(personKolonner, opts.utskrift.kolonner, standardPersonKolonner, opts.register); err != nil {
+			return err
+		}
 	}
 
 	kql := opts.kql
@@ -179,6 +220,10 @@ func runPersoner(ctx context.Context, c *TenorClient, reg *RegisterClient, ut, l
 		fmt.Fprintf(logg, "Advarsel: fant bare %d av %d ønskede personer.\n", len(personer), opts.antall)
 	}
 
+	rader := make([]PersonMedAltinn, len(personer))
+	for i, p := range personer {
+		rader[i] = PersonMedAltinn{Person: p}
+	}
 	if opts.register {
 		fnr := make([]string, len(personer))
 		for i, p := range personer {
@@ -188,16 +233,25 @@ func runPersoner(ctx context.Context, c *TenorClient, reg *RegisterClient, ut, l
 		if err != nil {
 			return err
 		}
-		rader := make([]PersonMedAltinn, len(personer))
 		for i, p := range personer {
-			rader[i] = PersonMedAltinn{Person: p, AltinnEnvironment: opts.env}
+			rader[i].AltinnEnvironment = opts.env
 			if party, ok := parter[p.Foedselsnummer]; ok {
 				rader[i].Altinn = &party
 			}
 		}
-		return skrivJSON(ut, rader)
 	}
-	if opts.jsonOutput {
+
+	switch format {
+	case formatCSV:
+		hoppetOver, err := skrivCSV(ut, rader, kolonner)
+		if hoppetOver > 0 {
+			fmt.Fprintf(logg, "Hoppet over %d personer som mangler verdier (f.eks. ikke i Register eller uten bruker).\n", hoppetOver)
+		}
+		return err
+	case formatJSON:
+		if opts.register {
+			return skrivJSON(ut, rader)
+		}
 		return skrivJSON(ut, personer)
 	}
 	for _, p := range personer {
