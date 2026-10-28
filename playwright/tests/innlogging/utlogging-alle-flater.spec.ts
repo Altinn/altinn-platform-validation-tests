@@ -23,7 +23,7 @@ test("Bruker er utlogget på alle flater etter utlogging fra arbeidsflate", { ta
     tilgangsstyring,
     infoportal,
 }) => {
-    test.skip(browserName === "webkit", "Playwright krasjer i WebKit på Linux, microsoft/playwright#43067");
+    test.fixme(browserName === "webkit", "Playwright krasjer i WebKit på Linux, microsoft/playwright#43067");
 
     await test.step("Bruker logger inn via arbeidsflate", async () => {
         await innlogging.loggInnViaArbeidsflate(user);
@@ -58,7 +58,7 @@ test("Bruker er utlogget på alle flater etter utlogging fra profilen", { tag: [
     tilgangsstyring,
     infoportal,
 }) => {
-    test.skip(browserName === "webkit", "Playwright krasjer i WebKit på Linux, microsoft/playwright#43067");
+    test.fixme(browserName === "webkit", "Playwright krasjer i WebKit på Linux, microsoft/playwright#43067");
 
     await test.step("Bruker logger inn via arbeidsflate og går til profilen", async () => {
         await innlogging.loggInnViaArbeidsflate(user);
@@ -96,7 +96,7 @@ test("Bruker er utlogget på alle flater etter utlogging fra tilgangsstyring", {
     tilgangsstyring,
     infoportal,
 }) => {
-    test.skip(browserName === "webkit", "Playwright krasjer i WebKit på Linux, microsoft/playwright#43067");
+    test.fixme(browserName === "webkit", "Playwright krasjer i WebKit på Linux, microsoft/playwright#43067");
 
     await test.step("Bruker logger inn via tilgangsstyring", async () => {
         await innlogging.loggInnViaTilgangsstyring(user);
