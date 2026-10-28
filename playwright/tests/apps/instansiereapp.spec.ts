@@ -1,4 +1,3 @@
-import { etternavn } from "../../config/environment";
 import { expect, test } from "../../fixtures/test";
 import { slettInstans } from "../../helpers/instanser";
 import { rettighetshaverUuid } from "../../helpers/rettighetshavere";
@@ -66,7 +65,7 @@ test("Bruker instansierer app og gir tilgang, med direktenavigasjon til appen", 
 
     await test.step("Person-A legger til person-B som ny bruker", async () => {
         await tilgangsstyring.brukereLink.click();
-        await tilgangsstyring.brukere.leggTilNyBruker(personB.pid, etternavn(personB));
+        await tilgangsstyring.brukere.leggTilNyBruker(personB.pid, personB.lastName);
     });
 
     await test.step("Person-A gir person-B tilgangspakken som gir tilgang til appen", async () => {
@@ -142,7 +141,7 @@ test.fixme("Bruker instansierer app", { tag: ["@at23", "@tt02"] }, async ({
 
     await test.step("Person-A legger til person-B som ny bruker", async () => {
         await tilgangsstyring.brukereLink.click();
-        await tilgangsstyring.brukere.leggTilNyBruker(personB.pid, etternavn(personB));
+        await tilgangsstyring.brukere.leggTilNyBruker(personB.pid, personB.lastName);
     });
 
     await test.step("Person-A gir person-B tilgangspakken som gir tilgang til appen", async () => {
