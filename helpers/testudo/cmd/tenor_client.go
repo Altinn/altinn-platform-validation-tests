@@ -159,12 +159,24 @@ const TenorMaksPerSide = 200
 // (fødselsnummer for freg, organisasjonsnummer for brreg-er-fr).
 // Første kall er uten seed, så utvalget blir tilfeldig fra gang til gang.
 func (c *TenorClient) HentMange(ctx context.Context, kilde Kilde, kql string, antall int) ([]TenorMetadata, error) {
+	return c.HentMangeFiltrert(ctx, kilde, kql, antall, nil)
+}
+
+// HentMangeFiltrert er HentMange, men tar bare med dokumenter der behold gir
+// true. Det er for krav KQL ikke kan uttrykke, f.eks. at en virksomhet har
+// daglig leder. Siden noen dokumenter forkastes, hentes flere per kall og i
+// flere runder enn uten filter.
+func (c *TenorClient) HentMangeFiltrert(ctx context.Context, kilde Kilde, kql string, antall int, behold func(TenorMetadata) bool) ([]TenorMetadata, error) {
 	if antall <= 0 {
 		return nil, nil
 	}
 	perSide := int32(min(antall, TenorMaksPerSide))
 	// Noen ekstra runder i tilfelle overlapp mellom seeds.
 	maksRunder := (antall+TenorMaksPerSide-1)/TenorMaksPerSide + 5
+	if behold != nil {
+		perSide = int32(min(max(2*antall, 20), TenorMaksPerSide))
+		maksRunder += 15
+	}
 
 	sett := make(map[string]bool, antall)
 	dokumenter := make([]TenorMetadata, 0, antall)
@@ -189,12 +201,16 @@ func (c *TenorClient) HentMange(ctx context.Context, kilde Kilde, kql string, an
 				continue
 			}
 			sett[md.ID] = true
+			if behold != nil && !behold(md) {
+				continue
+			}
 			dokumenter = append(dokumenter, md)
 			if len(dokumenter) == antall {
 				break
 			}
 		}
-		if int64(len(dokumenter)) >= res.Treff {
+		// Alle treffene er sett, også de som ble forkastet.
+		if int64(len(sett)) >= res.Treff {
 			break
 		}
 		seed = Ptr(res.Seed + 1)
