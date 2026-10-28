@@ -48,7 +48,7 @@ npx -y @azure/static-web-apps-cli deploy \
     --env "$ENVIRONMENT" \
     --verbose silly --print-config
 
-if [ -n "${SLACK_BOT_TOKEN:-}" ]; then
+if [ -n "${SLACK_WEBHOOK_URL:-}" ]; then
     echo "Sending Slack notification..."
 
     if [ "$metrics_exit" -eq 53 ]; then
