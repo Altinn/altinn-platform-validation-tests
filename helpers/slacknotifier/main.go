@@ -17,7 +17,6 @@ const maxListedTests = 5
 
 type Report struct {
 	Suites []Suite `json:"suites"`
-	Stats  Stats   `json:"stats"`
 }
 
 type Suite struct {
@@ -27,28 +26,38 @@ type Suite struct {
 
 type Spec struct {
 	Title string `json:"title"`
+	File  string `json:"file"`
 	OK    bool   `json:"ok"`
+	Tests []Test `json:"tests"`
 }
 
-type Stats struct {
-	Expected   int `json:"expected"`
-	Unexpected int `json:"unexpected"`
-	Flaky      int `json:"flaky"`
+type Test struct {
+	Status string `json:"status"`
 }
 
-// Rapporten har én suite per project, så en test som feiler i flere nettlesere listes én gang.
-func failedTests(suites []Suite, failed []string) []string {
+type Summary struct {
+	ran    map[string]bool
+	failed []string
+}
+
+// Rapporten har én suite per project. En test telles én gang uansett hvor mange
+// nettlesere den kjørte i, og regnes som feilet hvis den feilet i minst én.
+func summarize(suites []Suite, summary *Summary) {
 	for _, suite := range suites {
-		failed = failedTests(suite.Suites, failed)
+		summarize(suite.Suites, summary)
 
 		for _, spec := range suite.Specs {
-			if !spec.OK && !slices.Contains(failed, spec.Title) {
-				failed = append(failed, spec.Title)
+			if !slices.ContainsFunc(spec.Tests, func(t Test) bool { return t.Status != "skipped" }) {
+				continue
+			}
+
+			summary.ran[spec.File+spec.Title] = true
+
+			if !spec.OK && !slices.Contains(summary.failed, spec.Title) {
+				summary.failed = append(summary.failed, spec.Title)
 			}
 		}
 	}
-
-	return failed
 }
 
 func escape(text string) string {
@@ -64,23 +73,20 @@ func environmentName(environment string) string {
 }
 
 // Bare testtitler, ikke feilmeldinger: de kan inneholde testdata fra prod.
-func failedMessage(report Report, environment string, reportURL string) string {
-	failed := failedTests(report.Suites, nil)
-	total := report.Stats.Expected + report.Stats.Unexpected + report.Stats.Flaky
-
+func failedMessage(summary Summary, environment string, reportURL string) string {
 	var b strings.Builder
 
 	fmt.Fprintf(
 		&b,
 		":red_circle: *%s*: %d av %d Playwright-tester feilet",
 		environmentName(environment),
-		report.Stats.Unexpected,
-		total,
+		len(summary.failed),
+		len(summary.ran),
 	)
 
-	for i, title := range failed {
+	for i, title := range summary.failed {
 		if i == maxListedTests {
-			fmt.Fprintf(&b, "\n…og %d til, se rapporten", len(failed)-maxListedTests)
+			fmt.Fprintf(&b, "\n…og %d til, se rapporten", len(summary.failed)-maxListedTests)
 			break
 		}
 
@@ -170,8 +176,13 @@ func main() {
 
 		if err := json.Unmarshal(data, &report); err != nil {
 			log.Printf("Could not parse the report: %v", err)
-		} else if report.Stats.Expected+report.Stats.Unexpected+report.Stats.Flaky > 0 {
-			text = failedMessage(report, *environment, *reportURL)
+		} else {
+			summary := Summary{ran: map[string]bool{}}
+			summarize(report.Suites, &summary)
+
+			if len(summary.ran) > 0 {
+				text = failedMessage(summary, *environment, *reportURL)
+			}
 		}
 	}
 
