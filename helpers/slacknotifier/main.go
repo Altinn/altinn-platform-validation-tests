@@ -12,7 +12,7 @@ import (
 	"time"
 )
 
-const maxListedTests = 10
+const maxListedTests = 5
 
 type Report struct {
 	Suites []Suite `json:"suites"`
@@ -33,6 +33,18 @@ type Stats struct {
 	Expected   int `json:"expected"`
 	Unexpected int `json:"unexpected"`
 	Flaky      int `json:"flaky"`
+}
+
+type PostMessageRequest struct {
+	Channel  string `json:"channel"`
+	Text     string `json:"text"`
+	ThreadTS string `json:"thread_ts,omitempty"`
+}
+
+type PostMessageResponse struct {
+	OK    bool   `json:"ok"`
+	Error string `json:"error"`
+	TS    string `json:"ts"`
 }
 
 func failedTests(suites []Suite) []string {
@@ -59,8 +71,19 @@ func environmentName(environment string) string {
 	return environment
 }
 
+func bulletList(titles []string) string {
+	var b strings.Builder
+
+	for _, title := range titles {
+		fmt.Fprintf(&b, "\n• %s", title)
+	}
+
+	return b.String()
+}
+
 // Bare testtitler, ikke feilmeldinger: de kan inneholde testdata fra prod.
-func failedMessage(report Report, environment string, reportURL string) string {
+// Hele lista legges i tråden når den er lengre enn maxListedTests.
+func failedMessages(report Report, environment string, reportURL string) (string, string) {
 	failed := failedTests(report.Suites)
 	total := report.Stats.Expected + report.Stats.Unexpected + report.Stats.Flaky
 
@@ -74,18 +97,19 @@ func failedMessage(report Report, environment string, reportURL string) string {
 		total,
 	)
 
-	for i, title := range failed {
-		if i == maxListedTests {
-			fmt.Fprintf(&b, "\n…og %d til", len(failed)-maxListedTests)
-			break
-		}
+	thread := ""
 
-		fmt.Fprintf(&b, "\n• %s", title)
+	if len(failed) > maxListedTests {
+		b.WriteString(bulletList(failed[:maxListedTests]))
+		fmt.Fprintf(&b, "\n…og %d til, se tråden", len(failed)-maxListedTests)
+		thread = "Alle feilede tester:" + bulletList(failed)
+	} else {
+		b.WriteString(bulletList(failed))
 	}
 
 	fmt.Fprintf(&b, "\nRapport: %s", reportURL)
 
-	return b.String()
+	return b.String(), thread
 }
 
 func notStartedMessage(environment string, playwrightExit int) string {
@@ -96,25 +120,44 @@ func notStartedMessage(environment string, playwrightExit int) string {
 	)
 }
 
-func send(webhookURL string, text string) error {
-	payload, err := json.Marshal(map[string]string{"text": text})
+func postMessage(apiURL string, token string, message PostMessageRequest) (string, error) {
+	payload, err := json.Marshal(message)
 	if err != nil {
-		return err
+		return "", err
 	}
+
+	req, err := http.NewRequest(http.MethodPost, apiURL+"/chat.postMessage", bytes.NewReader(payload))
+	if err != nil {
+		return "", err
+	}
+
+	req.Header.Set("Content-Type", "application/json; charset=utf-8")
+	req.Header.Set("Authorization", "Bearer "+token)
 
 	client := http.Client{Timeout: 30 * time.Second}
 
-	resp, err := client.Post(webhookURL, "application/json", bytes.NewReader(payload))
+	resp, err := client.Do(req)
 	if err != nil {
-		return err
+		return "", err
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		return fmt.Errorf("slack svarte %s", resp.Status)
+		return "", fmt.Errorf("slack svarte %s", resp.Status)
 	}
 
-	return nil
+	// Slack svarer 200 også ved feil, med ok=false og en feilkode.
+	var result PostMessageResponse
+
+	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
+		return "", err
+	}
+
+	if !result.OK {
+		return "", fmt.Errorf("slack svarte %s", result.Error)
+	}
+
+	return result.TS, nil
 }
 
 func main() {
@@ -148,10 +191,16 @@ func main() {
 		"Exit code from Playwright, shown when -not-started is set",
 	)
 
+	slackAPIURL := flag.String(
+		"slack-api-url",
+		"https://slack.com/api",
+		"The Slack Web API base URL",
+	)
+
 	dryRun := flag.Bool(
 		"dry-run",
 		false,
-		"Print the message instead of sending it",
+		"Print the messages instead of sending them",
 	)
 
 	flag.Parse()
@@ -160,7 +209,7 @@ func main() {
 		log.Fatal("-environment is not set")
 	}
 
-	var text string
+	var text, thread string
 
 	if *notStarted {
 		text = notStartedMessage(*environment, *playwrightExit)
@@ -176,21 +225,46 @@ func main() {
 			log.Fatal(err)
 		}
 
-		text = failedMessage(report, *environment, *reportURL)
+		text, thread = failedMessages(report, *environment, *reportURL)
 	}
 
 	if *dryRun {
 		fmt.Println(text)
+
+		if thread != "" {
+			fmt.Println("--- tråd ---")
+			fmt.Println(thread)
+		}
+
 		return
 	}
 
-	webhookURL := os.Getenv("SLACK_WEBHOOK_URL")
-	if webhookURL == "" {
-		log.Fatal("SLACK_WEBHOOK_URL environment variable is not set")
+	token := os.Getenv("SLACK_BOT_TOKEN")
+	if token == "" {
+		log.Fatal("SLACK_BOT_TOKEN environment variable is not set")
 	}
 
-	if err := send(webhookURL, text); err != nil {
+	channel := os.Getenv("SLACK_CHANNEL_ID")
+	if channel == "" {
+		log.Fatal("SLACK_CHANNEL_ID environment variable is not set")
+	}
+
+	ts, err := postMessage(*slackAPIURL, token, PostMessageRequest{
+		Channel: channel,
+		Text:    text,
+	})
+	if err != nil {
 		log.Fatalf("Could not send Slack notification: %v", err)
+	}
+
+	if thread != "" {
+		if _, err := postMessage(*slackAPIURL, token, PostMessageRequest{
+			Channel:  channel,
+			Text:     thread,
+			ThreadTS: ts,
+		}); err != nil {
+			log.Fatalf("Could not send the full list to the thread: %v", err)
+		}
 	}
 
 	log.Println("Slack notification sent")
