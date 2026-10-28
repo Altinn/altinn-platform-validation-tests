@@ -8,6 +8,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"slices"
 	"strings"
 	"time"
 )
@@ -35,20 +36,23 @@ type Stats struct {
 	Flaky      int `json:"flaky"`
 }
 
-func failedTests(suites []Suite) []string {
-	var failed []string
-
+// Rapporten har én suite per project, så en test som feiler i flere nettlesere listes én gang.
+func failedTests(suites []Suite, failed []string) []string {
 	for _, suite := range suites {
-		failed = append(failed, failedTests(suite.Suites)...)
+		failed = failedTests(suite.Suites, failed)
 
 		for _, spec := range suite.Specs {
-			if !spec.OK {
+			if !spec.OK && !slices.Contains(failed, spec.Title) {
 				failed = append(failed, spec.Title)
 			}
 		}
 	}
 
 	return failed
+}
+
+func escape(text string) string {
+	return strings.NewReplacer("&", "&amp;", "<", "&lt;", ">", "&gt;").Replace(text)
 }
 
 func environmentName(environment string) string {
@@ -61,7 +65,7 @@ func environmentName(environment string) string {
 
 // Bare testtitler, ikke feilmeldinger: de kan inneholde testdata fra prod.
 func failedMessage(report Report, environment string, reportURL string) string {
-	failed := failedTests(report.Suites)
+	failed := failedTests(report.Suites, nil)
 	total := report.Stats.Expected + report.Stats.Unexpected + report.Stats.Flaky
 
 	var b strings.Builder
@@ -80,7 +84,7 @@ func failedMessage(report Report, environment string, reportURL string) string {
 			break
 		}
 
-		fmt.Fprintf(&b, "\n• %s", title)
+		fmt.Fprintf(&b, "\n• %s", escape(title))
 	}
 
 	fmt.Fprintf(&b, "\nRapport: %s", reportURL)
@@ -136,16 +140,10 @@ func main() {
 		"URL to the published HTML report",
 	)
 
-	notStarted := flag.Bool(
-		"not-started",
-		false,
-		"The run stopped before any tests ran, so the report is empty",
-	)
-
 	playwrightExit := flag.Int(
 		"playwright-exit",
 		0,
-		"Exit code from Playwright, shown when -not-started is set",
+		"Exit code from Playwright, shown when no tests ran",
 	)
 
 	dryRun := flag.Bool(
@@ -160,23 +158,21 @@ func main() {
 		log.Fatal("-environment is not set")
 	}
 
-	var text string
+	// En globalSetup som stopper kjøringen gir en rapport uten kjørte tester.
+	// Krasjer Playwright før rapporten skrives, finnes den ikke i det hele tatt.
+	text := notStartedMessage(*environment, *playwrightExit)
 
-	if *notStarted {
-		text = notStartedMessage(*environment, *playwrightExit)
+	data, err := os.ReadFile(*jsonFile)
+	if err != nil {
+		log.Printf("Could not read the report: %v", err)
 	} else {
-		data, err := os.ReadFile(*jsonFile)
-		if err != nil {
-			log.Fatal(err)
-		}
-
 		var report Report
 
 		if err := json.Unmarshal(data, &report); err != nil {
-			log.Fatal(err)
+			log.Printf("Could not parse the report: %v", err)
+		} else if report.Stats.Expected+report.Stats.Unexpected+report.Stats.Flaky > 0 {
+			text = failedMessage(report, *environment, *reportURL)
 		}
-
-		text = failedMessage(report, *environment, *reportURL)
 	}
 
 	if *dryRun {

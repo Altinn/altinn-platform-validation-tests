@@ -51,11 +51,10 @@ npx -y @azure/static-web-apps-cli deploy \
 if [ -n "${SLACK_WEBHOOK_URL:-}" ]; then
     echo "Sending Slack notification..."
 
-    if [ "$metrics_exit" -eq 53 ]; then
-        sendSlackNotification -environment "$ENVIRONMENT" -report-url "$REPORT_URL"
-    else
-        sendSlackNotification -environment "$ENVIRONMENT" -not-started -playwright-exit "$playwright_exit"
-    fi
+    sendSlackNotification \
+        -environment "$ENVIRONMENT" \
+        -report-url "$REPORT_URL" \
+        -playwright-exit "$playwright_exit"
 fi
 
 
