@@ -1,0 +1,39 @@
+package cmd
+
+// Felles for --register: slår opp Tenor-identifikatorer i Register, som
+// lib/registerEnrichment.ts i frontend.
+
+import (
+	"context"
+	"encoding/json"
+	"fmt"
+	"io"
+)
+
+// registerFelt er feltene som hentes for --register.
+var registerFelt = []PartyFelt{FeltParty, FeltPerson, FeltOrg, FeltUser}
+
+// slaaOppIRegister slår opp identifikatorene og skriver til logg hvor mange
+// som ikke finnes i miljoe.
+func slaaOppIRegister(ctx context.Context, reg *RegisterClient, identifikatorer []string, miljoe string, logg io.Writer) (map[string]Party, error) {
+	parter, err := reg.SlaaOppIdentifikatorer(ctx, identifikatorer, registerFelt...)
+	if err != nil {
+		return nil, err
+	}
+	mangler := map[string]bool{}
+	for _, id := range identifikatorer {
+		if _, ok := parter[id]; !ok {
+			mangler[id] = true
+		}
+	}
+	if len(mangler) > 0 {
+		fmt.Fprintf(logg, "Register (%s): %d identifikatorer mangler; altinn = null.\n", miljoe, len(mangler))
+	}
+	return parter, nil
+}
+
+func skrivJSON(ut io.Writer, v any) error {
+	enc := json.NewEncoder(ut)
+	enc.SetIndent("", "  ")
+	return enc.Encode(v)
+}

@@ -111,7 +111,7 @@ func TestRunPersonerUtskrift(t *testing.T) {
 	}
 	for _, tt := range tests {
 		var ut, logg bytes.Buffer
-		if err := runPersoner(context.Background(), c, &ut, &logg, &tt.opts); err != nil {
+		if err := runPersoner(context.Background(), c, nil, &ut, &logg, &tt.opts); err != nil {
 			t.Fatalf("%s: %v", tt.navn, err)
 		}
 		if ut.String() != tt.vil {
@@ -120,7 +120,7 @@ func TestRunPersonerUtskrift(t *testing.T) {
 	}
 
 	var ut, logg bytes.Buffer
-	if err := runPersoner(context.Background(), c, &ut, &logg, &personerOptions{antall: 5, jsonOutput: true}); err != nil {
+	if err := runPersoner(context.Background(), c, nil, &ut, &logg, &personerOptions{antall: 5, jsonOutput: true}); err != nil {
 		t.Fatal(err)
 	}
 	var personer []map[string]any

@@ -34,11 +34,20 @@ func newPersonerCmd() *cobra.Command {
 			if opts.antall < 1 {
 				return fmt.Errorf("%w: --antall må være minst 1", ErrInvalid)
 			}
+			// Register settes opp før Tenor, så feil i konfigurasjonen kommer
+			// før vi henter noe.
+			var reg *RegisterClient
+			if opts.register {
+				var err error
+				if reg, err = nyRegisterKlient(opts.env); err != nil {
+					return err
+				}
+			}
 			c, err := nyTenorKlient()
 			if err != nil {
 				return err
 			}
-			return runPersoner(cmd.Context(), c, cmd.OutOrStdout(), cmd.ErrOrStderr(), opts)
+			return runPersoner(cmd.Context(), c, reg, cmd.OutOrStdout(), cmd.ErrOrStderr(), opts)
 		},
 	}
 
@@ -137,11 +146,20 @@ func tilPerson(md TenorMetadata) (Person, bool) {
 	return p, true
 }
 
+// PersonMedAltinn er en person fra Tenor med parten fra Register. Altinn er
+// null når personen ikke finnes i miljøet.
+type PersonMedAltinn struct {
+	Person
+	Altinn            *Party `json:"altinn"`
+	AltinnEnvironment string `json:"altinnEnvironment"`
+}
+
 // runPersoner skriver personene til ut og meldinger til logg, som i
 // TS-versjonen: fnr per linje, fnr og navn med --navn, eller JSON med --json.
-func runPersoner(ctx context.Context, c *TenorClient, ut, logg io.Writer, opts *personerOptions) error {
-	if opts.register {
-		return fmt.Errorf("--register er ikke støttet ennå")
+// Med --register skrives JSON der hver person har parten fra Register (reg).
+func runPersoner(ctx context.Context, c *TenorClient, reg *RegisterClient, ut, logg io.Writer, opts *personerOptions) error {
+	if opts.register && reg == nil {
+		return fmt.Errorf("%w: --register krever en Register-klient", ErrInvalid)
 	}
 
 	kql := opts.kql
@@ -161,10 +179,26 @@ func runPersoner(ctx context.Context, c *TenorClient, ut, logg io.Writer, opts *
 		fmt.Fprintf(logg, "Advarsel: fant bare %d av %d ønskede personer.\n", len(personer), opts.antall)
 	}
 
+	if opts.register {
+		fnr := make([]string, len(personer))
+		for i, p := range personer {
+			fnr[i] = p.Foedselsnummer
+		}
+		parter, err := slaaOppIRegister(ctx, reg, fnr, opts.env, logg)
+		if err != nil {
+			return err
+		}
+		rader := make([]PersonMedAltinn, len(personer))
+		for i, p := range personer {
+			rader[i] = PersonMedAltinn{Person: p, AltinnEnvironment: opts.env}
+			if party, ok := parter[p.Foedselsnummer]; ok {
+				rader[i].Altinn = &party
+			}
+		}
+		return skrivJSON(ut, rader)
+	}
 	if opts.jsonOutput {
-		enc := json.NewEncoder(ut)
-		enc.SetIndent("", "  ")
-		return enc.Encode(personer)
+		return skrivJSON(ut, personer)
 	}
 	for _, p := range personer {
 		if opts.navn {
