@@ -174,13 +174,18 @@ local cronJob(
 
     envFrom: [
       {
+        configMapRef: {
+          name: 'deploy-environments-' + environment,
+        },
+      },
+      {
         secretRef: {
           name: 'playwright-user-' + environment,
         },
       },
       {
-        configMapRef: {
-          name: 'deploy-environments-' + environment,
+        secretRef: {
+          name: 'token-generator-creds',  // TODO: This won't work in prod..
         },
       },
     ],
