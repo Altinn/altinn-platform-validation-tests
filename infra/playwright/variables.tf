@@ -35,3 +35,9 @@ variable "preview_environments" {
   sensitive = false
   default   = ["at22", "at23", "tt02"]
 }
+
+variable "report_retention_days" {
+  description = "Number of days to retain Playwright reports"
+  type        = number
+  default     = 30
+}
