@@ -1,5 +1,7 @@
 FROM altinnplatformvalidationtests.azurecr.io/helpers-junitparser:1.0.1 AS builder
 
+FROM altinnplatformvalidationtests.azurecr.io/helpers-slacknotifier:1.0.0 AS slacknotifier
+
 FROM node:24-bookworm@sha256:6dac556d980b7f0e5498d08f08cee0ca67798b4ad6c23964a9214920e67758d0
 
 RUN apt update && \
@@ -49,6 +51,8 @@ RUN playwright install --with-deps
 WORKDIR /home/playwright/
 
 COPY --from=builder /app/generateMetricsFromJunitReport .
+
+COPY --from=slacknotifier /app/sendSlackNotification .
 
 COPY --chown=playwright:playwright ./run-playwright-tests.sh .
 
