@@ -8,8 +8,14 @@ import { test } from "../../fixtures/test";
 //
 // Ikke i prod: der logger testene inn via Mockporten, og utloggingen derfra lander
 // på en feilside.
+//
+// I WebKit på Linux krasjer Playwright med "Assertion error" når am.ui sender den
+// utloggede brukeren tilbake til samme ID-porten-side som den allerede står på.
+// Lokalt på macOS går det fint. Testene hoppes over der til Playwright har fikset
+// det, se https://github.com/microsoft/playwright/issues/43067#issuecomment-6477304285
 
 test("Bruker er utlogget på alle flater etter utlogging fra arbeidsflate", { tag: ["@at23", "@tt02"] }, async ({
+    browserName,
     innlogging,
     user,
     arbeidsflate,
@@ -17,6 +23,8 @@ test("Bruker er utlogget på alle flater etter utlogging fra arbeidsflate", { ta
     tilgangsstyring,
     infoportal,
 }) => {
+    test.fixme(browserName === "webkit", "Playwright krasjer i WebKit på Linux, microsoft/playwright#43067");
+
     await test.step("Bruker logger inn via arbeidsflate", async () => {
         await innlogging.loggInnViaArbeidsflate(user);
         await arbeidsflate.assertLoggedIn();
@@ -42,6 +50,7 @@ test("Bruker er utlogget på alle flater etter utlogging fra arbeidsflate", { ta
 });
 
 test("Bruker er utlogget på alle flater etter utlogging fra profilen", { tag: ["@at23", "@tt02"] }, async ({
+    browserName,
     innlogging,
     user,
     arbeidsflate,
@@ -49,6 +58,8 @@ test("Bruker er utlogget på alle flater etter utlogging fra profilen", { tag: [
     tilgangsstyring,
     infoportal,
 }) => {
+    test.fixme(browserName === "webkit", "Playwright krasjer i WebKit på Linux, microsoft/playwright#43067");
+
     await test.step("Bruker logger inn via arbeidsflate og går til profilen", async () => {
         await innlogging.loggInnViaArbeidsflate(user);
         await arbeidsflate.assertLoggedIn();
@@ -77,6 +88,7 @@ test("Bruker er utlogget på alle flater etter utlogging fra profilen", { tag: [
 });
 
 test("Bruker er utlogget på alle flater etter utlogging fra tilgangsstyring", { tag: ["@at23", "@tt02"] }, async ({
+    browserName,
     innlogging,
     user,
     arbeidsflate,
@@ -84,6 +96,8 @@ test("Bruker er utlogget på alle flater etter utlogging fra tilgangsstyring", {
     tilgangsstyring,
     infoportal,
 }) => {
+    test.fixme(browserName === "webkit", "Playwright krasjer i WebKit på Linux, microsoft/playwright#43067");
+
     await test.step("Bruker logger inn via tilgangsstyring", async () => {
         await innlogging.loggInnViaTilgangsstyring(user);
         await tilgangsstyring.assertLoggedIn();
