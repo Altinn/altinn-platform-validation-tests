@@ -10,6 +10,8 @@ import (
 	"path/filepath"
 	"strings"
 	"testing"
+
+	"github.com/spf13/viper"
 )
 
 func TestRunPersonerRegister(t *testing.T) {
@@ -63,62 +65,80 @@ func TestRunPersonerRegisterUtenKlient(t *testing.T) {
 	}
 }
 
-// medEnvFiler skriver .env og .env.<miljø> til en temp-mappe og peker envFil
-// dit så lenge testen varer.
-func medEnvFiler(t *testing.T, filer map[string]string) {
+// medKonfig laster YAML som config-fil i viper så lenge testen varer.
+func medKonfig(t *testing.T, innhold string) {
 	t.Helper()
-	dir := t.TempDir()
-	for navn, innhold := range filer {
-		if err := os.WriteFile(filepath.Join(dir, navn), []byte(innhold), 0o600); err != nil {
-			t.Fatal(err)
-		}
-	}
-	gammel := envFil
-	envFil = filepath.Join(dir, ".env")
-	t.Cleanup(func() { envFil = gammel })
-}
-
-func TestLesEnvFiler(t *testing.T) {
-	medEnvFiler(t, map[string]string{
-		".env":      "FELLES=fra-env\nOVERSTYRT=fra-env\n",
-		".env.at23": "OVERSTYRT=fra-at23\nAPI_BASE_URL=https://platform.at23.altinn.cloud\n",
-	})
-	t.Setenv("FRA_SHELL", "shell")
-
-	hent, err := lesEnvFiler("at23")
-	if err != nil {
+	viper.Reset()
+	t.Cleanup(viper.Reset)
+	viper.SetConfigType("yaml")
+	if err := viper.ReadConfig(strings.NewReader(innhold)); err != nil {
 		t.Fatal(err)
 	}
+}
+
+func TestKonfig(t *testing.T) {
+	medKonfig(t, `
+FELLES: fra-toppnivaa
+OVERSTYRT: fra-toppnivaa
+at23:
+  OVERSTYRT: fra-at23
+  API_BASE_URL: https://platform.at23.altinn.cloud
+`)
+	t.Setenv("FRA_SHELL", "shell")
+	t.Setenv("FELLES", "shell-vinner")
+
+	hent := konfig("at23")
 	for k, vil := range map[string]string{
-		"FELLES": "fra-env", "OVERSTYRT": "fra-at23",
+		"FELLES": "shell-vinner", "OVERSTYRT": "fra-at23",
 		"API_BASE_URL": "https://platform.at23.altinn.cloud", "FRA_SHELL": "shell",
+		"FINNES_IKKE": "",
 	} {
 		if got := hent(k); got != vil {
 			t.Errorf("%s = %q, vil ha %q", k, got, vil)
 		}
 	}
+	// Uten miljø brukes bare toppnivået.
+	if got := konfig("")("OVERSTYRT"); got != "fra-toppnivaa" {
+		t.Errorf("uten miljø: OVERSTYRT = %q", got)
+	}
+}
 
-	if _, err := lesEnvFiler("at22"); err == nil {
-		t.Error("manglende .env.at22 skal gi feil")
+func TestInitConfigMedConfigFlagg(t *testing.T) {
+	sti := filepath.Join(t.TempDir(), "testudo.yaml")
+	if err := os.WriteFile(sti, []byte("MASKINPORTEN_CLIENT_ID: fra-fil\n"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	viper.Reset()
+	t.Cleanup(viper.Reset)
+	gammel := cfgFile
+	cfgFile = sti
+	t.Cleanup(func() { cfgFile = gammel })
+
+	initConfig()
+	if got := konfig("")("MASKINPORTEN_CLIENT_ID"); got != "fra-fil" {
+		t.Errorf("MASKINPORTEN_CLIENT_ID = %q", got)
 	}
 }
 
 func TestNyRegisterKlient(t *testing.T) {
-	felles := "USERNAME_TEST_API=b\nPASSWORD_TEST_API=p\nAT23_REGISTER_SUBSCRIPTION_KEY=k\n"
+	felles := "USERNAME_TEST_API: b\nPASSWORD_TEST_API: p\n"
 	tests := []struct {
 		navn    string
-		env     string
+		yaml    string
 		miljoe  string
 		ugyldig bool
 	}{
-		{"ok", "API_BASE_URL=https://platform.at23.altinn.cloud\nENV_NAME=AT23\n", "at23", false},
-		{"ukjent miljø", "", "at99", true},
-		{"ENV_NAME stemmer ikke", "API_BASE_URL=x\nENV_NAME=at22\n", "at23", true},
-		{"mangler API_BASE_URL", "ENV_NAME=at23\n", "at23", true},
+		{"ok", felles + "at23:\n  API_BASE_URL: https://platform.at23.altinn.cloud\n  REGISTER_SUBSCRIPTION_KEY: k\n", "at23", false},
+		// Navnet fra frontend virker også.
+		{"frontend-navn", felles + "AT23_REGISTER_SUBSCRIPTION_KEY: k\nat23:\n  API_BASE_URL: https://platform.at23.altinn.cloud\n", "at23", false},
+		{"ukjent miljø", felles, "at99", true},
+		{"ENV_NAME stemmer ikke", felles + "at23:\n  API_BASE_URL: x\n  ENV_NAME: at22\n  REGISTER_SUBSCRIPTION_KEY: k\n", "at23", true},
+		{"mangler API_BASE_URL", felles + "at23:\n  REGISTER_SUBSCRIPTION_KEY: k\n", "at23", true},
+		{"API_BASE_URL bare for et annet miljø", felles + "at22:\n  API_BASE_URL: x\n  REGISTER_SUBSCRIPTION_KEY: k\n", "at23", true},
 	}
 	for _, tt := range tests {
 		t.Run(tt.navn, func(t *testing.T) {
-			medEnvFiler(t, map[string]string{".env": felles, ".env.at23": tt.env})
+			medKonfig(t, tt.yaml)
 			reg, err := nyRegisterKlient(tt.miljoe)
 			if tt.ugyldig {
 				if !errors.Is(err, ErrInvalid) {
@@ -136,11 +156,10 @@ func TestNyRegisterKlient(t *testing.T) {
 	}
 
 	t.Run("mangler subscription key", func(t *testing.T) {
-		medEnvFiler(t, map[string]string{
-			".env":      "USERNAME_TEST_API=b\nPASSWORD_TEST_API=p\n",
-			".env.at23": "API_BASE_URL=x\n",
-		})
-		if _, err := nyRegisterKlient("at23"); err == nil || !strings.Contains(err.Error(), "AT23_REGISTER_SUBSCRIPTION_KEY") {
+		medKonfig(t, felles+"at23:\n  API_BASE_URL: x\n")
+		_, err := nyRegisterKlient("at23")
+		if err == nil || !strings.Contains(err.Error(), "REGISTER_SUBSCRIPTION_KEY mangler for at23") ||
+			!strings.Contains(err.Error(), "~/.testudo.yaml") {
 			t.Errorf("err = %v", err)
 		}
 	})

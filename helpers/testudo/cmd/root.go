@@ -4,6 +4,7 @@ Copyright © 2026 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"strings"
@@ -46,7 +47,7 @@ func init() {
 	// when this action is called directly.
 	// rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 
-	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.cobra.yaml)")
+	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.testudo.yaml)")
 
 	replacer := strings.NewReplacer("-", "_")
 	viper.SetEnvKeyReplacer(replacer)
@@ -71,7 +72,13 @@ func initConfig() {
 
 	viper.AutomaticEnv()
 
-	if err := viper.ReadInConfig(); err == nil {
-		fmt.Println("Using config file:", viper.ConfigFileUsed())
+	// Uten --config er det greit at fila mangler, siden alt også kan settes
+	// som miljøvariabler. En fil som finnes, men ikke kan leses, er en feil.
+	// Ingenting skrives til stdout her, siden stdout er resultatet.
+	if err := viper.ReadInConfig(); err != nil {
+		var ikkeFunnet viper.ConfigFileNotFoundError
+		if cfgFile != "" || !errors.As(err, &ikkeFunnet) {
+			cobra.CheckErr(fmt.Errorf("les config-fil: %w", err))
+		}
 	}
 }

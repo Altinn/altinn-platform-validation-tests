@@ -4,15 +4,12 @@ Copyright © 2026 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
+	"cmp"
 	"fmt"
-	"maps"
-	"os"
-	"path/filepath"
 	"slices"
 	"strings"
 
 	"github.com/spf13/cobra"
-	"github.com/subosito/gotenv"
 )
 
 // tenorCmd represents the tenor command
@@ -30,47 +27,12 @@ to quickly create a Cobra application.`,
 	},
 }
 
-// frontendEnvFil er .env-filen i altinn-access-management-frontend, som
-// inntil videre er der Maskinporten-nøklene ligger. Stien er relativ til
-// helpers/testudo, med repoene ved siden av hverandre.
-const frontendEnvFil = "../../../altinn-access-management-frontend/playwright/config/.env"
-
-var envFil string
-
-// lesEnvFiler leser envFil og, hvis miljoe er satt, .env.<miljoe> i samme
-// mappe, slik loadEnv i frontend gjør. Miljøfilen går foran envFil, og
-// variabler som er satt i miljøet går foran begge.
-func lesEnvFiler(miljoe string) (func(string) string, error) {
-	filer := []string{envFil}
-	if miljoe != "" {
-		filer = append(filer, filepath.Join(filepath.Dir(envFil), ".env."+miljoe))
-	}
-	verdier := map[string]string{}
-	for _, f := range filer {
-		m, err := gotenv.Read(f)
-		if err != nil {
-			return nil, fmt.Errorf("les env-fil %s: %w", f, err)
-		}
-		maps.Copy(verdier, m)
-	}
-	return func(k string) string {
-		if v, ok := os.LookupEnv(k); ok {
-			return v
-		}
-		return verdier[k]
-	}, nil
-}
-
 // nyTenorKlient lager en Tenor-klient med Maskinporten-token, med
-// MASKINPORTEN_CLIENT_ID og MASKINPORTEN_JWK fra envFil.
+// MASKINPORTEN_CLIENT_ID og MASKINPORTEN_JWK fra konfigurasjonen.
 func nyTenorKlient() (*TenorClient, error) {
-	hent, err := lesEnvFiler("")
+	cfg, err := MaskinportenConfigFra(konfig(""))
 	if err != nil {
-		return nil, err
-	}
-	cfg, err := MaskinportenConfigFra(hent)
-	if err != nil {
-		return nil, err
+		return nil, medKonfigHint(err)
 	}
 	mp, err := NewMaskinportenClient(cfg, tenorScope)
 	if err != nil {
@@ -80,32 +42,29 @@ func nyTenorKlient() (*TenorClient, error) {
 }
 
 // nyRegisterKlient lager en Register-klient for miljoe med platform-token fra
-// test token generator. API_BASE_URL og ENV_NAME leses fra .env.<miljoe>, og
-// subscription key fra <MILJOE>_REGISTER_SUBSCRIPTION_KEY.
+// test token generator. API_BASE_URL og subscription key leses fra seksjonen
+// for miljoe i konfigurasjonen. Subscription key kan også hete
+// <MILJOE>_REGISTER_SUBSCRIPTION_KEY, som i frontend.
 func nyRegisterKlient(miljoe string) (*RegisterClient, error) {
 	if !slices.Contains(miljoer, miljoe) {
 		return nil, fmt.Errorf("%w: ukjent miljø %q, bruk en av %s", ErrInvalid, miljoe, strings.Join(miljoer, ", "))
 	}
-	hent, err := lesEnvFiler(miljoe)
-	if err != nil {
-		return nil, err
-	}
+	hent := konfig(miljoe)
 	if navn := hent("ENV_NAME"); navn != "" && !strings.EqualFold(navn, miljoe) {
 		return nil, fmt.Errorf("%w: ENV_NAME er %q, men --env er %q", ErrInvalid, navn, miljoe)
 	}
 	baseURL := hent("API_BASE_URL")
 	if baseURL == "" {
-		return nil, fmt.Errorf("%w: API_BASE_URL mangler for %s", ErrInvalid, miljoe)
+		return nil, medKonfigHint(fmt.Errorf("%w: API_BASE_URL mangler for %s", ErrInvalid, miljoe))
 	}
-	noekkelNavn := strings.ToUpper(miljoe) + "_REGISTER_SUBSCRIPTION_KEY"
-	noekkel := hent(noekkelNavn)
+	noekkel := cmp.Or(hent(strings.ToUpper(miljoe)+"_REGISTER_SUBSCRIPTION_KEY"), hent("REGISTER_SUBSCRIPTION_KEY"))
 	if noekkel == "" {
-		return nil, fmt.Errorf("%w: %s mangler", ErrInvalid, noekkelNavn)
+		return nil, medKonfigHint(fmt.Errorf("%w: REGISTER_SUBSCRIPTION_KEY mangler for %s", ErrInvalid, miljoe))
 	}
 
 	pcfg, err := PlatformTokenConfigFra(hent, miljoe)
 	if err != nil {
-		return nil, err
+		return nil, medKonfigHint(err)
 	}
 	pt, err := NewPlatformTokenGenerator(pcfg)
 	if err != nil {
@@ -116,11 +75,6 @@ func nyRegisterKlient(miljoe string) (*RegisterClient, error) {
 
 func init() {
 	rootCmd.AddCommand(tenorCmd)
-
-	tenorCmd.PersistentFlags().StringVar(
-		&envFil, "env-fil", frontendEnvFil,
-		"Env-fil med MASKINPORTEN_CLIENT_ID og MASKINPORTEN_JWK",
-	)
 
 	// Here you will define your flags and configuration settings.
 

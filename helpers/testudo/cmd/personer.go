@@ -106,7 +106,7 @@ func newPersonerCmd() *cobra.Command {
 	)
 	cmd.Flags().StringVar(
 		&opts.env, "env", "tt02",
-		"Miljø for env-fil: tt02, at22, at23",
+		"Miljø: tt02, at22, at23, yt01 (seksjon i config-fila)",
 	)
 	leggTilUtskriftFlagg(cmd, &opts.utskrift, standardPersonKolonner)
 
