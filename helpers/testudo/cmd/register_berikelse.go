@@ -55,6 +55,15 @@ func partyUUID(p *Party) string {
 	return p.PartyUUID
 }
 
+// visningsnavn er displayName fra Register når det finnes, ellers navnet fra
+// Tenor.
+func visningsnavn(p *Party, tenorNavn string) string {
+	if p != nil && p.DisplayName != "" {
+		return p.DisplayName
+	}
+	return tenorNavn
+}
+
 func skrivJSON(ut io.Writer, v any) error {
 	enc := json.NewEncoder(ut)
 	enc.SetIndent("", "  ")

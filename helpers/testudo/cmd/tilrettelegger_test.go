@@ -253,7 +253,7 @@ func TestRunVirksomheterRolleRegisterCSVOgJSON(t *testing.T) {
 	if err := runVirksomheter(context.Background(), c, reg, &ut, &logg, opts); err != nil {
 		t.Fatal(err)
 	}
-	vil := "orgNo,orgName,orgPartyId,orgUuid,clientOrgNo,clientOrgName,clientPartyId,clientPartyUuid\n" +
+	vil := "organizationIdentifier,displayName,partyId,partyUuid,clientOrganizationIdentifier,clientDisplayName,clientPartyId,clientPartyUuid\n" +
 		revisorMedLeder + ",REVISOR EN AS,801,f-1,100000011,KLIENT 11 AS,811,k-11\n"
 	if ut.String() != vil {
 		t.Errorf("csv = %q", ut.String())
@@ -269,11 +269,11 @@ func TestRunVirksomheterRolleRegisterCSVOgJSON(t *testing.T) {
 	// type-kolonnen gir rollen.
 	ut.Reset()
 	opts.klienter = 0
-	opts.utskrift.kolonner = "orgUuid,orgNo,type"
+	opts.utskrift.kolonner = "partyUuid,organizationIdentifier,type"
 	if err := runVirksomheter(context.Background(), c, reg, &ut, &logg, opts); err != nil {
 		t.Fatal(err)
 	}
-	if ut.String() != "orgUuid,orgNo,type\nf-1,"+revisorMedLeder+",revisor\n" {
+	if ut.String() != "partyUuid,organizationIdentifier,type\nf-1,"+revisorMedLeder+",revisor\n" {
 		t.Errorf("csv med type = %q", ut.String())
 	}
 

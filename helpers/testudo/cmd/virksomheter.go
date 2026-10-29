@@ -31,10 +31,10 @@ type virksomheterOptions struct {
 }
 
 // standardVirksomhetKolonner er CSV-kolonnene uten --kolonner.
-var standardVirksomhetKolonner = []string{"orgNo", "orgName", "orgPartyId", "orgUuid"}
+var standardVirksomhetKolonner = []string{"organizationIdentifier", "displayName", "partyId", "partyUuid"}
 
 // standardKlientKolonner legges til standardkolonnene med --klienter.
-var standardKlientKolonner = []string{"clientOrgNo", "clientOrgName", "clientPartyId", "clientPartyUuid"}
+var standardKlientKolonner = []string{"clientOrganizationIdentifier", "clientDisplayName", "clientPartyId", "clientPartyUuid"}
 
 // virksomhetRad er én rad i CSV: en virksomhet, og med --klienter én av
 // klientene, så hver kombinasjon blir en egen rad.
@@ -44,14 +44,15 @@ type virksomhetRad struct {
 }
 
 // virksomhetKolonner er kolonnene en virksomhet kan skrives ut med i CSV.
-// ssn, userId, userPartyId, userPartyUuid og lastName er daglig leder, og
-// client* er klienten.
+// Virksomhetens egne kolonner har feltnavnene i Register (Party). ssn, userId,
+// userPartyId, userPartyUuid og lastName er daglig leder, og client* er
+// klienten.
 var virksomhetKolonner = []kolonne[virksomhetRad]{
-	{navn: "orgNo", verdi: func(r virksomhetRad) string { return r.Organisasjonsnummer }},
-	{navn: "orgName", verdi: func(r virksomhetRad) string { return r.Navn }},
-	{navn: "orgPartyId", register: true, verdi: func(r virksomhetRad) string { return partyID(r.Altinn) }},
-	{navn: "orgUuid", register: true, verdi: func(r virksomhetRad) string { return partyUUID(r.Altinn) }},
-	{navn: "orgType", verdi: func(r virksomhetRad) string { return r.Organisasjonsform }},
+	{navn: "organizationIdentifier", verdi: func(r virksomhetRad) string { return r.Organisasjonsnummer }},
+	{navn: "displayName", verdi: func(r virksomhetRad) string { return visningsnavn(r.Altinn, r.Navn) }},
+	{navn: "partyId", register: true, verdi: func(r virksomhetRad) string { return partyID(r.Altinn) }},
+	{navn: "partyUuid", register: true, verdi: func(r virksomhetRad) string { return partyUUID(r.Altinn) }},
+	{navn: "unitType", verdi: func(r virksomhetRad) string { return r.Organisasjonsform }},
 	{navn: "type", verdi: func(r virksomhetRad) string { return r.Rolle }},
 	{navn: "clientCount", verdi: func(r virksomhetRad) string { return tallTekst(uint64(r.AntallKlienter)) }},
 	{navn: "ssn", verdi: func(r virksomhetRad) string { return r.DagligLeder }},
@@ -64,17 +65,17 @@ var virksomhetKolonner = []kolonne[virksomhetRad]{
 		}
 		return r.DagligLederAltinn.LastName
 	}},
-	{navn: "clientOrgNo", verdi: func(r virksomhetRad) string {
+	{navn: "clientOrganizationIdentifier", verdi: func(r virksomhetRad) string {
 		if r.Klient == nil {
 			return ""
 		}
 		return r.Klient.Organisasjonsnummer
 	}},
-	{navn: "clientOrgName", verdi: func(r virksomhetRad) string {
+	{navn: "clientDisplayName", verdi: func(r virksomhetRad) string {
 		if r.Klient == nil {
 			return ""
 		}
-		return r.Klient.Navn
+		return visningsnavn(r.Klient.Altinn, r.Klient.Navn)
 	}},
 	{navn: "clientPartyId", register: true, verdi: func(r virksomhetRad) string {
 		if r.Klient == nil {

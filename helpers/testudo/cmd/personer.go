@@ -26,14 +26,16 @@ type personerOptions struct {
 }
 
 // standardPersonKolonner er CSV-kolonnene uten --kolonner.
-var standardPersonKolonner = []string{"ssn", "userId", "userPartyId", "userPartyUuid"}
+var standardPersonKolonner = []string{"personIdentifier", "userId", "partyId", "partyUuid"}
 
-// personKolonner er kolonnene en person kan skrives ut med i CSV.
+// personKolonner er kolonnene en person kan skrives ut med i CSV. Navnene er
+// feltnavnene i Register (Party).
 var personKolonner = []kolonne[PersonMedAltinn]{
-	{navn: "ssn", verdi: func(p PersonMedAltinn) string { return p.Foedselsnummer }},
+	{navn: "personIdentifier", verdi: func(p PersonMedAltinn) string { return p.Foedselsnummer }},
 	{navn: "userId", register: true, verdi: func(p PersonMedAltinn) string { return brukerID(p.Altinn) }},
-	{navn: "userPartyId", register: true, verdi: func(p PersonMedAltinn) string { return partyID(p.Altinn) }},
-	{navn: "userPartyUuid", register: true, verdi: func(p PersonMedAltinn) string { return partyUUID(p.Altinn) }},
+	{navn: "partyId", register: true, verdi: func(p PersonMedAltinn) string { return partyID(p.Altinn) }},
+	{navn: "partyUuid", register: true, verdi: func(p PersonMedAltinn) string { return partyUUID(p.Altinn) }},
+	{navn: "displayName", verdi: func(p PersonMedAltinn) string { return visningsnavn(p.Altinn, p.Navn) }},
 	// Etternavnet fra Register når det finnes, ellers fra Tenor.
 	{navn: "lastName", verdi: func(p PersonMedAltinn) string {
 		if p.Altinn != nil && p.Altinn.LastName != "" {
