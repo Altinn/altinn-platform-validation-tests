@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/prometheus/client_golang/prometheus"
@@ -76,7 +77,7 @@ var (
 			Name: "playwright_suite_duration_seconds",
 			Help: "Duration of the test suite in seconds",
 		},
-		[]string{"suite", "deploy_env"},
+		[]string{"suite", "browser", "language", "deploy_env"},
 	)
 
 	suiteTotal = prometheus.NewGaugeVec(
@@ -84,7 +85,7 @@ var (
 			Name: "playwright_tests_total",
 			Help: "Total number of tests in the suite",
 		},
-		[]string{"suite", "deploy_env"},
+		[]string{"suite", "browser", "language", "deploy_env"},
 	)
 
 	suitePassed = prometheus.NewGaugeVec(
@@ -92,7 +93,7 @@ var (
 			Name: "playwright_tests_passed",
 			Help: "Total number of passed tests in the suite",
 		},
-		[]string{"suite", "deploy_env"},
+		[]string{"suite", "browser", "language", "deploy_env"},
 	)
 
 	suiteFailed = prometheus.NewGaugeVec(
@@ -100,7 +101,7 @@ var (
 			Name: "playwright_tests_failed_total",
 			Help: "Total number of failed tests in the suite (failures + errors)",
 		},
-		[]string{"suite", "deploy_env"},
+		[]string{"suite", "browser", "language", "deploy_env"},
 	)
 
 	suiteSkipped = prometheus.NewGaugeVec(
@@ -108,7 +109,7 @@ var (
 			Name: "playwright_tests_skipped_total",
 			Help: "Total number of skipped tests in the suite",
 		},
-		[]string{"suite", "deploy_env"},
+		[]string{"suite", "browser", "language", "deploy_env"},
 	)
 
 	// -------------------------------------------------------------------------
@@ -120,7 +121,7 @@ var (
 			Name: "playwright_test_duration_seconds",
 			Help: "Duration of individual testcases in seconds",
 		},
-		[]string{"suite", "test", "status", "deploy_env"},
+		[]string{"suite", "test", "status", "browser", "language", "deploy_env"},
 	)
 
 	testStatus = prometheus.NewGaugeVec(
@@ -128,7 +129,7 @@ var (
 			Name: "playwright_test_status",
 			Help: "Status of individual testcases (0=passed,1=failed,2=skipped)",
 		},
-		[]string{"suite", "test", "deploy_env"},
+		[]string{"suite", "test", "browser", "language", "deploy_env"},
 	)
 
 	// -------------------------------------------------------------------------
@@ -180,28 +181,41 @@ func parseJUnit(file string, deployEnv string) bool {
 			passed = 0
 		}
 
+		// Playwright sets hostname to the project name, e.g. "at23-chromium-bokmål".
+		browser, language := getBrowserAndLanguage(suite.Hostname)
+
 		suiteDuration.WithLabelValues(
 			suite.Name,
+			browser,
+			language,
 			deployEnv,
 		).Set(suite.Time)
 
 		suiteTotal.WithLabelValues(
 			suite.Name,
+			browser,
+			language,
 			deployEnv,
 		).Set(float64(suite.Tests))
 
 		suitePassed.WithLabelValues(
 			suite.Name,
+			browser,
+			language,
 			deployEnv,
 		).Set(float64(passed))
 
 		suiteFailed.WithLabelValues(
 			suite.Name,
+			browser,
+			language,
 			deployEnv,
 		).Set(float64(failed))
 
 		suiteSkipped.WithLabelValues(
 			suite.Name,
+			browser,
+			language,
 			deployEnv,
 		).Set(float64(suite.Skipped))
 
@@ -226,18 +240,35 @@ func parseJUnit(file string, deployEnv string) bool {
 				suite.Name,
 				tc.Name,
 				status,
+				browser,
+				language,
 				deployEnv,
 			).Set(tc.Time)
 
 			testStatus.WithLabelValues(
 				suite.Name,
 				tc.Name,
+				browser,
+				language,
 				deployEnv,
 			).Set(statusValue)
 		}
 	}
 
 	return hasFailedTests
+}
+
+func getBrowserAndLanguage(hostname string) (string, string) {
+	parts := strings.Split(hostname, "-")
+
+	if len(parts) < 3 {
+		return "unknown", "unknown"
+	}
+
+	browser := parts[1]
+	language := strings.Join(parts[2:], "-")
+
+	return browser, language
 }
 
 func pushMetrics(pusher *push.Pusher) error {
