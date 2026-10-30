@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/prometheus/client_golang/prometheus"
@@ -238,6 +239,19 @@ func parseJUnit(file string, deployEnv string) bool {
 	}
 
 	return hasFailedTests
+}
+
+func getBrowserAndLanguage(hostname string) (string, string) {
+	parts := strings.Split(hostname, "-")
+
+	if len(parts) < 3 {
+		return "unknown", "unknown"
+	}
+
+	browser := parts[1]
+	language := strings.Join(parts[2:], "-")
+
+	return browser, language
 }
 
 func pushMetrics(pusher *push.Pusher) error {
