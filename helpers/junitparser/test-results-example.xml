@@ -1,0 +1,697 @@
+<testsuites id="" name="" tests="72" failures="1" skipped="6" errors="1" time="129.967154">
+<testsuite name="apps/innsending.spec.ts" timestamp="2026-10-30T10:35:18.886Z" hostname="at23-chromium-bokmål" tests="1" failures="0" skipped="0" time="20.91" errors="0">
+<testcase name="Bruker logger inn fra altinn.no, sender inn app via dyplenke og ser innsendingen i innboksen" classname="apps/innsending.spec.ts" time="20.91">
+<system-out>
+<![CDATA[Testbruker: OPPBLÅST BIL
+]]>
+</system-out>
+</testcase>
+</testsuite>
+<testsuite name="apps/instansiereapp.spec.ts" timestamp="2026-10-30T10:35:18.886Z" hostname="at23-chromium-bokmål" tests="2" failures="0" skipped="1" time="90.576" errors="1">
+<testcase name="Bruker instansierer app og gir tilgang, med direktenavigasjon til appen" classname="apps/instansiereapp.spec.ts" time="90.576">
+<system-out>
+<![CDATA[Person-A: KOSTBAR AGENDA, person-B: AKTIV PÅKJENNING
+
+[[ATTACHMENT|test-results/apps-instansiereapp-Bruker-b6680-direktenavigasjon-til-appen-at23-chromium-bokmål/video.webm]]
+
+[[ATTACHMENT|test-results/apps-instansiereapp-Bruker-b6680-direktenavigasjon-til-appen-at23-chromium-bokmål/error-context.md]]
+Person-A: HANDLEKRAFTIG IGLE, person-B: NATURSTRIDIG LAMPETT
+
+[[ATTACHMENT|test-results/apps-instansiereapp-Bruker-b6680-direktenavigasjon-til-appen-at23-chromium-bokmål-retry1/video.webm]]
+
+[[ATTACHMENT|test-results/apps-instansiereapp-Bruker-b6680-direktenavigasjon-til-appen-at23-chromium-bokmål-retry1/error-context.md]]
+
+[[ATTACHMENT|test-results/apps-instansiereapp-Bruker-b6680-direktenavigasjon-til-appen-at23-chromium-bokmål-retry1/trace.zip]]
+]]>
+</system-out>
+<error message="locator.innerText: Timeout 2000ms exceeded." type="TimeoutError">
+<![CDATA[  [at23-chromium-bokmål] › apps/instansiereapp.spec.ts:30:5 › Bruker instansierer app og gir tilgang, med direktenavigasjon til appen @at23 @tt02 @prod › Person-B logger inn via Tilgangsstyring, velger person-A som aktør og setter språk 
+
+    TimeoutError: locator.innerText: Timeout 2000ms exceeded.
+    Call log:
+      - waiting for getByRole('banner').getByRole('button').filter({ hasNotText: /^(meny|menu)$/i }).first()
+
+
+       at ../pages/felles/aktorvelger.ts:99
+
+       97 |
+       98 |     private async starPa(navn: string): Promise<boolean> {
+    >  99 |         const tekst = await this.aktorKnapp.innerText({ timeout: 2_000 });
+          |                                             ^
+      100 |         return tekst.toLowerCase().includes(navn.toLowerCase());
+      101 |     }
+      102 |
+        at AktorvelgerPom.starPa (/tmp/altinn-platform-validation-tests/playwright/pages/felles/aktorvelger.ts:99:45)
+        at AktorvelgerPom.velgAktorEtterInnlogging (/tmp/altinn-platform-validation-tests/playwright/pages/felles/aktorvelger.ts:72:65)
+        at InnloggingPom.loggInnViaTilgangsstyring (/tmp/altinn-platform-validation-tests/playwright/pages/felles/innlogging.ts:103:9)
+        at /tmp/altinn-platform-validation-tests/playwright/tests/apps/instansiereapp.spec.ts:83:9
+        at /tmp/altinn-platform-validation-tests/playwright/tests/apps/instansiereapp.spec.ts:81:21
+
+    attachment #1: video (video/webm) ──────────────────────────────────────────────────────────────
+    ../test-results/apps-instansiereapp-Bruker-b6680-direktenavigasjon-til-appen-at23-chromium-bokmål/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../test-results/apps-instansiereapp-Bruker-b6680-direktenavigasjon-til-appen-at23-chromium-bokmål/error-context.md
+
+    Retry #1 ───────────────────────────────────────────────────────────────────────────────────────
+
+    Error: Aktørlisten eller menyen er klar
+
+    expect(locator).toBeVisible() failed
+
+    Locator: getByRole('dialog').or(getByRole('banner').getByRole('button', { name: /^(meny|menu)$/i }).and(locator(':enabled'))).first()
+    Expected: visible
+    Timeout: 20000ms
+    Error: element(s) not found
+
+    Call log:
+      - Aktørlisten eller menyen er klar getByRole('dialog').or(getByRole('banner').getByRole('button', { name: /^(meny|menu)$/i }).and(locator(':enabled'))).first() with timeout 20000ms
+      - waiting for getByRole('dialog').or(getByRole('banner').getByRole('button', { name: /^(meny|menu)$/i }).and(locator(':enabled'))).first()
+
+
+       at ../pages/felles/aktorvelger.ts:63
+
+      61 |             .and(this.page.locator(":enabled"));
+      62 |         await expect(this.dialog.or(menyKlar).first(), "Aktørlisten eller menyen er klar")
+    > 63 |             .toBeVisible({ timeout: REDIRECT_TIMEOUT });
+         |              ^
+      64 |
+      65 |         // Lista kan lukke seg igjen like etter at den har åpnet seg, og da blir menyen klar.
+      66 |         if (await this.dialog.isVisible()) {
+        at AktorvelgerPom.velgAktorEtterInnlogging (/tmp/altinn-platform-validation-tests/playwright/pages/felles/aktorvelger.ts:63:14)
+        at InnloggingPom.loggInnViaTilgangsstyring (/tmp/altinn-platform-validation-tests/playwright/pages/felles/innlogging.ts:103:32)
+        at /tmp/altinn-platform-validation-tests/playwright/tests/apps/instansiereapp.spec.ts:83:9
+        at /tmp/altinn-platform-validation-tests/playwright/tests/apps/instansiereapp.spec.ts:81:21
+
+    attachment #1: video (video/webm) ──────────────────────────────────────────────────────────────
+    ../test-results/apps-instansiereapp-Bruker-b6680-direktenavigasjon-til-appen-at23-chromium-bokmål-retry1/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../test-results/apps-instansiereapp-Bruker-b6680-direktenavigasjon-til-appen-at23-chromium-bokmål-retry1/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../test-results/apps-instansiereapp-Bruker-b6680-direktenavigasjon-til-appen-at23-chromium-bokmål-retry1/trace.zip
+    Usage:
+
+        npx playwright show-trace ../test-results/apps-instansiereapp-Bruker-b6680-direktenavigasjon-til-appen-at23-chromium-bokmål-retry1/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+]]>
+</error>
+</testcase>
+<testcase name="Bruker instansierer app" classname="apps/instansiereapp.spec.ts">
+<properties>
+<property name="fixme" value="">
+</property>
+</properties>
+<skipped>
+</skipped>
+</testcase>
+</testsuite>
+<testsuite name="cookiebanner/cookiebanner-vises.spec.ts" timestamp="2026-10-30T10:35:18.886Z" hostname="at23-chromium-bokmål" tests="4" failures="0" skipped="0" time="27.31" errors="0">
+<testcase name="Cookiebanneret vises på arbeidsflate for en ny sesjon" classname="cookiebanner/cookiebanner-vises.spec.ts" time="7.846">
+<system-out>
+<![CDATA[Testbruker: GOD OKSYDERT AVANSE
+]]>
+</system-out>
+</testcase>
+<testcase name="Cookiebanneret vises på profilen for en ny sesjon" classname="cookiebanner/cookiebanner-vises.spec.ts" time="8.68">
+<system-out>
+<![CDATA[Testbruker: SNAKKESALIG MATERIALISTISK SYDVEST
+]]>
+</system-out>
+</testcase>
+<testcase name="Cookiebanneret vises på tilgangsstyring for en ny sesjon" classname="cookiebanner/cookiebanner-vises.spec.ts" time="9.262">
+<system-out>
+<![CDATA[Testbruker: SELVTILFREDS DEIG
+]]>
+</system-out>
+</testcase>
+<testcase name="Cookiebanneret vises på infoportalen for en ny sesjon" classname="cookiebanner/cookiebanner-vises.spec.ts" time="1.522">
+</testcase>
+</testsuite>
+<testsuite name="cookiebanner/cookievalg-alle-flater.spec.ts" timestamp="2026-10-30T10:35:18.886Z" hostname="at23-chromium-bokmål" tests="4" failures="0" skipped="0" time="55.271" errors="0">
+<testcase name="Godtatt på arbeidsflate gjelder på alle flater" classname="cookiebanner/cookievalg-alle-flater.spec.ts" time="14.035">
+<system-out>
+<![CDATA[Testbruker: NØDVENDIG RÅVARE
+]]>
+</system-out>
+</testcase>
+<testcase name="Avslått på profilen gjelder på alle flater" classname="cookiebanner/cookievalg-alle-flater.spec.ts" time="15.103">
+<system-out>
+<![CDATA[Testbruker: VELKOMMEN HANDELSREISENDE
+]]>
+</system-out>
+</testcase>
+<testcase name="Godtatt på tilgangsstyring gjelder på alle flater" classname="cookiebanner/cookievalg-alle-flater.spec.ts" time="14.133">
+<system-out>
+<![CDATA[Testbruker: REDD JUKEBOKS
+]]>
+</system-out>
+</testcase>
+<testcase name="Avslått på infoportalen gjelder på alle flater" classname="cookiebanner/cookievalg-alle-flater.spec.ts" time="12">
+<system-out>
+<![CDATA[Testbruker: SANNSYNLIG AKTPÅGIVENDE FASTLANDSFORBINDELSE
+]]>
+</system-out>
+</testcase>
+</testsuite>
+<testsuite name="infoportal/header-gjenspeiler-bruker.spec.ts" timestamp="2026-10-30T10:35:18.886Z" hostname="at23-chromium-bokmål" tests="1" failures="0" skipped="0" time="9.478" errors="0">
+<testcase name="Infoportalens header gjenspeiler pålogget bruker og valgt aktør etter navigering ut fra arbeidsflate" classname="infoportal/header-gjenspeiler-bruker.spec.ts" time="9.478">
+<system-out>
+<![CDATA[Testbruker: URETTFERDIG KANIN
+]]>
+</system-out>
+</testcase>
+</testsuite>
+<testsuite name="infoportal/sprak-fra-profil.spec.ts" timestamp="2026-10-30T10:35:18.886Z" hostname="at23-chromium-bokmål" tests="1" failures="0" skipped="0" time="9.508" errors="0">
+<testcase name="Brukerens språkvalg fra profilen vises i infoportalen" classname="infoportal/sprak-fra-profil.spec.ts" time="9.508">
+<system-out>
+<![CDATA[Testbruker: UAVHENGIG DRIKKE
+]]>
+</system-out>
+</testcase>
+</testsuite>
+<testsuite name="innlogging/dyplenke.spec.ts" timestamp="2026-10-30T10:35:18.886Z" hostname="at23-chromium-bokmål" tests="1" failures="0" skipped="0" time="8.462" errors="0">
+<testcase name="Bruker som åpner en lenke til profilen logges inn og lander på profilen" classname="innlogging/dyplenke.spec.ts" time="8.462">
+<system-out>
+<![CDATA[Testbruker: PUNKTLIG SPESIALIST
+]]>
+</system-out>
+</testcase>
+</testsuite>
+<testsuite name="innlogging/innlogging-alle-flater.spec.ts" timestamp="2026-10-30T10:35:18.886Z" hostname="at23-chromium-bokmål" tests="2" failures="0" skipped="0" time="32.493" errors="0">
+<testcase name="Bruker er innlogget på alle flater etter innlogging via arbeidsflate" classname="innlogging/innlogging-alle-flater.spec.ts" time="15.115">
+<system-out>
+<![CDATA[Testbruker: NESTE PIZZA
+]]>
+</system-out>
+</testcase>
+<testcase name="Bruker er innlogget på alle flater etter innlogging via tilgangsstyring" classname="innlogging/innlogging-alle-flater.spec.ts" time="17.378">
+<system-out>
+<![CDATA[Testbruker: VAKLENDE KOS
+]]>
+</system-out>
+</testcase>
+</testsuite>
+<testsuite name="innlogging/innlogging-refresh-alle-flater.spec.ts" timestamp="2026-10-30T10:35:18.886Z" hostname="at23-chromium-bokmål" tests="2" failures="0" skipped="0" time="37.352" errors="0">
+<testcase name="Bruker forblir innlogget på alle flater etter innlogging via arbeidsflate" classname="innlogging/innlogging-refresh-alle-flater.spec.ts" time="19.209">
+<system-out>
+<![CDATA[Testbruker: UFRUKTBAR FOLE
+]]>
+</system-out>
+</testcase>
+<testcase name="Bruker forblir innlogget på alle flater etter innlogging via tilgangsstyring" classname="innlogging/innlogging-refresh-alle-flater.spec.ts" time="18.143">
+<system-out>
+<![CDATA[Testbruker: FINTFØLENDE BENSIN
+]]>
+</system-out>
+</testcase>
+</testsuite>
+<testsuite name="innlogging/mockporten.spec.ts" timestamp="2026-10-30T10:35:18.886Z" hostname="at23-chromium-bokmål" tests="1" failures="0" skipped="0" time="5.071" errors="0">
+<testcase name="Bruker logger inn via Mockporten" classname="innlogging/mockporten.spec.ts" time="5.071">
+<system-out>
+<![CDATA[Testbruker: SUBJEKTIV TELESKOPORD
+]]>
+</system-out>
+</testcase>
+</testsuite>
+<testsuite name="innlogging/utlogging-alle-flater.spec.ts" timestamp="2026-10-30T10:35:18.886Z" hostname="at23-chromium-bokmål" tests="3" failures="0" skipped="0" time="48.041" errors="0">
+<testcase name="Bruker er utlogget på alle flater etter utlogging fra arbeidsflate" classname="innlogging/utlogging-alle-flater.spec.ts" time="16.089">
+<system-out>
+<![CDATA[Testbruker: SMAL APRIKOS
+]]>
+</system-out>
+</testcase>
+<testcase name="Bruker er utlogget på alle flater etter utlogging fra profilen" classname="innlogging/utlogging-alle-flater.spec.ts" time="17.045">
+<system-out>
+<![CDATA[Testbruker: HÅNDFAST ADVENTSKALENDER
+]]>
+</system-out>
+</testcase>
+<testcase name="Bruker er utlogget på alle flater etter utlogging fra tilgangsstyring" classname="innlogging/utlogging-alle-flater.spec.ts" time="14.907">
+<system-out>
+<![CDATA[Testbruker: KORREKT ARKEOLOG
+]]>
+</system-out>
+</testcase>
+</testsuite>
+<testsuite name="meldinger/les-melding.spec.ts" timestamp="2026-10-30T10:35:18.886Z" hostname="at23-chromium-bokmål" tests="1" failures="0" skipped="0" time="25.441" errors="0">
+<testcase name="Bruker logger inn, leser en melding fra innboksen og bekrefter den" classname="meldinger/les-melding.spec.ts" time="25.441">
+<system-out>
+<![CDATA[Testbruker: SOLID ADVOKAT
+]]>
+</system-out>
+</testcase>
+</testsuite>
+<testsuite name="tilgangsstyring/tilgjengelige-seksjoner.spec.ts" timestamp="2026-10-30T10:35:18.886Z" hostname="at23-chromium-bokmål" tests="1" failures="0" skipped="0" time="10.744" errors="0">
+<testcase name="Bruker ser oversikt over navigasjonsvalg" classname="tilgangsstyring/tilgjengelige-seksjoner.spec.ts" time="10.744">
+<system-out>
+<![CDATA[Testbruker: SEIN JULEFERIE
+]]>
+</system-out>
+</testcase>
+</testsuite>
+<testsuite name="apps/innsending.spec.ts" timestamp="2026-10-30T10:35:18.886Z" hostname="at23-edge-bokmål" tests="1" failures="0" skipped="0" time="24.303" errors="0">
+<testcase name="Bruker logger inn fra altinn.no, sender inn app via dyplenke og ser innsendingen i innboksen" classname="apps/innsending.spec.ts" time="24.303">
+<system-out>
+<![CDATA[Testbruker: RØD KRETS
+]]>
+</system-out>
+</testcase>
+</testsuite>
+<testsuite name="apps/instansiereapp.spec.ts" timestamp="2026-10-30T10:35:18.886Z" hostname="at23-edge-bokmål" tests="2" failures="1" skipped="1" time="95.462" errors="0">
+<testcase name="Bruker instansierer app og gir tilgang, med direktenavigasjon til appen" classname="apps/instansiereapp.spec.ts" time="95.462">
+<system-out>
+<![CDATA[Person-A: ORIGINAL BUSSKUR, person-B: ULIK ARTIKKEL
+
+[[ATTACHMENT|test-results/apps-instansiereapp-Bruker-b6680-direktenavigasjon-til-appen-at23-edge-bokmål/video.webm]]
+
+[[ATTACHMENT|test-results/apps-instansiereapp-Bruker-b6680-direktenavigasjon-til-appen-at23-edge-bokmål/error-context.md]]
+Person-A: MINKENDE SYL, person-B: PRAKTISK FUGLEKASSE
+
+[[ATTACHMENT|test-results/apps-instansiereapp-Bruker-b6680-direktenavigasjon-til-appen-at23-edge-bokmål-retry1/video.webm]]
+
+[[ATTACHMENT|test-results/apps-instansiereapp-Bruker-b6680-direktenavigasjon-til-appen-at23-edge-bokmål-retry1/error-context.md]]
+
+[[ATTACHMENT|test-results/apps-instansiereapp-Bruker-b6680-direktenavigasjon-til-appen-at23-edge-bokmål-retry1/trace.zip]]
+]]>
+</system-out>
+<failure message="Aktørlisten eller menyen er klar" type="expect.toBeVisible">
+<![CDATA[  [at23-edge-bokmål] › apps/instansiereapp.spec.ts:30:5 › Bruker instansierer app og gir tilgang, med direktenavigasjon til appen @at23 @tt02 @prod › Person-B logger inn via Tilgangsstyring, velger person-A som aktør og setter språk 
+
+    Error: Aktørlisten eller menyen er klar
+
+    expect(locator).toBeVisible() failed
+
+    Locator: getByRole('dialog').or(getByRole('banner').getByRole('button', { name: /^(meny|menu)$/i }).and(locator(':enabled'))).first()
+    Expected: visible
+    Timeout: 20000ms
+    Error: element(s) not found
+
+    Call log:
+      - Aktørlisten eller menyen er klar getByRole('dialog').or(getByRole('banner').getByRole('button', { name: /^(meny|menu)$/i }).and(locator(':enabled'))).first() with timeout 20000ms
+      - waiting for getByRole('dialog').or(getByRole('banner').getByRole('button', { name: /^(meny|menu)$/i }).and(locator(':enabled'))).first()
+
+
+       at ../pages/felles/aktorvelger.ts:63
+
+      61 |             .and(this.page.locator(":enabled"));
+      62 |         await expect(this.dialog.or(menyKlar).first(), "Aktørlisten eller menyen er klar")
+    > 63 |             .toBeVisible({ timeout: REDIRECT_TIMEOUT });
+         |              ^
+      64 |
+      65 |         // Lista kan lukke seg igjen like etter at den har åpnet seg, og da blir menyen klar.
+      66 |         if (await this.dialog.isVisible()) {
+        at AktorvelgerPom.velgAktorEtterInnlogging (/tmp/altinn-platform-validation-tests/playwright/pages/felles/aktorvelger.ts:63:14)
+        at InnloggingPom.loggInnViaTilgangsstyring (/tmp/altinn-platform-validation-tests/playwright/pages/felles/innlogging.ts:103:32)
+        at /tmp/altinn-platform-validation-tests/playwright/tests/apps/instansiereapp.spec.ts:83:9
+        at /tmp/altinn-platform-validation-tests/playwright/tests/apps/instansiereapp.spec.ts:81:21
+
+    attachment #1: video (video/webm) ──────────────────────────────────────────────────────────────
+    ../test-results/apps-instansiereapp-Bruker-b6680-direktenavigasjon-til-appen-at23-edge-bokmål/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../test-results/apps-instansiereapp-Bruker-b6680-direktenavigasjon-til-appen-at23-edge-bokmål/error-context.md
+
+    Retry #1 ───────────────────────────────────────────────────────────────────────────────────────
+
+    Error: Aktørlisten eller menyen er klar
+
+    expect(locator).toBeVisible() failed
+
+    Locator: getByRole('dialog').or(getByRole('banner').getByRole('button', { name: /^(meny|menu)$/i }).and(locator(':enabled'))).first()
+    Expected: visible
+    Timeout: 20000ms
+    Error: element(s) not found
+
+    Call log:
+      - Aktørlisten eller menyen er klar getByRole('dialog').or(getByRole('banner').getByRole('button', { name: /^(meny|menu)$/i }).and(locator(':enabled'))).first() with timeout 20000ms
+      - waiting for getByRole('dialog').or(getByRole('banner').getByRole('button', { name: /^(meny|menu)$/i }).and(locator(':enabled'))).first()
+
+
+       at ../pages/felles/aktorvelger.ts:63
+
+      61 |             .and(this.page.locator(":enabled"));
+      62 |         await expect(this.dialog.or(menyKlar).first(), "Aktørlisten eller menyen er klar")
+    > 63 |             .toBeVisible({ timeout: REDIRECT_TIMEOUT });
+         |              ^
+      64 |
+      65 |         // Lista kan lukke seg igjen like etter at den har åpnet seg, og da blir menyen klar.
+      66 |         if (await this.dialog.isVisible()) {
+        at AktorvelgerPom.velgAktorEtterInnlogging (/tmp/altinn-platform-validation-tests/playwright/pages/felles/aktorvelger.ts:63:14)
+        at InnloggingPom.loggInnViaTilgangsstyring (/tmp/altinn-platform-validation-tests/playwright/pages/felles/innlogging.ts:103:32)
+        at /tmp/altinn-platform-validation-tests/playwright/tests/apps/instansiereapp.spec.ts:83:9
+        at /tmp/altinn-platform-validation-tests/playwright/tests/apps/instansiereapp.spec.ts:81:21
+
+    attachment #1: video (video/webm) ──────────────────────────────────────────────────────────────
+    ../test-results/apps-instansiereapp-Bruker-b6680-direktenavigasjon-til-appen-at23-edge-bokmål-retry1/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../test-results/apps-instansiereapp-Bruker-b6680-direktenavigasjon-til-appen-at23-edge-bokmål-retry1/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../test-results/apps-instansiereapp-Bruker-b6680-direktenavigasjon-til-appen-at23-edge-bokmål-retry1/trace.zip
+    Usage:
+
+        npx playwright show-trace ../test-results/apps-instansiereapp-Bruker-b6680-direktenavigasjon-til-appen-at23-edge-bokmål-retry1/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+]]>
+</failure>
+</testcase>
+<testcase name="Bruker instansierer app" classname="apps/instansiereapp.spec.ts">
+<properties>
+<property name="fixme" value="">
+</property>
+</properties>
+<skipped>
+</skipped>
+</testcase>
+</testsuite>
+<testsuite name="cookiebanner/cookiebanner-vises.spec.ts" timestamp="2026-10-30T10:35:18.886Z" hostname="at23-edge-bokmål" tests="4" failures="0" skipped="0" time="23.056" errors="0">
+<testcase name="Cookiebanneret vises på arbeidsflate for en ny sesjon" classname="cookiebanner/cookiebanner-vises.spec.ts" time="6.961">
+<system-out>
+<![CDATA[Testbruker: EKTE FISKEBOLLE
+]]>
+</system-out>
+</testcase>
+<testcase name="Cookiebanneret vises på profilen for en ny sesjon" classname="cookiebanner/cookiebanner-vises.spec.ts" time="7.251">
+<system-out>
+<![CDATA[Testbruker: OPPLAGT PANNE
+]]>
+</system-out>
+</testcase>
+<testcase name="Cookiebanneret vises på tilgangsstyring for en ny sesjon" classname="cookiebanner/cookiebanner-vises.spec.ts" time="6.772">
+<system-out>
+<![CDATA[Testbruker: URIMELIG LUKT
+]]>
+</system-out>
+</testcase>
+<testcase name="Cookiebanneret vises på infoportalen for en ny sesjon" classname="cookiebanner/cookiebanner-vises.spec.ts" time="2.072">
+</testcase>
+</testsuite>
+<testsuite name="cookiebanner/cookievalg-alle-flater.spec.ts" timestamp="2026-10-30T10:35:18.886Z" hostname="at23-edge-bokmål" tests="4" failures="0" skipped="0" time="50.972" errors="0">
+<testcase name="Godtatt på arbeidsflate gjelder på alle flater" classname="cookiebanner/cookievalg-alle-flater.spec.ts" time="11.884">
+<system-out>
+<![CDATA[Testbruker: ARITMETISK MISFORNØYD FRASE
+]]>
+</system-out>
+</testcase>
+<testcase name="Avslått på profilen gjelder på alle flater" classname="cookiebanner/cookievalg-alle-flater.spec.ts" time="12.996">
+<system-out>
+<![CDATA[Testbruker: UNG KARAKTERISTIKK
+]]>
+</system-out>
+</testcase>
+<testcase name="Godtatt på tilgangsstyring gjelder på alle flater" classname="cookiebanner/cookievalg-alle-flater.spec.ts" time="15.408">
+<system-out>
+<![CDATA[Testbruker: REDD HORISONTAL ALDERSTRYGD
+]]>
+</system-out>
+</testcase>
+<testcase name="Avslått på infoportalen gjelder på alle flater" classname="cookiebanner/cookievalg-alle-flater.spec.ts" time="10.684">
+<system-out>
+<![CDATA[Testbruker: OPTIMISTISK HANKATT
+]]>
+</system-out>
+</testcase>
+</testsuite>
+<testsuite name="infoportal/header-gjenspeiler-bruker.spec.ts" timestamp="2026-10-30T10:35:18.886Z" hostname="at23-edge-bokmål" tests="1" failures="0" skipped="0" time="9.122" errors="0">
+<testcase name="Infoportalens header gjenspeiler pålogget bruker og valgt aktør etter navigering ut fra arbeidsflate" classname="infoportal/header-gjenspeiler-bruker.spec.ts" time="9.122">
+<system-out>
+<![CDATA[Testbruker: OPPGITT MANDOLIN
+]]>
+</system-out>
+</testcase>
+</testsuite>
+<testsuite name="infoportal/sprak-fra-profil.spec.ts" timestamp="2026-10-30T10:35:18.886Z" hostname="at23-edge-bokmål" tests="1" failures="0" skipped="0" time="10.701" errors="0">
+<testcase name="Brukerens språkvalg fra profilen vises i infoportalen" classname="infoportal/sprak-fra-profil.spec.ts" time="10.701">
+<system-out>
+<![CDATA[Testbruker: INTERNASJONAL TOMMEL
+]]>
+</system-out>
+</testcase>
+</testsuite>
+<testsuite name="innlogging/dyplenke.spec.ts" timestamp="2026-10-30T10:35:18.886Z" hostname="at23-edge-bokmål" tests="1" failures="0" skipped="0" time="6.602" errors="0">
+<testcase name="Bruker som åpner en lenke til profilen logges inn og lander på profilen" classname="innlogging/dyplenke.spec.ts" time="6.602">
+<system-out>
+<![CDATA[Testbruker: VENSTRE FISKEKROK
+]]>
+</system-out>
+</testcase>
+</testsuite>
+<testsuite name="innlogging/innlogging-alle-flater.spec.ts" timestamp="2026-10-30T10:35:18.886Z" hostname="at23-edge-bokmål" tests="2" failures="0" skipped="0" time="25.627" errors="0">
+<testcase name="Bruker er innlogget på alle flater etter innlogging via arbeidsflate" classname="innlogging/innlogging-alle-flater.spec.ts" time="12.824">
+<system-out>
+<![CDATA[Testbruker: POSSESSIV GRAV
+]]>
+</system-out>
+</testcase>
+<testcase name="Bruker er innlogget på alle flater etter innlogging via tilgangsstyring" classname="innlogging/innlogging-alle-flater.spec.ts" time="12.803">
+<system-out>
+<![CDATA[Testbruker: FREIDIG HAVHEST
+]]>
+</system-out>
+</testcase>
+</testsuite>
+<testsuite name="innlogging/innlogging-refresh-alle-flater.spec.ts" timestamp="2026-10-30T10:35:18.886Z" hostname="at23-edge-bokmål" tests="2" failures="0" skipped="0" time="30.831" errors="0">
+<testcase name="Bruker forblir innlogget på alle flater etter innlogging via arbeidsflate" classname="innlogging/innlogging-refresh-alle-flater.spec.ts" time="15.172">
+<system-out>
+<![CDATA[Testbruker: FORETAKSOM TRAPP
+]]>
+</system-out>
+</testcase>
+<testcase name="Bruker forblir innlogget på alle flater etter innlogging via tilgangsstyring" classname="innlogging/innlogging-refresh-alle-flater.spec.ts" time="15.659">
+<system-out>
+<![CDATA[Testbruker: UAVHENGIG ANTILOPE
+]]>
+</system-out>
+</testcase>
+</testsuite>
+<testsuite name="innlogging/mockporten.spec.ts" timestamp="2026-10-30T10:35:18.886Z" hostname="at23-edge-bokmål" tests="1" failures="0" skipped="0" time="3.723" errors="0">
+<testcase name="Bruker logger inn via Mockporten" classname="innlogging/mockporten.spec.ts" time="3.723">
+<system-out>
+<![CDATA[Testbruker: SVENSK DAM
+]]>
+</system-out>
+</testcase>
+</testsuite>
+<testsuite name="innlogging/utlogging-alle-flater.spec.ts" timestamp="2026-10-30T10:35:18.886Z" hostname="at23-edge-bokmål" tests="3" failures="0" skipped="0" time="41.992" errors="0">
+<testcase name="Bruker er utlogget på alle flater etter utlogging fra arbeidsflate" classname="innlogging/utlogging-alle-flater.spec.ts" time="14.923">
+<system-out>
+<![CDATA[Testbruker: HANDLEKRAFTIG ARBEIDSKRAFT
+]]>
+</system-out>
+</testcase>
+<testcase name="Bruker er utlogget på alle flater etter utlogging fra profilen" classname="innlogging/utlogging-alle-flater.spec.ts" time="14.514">
+<system-out>
+<![CDATA[Testbruker: HEL BARON
+]]>
+</system-out>
+</testcase>
+<testcase name="Bruker er utlogget på alle flater etter utlogging fra tilgangsstyring" classname="innlogging/utlogging-alle-flater.spec.ts" time="12.555">
+<system-out>
+<![CDATA[Testbruker: USTABIL UTAKKNEMLIG DRAGE KONDUKTØR
+]]>
+</system-out>
+</testcase>
+</testsuite>
+<testsuite name="meldinger/les-melding.spec.ts" timestamp="2026-10-30T10:35:18.886Z" hostname="at23-edge-bokmål" tests="1" failures="0" skipped="0" time="25.894" errors="0">
+<testcase name="Bruker logger inn, leser en melding fra innboksen og bekrefter den" classname="meldinger/les-melding.spec.ts" time="25.894">
+<system-out>
+<![CDATA[Testbruker: GLOVARM UNGE
+]]>
+</system-out>
+</testcase>
+</testsuite>
+<testsuite name="tilgangsstyring/tilgjengelige-seksjoner.spec.ts" timestamp="2026-10-30T10:35:18.886Z" hostname="at23-edge-bokmål" tests="1" failures="0" skipped="0" time="8.217" errors="0">
+<testcase name="Bruker ser oversikt over navigasjonsvalg" classname="tilgangsstyring/tilgjengelige-seksjoner.spec.ts" time="8.217">
+<system-out>
+<![CDATA[Testbruker: OPPLYST KAMERA
+]]>
+</system-out>
+</testcase>
+</testsuite>
+<testsuite name="apps/innsending.spec.ts" timestamp="2026-10-30T10:35:18.886Z" hostname="at23-webkit-bokmål" tests="1" failures="0" skipped="0" time="57.478" errors="0">
+<testcase name="Bruker logger inn fra altinn.no, sender inn app via dyplenke og ser innsendingen i innboksen" classname="apps/innsending.spec.ts" time="57.478">
+<system-out>
+<![CDATA[Testbruker: VASSEN TOURNURE
+
+[[ATTACHMENT|test-results/apps-innsending-Bruker-log-7b617-er-innsendingen-i-innboksen-at23-webkit-bokmål/video.webm]]
+
+[[ATTACHMENT|test-results/apps-innsending-Bruker-log-7b617-er-innsendingen-i-innboksen-at23-webkit-bokmål/error-context.md]]
+Testbruker: MATT SYNDEBUKK
+
+[[ATTACHMENT|test-results/apps-innsending-Bruker-log-7b617-er-innsendingen-i-innboksen-at23-webkit-bokmål-retry1/trace.zip]]
+]]>
+</system-out>
+</testcase>
+</testsuite>
+<testsuite name="apps/instansiereapp.spec.ts" timestamp="2026-10-30T10:35:18.886Z" hostname="at23-webkit-bokmål" tests="2" failures="0" skipped="1" time="55.632" errors="0">
+<testcase name="Bruker instansierer app og gir tilgang, med direktenavigasjon til appen" classname="apps/instansiereapp.spec.ts" time="55.632">
+<system-out>
+<![CDATA[Person-A: LYKKELIG HETE, person-B: TYDELIG AVSLUTNING
+]]>
+</system-out>
+</testcase>
+<testcase name="Bruker instansierer app" classname="apps/instansiereapp.spec.ts">
+<properties>
+<property name="fixme" value="">
+</property>
+</properties>
+<skipped>
+</skipped>
+</testcase>
+</testsuite>
+<testsuite name="cookiebanner/cookiebanner-vises.spec.ts" timestamp="2026-10-30T10:35:18.886Z" hostname="at23-webkit-bokmål" tests="4" failures="0" skipped="0" time="45.299" errors="0">
+<testcase name="Cookiebanneret vises på arbeidsflate for en ny sesjon" classname="cookiebanner/cookiebanner-vises.spec.ts" time="10.281">
+<system-out>
+<![CDATA[Testbruker: USENSUELL GRØT
+]]>
+</system-out>
+</testcase>
+<testcase name="Cookiebanneret vises på profilen for en ny sesjon" classname="cookiebanner/cookiebanner-vises.spec.ts" time="16.741">
+<system-out>
+<![CDATA[Testbruker: VEIK HOTELLDIREKTØR
+]]>
+</system-out>
+</testcase>
+<testcase name="Cookiebanneret vises på tilgangsstyring for en ny sesjon" classname="cookiebanner/cookiebanner-vises.spec.ts" time="14.989">
+<system-out>
+<![CDATA[Testbruker: PARODISK BÅT
+]]>
+</system-out>
+</testcase>
+<testcase name="Cookiebanneret vises på infoportalen for en ny sesjon" classname="cookiebanner/cookiebanner-vises.spec.ts" time="3.288">
+</testcase>
+</testsuite>
+<testsuite name="cookiebanner/cookievalg-alle-flater.spec.ts" timestamp="2026-10-30T10:35:18.886Z" hostname="at23-webkit-bokmål" tests="4" failures="0" skipped="0" time="73.075" errors="0">
+<testcase name="Godtatt på arbeidsflate gjelder på alle flater" classname="cookiebanner/cookievalg-alle-flater.spec.ts" time="16.872">
+<system-out>
+<![CDATA[Testbruker: JORDNÆR AKUPUNKTØR
+]]>
+</system-out>
+</testcase>
+<testcase name="Avslått på profilen gjelder på alle flater" classname="cookiebanner/cookievalg-alle-flater.spec.ts" time="20.219">
+<system-out>
+<![CDATA[Testbruker: SMIDIG AVSLUTNING
+]]>
+</system-out>
+</testcase>
+<testcase name="Godtatt på tilgangsstyring gjelder på alle flater" classname="cookiebanner/cookievalg-alle-flater.spec.ts" time="21.894">
+<system-out>
+<![CDATA[Testbruker: FRYKTLØS DEIG
+]]>
+</system-out>
+</testcase>
+<testcase name="Avslått på infoportalen gjelder på alle flater" classname="cookiebanner/cookievalg-alle-flater.spec.ts" time="14.09">
+<system-out>
+<![CDATA[Testbruker: KVART PERSON
+]]>
+</system-out>
+</testcase>
+</testsuite>
+<testsuite name="infoportal/header-gjenspeiler-bruker.spec.ts" timestamp="2026-10-30T10:35:18.886Z" hostname="at23-webkit-bokmål" tests="1" failures="0" skipped="0" time="11.213" errors="0">
+<testcase name="Infoportalens header gjenspeiler pålogget bruker og valgt aktør etter navigering ut fra arbeidsflate" classname="infoportal/header-gjenspeiler-bruker.spec.ts" time="11.213">
+<system-out>
+<![CDATA[Testbruker: EMPIRISK VOLLEYBALL
+]]>
+</system-out>
+</testcase>
+</testsuite>
+<testsuite name="infoportal/sprak-fra-profil.spec.ts" timestamp="2026-10-30T10:35:18.886Z" hostname="at23-webkit-bokmål" tests="1" failures="0" skipped="0" time="14.764" errors="0">
+<testcase name="Brukerens språkvalg fra profilen vises i infoportalen" classname="infoportal/sprak-fra-profil.spec.ts" time="14.764">
+<system-out>
+<![CDATA[Testbruker: MISFORNØYD PRÆRIEULV
+]]>
+</system-out>
+</testcase>
+</testsuite>
+<testsuite name="innlogging/dyplenke.spec.ts" timestamp="2026-10-30T10:35:18.886Z" hostname="at23-webkit-bokmål" tests="1" failures="0" skipped="0" time="9.034" errors="0">
+<testcase name="Bruker som åpner en lenke til profilen logges inn og lander på profilen" classname="innlogging/dyplenke.spec.ts" time="9.034">
+<system-out>
+<![CDATA[Testbruker: AKTPÅGIVENDE JORDBRUK
+]]>
+</system-out>
+</testcase>
+</testsuite>
+<testsuite name="innlogging/innlogging-alle-flater.spec.ts" timestamp="2026-10-30T10:35:18.886Z" hostname="at23-webkit-bokmål" tests="2" failures="0" skipped="0" time="41.264" errors="0">
+<testcase name="Bruker er innlogget på alle flater etter innlogging via arbeidsflate" classname="innlogging/innlogging-alle-flater.spec.ts" time="18.429">
+<system-out>
+<![CDATA[Testbruker: NY MØLLE
+]]>
+</system-out>
+</testcase>
+<testcase name="Bruker er innlogget på alle flater etter innlogging via tilgangsstyring" classname="innlogging/innlogging-alle-flater.spec.ts" time="22.835">
+<system-out>
+<![CDATA[Testbruker: SITRONGUL BRANDE
+]]>
+</system-out>
+</testcase>
+</testsuite>
+<testsuite name="innlogging/innlogging-refresh-alle-flater.spec.ts" timestamp="2026-10-30T10:35:18.886Z" hostname="at23-webkit-bokmål" tests="2" failures="0" skipped="0" time="46.162" errors="0">
+<testcase name="Bruker forblir innlogget på alle flater etter innlogging via arbeidsflate" classname="innlogging/innlogging-refresh-alle-flater.spec.ts" time="22.089">
+<system-out>
+<![CDATA[Testbruker: PRESIS ALV
+]]>
+</system-out>
+</testcase>
+<testcase name="Bruker forblir innlogget på alle flater etter innlogging via tilgangsstyring" classname="innlogging/innlogging-refresh-alle-flater.spec.ts" time="24.073">
+<system-out>
+<![CDATA[Testbruker: MORSOM LØRDAG POSTNUMMER
+]]>
+</system-out>
+</testcase>
+</testsuite>
+<testsuite name="innlogging/mockporten.spec.ts" timestamp="2026-10-30T10:35:18.886Z" hostname="at23-webkit-bokmål" tests="1" failures="0" skipped="0" time="6.918" errors="0">
+<testcase name="Bruker logger inn via Mockporten" classname="innlogging/mockporten.spec.ts" time="6.918">
+<system-out>
+<![CDATA[Testbruker: LYKKELIG GRÅHEGRE
+]]>
+</system-out>
+</testcase>
+</testsuite>
+<testsuite name="innlogging/utlogging-alle-flater.spec.ts" timestamp="2026-10-30T10:35:18.886Z" hostname="at23-webkit-bokmål" tests="3" failures="0" skipped="3" time="2.451" errors="0">
+<testcase name="Bruker er utlogget på alle flater etter utlogging fra arbeidsflate" classname="innlogging/utlogging-alle-flater.spec.ts">
+<properties>
+<property name="fixme" value="Playwright krasjer i WebKit på Linux, microsoft/playwright#43067">
+</property>
+</properties>
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Bruker er utlogget på alle flater etter utlogging fra profilen" classname="innlogging/utlogging-alle-flater.spec.ts">
+<properties>
+<property name="fixme" value="Playwright krasjer i WebKit på Linux, microsoft/playwright#43067">
+</property>
+</properties>
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Bruker er utlogget på alle flater etter utlogging fra tilgangsstyring" classname="innlogging/utlogging-alle-flater.spec.ts">
+<properties>
+<property name="fixme" value="Playwright krasjer i WebKit på Linux, microsoft/playwright#43067">
+</property>
+</properties>
+<skipped>
+</skipped>
+</testcase>
+</testsuite>
+<testsuite name="meldinger/les-melding.spec.ts" timestamp="2026-10-30T10:35:18.886Z" hostname="at23-webkit-bokmål" tests="1" failures="0" skipped="0" time="25.133" errors="0">
+<testcase name="Bruker logger inn, leser en melding fra innboksen og bekrefter den" classname="meldinger/les-melding.spec.ts" time="25.133">
+<system-out>
+<![CDATA[Testbruker: UKONTROVERSIELL KREPS
+]]>
+</system-out>
+</testcase>
+</testsuite>
+<testsuite name="tilgangsstyring/tilgjengelige-seksjoner.spec.ts" timestamp="2026-10-30T10:35:18.886Z" hostname="at23-webkit-bokmål" tests="1" failures="0" skipped="0" time="9.176" errors="0">
+<testcase name="Bruker ser oversikt over navigasjonsvalg" classname="tilgangsstyring/tilgjengelige-seksjoner.spec.ts" time="9.176">
+<system-out>
+<![CDATA[Testbruker: SUBJEKTIV TAKRAS
+]]>
+</system-out>
+</testcase>
+</testsuite>
+</testsuites>
