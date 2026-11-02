@@ -22,7 +22,7 @@ func TestPlatformTokenOgCache(t *testing.T) {
 			t.Errorf("basic auth = %q %q %v", u, p, ok)
 		}
 		q := r.URL.Query()
-		if q.Get("env") != "at23" || q.Get("app") != "testudo" || q.Get("ttl") != "60000" || q.Has("org") {
+		if q.Get("env") != "at23" || q.Get("app") != "testudo" || q.Get("ttl") != "300" || q.Has("org") {
 			t.Errorf("query = %v", q)
 		}
 		fmt.Fprintf(w, "token-%d\n", kall)
@@ -43,8 +43,8 @@ func TestPlatformTokenOgCache(t *testing.T) {
 			t.Fatalf("token = %q, err = %v", tok, err)
 		}
 	}
-	// 60000s levetid, fornyes 5 minutter før.
-	naa = naa.Add(60000*time.Second - 5*time.Minute - time.Second)
+	// 5 minutters levetid, fornyes 30 sekunder før.
+	naa = naa.Add(5*time.Minute - 30*time.Second - time.Second)
 	if tok, _ := g.Token(context.Background()); tok != "token-1" {
 		t.Errorf("rett før fornyelse: token = %q", tok)
 	}

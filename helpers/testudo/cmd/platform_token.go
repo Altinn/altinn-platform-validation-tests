@@ -22,10 +22,11 @@ const (
 	// standardPlatformApp er app-navnet tokenet utstedes for. K6 bruker
 	// k6-e2e-tests og frontend testtjeneste.
 	standardPlatformApp = "testudo"
-	// standardPlatformTTL er levetiden vi ber om, som i K6 og frontend.
-	standardPlatformTTL = 60000 * time.Second
+	// standardPlatformTTL er levetiden vi ber om. Tokenet caches og fornyes,
+	// så det trenger bare å vare litt. K6 og frontend ber om 60000 sekunder.
+	standardPlatformTTL = 5 * time.Minute
 	// platformFornyFoer er hvor lenge før utløp tokenet hentes på nytt.
-	platformFornyFoer = 5 * time.Minute
+	platformFornyFoer = 30 * time.Second
 )
 
 // PlatformTokenConfig er det som trengs for å hente platform access token.
@@ -39,7 +40,7 @@ type PlatformTokenConfig struct {
 	App string
 	// Org setter utstederen. Tom betyr token generatorens standard.
 	Org string
-	// TTL er levetiden vi ber om. Standard er 60000 sekunder.
+	// TTL er levetiden vi ber om. Standard er 5 minutter.
 	TTL time.Duration
 	// BaseURL er token generatoren. Standard er Altinn sin.
 	BaseURL string
