@@ -6,15 +6,10 @@ package cmd
 
 import (
 	"context"
-	"crypto"
-	"crypto/rand"
 	"crypto/rsa"
-	"crypto/sha256"
-	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"io"
-	"math/big"
 	"net/http"
 	"net/url"
 	"strings"
@@ -22,6 +17,9 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/lestrrat-go/jwx/v4/jwa"
+	"github.com/lestrrat-go/jwx/v4/jwk"
+	"github.com/lestrrat-go/jwx/v4/jwt"
 )
 
 var maskinportenTokenEndpoint = "https://test.maskinporten.no/token"
@@ -37,9 +35,8 @@ const (
 type MaskinportenConfig struct {
 	// ClientID brukes som iss i grant-en.
 	ClientID string
-	// JWK er den private nøkkelen; kid i JWK-en settes i JWT-headeren.
-	JWK *rsa.PrivateKey
-	KID string
+	// JWK er den private nøkkelen. Har den kid, settes den i JWT-headeren.
+	JWK jwk.Key
 	// ConsumerOrg settes som consumer_org for "på vegne av"-scenarioer.
 	ConsumerOrg string
 	// TokenURL er både token-endepunktet og aud. Standard er testmiljøet.
@@ -53,62 +50,41 @@ func MaskinportenConfigFra(hent func(string) string) (MaskinportenConfig, error)
 	if cfg.ClientID == "" {
 		return cfg, fmt.Errorf("%w: MASKINPORTEN_CLIENT_ID mangler", ErrInvalid)
 	}
-	jwk := hent("MASKINPORTEN_JWK")
-	if jwk == "" {
+	tekst := hent("MASKINPORTEN_JWK")
+	if tekst == "" {
 		return cfg, fmt.Errorf("%w: MASKINPORTEN_JWK mangler", ErrInvalid)
 	}
-	key, kid, err := ParsePrivatNoekkelJWK(jwk)
+	key, err := ParsePrivatNoekkelJWK(tekst)
 	if err != nil {
 		return cfg, fmt.Errorf("MASKINPORTEN_JWK: %w", err)
 	}
-	cfg.JWK, cfg.KID = key, kid
+	cfg.JWK = key
 	return cfg, nil
 }
 
-// ParsePrivatNoekkelJWK leser en privat RSA-nøkkel i JWK-format og returnerer
-// nøkkelen og kid.
-func ParsePrivatNoekkelJWK(s string) (*rsa.PrivateKey, string, error) {
-	var jwk struct {
-		Kty string `json:"kty"`
-		Kid string `json:"kid"`
-		N   string `json:"n"`
-		E   string `json:"e"`
-		D   string `json:"d"`
-		P   string `json:"p"`
-		Q   string `json:"q"`
+// ParsePrivatNoekkelJWK leser en privat RSA-nøkkel i JWK-format.
+func ParsePrivatNoekkelJWK(s string) (jwk.Key, error) {
+	key, err := jwk.ParseKey([]byte(s))
+	if err != nil {
+		return nil, fmt.Errorf("%w: JWK: %v", ErrInvalid, err)
 	}
-	if err := json.Unmarshal([]byte(s), &jwk); err != nil {
-		return nil, "", fmt.Errorf("%w: JWK er ikke gyldig JSON: %v", ErrInvalid, err)
+	if key.KeyType() != jwa.RSA() {
+		return nil, fmt.Errorf("%w: JWK må ha kty RSA, har %q", ErrInvalid, key.KeyType())
 	}
-	if jwk.Kty != "RSA" {
-		return nil, "", fmt.Errorf("%w: JWK må ha kty RSA, har %q", ErrInvalid, jwk.Kty)
+	if privat, err := jwk.IsPrivateKey(key); err != nil || !privat {
+		return nil, fmt.Errorf("%w: JWK er ikke en privat nøkkel", ErrInvalid)
 	}
-
-	tall := map[string]*big.Int{}
-	for navn, verdi := range map[string]string{"n": jwk.N, "e": jwk.E, "d": jwk.D, "p": jwk.P, "q": jwk.Q} {
-		if verdi == "" {
-			return nil, "", fmt.Errorf("%w: JWK mangler %q", ErrInvalid, navn)
-		}
-		b, err := base64.RawURLEncoding.DecodeString(verdi)
-		if err != nil {
-			return nil, "", fmt.Errorf("%w: JWK-feltet %q: %v", ErrInvalid, navn, err)
-		}
-		tall[navn] = new(big.Int).SetBytes(b)
+	// key.Validate sjekker bare at feltene finnes. rsa.PrivateKey.Validate
+	// sjekker også at de henger sammen, så en ødelagt nøkkel oppdages her og
+	// ikke som en avvist signatur hos Maskinporten.
+	raw, err := jwk.Export[*rsa.PrivateKey](key)
+	if err != nil {
+		return nil, fmt.Errorf("%w: JWK: %v", ErrInvalid, err)
 	}
-	if !tall["e"].IsInt64() {
-		return nil, "", fmt.Errorf("%w: JWK har ugyldig e", ErrInvalid)
+	if err := raw.Validate(); err != nil {
+		return nil, fmt.Errorf("%w: JWK: %v", ErrInvalid, err)
 	}
-
-	key := &rsa.PrivateKey{
-		PublicKey: rsa.PublicKey{N: tall["n"], E: int(tall["e"].Int64())},
-		D:         tall["d"],
-		Primes:    []*big.Int{tall["p"], tall["q"]},
-	}
-	if err := key.Validate(); err != nil {
-		return nil, "", fmt.Errorf("%w: JWK: %v", ErrInvalid, err)
-	}
-	key.Precompute()
-	return key, jwk.Kid, nil
+	return key, nil
 }
 
 // MaskinportenClient henter og cacher access token for et sett med scopes.
@@ -214,44 +190,35 @@ func (c *MaskinportenClient) hentToken(ctx context.Context) (string, time.Durati
 	return svar.AccessToken, time.Duration(svar.ExpiresIn) * time.Second, nil
 }
 
-// lagGrant signerer JWT-en som sendes som assertion.
+// lagGrant signerer JWT-en som sendes som assertion. jwx setter alg, typ og
+// kid (fra JWK-en) i headeren.
 func (c *MaskinportenClient) lagGrant() (string, error) {
 	jti, err := uuid.NewRandom()
 	if err != nil {
 		return "", fmt.Errorf("lag jti: %w", err)
 	}
-	naa := c.naa().Unix()
+	naa := c.naa()
 
-	header := map[string]string{"alg": "RS256", "typ": "JWT"}
-	if c.cfg.KID != "" {
-		header["kid"] = c.cfg.KID
-	}
-	payload := map[string]any{
-		"aud":   c.cfg.TokenURL,
-		"iss":   c.cfg.ClientID,
-		"scope": c.scopes,
-		"iat":   naa,
-		"exp":   naa + int64(maskinportenGrantLevetid/time.Second),
-		"jti":   jti.String(),
-	}
+	b := jwt.NewBuilder().
+		Audience([]string{c.cfg.TokenURL}).
+		Issuer(c.cfg.ClientID).
+		IssuedAt(naa).
+		Expiration(naa.Add(maskinportenGrantLevetid)).
+		JwtID(jti.String()).
+		Claim("scope", c.scopes)
 	if c.cfg.ConsumerOrg != "" {
-		payload["consumer_org"] = c.cfg.ConsumerOrg
+		b = b.Claim("consumer_org", c.cfg.ConsumerOrg)
 	}
-
-	h, err := json.Marshal(header)
+	tok, err := b.Build()
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("bygg Maskinporten-grant: %w", err)
 	}
-	p, err := json.Marshal(payload)
-	if err != nil {
-		return "", err
-	}
-	input := base64.RawURLEncoding.EncodeToString(h) + "." + base64.RawURLEncoding.EncodeToString(p)
+	// Maskinporten vil ha aud som tekst, ikke liste.
+	tok.Options().Enable(jwt.FlattenAudience)
 
-	hash := sha256.Sum256([]byte(input))
-	sig, err := rsa.SignPKCS1v15(rand.Reader, c.cfg.JWK, crypto.SHA256, hash[:])
+	signert, err := jwt.Sign(tok, jwt.WithKey(jwa.RS256(), c.cfg.JWK))
 	if err != nil {
 		return "", fmt.Errorf("signer Maskinporten-grant: %w", err)
 	}
-	return input + "." + base64.RawURLEncoding.EncodeToString(sig), nil
+	return string(signert), nil
 }

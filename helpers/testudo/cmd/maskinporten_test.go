@@ -3,6 +3,8 @@ package cmd
 import (
 	"context"
 	"crypto"
+	"crypto/ecdsa"
+	"crypto/elliptic"
 	"crypto/rand"
 	"crypto/rsa"
 	"crypto/sha256"
@@ -19,6 +21,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/lestrrat-go/jwx/v4/jwk"
 )
 
 var testNoekkel = sync.OnceValue(func() *rsa.PrivateKey {
@@ -44,6 +47,26 @@ func testJWK(key *rsa.PrivateKey, kid string) string {
 	}
 	b, _ := json.Marshal(felt)
 	return string(b)
+}
+
+// testJWKNoekkel er testnøkkelen som jwk.Key, med kid hvis den ikke er tom.
+func testJWKNoekkel(t *testing.T, kid string) jwk.Key {
+	t.Helper()
+	key, err := ParsePrivatNoekkelJWK(testJWK(testNoekkel(), kid))
+	if err != nil {
+		t.Fatal(err)
+	}
+	return key
+}
+
+// eksporter gir RSA-nøkkelen i en jwk.Key.
+func eksporter(t *testing.T, key jwk.Key) *rsa.PrivateKey {
+	t.Helper()
+	raw, err := jwk.Export[*rsa.PrivateKey](key)
+	if err != nil {
+		t.Fatal(err)
+	}
+	return raw
 }
 
 // lesGrant verifiserer signaturen og returnerer header og payload.
@@ -101,7 +124,7 @@ func TestMaskinportenTokenOgCache(t *testing.T) {
 	srvURL = srv.URL
 
 	c, err := NewMaskinportenClient(MaskinportenConfig{
-		ClientID: "klient", KID: "min-kid", JWK: key, TokenURL: srv.URL,
+		ClientID: "klient", JWK: testJWKNoekkel(t, "min-kid"), TokenURL: srv.URL,
 	}, "a:les", "b:skriv")
 	if err != nil {
 		t.Fatal(err)
@@ -149,7 +172,7 @@ func TestMaskinportenConsumerOrgOgUtenKid(t *testing.T) {
 	defer srv.Close()
 
 	c, _ := NewMaskinportenClient(MaskinportenConfig{
-		ClientID: "klient", JWK: key, ConsumerOrg: "991825827", TokenURL: srv.URL,
+		ClientID: "klient", JWK: testJWKNoekkel(t, ""), ConsumerOrg: "991825827", TokenURL: srv.URL,
 	}, "x")
 	if _, err := c.Token(context.Background()); err != nil {
 		t.Fatal(err)
@@ -164,7 +187,7 @@ func TestMaskinportenFeilsvar(t *testing.T) {
 	defer srv.Close()
 
 	c, _ := NewMaskinportenClient(MaskinportenConfig{
-		ClientID: "klient", JWK: testNoekkel(), TokenURL: srv.URL,
+		ClientID: "klient", JWK: testJWKNoekkel(t, ""), TokenURL: srv.URL,
 	}, "x")
 	_, err := c.Token(context.Background())
 	if !errors.Is(err, ErrInvalidResponse) || !strings.Contains(err.Error(), "invalid_scope: Scope finnes ikke") {
@@ -176,27 +199,34 @@ func TestNewMaskinportenClientValiderer(t *testing.T) {
 	if _, err := NewMaskinportenClient(MaskinportenConfig{ClientID: "k"}, "x"); !errors.Is(err, ErrInvalid) {
 		t.Errorf("uten JWK: %v", err)
 	}
-	if _, err := NewMaskinportenClient(MaskinportenConfig{ClientID: "k", JWK: testNoekkel()}); !errors.Is(err, ErrInvalid) {
+	if _, err := NewMaskinportenClient(MaskinportenConfig{ClientID: "k", JWK: testJWKNoekkel(t, "")}); !errors.Is(err, ErrInvalid) {
 		t.Errorf("uten scope: %v", err)
 	}
 }
 
 func TestParsePrivatNoekkelJWK(t *testing.T) {
 	key := testNoekkel()
-	got, kid, err := ParsePrivatNoekkelJWK(testJWK(key, "kid-1"))
+	got, err := ParsePrivatNoekkelJWK(testJWK(key, "kid-1"))
 	if err != nil {
 		t.Fatal(err)
 	}
-	if kid != "kid-1" || !got.Equal(key) {
-		t.Errorf("kid = %q, lik = %v", kid, got.Equal(key))
+	if kid, _ := got.KeyID(); kid != "kid-1" || !eksporter(t, got).Equal(key) {
+		t.Errorf("kid = %q, lik = %v", kid, eksporter(t, got).Equal(key))
 	}
 
+	ec, _ := ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
+	ecJWK, _ := jwk.Import[jwk.Key](ec)
+	ecJSON, _ := json.Marshal(ecJWK)
+	offentlig, _ := jwk.Import[jwk.Key](&key.PublicKey)
+	offentligJSON, _ := json.Marshal(offentlig)
+
 	for navn, s := range map[string]string{
-		"ikke json": "{",
-		"feil kty":  `{"kty":"EC"}`,
-		"mangler d": strings.Replace(testJWK(key, "k"), `"d":`, `"x":`, 1),
+		"ikke json":        "{",
+		"EC-nøkkel":        string(ecJSON),
+		"offentlig nøkkel": string(offentligJSON),
+		"feil d":           strings.Replace(testJWK(key, "k"), `"d":"`+b64(key.D)+`"`, `"d":"`+b64(big.NewInt(12345))+`"`, 1),
 	} {
-		if _, _, err := ParsePrivatNoekkelJWK(s); !errors.Is(err, ErrInvalid) {
+		if _, err := ParsePrivatNoekkelJWK(s); !errors.Is(err, ErrInvalid) {
 			t.Errorf("%s: err = %v", navn, err)
 		}
 	}
@@ -211,7 +241,7 @@ func TestMaskinportenConfigFra(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if cfg.ClientID != "c" || cfg.KID != "jwk-kid" || !cfg.JWK.Equal(key) {
+	if kid, _ := cfg.JWK.KeyID(); cfg.ClientID != "c" || kid != "jwk-kid" || !eksporter(t, cfg.JWK).Equal(key) {
 		t.Errorf("cfg = %+v", cfg)
 	}
 
