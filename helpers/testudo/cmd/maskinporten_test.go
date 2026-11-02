@@ -17,6 +17,8 @@ import (
 	"sync"
 	"testing"
 	"time"
+
+	"github.com/google/uuid"
 )
 
 var testNoekkel = sync.OnceValue(func() *rsa.PrivateKey {
@@ -81,9 +83,11 @@ func TestMaskinportenTokenOgCache(t *testing.T) {
 		if header["alg"] != "RS256" || header["typ"] != "JWT" || header["kid"] != "min-kid" {
 			t.Errorf("header = %v", header)
 		}
-		if payload["aud"] != srvURL || payload["iss"] != "klient" ||
-			payload["scope"] != "a:les b:skriv" || payload["jti"] == "" {
+		if payload["aud"] != srvURL || payload["iss"] != "klient" || payload["scope"] != "a:les b:skriv" {
 			t.Errorf("payload = %v", payload)
+		}
+		if jti, err := uuid.Parse(fmt.Sprint(payload["jti"])); err != nil || jti.Version() != 4 {
+			t.Errorf("jti = %v, vil ha UUID v4 (err = %v)", payload["jti"], err)
 		}
 		if _, ok := payload["consumer_org"]; ok {
 			t.Errorf("consumer_org skal ikke være satt: %v", payload)

@@ -20,6 +20,8 @@ import (
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/google/uuid"
 )
 
 var maskinportenTokenEndpoint = "https://test.maskinporten.no/token"
@@ -214,9 +216,9 @@ func (c *MaskinportenClient) hentToken(ctx context.Context) (string, time.Durati
 
 // lagGrant signerer JWT-en som sendes som assertion.
 func (c *MaskinportenClient) lagGrant() (string, error) {
-	jti, err := nyUUID()
+	jti, err := uuid.NewRandom()
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("lag jti: %w", err)
 	}
 	naa := c.naa().Unix()
 
@@ -230,7 +232,7 @@ func (c *MaskinportenClient) lagGrant() (string, error) {
 		"scope": c.scopes,
 		"iat":   naa,
 		"exp":   naa + int64(maskinportenGrantLevetid/time.Second),
-		"jti":   jti,
+		"jti":   jti.String(),
 	}
 	if c.cfg.ConsumerOrg != "" {
 		payload["consumer_org"] = c.cfg.ConsumerOrg
@@ -252,15 +254,4 @@ func (c *MaskinportenClient) lagGrant() (string, error) {
 		return "", fmt.Errorf("signer Maskinporten-grant: %w", err)
 	}
 	return input + "." + base64.RawURLEncoding.EncodeToString(sig), nil
-}
-
-// nyUUID lager en tilfeldig UUID v4.
-func nyUUID() (string, error) {
-	var b [16]byte
-	if _, err := rand.Read(b[:]); err != nil {
-		return "", err
-	}
-	b[6] = b[6]&0x0f | 0x40
-	b[8] = b[8]&0x3f | 0x80
-	return fmt.Sprintf("%x-%x-%x-%x-%x", b[0:4], b[4:6], b[6:8], b[8:10], b[10:16]), nil
 }
