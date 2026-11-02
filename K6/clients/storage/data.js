@@ -11,6 +11,9 @@ const TAGS = {
     GetData: {
         action: "get-data",
     },
+    GetDataVersion: {
+        action: "get-data-version",
+    },
     UpdateData: {
         action: "update-data",
     },
@@ -106,6 +109,31 @@ class DataClient {
             requestParams({
                 endpoint: `${this.FULL_PATH}/instances/{instanceOwnerPartyId}/{instanceGuid}/data/{dataGuid}`,
                 action: TAGS.GetData.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+                accept: null,
+            }),
+        );
+    }
+
+    /**
+     * Downloads the content of one blob version of a data element, for the instance's own service owner.
+     *
+     * GET /instances/{instanceOwnerPartyId}/{instanceGuid}/data/{dataGuid}/versions/{blobVersionId}
+     *
+     * @param {number} instanceOwnerPartyId Instance owner party id.
+     * @param {string} instanceGuid Instance UUID.
+     * @param {string} dataGuid Data element UUID.
+     * @param {string} blobVersionId The blob version to retrieve.
+     * @param {{[key:string]:string}|null} [labels] Optional k6 request labels.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
+     */
+    GetDataVersion(instanceOwnerPartyId, instanceGuid, dataGuid, blobVersionId, labels = null) {
+        return http.get(
+            `${this.FULL_PATH}/instances/${instanceOwnerPartyId}/${instanceGuid}/data/${dataGuid}/versions/${encodeURIComponent(blobVersionId)}`,
+            requestParams({
+                endpoint: `${this.FULL_PATH}/instances/{instanceOwnerPartyId}/{instanceGuid}/data/{dataGuid}/versions/{blobVersionId}`,
+                action: TAGS.GetDataVersion.action,
                 labels,
                 token: this.tokenGenerator.getToken(),
                 accept: null,

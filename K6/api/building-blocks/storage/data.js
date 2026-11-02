@@ -117,6 +117,49 @@ export function GetData(
 }
 
 /**
+ * Downloads the content of one blob version of a data element, for the instance's own service owner.
+ *
+ * @param {DataClient} dataClient Client for the API.
+ * @param {number} instanceOwnerPartyId Instance owner party id.
+ * @param {string} instanceGuid Instance UUID.
+ * @param {string} dataGuid Data element UUID.
+ * @param {string} blobVersionId The blob version to retrieve.
+ * @param {{[key:string]:string}|null} [labels] Optional k6 request labels.
+ * @returns {import("k6/http").RefinedResponse<"text">} The HTTP response. The body is the file
+ * content, so the response is returned rather than a boolean.
+ */
+export function GetDataVersion(
+    dataClient,
+    instanceOwnerPartyId,
+    instanceGuid,
+    dataGuid,
+    blobVersionId,
+    labels = null,
+) {
+    const res = withRetries(
+        () => dataClient.GetDataVersion(
+            instanceOwnerPartyId,
+            instanceGuid,
+            dataGuid,
+            blobVersionId,
+            labels,
+        ),
+        "GetDataVersion",
+    );
+
+    const success = check(res, {
+        "GetDataVersion - status code is 200": (r) => r.status === 200,
+    });
+
+    if (!success) {
+        console.log(res.status);
+        console.log(res.body);
+    }
+
+    return res;
+}
+
+/**
  * Replaces the content of a data element.
  *
  * @param {DataClient} dataClient Client for the API.

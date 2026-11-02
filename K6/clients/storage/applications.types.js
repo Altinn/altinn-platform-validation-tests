@@ -25,6 +25,7 @@
  * @property {Record<string, string|null>|null} description
  * @property {AppMetadataAccess|null} access
  * @property {Array<AppMetadataContactPoint>|null} contactPoints
+ * @property {AppStatus} status
  * @property {string|null} created
  * @property {string|null} createdBy
  * @property {string|null} lastChanged
@@ -34,6 +35,10 @@
 /**
  * @typedef {object} ApplicationList
  * @property {Array<Application>|null} applications
+ */
+
+/**
+ * @typedef {"Completed"|"Deprecated"|"UnderDevelopment"|"Withdrawn"} AppStatus
  */
 
 /**
@@ -51,7 +56,7 @@
  * @property {number} maxCount
  * @property {number} minCount
  * @property {string|null} grouping
- * @property {boolean} enablePdfCreation
+ * @property {boolean|null} enablePdfCreation Deprecated in Swagger.
  * @property {boolean} enableFileScan
  * @property {boolean} validationErrorOnPendingFileScan
  * @property {Array<string>|null} enabledFileAnalysers
@@ -123,6 +128,9 @@
  * @property {Array<string>|null} excludedDataTypes
  * @property {Array<string>|null} excludedDataFields
  * @property {boolean} includeAttachments
+ * @property {boolean} includeDueBefore
+ * @property {Array<string>|null} includedDataValues
+ * @property {Array<string>|null} includedPresentationTexts
  */
 
 /**
@@ -211,6 +219,7 @@
 // Runtime exports for VS Code autocomplete/imports.
 export const Application = {};
 export const ApplicationList = {};
+export const AppStatus = {};
 export const DataType = {};
 export const PartyTypesAllowed = {};
 export const ApplicationLogic = {};
