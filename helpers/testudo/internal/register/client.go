@@ -1,8 +1,7 @@
-package cmd
-
-// Klient for Register sine access-management-endepunkter
+// Package register er en klient for Register sine access-management-endepunkter
 // (altinn-register: Controllers/AccessManagementController.cs), med modeller
 // fra Altinn.Register.Contracts.
+package register
 
 import (
 	"bytes"
@@ -16,67 +15,70 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+	"time"
+
+	"github.com/Altinn/altinn-platform-validation-tests/helpers/testudo/internal/errs"
 )
 
-const registerAccessManagementPath = "/register/api/v1/access-management/parties"
+const accessManagementPath = "/register/api/v1/access-management/parties"
 
-// RegisterMaksPerQuery er det høyeste antallet URN-er Register tar i ett
+// MaxPerQuery er det høyeste antallet URN-er Register tar i ett
 // query-kall (PARTY_QUERY_MAX_ITEMS).
-const RegisterMaksPerQuery = 100
+const MaxPerQuery = 100
 
-// PartyUrn er en referanse til en part, f.eks.
+// PartyURN er en referanse til en part, f.eks.
 // urn:altinn:person:identifier-no:01010112345.
-type PartyUrn string
+type PartyURN string
 
-func PersonUrn(foedselsnummer string) PartyUrn {
-	return PartyUrn("urn:altinn:person:identifier-no:" + foedselsnummer)
+func PersonURN(foedselsnummer string) PartyURN {
+	return PartyURN("urn:altinn:person:identifier-no:" + foedselsnummer)
 }
 
-func OrganisasjonUrn(organisasjonsnummer string) PartyUrn {
-	return PartyUrn("urn:altinn:organization:identifier-no:" + organisasjonsnummer)
+func OrganizationURN(organisasjonsnummer string) PartyURN {
+	return PartyURN("urn:altinn:organization:identifier-no:" + organisasjonsnummer)
 }
 
-func PartyIDUrn(partyID uint32) PartyUrn {
-	return PartyUrn("urn:altinn:party:id:" + strconv.FormatUint(uint64(partyID), 10))
+func PartyIDURN(partyID uint32) PartyURN {
+	return PartyURN("urn:altinn:party:id:" + strconv.FormatUint(uint64(partyID), 10))
 }
 
-func PartyUUIDUrn(partyUUID string) PartyUrn {
-	return PartyUrn("urn:altinn:party:uuid:" + partyUUID)
+func PartyUUIDURN(partyUUID string) PartyURN {
+	return PartyURN("urn:altinn:party:uuid:" + partyUUID)
 }
 
-func BrukerIDUrn(userID uint32) PartyUrn {
-	return PartyUrn("urn:altinn:user:id:" + strconv.FormatUint(uint64(userID), 10))
+func UserIDURN(userID uint32) PartyURN {
+	return PartyURN("urn:altinn:user:id:" + strconv.FormatUint(uint64(userID), 10))
 }
 
-func BrukernavnUrn(brukernavn string) PartyUrn {
-	return PartyUrn("urn:altinn:party:username:" + brukernavn)
+func UsernameURN(brukernavn string) PartyURN {
+	return PartyURN("urn:altinn:party:username:" + brukernavn)
 }
 
-func IdportenEpostUrn(epost string) PartyUrn {
-	return PartyUrn("urn:altinn:person:idporten-email:" + epost)
+func IDPortenEmailURN(epost string) PartyURN {
+	return PartyURN("urn:altinn:person:idporten-email:" + epost)
 }
 
-// PartyFelt er et felt eller en feltgruppe i fields-parameteren
+// Field er et felt eller en feltgruppe i fields-parameteren
 // (PartyFieldIncludes). Uten felt svarer Register med identifikatorer og
 // visningsnavn.
-type PartyFelt string
+type Field string
 
 const (
-	FeltIdentifiers PartyFelt = "identifiers"
-	FeltParty       PartyFelt = "party"
-	FeltPerson      PartyFelt = "person"
-	FeltOrg         PartyFelt = "org"
-	FeltSI          PartyFelt = "si"
-	FeltSysuser     PartyFelt = "sysuser"
-	FeltUser        PartyFelt = "user"
+	FieldIdentifiers Field = "identifiers"
+	FieldParty       Field = "party"
+	FieldPerson      Field = "person"
+	FieldOrg         Field = "org"
+	FieldSI          Field = "si"
+	FieldSysuser     Field = "sysuser"
+	FieldUser        Field = "user"
 
-	FeltDisplayName       PartyFelt = "display-name"
-	FeltPersonName        PartyFelt = "person.name"
-	FeltPersonDateOfBirth PartyFelt = "person.date-of-birth"
-	FeltUserID            PartyFelt = "user.id"
-	FeltUserName          PartyFelt = "user.name"
-	// FeltOrgSubunits avvises av query-endepunktet.
-	FeltOrgSubunits PartyFelt = "org.subunits"
+	FieldDisplayName       Field = "display-name"
+	FieldPersonName        Field = "person.name"
+	FieldPersonDateOfBirth Field = "person.date-of-birth"
+	FieldUserID            Field = "user.id"
+	FieldUserName          Field = "user.name"
+	// FieldOrgSubunits avvises av query-endepunktet.
+	FieldOrgSubunits Field = "org.subunits"
 )
 
 // Partytyper i partyType. Listen er ikke uttømmende.
@@ -166,42 +168,47 @@ type MailingAddress struct {
 	City       string `json:"city,omitempty"`
 }
 
-// RegisterClient kaller Register gjennom APIM. Access-management-endepunktene
+// TokenSource gir et gyldig platform access token.
+type TokenSource interface {
+	Token(ctx context.Context) (string, error)
+}
+
+// Client kaller Register gjennom APIM. Access-management-endepunktene
 // tar et platform access token i headeren PlatformAccessToken, ikke et
 // bearer-token.
-type RegisterClient struct {
+type Client struct {
 	baseURL         string
 	subscriptionKey string
 	http            *http.Client
 	tokens          TokenSource
 }
 
-// NewRegisterClient lager en klient. baseURL er f.eks.
+// NewClient lager en klient. baseURL er f.eks.
 // https://platform.at22.altinn.cloud, og subscriptionKey sendes som
 // Ocp-Apim-Subscription-Key.
-func NewRegisterClient(baseURL, subscriptionKey string, tokens TokenSource) *RegisterClient {
-	return &RegisterClient{
+func NewClient(baseURL, subscriptionKey string, tokens TokenSource) *Client {
+	return &Client{
 		baseURL:         strings.TrimRight(baseURL, "/"),
 		subscriptionKey: subscriptionKey,
-		http:            newClient(),
+		http:            &http.Client{Timeout: 10 * time.Second},
 		tokens:          tokens,
 	}
 }
 
 // QueryParties slår opp parter med POST /parties/query. Over 100 URN-er deles
 // opp i flere kall. Parter som ikke finnes er bare utelatt fra svaret.
-func (c *RegisterClient) QueryParties(ctx context.Context, urns []PartyUrn, felt ...PartyFelt) ([]Party, error) {
+func (c *Client) QueryParties(ctx context.Context, urns []PartyURN, felt ...Field) ([]Party, error) {
 	parter := []Party{}
-	for start := 0; start < len(urns); start += RegisterMaksPerQuery {
-		batch := urns[start:min(start+RegisterMaksPerQuery, len(urns))]
-		body, err := json.Marshal(map[string][]PartyUrn{"data": batch})
+	for start := 0; start < len(urns); start += MaxPerQuery {
+		batch := urns[start:min(start+MaxPerQuery, len(urns))]
+		body, err := json.Marshal(map[string][]PartyURN{"data": batch})
 		if err != nil {
-			return nil, fmt.Errorf("%w: %v", ErrInvalid, err)
+			return nil, fmt.Errorf("%w: %v", errs.Invalid, err)
 		}
 		var svar struct {
 			Data *[]Party `json:"data"`
 		}
-		err = c.gjoer(ctx, http.MethodPost, registerAccessManagementPath+"/query", felt, body, &svar)
+		err = c.gjoer(ctx, http.MethodPost, accessManagementPath+"/query", felt, body, &svar)
 		if errors.Is(err, errIngenInnhold) {
 			continue
 		}
@@ -209,19 +216,19 @@ func (c *RegisterClient) QueryParties(ctx context.Context, urns []PartyUrn, felt
 			return nil, err
 		}
 		if svar.Data == nil {
-			return nil, fmt.Errorf("%w: Register-svaret mangler data", ErrInvalidResponse)
+			return nil, fmt.Errorf("%w: Register-svaret mangler data", errs.InvalidResponse)
 		}
 		parter = append(parter, *svar.Data...)
 	}
 	return parter, nil
 }
 
-// HentParty henter én part med GET /parties/{uuid}.
-func (c *RegisterClient) HentParty(ctx context.Context, partyUUID string, felt ...PartyFelt) (*Party, error) {
+// GetParty henter én part med GET /parties/{uuid}.
+func (c *Client) GetParty(ctx context.Context, partyUUID string, felt ...Field) (*Party, error) {
 	var p Party
-	err := c.gjoer(ctx, http.MethodGet, registerAccessManagementPath+"/"+url.PathEscape(partyUUID), felt, nil, &p)
+	err := c.gjoer(ctx, http.MethodGet, accessManagementPath+"/"+url.PathEscape(partyUUID), felt, nil, &p)
 	if errors.Is(err, errIngenInnhold) {
-		return nil, fmt.Errorf("%w: Register svarte uten innhold for %s", ErrInvalidResponse, partyUUID)
+		return nil, fmt.Errorf("%w: Register svarte uten innhold for %s", errs.InvalidResponse, partyUUID)
 	}
 	if err != nil {
 		return nil, err
@@ -234,24 +241,24 @@ var errIngenInnhold = errors.New("ingen innhold")
 
 var norskIdentifikatorRe = regexp.MustCompile(`^(\d{9}|\d{11})$`)
 
-// SlaaOppIdentifikatorer slår opp fødselsnumre (11 siffer) og
+// LookupIdentifiers slår opp fødselsnumre (11 siffer) og
 // organisasjonsnumre (9 siffer) og returnerer partene per identifikator.
 // Identifikatorer som ikke finnes er ikke med i svaret.
-func (c *RegisterClient) SlaaOppIdentifikatorer(ctx context.Context, identifikatorer []string, felt ...PartyFelt) (map[string]Party, error) {
+func (c *Client) LookupIdentifiers(ctx context.Context, identifikatorer []string, felt ...Field) (map[string]Party, error) {
 	sett := map[string]bool{}
-	urns := []PartyUrn{}
+	urns := []PartyURN{}
 	for _, id := range identifikatorer {
 		if !norskIdentifikatorRe.MatchString(id) {
-			return nil, fmt.Errorf("%w: %q er verken fødselsnummer (11 siffer) eller organisasjonsnummer (9 siffer)", ErrInvalid, id)
+			return nil, fmt.Errorf("%w: %q er verken fødselsnummer (11 siffer) eller organisasjonsnummer (9 siffer)", errs.Invalid, id)
 		}
 		if sett[id] {
 			continue
 		}
 		sett[id] = true
 		if len(id) == 9 {
-			urns = append(urns, OrganisasjonUrn(id))
+			urns = append(urns, OrganizationURN(id))
 		} else {
-			urns = append(urns, PersonUrn(id))
+			urns = append(urns, PersonURN(id))
 		}
 	}
 
@@ -266,14 +273,14 @@ func (c *RegisterClient) SlaaOppIdentifikatorer(ctx context.Context, identifikat
 			id = p.OrganizationIdentifier
 		}
 		if !sett[id] {
-			return nil, fmt.Errorf("%w: Register svarte med en part vi ikke ba om (%q)", ErrInvalidResponse, id)
+			return nil, fmt.Errorf("%w: Register svarte med en part vi ikke ba om (%q)", errs.InvalidResponse, id)
 		}
 		resultat[id] = p
 	}
 	return resultat, nil
 }
 
-func (c *RegisterClient) gjoer(ctx context.Context, metode, sti string, felt []PartyFelt, body []byte, ut any) error {
+func (c *Client) gjoer(ctx context.Context, metode, sti string, felt []Field, body []byte, ut any) error {
 	token, err := c.tokens.Token(ctx)
 	if err != nil {
 		return fmt.Errorf("hent platform-token: %w", err)
@@ -294,7 +301,7 @@ func (c *RegisterClient) gjoer(ctx context.Context, metode, sti string, felt []P
 	}
 	req, err := http.NewRequestWithContext(ctx, metode, u, r)
 	if err != nil {
-		return fmt.Errorf("%w: %v", ErrInvalid, err)
+		return fmt.Errorf("%w: %v", errs.Invalid, err)
 	}
 	req.Header.Set("PlatformAccessToken", token)
 	req.Header.Set("Ocp-Apim-Subscription-Key", c.subscriptionKey)
@@ -305,16 +312,16 @@ func (c *RegisterClient) gjoer(ctx context.Context, metode, sti string, felt []P
 
 	resp, err := c.http.Do(req)
 	if err != nil {
-		return fmt.Errorf("%w: Register: %v", ErrConnection, err)
+		return fmt.Errorf("%w: Register: %v", errs.Connection, err)
 	}
 	defer resp.Body.Close()
 
 	data, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return fmt.Errorf("%w: Register: les svar: %v", ErrConnection, err)
+		return fmt.Errorf("%w: Register: les svar: %v", errs.Connection, err)
 	}
 	if resp.StatusCode == http.StatusNotFound {
-		return fmt.Errorf("%w: Register %s %s", ErrNotFound, metode, sti)
+		return fmt.Errorf("%w: Register %s %s", errs.NotFound, metode, sti)
 	}
 	if resp.StatusCode == http.StatusNoContent {
 		return errIngenInnhold
@@ -322,10 +329,10 @@ func (c *RegisterClient) gjoer(ctx context.Context, metode, sti string, felt []P
 	// 206 Partial Content er et gyldig svar fra query.
 	if resp.StatusCode < 200 || resp.StatusCode > 299 {
 		return fmt.Errorf("%w: Register svarte HTTP %d på %s %s: %s",
-			ErrInvalidResponse, resp.StatusCode, metode, sti, strings.TrimSpace(string(data)))
+			errs.InvalidResponse, resp.StatusCode, metode, sti, strings.TrimSpace(string(data)))
 	}
 	if err := json.Unmarshal(data, ut); err != nil {
-		return fmt.Errorf("%w: Register: %v", ErrInvalidResponse, err)
+		return fmt.Errorf("%w: Register: %v", errs.InvalidResponse, err)
 	}
 	return nil
 }

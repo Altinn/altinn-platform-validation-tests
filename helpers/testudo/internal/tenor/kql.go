@@ -1,4 +1,4 @@
-package cmd
+package tenor
 
 // Hjelpere for å bygge KQL-spørringer mot Tenor. Feltnavn og verdier for freg
 // er hentet fra Tenor sin "Avansert søk"-dokumentasjon for Folkeregisteret.
@@ -9,29 +9,26 @@ import (
 	"time"
 )
 
-// KQLDato er datoformatet Tenor bruker i KQL, f.eks. foedselsdato>1970-01-01.
-const KQLDato = "2006-01-02"
+// KQLDateFormat er datoformatet Tenor bruker i KQL, f.eks. foedselsdato>1970-01-01.
+const KQLDateFormat = "2006-01-02"
 
-// Myndighetsalder er alderen en person regnes som myndig fra.
-const Myndighetsalder = 18
-
-// Sammenligning er en operator for tall- og datofelt.
-type Sammenligning string
+// Comparison er en operator for tall- og datofelt.
+type Comparison string
 
 const (
-	StoerreEnn    Sammenligning = ">"
-	StoerreEnnLik Sammenligning = ">="
-	MindreEnn     Sammenligning = "<"
-	MindreEnnLik  Sammenligning = "<="
+	Greater        Comparison = ">"
+	GreaterOrEqual Comparison = ">="
+	Less           Comparison = "<"
+	LessOrEqual    Comparison = "<="
 )
 
-// Er gir felt:"verdi". Verdien siteres, så mellomrom og spesialtegn er trygt.
-func Er(felt, verdi string) string {
+// Eq gir felt:"verdi". Verdien siteres, så mellomrom og spesialtegn er trygt.
+func Eq(felt, verdi string) string {
 	return felt + ":" + sitat(verdi)
 }
 
-// ErEnAv gir felt:("a" or "b" ...).
-func ErEnAv(felt string, verdier ...string) string {
+// OneOf gir felt:("a" or "b" ...).
+func OneOf(felt string, verdier ...string) string {
 	siterte := make([]string, len(verdier))
 	for i, v := range verdier {
 		siterte[i] = sitat(v)
@@ -39,23 +36,23 @@ func ErEnAv(felt string, verdier ...string) string {
 	return felt + ":(" + strings.Join(siterte, " or ") + ")"
 }
 
-// Finnes gir felt:*, som treffer alle dokumenter som har feltet uansett verdi.
-func Finnes(felt string) string {
+// Exists gir felt:*, som treffer alle dokumenter som har feltet uansett verdi.
+func Exists(felt string) string {
 	return felt + ":*"
 }
 
-// ErSann gir felt:true eller felt:false for boolske felt.
-func ErSann(felt string, verdi bool) string {
+// Bool gir felt:true eller felt:false for boolske felt.
+func Bool(felt string, verdi bool) string {
 	return fmt.Sprintf("%s:%t", felt, verdi)
 }
 
-// Sammenlign gir f.eks. navnLengde>50 eller foedselsdato>=1970-01-01.
-func Sammenlign(felt string, op Sammenligning, verdi string) string {
+// Compare gir f.eks. navnLengde>50 eller foedselsdato>=1970-01-01.
+func Compare(felt string, op Comparison, verdi string) string {
 	return felt + string(op) + verdi
 }
 
-// Intervall gir felt:[fra to til]. Tom grense blir *, dvs. åpen.
-func Intervall(felt, fra, til string) string {
+// Range gir felt:[fra to til]. Tom grense blir *, dvs. åpen.
+func Range(felt, fra, til string) string {
 	if fra == "" {
 		fra = "*"
 	}
@@ -65,40 +62,30 @@ func Intervall(felt, fra, til string) string {
 	return fmt.Sprintf("%s:[%s to %s]", felt, fra, til)
 }
 
-// DatoIntervall er Intervall med datoer. Null-tid blir åpen grense.
-func DatoIntervall(felt string, fra, til time.Time) string {
-	return Intervall(felt, formaterDato(fra), formaterDato(til))
+// DateRange er Range med datoer. Null-tid blir åpen grense.
+func DateRange(felt string, fra, til time.Time) string {
+	return Range(felt, formaterDato(fra), formaterDato(til))
 }
 
-// Nestet søker i et nestet objekt, f.eks.
-// Nestet("tenorRelasjoner.arbeidsforhold", Er("ansettelsesform", "fast")).
-func Nestet(felt, indre string) string {
+// Nested søker i et nestet objekt, f.eks.
+// Nested("tenorRelasjoner.arbeidsforhold", Eq("ansettelsesform", "fast")).
+func Nested(felt, indre string) string {
 	return felt + ":{" + indre + "}"
 }
 
-// Og slår sammen deluttrykk med AND. Tomme deler hoppes over.
-func Og(deler ...string) string {
+// And slår sammen deluttrykk med AND. Tomme deler hoppes over.
+func And(deler ...string) string {
 	return kombiner(" AND ", deler)
 }
 
-// Eller slår sammen deluttrykk med OR. Tomme deler hoppes over.
-func Eller(deler ...string) string {
+// Or slår sammen deluttrykk med OR. Tomme deler hoppes over.
+func Or(deler ...string) string {
 	return kombiner(" OR ", deler)
 }
 
-// Ikke negerer et uttrykk.
-func Ikke(uttrykk string) string {
+// Not negerer et uttrykk.
+func Not(uttrykk string) string {
 	return "NOT (" + uttrykk + ")"
-}
-
-// BosattMyndigKQL gir personer med personstatus bosatt som har fylt 18 år
-// på datoen naa.
-func BosattMyndigKQL(naa time.Time) string {
-	senest := naa.UTC().AddDate(-Myndighetsalder, 0, 0)
-	return Og(
-		Er(FregPersonstatus, PersonstatusBosatt),
-		DatoIntervall(FregFoedselsdato, time.Time{}, senest),
-	)
 }
 
 func kombiner(sep string, deler []string) string {
@@ -127,7 +114,7 @@ func formaterDato(t time.Time) string {
 	if t.IsZero() {
 		return ""
 	}
-	return t.Format(KQLDato)
+	return t.Format(KQLDateFormat)
 }
 
 // Feltnavn i freg (Folkeregisteret).

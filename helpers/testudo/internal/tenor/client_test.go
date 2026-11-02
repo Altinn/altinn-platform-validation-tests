@@ -1,4 +1,4 @@
-package cmd
+package tenor
 
 import (
 	"context"
@@ -6,16 +6,15 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
-	"time"
+
+	"github.com/Altinn/altinn-platform-validation-tests/helpers/testudo/internal/errs"
 )
 
-func testClient(t *testing.T, h http.HandlerFunc) *TenorClient {
+func testClient(t *testing.T, h http.HandlerFunc) *Client {
 	t.Helper()
 	srv := httptest.NewServer(h)
 	t.Cleanup(srv.Close)
-	c := NewTenorClient(StaticToken("tok"))
-	c.baseURL = srv.URL
-	return c
+	return NewClient(srv.URL, StaticToken("tok"))
 }
 
 func TestSoekSenderParametreOgDekoder(t *testing.T) {
@@ -41,8 +40,8 @@ func TestSoekSenderParametreOgDekoder(t *testing.T) {
 			"dokumentListe":[{"tenorMetadata":{"id":"01010112345","kildedata":"{\"navn\":[]}"}}]}`))
 	})
 
-	res, err := c.Soek(context.Background(), KildeFreg, SoekParams{
-		KQL:    Er(FregPersonstatus, PersonstatusBosatt),
+	res, err := c.Search(context.Background(), SourceFreg, SearchParams{
+		KQL:    Eq(FregPersonstatus, PersonstatusBosatt),
 		Antall: Ptr[int32](200),
 		Side:   Ptr[int32](0),
 		Seed:   Ptr[int32](3),
@@ -57,7 +56,7 @@ func TestSoekSenderParametreOgDekoder(t *testing.T) {
 	if len(res.DokumentListe) != 1 {
 		t.Fatalf("dokumenter = %d", len(res.DokumentListe))
 	}
-	md, err := LesTenorMetadata(res.DokumentListe[0])
+	md, err := ReadMetadata(res.DokumentListe[0])
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -70,7 +69,7 @@ func TestNesteSideNull(t *testing.T) {
 	c := testClient(t, func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte(`{"treff":1,"nesteSide":null,"dokumentListe":[]}`))
 	})
-	res, err := c.Soek(context.Background(), KildeBrreg, SoekParams{})
+	res, err := c.Search(context.Background(), SourceBrreg, SearchParams{})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -97,7 +96,7 @@ func TestUthentingOgTell(t *testing.T) {
 		}
 	})
 
-	res, err := c.Uthenting(context.Background(), KildeBrreg, UthentingParams{KQL: Finnes("revisorerOrgnr")})
+	res, err := c.Extract(context.Background(), SourceBrreg, ExtractParams{KQL: Exists("revisorerOrgnr")})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -105,7 +104,7 @@ func TestUthentingOgTell(t *testing.T) {
 		t.Errorf("dokumenter = %d", len(res.DokumentListe))
 	}
 
-	n, err := c.Tell(context.Background(), KildeBrreg, "organisasjonsform.kode:AS")
+	n, err := c.Count(context.Background(), SourceBrreg, "organisasjonsform.kode:AS")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -121,9 +120,9 @@ func TestFeil(t *testing.T) {
 		body   string
 		vil    error
 	}{
-		{"404", http.StatusNotFound, "", ErrNotFound},
-		{"500", http.StatusInternalServerError, "boom", ErrInvalidResponse},
-		{"ugyldig json", http.StatusOK, "ikke json", ErrInvalidResponse},
+		{"404", http.StatusNotFound, "", errs.NotFound},
+		{"500", http.StatusInternalServerError, "boom", errs.InvalidResponse},
+		{"ugyldig json", http.StatusOK, "ikke json", errs.InvalidResponse},
 	}
 	for _, tt := range tests {
 		t.Run(tt.navn, func(t *testing.T) {
@@ -131,47 +130,45 @@ func TestFeil(t *testing.T) {
 				w.WriteHeader(tt.status)
 				w.Write([]byte(tt.body))
 			})
-			_, err := c.Soek(context.Background(), KildeFreg, SoekParams{KQL: "x"})
+			_, err := c.Search(context.Background(), SourceFreg, SearchParams{KQL: "x"})
 			if !errors.Is(err, tt.vil) {
 				t.Errorf("err = %v, vil ha %v", err, tt.vil)
 			}
 		})
 	}
 
-	c := NewTenorClient(StaticToken("tok"))
-	if _, err := c.Soek(context.Background(), "", SoekParams{}); !errors.Is(err, ErrInvalid) {
+	c := NewClient(DefaultBaseURL, StaticToken("tok"))
+	if _, err := c.Search(context.Background(), "", SearchParams{}); !errors.Is(err, errs.Invalid) {
 		t.Errorf("tom kilde: err = %v", err)
 	}
 	c.baseURL = "http://127.0.0.1:1"
-	if _, err := c.Soek(context.Background(), KildeFreg, SoekParams{}); !errors.Is(err, ErrConnection) {
+	if _, err := c.Search(context.Background(), SourceFreg, SearchParams{}); !errors.Is(err, errs.Connection) {
 		t.Errorf("ingen server: err = %v", err)
 	}
 }
 
 func TestLesTenorMetadataMangler(t *testing.T) {
-	if _, err := LesTenorMetadata([]byte(`{"id":"1"}`)); !errors.Is(err, ErrInvalidResponse) {
+	if _, err := ReadMetadata([]byte(`{"id":"1"}`)); !errors.Is(err, errs.InvalidResponse) {
 		t.Errorf("err = %v", err)
 	}
 }
 
 func TestKQL(t *testing.T) {
-	naa := time.Date(2026, 10, 27, 12, 0, 0, 0, time.UTC)
 	tests := []struct {
 		navn, fikk, vil string
 	}{
-		{"er", Er(FregFornavn, `O"Brien`), `fornavn:"O\"Brien"`},
-		{"er en av", ErEnAv(FregSivilstand, SivilstandGift, SivilstandSkilt), `sivilstand:("gift" or "skilt")`},
-		{"finnes", Finnes(FregDeltBosted), "deltBosted:*"},
-		{"bool", ErSann(FregHarRettsligHandleevne, true), "harRettsligHandleevne:true"},
-		{"sammenlign", Sammenlign(FregNavnLengde, StoerreEnn, "50"), "navnLengde>50"},
-		{"åpent intervall", Intervall(FregAntallBarn, "2", ""), "antallBarn:[2 to *]"},
-		{"nestet", Nestet("tenorRelasjoner.arbeidsforhold", Er("ansettelsesform", "fast")),
+		{"er", Eq(FregFornavn, `O"Brien`), `fornavn:"O\"Brien"`},
+		{"er en av", OneOf(FregSivilstand, SivilstandGift, SivilstandSkilt), `sivilstand:("gift" or "skilt")`},
+		{"finnes", Exists(FregDeltBosted), "deltBosted:*"},
+		{"bool", Bool(FregHarRettsligHandleevne, true), "harRettsligHandleevne:true"},
+		{"sammenlign", Compare(FregNavnLengde, Greater, "50"), "navnLengde>50"},
+		{"åpent intervall", Range(FregAntallBarn, "2", ""), "antallBarn:[2 to *]"},
+		{"nestet", Nested("tenorRelasjoner.arbeidsforhold", Eq("ansettelsesform", "fast")),
 			`tenorRelasjoner.arbeidsforhold:{ansettelsesform:"fast"}`},
-		{"og hopper over tomme", Og("a:1", "", "b:2"), "(a:1) AND (b:2)"},
-		{"og med én del", Og("a:1", " "), "a:1"},
-		{"eller", Eller("a:1", "b:2"), "(a:1) OR (b:2)"},
-		{"ikke", Ikke(Er(FregKjoenn, KjoennMann)), `NOT (kjoenn:"mann")`},
-		{"bosatt myndig", BosattMyndigKQL(naa), `(personstatus:"bosatt") AND (foedselsdato:[* to 2008-10-27])`},
+		{"og hopper over tomme", And("a:1", "", "b:2"), "(a:1) AND (b:2)"},
+		{"og med én del", And("a:1", " "), "a:1"},
+		{"eller", Or("a:1", "b:2"), "(a:1) OR (b:2)"},
+		{"ikke", Not(Eq(FregKjoenn, KjoennMann)), `NOT (kjoenn:"mann")`},
 	}
 	for _, tt := range tests {
 		if tt.fikk != tt.vil {

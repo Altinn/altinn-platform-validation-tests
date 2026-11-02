@@ -1,8 +1,7 @@
-package cmd
-
-// Maskinporten-klient som henter access token med en JWT bearer grant, på
+// Package maskinporten henter access token med en JWT bearer grant, på
 // samme måte som MaskinportenToken i altinn-access-management-frontend
 // (playwright/api-requests/MaskinportenToken.ts og util/jwtHelper.ts).
+package maskinporten
 
 import (
 	"context"
@@ -20,9 +19,11 @@ import (
 	"github.com/lestrrat-go/jwx/v4/jwa"
 	"github.com/lestrrat-go/jwx/v4/jwk"
 	"github.com/lestrrat-go/jwx/v4/jwt"
+
+	"github.com/Altinn/altinn-platform-validation-tests/helpers/testudo/internal/errs"
 )
 
-var maskinportenTokenEndpoint = "https://test.maskinporten.no/token"
+const DefaultTokenURL = "https://test.maskinporten.no/token"
 
 const (
 	// Levetiden til grant-en (exp - iat), som getCurrentTimestamps i frontend.
@@ -31,8 +32,8 @@ const (
 	maskinportenFornyFoer = 30 * time.Second
 )
 
-// MaskinportenConfig er det som trengs for å hente token fra Maskinporten.
-type MaskinportenConfig struct {
+// Config er det som trengs for å hente token fra Maskinporten.
+type Config struct {
 	// ClientID brukes som iss i grant-en.
 	ClientID string
 	// JWK er den private nøkkelen. Har den kid, settes den i JWT-headeren.
@@ -43,18 +44,18 @@ type MaskinportenConfig struct {
 	TokenURL string
 }
 
-// MaskinportenConfigFra leser MASKINPORTEN_CLIENT_ID og MASKINPORTEN_JWK med
+// ConfigFrom leser MASKINPORTEN_CLIENT_ID og MASKINPORTEN_JWK med
 // hent, f.eks. os.Getenv eller viper.GetString.
-func MaskinportenConfigFra(hent func(string) string) (MaskinportenConfig, error) {
-	cfg := MaskinportenConfig{ClientID: hent("MASKINPORTEN_CLIENT_ID")}
+func ConfigFrom(hent func(string) string) (Config, error) {
+	cfg := Config{ClientID: hent("MASKINPORTEN_CLIENT_ID")}
 	if cfg.ClientID == "" {
-		return cfg, fmt.Errorf("%w: MASKINPORTEN_CLIENT_ID mangler", ErrInvalid)
+		return cfg, fmt.Errorf("%w: MASKINPORTEN_CLIENT_ID mangler", errs.Invalid)
 	}
 	tekst := hent("MASKINPORTEN_JWK")
 	if tekst == "" {
-		return cfg, fmt.Errorf("%w: MASKINPORTEN_JWK mangler", ErrInvalid)
+		return cfg, fmt.Errorf("%w: MASKINPORTEN_JWK mangler", errs.Invalid)
 	}
-	key, err := ParsePrivatNoekkelJWK(tekst)
+	key, err := ParsePrivateKeyJWK(tekst)
 	if err != nil {
 		return cfg, fmt.Errorf("MASKINPORTEN_JWK: %w", err)
 	}
@@ -62,35 +63,35 @@ func MaskinportenConfigFra(hent func(string) string) (MaskinportenConfig, error)
 	return cfg, nil
 }
 
-// ParsePrivatNoekkelJWK leser en privat RSA-nøkkel i JWK-format.
-func ParsePrivatNoekkelJWK(s string) (jwk.Key, error) {
+// ParsePrivateKeyJWK leser en privat RSA-nøkkel i JWK-format.
+func ParsePrivateKeyJWK(s string) (jwk.Key, error) {
 	key, err := jwk.ParseKey([]byte(s))
 	if err != nil {
-		return nil, fmt.Errorf("%w: JWK: %v", ErrInvalid, err)
+		return nil, fmt.Errorf("%w: JWK: %v", errs.Invalid, err)
 	}
 	if key.KeyType() != jwa.RSA() {
-		return nil, fmt.Errorf("%w: JWK må ha kty RSA, har %q", ErrInvalid, key.KeyType())
+		return nil, fmt.Errorf("%w: JWK må ha kty RSA, har %q", errs.Invalid, key.KeyType())
 	}
 	if privat, err := jwk.IsPrivateKey(key); err != nil || !privat {
-		return nil, fmt.Errorf("%w: JWK er ikke en privat nøkkel", ErrInvalid)
+		return nil, fmt.Errorf("%w: JWK er ikke en privat nøkkel", errs.Invalid)
 	}
 	// key.Validate sjekker bare at feltene finnes. rsa.PrivateKey.Validate
 	// sjekker også at de henger sammen, så en ødelagt nøkkel oppdages her og
 	// ikke som en avvist signatur hos Maskinporten.
 	raw, err := jwk.Export[*rsa.PrivateKey](key)
 	if err != nil {
-		return nil, fmt.Errorf("%w: JWK: %v", ErrInvalid, err)
+		return nil, fmt.Errorf("%w: JWK: %v", errs.Invalid, err)
 	}
 	if err := raw.Validate(); err != nil {
-		return nil, fmt.Errorf("%w: JWK: %v", ErrInvalid, err)
+		return nil, fmt.Errorf("%w: JWK: %v", errs.Invalid, err)
 	}
 	return key, nil
 }
 
-// MaskinportenClient henter og cacher access token for et sett med scopes.
-// Den implementerer TokenSource.
-type MaskinportenClient struct {
-	cfg    MaskinportenConfig
+// Client henter og cacher access token for et sett med scopes.
+// Den kan brukes som TokenSource for tenor.Client.
+type Client struct {
+	cfg    Config
 	scopes string
 	http   *http.Client
 	naa    func() time.Time
@@ -100,28 +101,28 @@ type MaskinportenClient struct {
 	utloeper time.Time
 }
 
-// NewMaskinportenClient lager en klient som ber om de gitte scopene.
-func NewMaskinportenClient(cfg MaskinportenConfig, scopes ...string) (*MaskinportenClient, error) {
+// NewClient lager en klient som ber om de gitte scopene.
+func NewClient(cfg Config, scopes ...string) (*Client, error) {
 	if cfg.ClientID == "" || cfg.JWK == nil {
-		return nil, fmt.Errorf("%w: Maskinporten trenger client ID og JWK", ErrInvalid)
+		return nil, fmt.Errorf("%w: Maskinporten trenger client ID og JWK", errs.Invalid)
 	}
 	if len(scopes) == 0 {
-		return nil, fmt.Errorf("%w: minst ett scope må oppgis", ErrInvalid)
+		return nil, fmt.Errorf("%w: minst ett scope må oppgis", errs.Invalid)
 	}
 	if cfg.TokenURL == "" {
-		cfg.TokenURL = maskinportenTokenEndpoint
+		cfg.TokenURL = DefaultTokenURL
 	}
-	return &MaskinportenClient{
+	return &Client{
 		cfg:    cfg,
 		scopes: strings.Join(scopes, " "),
-		http:   newClient(),
+		http:   &http.Client{Timeout: 10 * time.Second},
 		naa:    time.Now,
 	}, nil
 }
 
 // Token returnerer et gyldig access token, og henter nytt når det er nær
 // ved å utløpe.
-func (c *MaskinportenClient) Token(ctx context.Context) (string, error) {
+func (c *Client) Token(ctx context.Context) (string, error) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 
@@ -138,7 +139,7 @@ func (c *MaskinportenClient) Token(ctx context.Context) (string, error) {
 	return c.token, nil
 }
 
-func (c *MaskinportenClient) hentToken(ctx context.Context) (string, time.Duration, error) {
+func (c *Client) hentToken(ctx context.Context) (string, time.Duration, error) {
 	grant, err := c.lagGrant()
 	if err != nil {
 		return "", 0, err
@@ -150,20 +151,20 @@ func (c *MaskinportenClient) hentToken(ctx context.Context) (string, time.Durati
 	}
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, c.cfg.TokenURL, strings.NewReader(form.Encode()))
 	if err != nil {
-		return "", 0, fmt.Errorf("%w: %v", ErrInvalid, err)
+		return "", 0, fmt.Errorf("%w: %v", errs.Invalid, err)
 	}
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	req.Header.Set("Accept", "application/json")
 
 	resp, err := c.http.Do(req)
 	if err != nil {
-		return "", 0, fmt.Errorf("%w: Maskinporten: %v", ErrConnection, err)
+		return "", 0, fmt.Errorf("%w: Maskinporten: %v", errs.Connection, err)
 	}
 	defer resp.Body.Close()
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return "", 0, fmt.Errorf("%w: Maskinporten: les svar: %v", ErrConnection, err)
+		return "", 0, fmt.Errorf("%w: Maskinporten: les svar: %v", errs.Connection, err)
 	}
 
 	var svar struct {
@@ -179,20 +180,20 @@ func (c *MaskinportenClient) hentToken(ctx context.Context) (string, time.Durati
 		if jsonErr == nil && svar.Error != "" {
 			detaljer = strings.TrimSpace(svar.Error + ": " + svar.ErrorDescription)
 		}
-		return "", 0, fmt.Errorf("%w: Maskinporten svarte HTTP %d: %s", ErrInvalidResponse, resp.StatusCode, detaljer)
+		return "", 0, fmt.Errorf("%w: Maskinporten svarte HTTP %d: %s", errs.InvalidResponse, resp.StatusCode, detaljer)
 	}
 	if jsonErr != nil {
-		return "", 0, fmt.Errorf("%w: Maskinporten: %v", ErrInvalidResponse, jsonErr)
+		return "", 0, fmt.Errorf("%w: Maskinporten: %v", errs.InvalidResponse, jsonErr)
 	}
 	if svar.AccessToken == "" || svar.ExpiresIn <= 0 {
-		return "", 0, fmt.Errorf("%w: Maskinporten: svaret mangler access_token eller expires_in", ErrInvalidResponse)
+		return "", 0, fmt.Errorf("%w: Maskinporten: svaret mangler access_token eller expires_in", errs.InvalidResponse)
 	}
 	return svar.AccessToken, time.Duration(svar.ExpiresIn) * time.Second, nil
 }
 
 // lagGrant signerer JWT-en som sendes som assertion. jwx setter alg, typ og
 // kid (fra JWK-en) i headeren.
-func (c *MaskinportenClient) lagGrant() (string, error) {
+func (c *Client) lagGrant() (string, error) {
 	jti, err := uuid.NewRandom()
 	if err != nil {
 		return "", fmt.Errorf("lag jti: %w", err)

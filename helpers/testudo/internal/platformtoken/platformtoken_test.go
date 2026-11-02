@@ -1,4 +1,4 @@
-package cmd
+package platformtoken
 
 import (
 	"context"
@@ -9,6 +9,8 @@ import (
 	"strings"
 	"testing"
 	"time"
+
+	"github.com/Altinn/altinn-platform-validation-tests/helpers/testudo/internal/errs"
 )
 
 func TestPlatformTokenOgCache(t *testing.T) {
@@ -29,8 +31,8 @@ func TestPlatformTokenOgCache(t *testing.T) {
 	}))
 	defer srv.Close()
 
-	g, err := NewPlatformTokenGenerator(PlatformTokenConfig{
-		Brukernavn: "bruker", Passord: "hemmelig", Miljoe: "at23", BaseURL: srv.URL + "/",
+	g, err := NewGenerator(Config{
+		Username: "bruker", Password: "hemmelig", Environment: "at23", BaseURL: srv.URL + "/",
 	})
 	if err != nil {
 		t.Fatal(err)
@@ -64,8 +66,8 @@ func TestPlatformTokenAppOrgOgTTL(t *testing.T) {
 	}))
 	defer srv.Close()
 
-	g, _ := NewPlatformTokenGenerator(PlatformTokenConfig{
-		Brukernavn: "b", Passord: "p", Miljoe: "tt02", App: "min-app", Org: "ttd",
+	g, _ := NewGenerator(Config{
+		Username: "b", Password: "p", Environment: "tt02", App: "min-app", Org: "ttd",
 		TTL: 2 * time.Minute, BaseURL: srv.URL,
 	})
 	if _, err := g.Token(context.Background()); err != nil {
@@ -82,10 +84,10 @@ func TestPlatformTokenFeil(t *testing.T) {
 		"tomt svar": func(w http.ResponseWriter, r *http.Request) {},
 	} {
 		srv := httptest.NewServer(h)
-		g, _ := NewPlatformTokenGenerator(PlatformTokenConfig{Brukernavn: "b", Passord: "p", Miljoe: "at22", BaseURL: srv.URL})
+		g, _ := NewGenerator(Config{Username: "b", Password: "p", Environment: "at22", BaseURL: srv.URL})
 		_, err := g.Token(context.Background())
 		srv.Close()
-		if !errors.Is(err, ErrInvalidResponse) {
+		if !errors.Is(err, errs.InvalidResponse) {
 			t.Errorf("%s: err = %v", navn, err)
 		}
 		if strings.Contains(fmt.Sprint(err), "p@") {
@@ -108,14 +110,14 @@ func TestPlatformTokenConfigFra(t *testing.T) {
 		{"mangler miljø", map[string]string{"TOKEN_GENERATOR_USERNAME": "k6", "TOKEN_GENERATOR_PASSWORD": "p"}, "", "", true},
 	}
 	for _, tt := range tests {
-		cfg, err := PlatformTokenConfigFra(func(k string) string { return tt.env[k] }, tt.miljoe)
+		cfg, err := ConfigFrom(func(k string) string { return tt.env[k] }, tt.miljoe)
 		if tt.ugyldig {
-			if !errors.Is(err, ErrInvalid) {
+			if !errors.Is(err, errs.Invalid) {
 				t.Errorf("%s: err = %v", tt.navn, err)
 			}
 			continue
 		}
-		if err != nil || cfg.Brukernavn != tt.brukernavn || cfg.Miljoe != tt.miljoe {
+		if err != nil || cfg.Username != tt.brukernavn || cfg.Environment != tt.miljoe {
 			t.Errorf("%s: cfg = %+v, err = %v", tt.navn, cfg, err)
 		}
 	}

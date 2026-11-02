@@ -1,7 +1,6 @@
-package cmd
-
-// Henter platform access token fra Altinn sin test token generator, som
-// PlatformTokenGenerator i K6/token-generator.js.
+// Package platformtoken henter platform access token fra Altinn sin test
+// token generator, som PlatformTokenGenerator i K6/token-generator.js.
+package platformtoken
 
 import (
 	"context"
@@ -13,9 +12,11 @@ import (
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/Altinn/altinn-platform-validation-tests/helpers/testudo/internal/errs"
 )
 
-var tokenGeneratorBaseURL = "https://altinn-testtools-token-generator.azurewebsites.net"
+const DefaultBaseURL = "https://altinn-testtools-token-generator.azurewebsites.net"
 
 const (
 	platformTokenPath = "/api/GetPlatformAccessToken"
@@ -29,13 +30,13 @@ const (
 	platformFornyFoer = 30 * time.Second
 )
 
-// PlatformTokenConfig er det som trengs for å hente platform access token.
-type PlatformTokenConfig struct {
-	// Brukernavn og Passord er Basic auth mot token generatoren.
-	Brukernavn string
-	Passord    string
-	// Miljoe er env-parameteren, f.eks. at22, at23 eller tt02.
-	Miljoe string
+// Config er det som trengs for å hente platform access token.
+type Config struct {
+	// Username og Password er Basic auth mot token generatoren.
+	Username string
+	Password string
+	// Environment er env-parameteren, f.eks. at22, at23 eller tt02.
+	Environment string
 	// App er appen tokenet utstedes for. Standard er testudo.
 	App string
 	// Org setter utstederen. Tom betyr token generatorens standard.
@@ -46,28 +47,28 @@ type PlatformTokenConfig struct {
 	BaseURL string
 }
 
-// PlatformTokenConfigFra leser brukernavn og passord med hent, med de samme
+// ConfigFrom leser brukernavn og passord med hent, med de samme
 // navnene som K6 og Playwright bruker: TOKEN_GENERATOR_USERNAME og
 // TOKEN_GENERATOR_PASSWORD.
-func PlatformTokenConfigFra(hent func(string) string, miljoe string) (PlatformTokenConfig, error) {
-	cfg := PlatformTokenConfig{
-		Brukernavn: hent("TOKEN_GENERATOR_USERNAME"),
-		Passord:    hent("TOKEN_GENERATOR_PASSWORD"),
-		Miljoe:     miljoe,
+func ConfigFrom(hent func(string) string, miljoe string) (Config, error) {
+	cfg := Config{
+		Username:    hent("TOKEN_GENERATOR_USERNAME"),
+		Password:    hent("TOKEN_GENERATOR_PASSWORD"),
+		Environment: miljoe,
 	}
-	if cfg.Brukernavn == "" || cfg.Passord == "" {
-		return cfg, fmt.Errorf("%w: TOKEN_GENERATOR_USERNAME og TOKEN_GENERATOR_PASSWORD må være satt", ErrInvalid)
+	if cfg.Username == "" || cfg.Password == "" {
+		return cfg, fmt.Errorf("%w: TOKEN_GENERATOR_USERNAME og TOKEN_GENERATOR_PASSWORD må være satt", errs.Invalid)
 	}
 	if miljoe == "" {
-		return cfg, fmt.Errorf("%w: miljø mangler", ErrInvalid)
+		return cfg, fmt.Errorf("%w: miljø mangler", errs.Invalid)
 	}
 	return cfg, nil
 }
 
-// PlatformTokenGenerator henter og cacher platform access token. Den
-// implementerer TokenSource.
-type PlatformTokenGenerator struct {
-	cfg  PlatformTokenConfig
+// Generator henter og cacher platform access token. Den kan brukes som
+// TokenSource for register.Client.
+type Generator struct {
+	cfg  Config
 	http *http.Client
 	naa  func() time.Time
 
@@ -76,9 +77,9 @@ type PlatformTokenGenerator struct {
 	utloeper time.Time
 }
 
-func NewPlatformTokenGenerator(cfg PlatformTokenConfig) (*PlatformTokenGenerator, error) {
-	if cfg.Brukernavn == "" || cfg.Passord == "" || cfg.Miljoe == "" {
-		return nil, fmt.Errorf("%w: token generatoren trenger brukernavn, passord og miljø", ErrInvalid)
+func NewGenerator(cfg Config) (*Generator, error) {
+	if cfg.Username == "" || cfg.Password == "" || cfg.Environment == "" {
+		return nil, fmt.Errorf("%w: token generatoren trenger brukernavn, passord og miljø", errs.Invalid)
 	}
 	if cfg.App == "" {
 		cfg.App = standardPlatformApp
@@ -87,14 +88,14 @@ func NewPlatformTokenGenerator(cfg PlatformTokenConfig) (*PlatformTokenGenerator
 		cfg.TTL = standardPlatformTTL
 	}
 	if cfg.BaseURL == "" {
-		cfg.BaseURL = tokenGeneratorBaseURL
+		cfg.BaseURL = DefaultBaseURL
 	}
 	cfg.BaseURL = strings.TrimRight(cfg.BaseURL, "/")
-	return &PlatformTokenGenerator{cfg: cfg, http: newClient(), naa: time.Now}, nil
+	return &Generator{cfg: cfg, http: &http.Client{Timeout: 10 * time.Second}, naa: time.Now}, nil
 }
 
 // Token returnerer et gyldig platform access token.
-func (g *PlatformTokenGenerator) Token(ctx context.Context) (string, error) {
+func (g *Generator) Token(ctx context.Context) (string, error) {
 	g.mu.Lock()
 	defer g.mu.Unlock()
 
@@ -103,7 +104,7 @@ func (g *PlatformTokenGenerator) Token(ctx context.Context) (string, error) {
 	}
 
 	q := url.Values{
-		"env": {g.cfg.Miljoe},
+		"env": {g.cfg.Environment},
 		"app": {g.cfg.App},
 		"ttl": {strconv.FormatInt(int64(g.cfg.TTL/time.Second), 10)},
 	}
@@ -120,31 +121,31 @@ func (g *PlatformTokenGenerator) Token(ctx context.Context) (string, error) {
 	return g.token, nil
 }
 
-func (g *PlatformTokenGenerator) hent(ctx context.Context, sti string, q url.Values) (string, error) {
+func (g *Generator) hent(ctx context.Context, sti string, q url.Values) (string, error) {
 	u := g.cfg.BaseURL + sti + "?" + q.Encode()
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, u, nil)
 	if err != nil {
-		return "", fmt.Errorf("%w: %v", ErrInvalid, err)
+		return "", fmt.Errorf("%w: %v", errs.Invalid, err)
 	}
-	req.SetBasicAuth(g.cfg.Brukernavn, g.cfg.Passord)
+	req.SetBasicAuth(g.cfg.Username, g.cfg.Password)
 
 	resp, err := g.http.Do(req)
 	if err != nil {
-		return "", fmt.Errorf("%w: token generator: %v", ErrConnection, err)
+		return "", fmt.Errorf("%w: token generator: %v", errs.Connection, err)
 	}
 	defer resp.Body.Close()
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return "", fmt.Errorf("%w: token generator: les svar: %v", ErrConnection, err)
+		return "", fmt.Errorf("%w: token generator: les svar: %v", errs.Connection, err)
 	}
 	if resp.StatusCode != http.StatusOK {
 		return "", fmt.Errorf("%w: token generator svarte HTTP %d på %s: %s",
-			ErrInvalidResponse, resp.StatusCode, sti, strings.TrimSpace(string(body)))
+			errs.InvalidResponse, resp.StatusCode, sti, strings.TrimSpace(string(body)))
 	}
 	token := strings.TrimSpace(string(body))
 	if token == "" {
-		return "", fmt.Errorf("%w: token generator svarte uten token", ErrInvalidResponse)
+		return "", fmt.Errorf("%w: token generator svarte uten token", errs.InvalidResponse)
 	}
 	return token, nil
 }

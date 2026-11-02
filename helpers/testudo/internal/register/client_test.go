@@ -1,4 +1,4 @@
-package cmd
+package register_test
 
 import (
 	"context"
@@ -6,40 +6,17 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"net/http/httptest"
 	"strings"
 	"testing"
+
+	"github.com/Altinn/altinn-platform-validation-tests/helpers/testudo/internal/errs"
+	"github.com/Altinn/altinn-platform-validation-tests/helpers/testudo/internal/register"
+	"github.com/Altinn/altinn-platform-validation-tests/helpers/testudo/internal/register/registertest"
 )
 
-func testRegisterClient(t *testing.T, h http.HandlerFunc) *RegisterClient {
-	t.Helper()
-	srv := httptest.NewServer(h)
-	t.Cleanup(srv.Close)
-	return NewRegisterClient(srv.URL+"/", "nøkkel", StaticToken("plattform"))
-}
-
-// lesQuery sjekker headere og returnerer URN-ene i forespørselen.
-func lesQuery(t *testing.T, r *http.Request) []string {
-	t.Helper()
-	if r.Method != http.MethodPost || r.URL.Path != "/register/api/v1/access-management/parties/query" {
-		t.Errorf("%s %s", r.Method, r.URL.Path)
-	}
-	if r.Header.Get("PlatformAccessToken") != "plattform" || r.Header.Get("Ocp-Apim-Subscription-Key") != "nøkkel" ||
-		r.Header.Get("Content-Type") != "application/json" || r.Header.Get("Authorization") != "" {
-		t.Errorf("headere = %v", r.Header)
-	}
-	var body struct {
-		Data []string `json:"data"`
-	}
-	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
-		t.Fatal(err)
-	}
-	return body.Data
-}
-
 func TestQueryPartiesDekoderAlleTyper(t *testing.T) {
-	c := testRegisterClient(t, func(w http.ResponseWriter, r *http.Request) {
-		urns := lesQuery(t, r)
+	c := registertest.NewClient(t, func(w http.ResponseWriter, r *http.Request) {
+		urns := registertest.ReadQuery(t, r)
 		if r.URL.Query().Get("fields") != "party,person,org,user,si,sysuser" {
 			t.Errorf("fields = %q", r.URL.Query().Get("fields"))
 		}
@@ -63,8 +40,8 @@ func TestQueryPartiesDekoderAlleTyper(t *testing.T) {
 	})
 
 	parter, err := c.QueryParties(context.Background(),
-		[]PartyUrn{PersonUrn("01010112345"), OrganisasjonUrn("123456789")},
-		FeltParty, FeltPerson, FeltOrg, FeltUser, FeltSI, FeltSysuser)
+		[]register.PartyURN{register.PersonURN("01010112345"), register.OrganizationURN("123456789")},
+		register.FieldParty, register.FieldPerson, register.FieldOrg, register.FieldUser, register.FieldSI, register.FieldSysuser)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -72,7 +49,7 @@ func TestQueryPartiesDekoderAlleTyper(t *testing.T) {
 		t.Fatalf("parter = %d", len(parter))
 	}
 	p := parter[0]
-	if p.PartyID != 501 || p.PartyType != PartyTypePerson || p.User == nil || p.User.UserID != 20001 ||
+	if p.PartyID != 501 || p.PartyType != register.PartyTypePerson || p.User == nil || p.User.UserID != 20001 ||
 		len(p.User.UserIDs) != 2 || p.Address == nil || p.Address.City != "OSLO" || p.MailingAddress.Address != "Gata 1" ||
 		p.DeletedAt != "" || p.VersionID != 7 {
 		t.Errorf("person = %+v", p)
@@ -87,8 +64,8 @@ func TestQueryPartiesDekoderAlleTyper(t *testing.T) {
 
 func TestQueryPartiesDelerOppIBatcher(t *testing.T) {
 	var batcher []int
-	c := testRegisterClient(t, func(w http.ResponseWriter, r *http.Request) {
-		urns := lesQuery(t, r)
+	c := registertest.NewClient(t, func(w http.ResponseWriter, r *http.Request) {
+		urns := registertest.ReadQuery(t, r)
 		batcher = append(batcher, len(urns))
 		if r.URL.RawQuery != "" {
 			t.Errorf("uten felt skal fields utelates: %q", r.URL.RawQuery)
@@ -105,9 +82,9 @@ func TestQueryPartiesDelerOppIBatcher(t *testing.T) {
 		json.NewEncoder(w).Encode(map[string]any{"data": data})
 	})
 
-	urns := make([]PartyUrn, 150)
+	urns := make([]register.PartyURN, 150)
 	for i := range urns {
-		urns[i] = PartyIDUrn(uint32(i + 1))
+		urns[i] = register.PartyIDURN(uint32(i + 1))
 	}
 	parter, err := c.QueryParties(context.Background(), urns)
 	if err != nil {
@@ -119,7 +96,7 @@ func TestQueryPartiesDelerOppIBatcher(t *testing.T) {
 }
 
 func TestQueryPartiesTomListeGjoerIngenKall(t *testing.T) {
-	c := testRegisterClient(t, func(w http.ResponseWriter, r *http.Request) {
+	c := registertest.NewClient(t, func(w http.ResponseWriter, r *http.Request) {
 		t.Error("uventet kall")
 	})
 	parter, err := c.QueryParties(context.Background(), nil)
@@ -129,8 +106,8 @@ func TestQueryPartiesTomListeGjoerIngenKall(t *testing.T) {
 }
 
 func TestSlaaOppIdentifikatorer(t *testing.T) {
-	c := testRegisterClient(t, func(w http.ResponseWriter, r *http.Request) {
-		urns := lesQuery(t, r)
+	c := registertest.NewClient(t, func(w http.ResponseWriter, r *http.Request) {
+		urns := registertest.ReadQuery(t, r)
 		if len(urns) != 3 {
 			t.Errorf("duplikater ble ikke fjernet: %v", urns)
 		}
@@ -138,8 +115,8 @@ func TestSlaaOppIdentifikatorer(t *testing.T) {
 			{"partyUuid":"a","partyId":1,"personIdentifier":"01010112345"},
 			{"partyUuid":"b","partyId":2,"organizationIdentifier":"123456789"}]}`))
 	})
-	m, err := c.SlaaOppIdentifikatorer(context.Background(),
-		[]string{"01010112345", "123456789", "01010112345", "99999999999"}, FeltParty)
+	m, err := c.LookupIdentifiers(context.Background(),
+		[]string{"01010112345", "123456789", "01010112345", "99999999999"}, register.FieldParty)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -150,29 +127,29 @@ func TestSlaaOppIdentifikatorer(t *testing.T) {
 		t.Error("ukjent identifikator skal ikke være med")
 	}
 
-	if _, err := c.SlaaOppIdentifikatorer(context.Background(), []string{"123"}); !errors.Is(err, ErrInvalid) {
+	if _, err := c.LookupIdentifiers(context.Background(), []string{"123"}); !errors.Is(err, errs.Invalid) {
 		t.Errorf("ugyldig identifikator: err = %v", err)
 	}
 }
 
 func TestSlaaOppIdentifikatorerUkjentPart(t *testing.T) {
-	c := testRegisterClient(t, func(w http.ResponseWriter, r *http.Request) {
+	c := registertest.NewClient(t, func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte(`{"data":[{"partyUuid":"x","personIdentifier":"22222222222"}]}`))
 	})
-	if _, err := c.SlaaOppIdentifikatorer(context.Background(), []string{"11111111111"}); !errors.Is(err, ErrInvalidResponse) {
+	if _, err := c.LookupIdentifiers(context.Background(), []string{"11111111111"}); !errors.Is(err, errs.InvalidResponse) {
 		t.Errorf("err = %v", err)
 	}
 }
 
 func TestHentParty(t *testing.T) {
-	c := testRegisterClient(t, func(w http.ResponseWriter, r *http.Request) {
+	c := registertest.NewClient(t, func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodGet || r.URL.Path != "/register/api/v1/access-management/parties/p-1" ||
 			r.URL.Query().Get("fields") != "person.name" {
 			t.Errorf("%s %s?%s", r.Method, r.URL.Path, r.URL.RawQuery)
 		}
 		w.Write([]byte(`{"partyUuid":"p-1","firstName":"KARI"}`))
 	})
-	p, err := c.HentParty(context.Background(), "p-1", FeltPersonName)
+	p, err := c.GetParty(context.Background(), "p-1", register.FieldPersonName)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -188,17 +165,17 @@ func TestRegisterFeil(t *testing.T) {
 		body   string
 		vil    error
 	}{
-		{"404", http.StatusNotFound, "", ErrNotFound},
-		{"400 problem details", http.StatusBadRequest, `{"title":"Bad request","code":"REG-00001"}`, ErrInvalidResponse},
-		{"ugyldig json", http.StatusOK, "ikke json", ErrInvalidResponse},
-		{"mangler data", http.StatusOK, `{}`, ErrInvalidResponse},
+		{"404", http.StatusNotFound, "", errs.NotFound},
+		{"400 problem details", http.StatusBadRequest, `{"title":"Bad request","code":"REG-00001"}`, errs.InvalidResponse},
+		{"ugyldig json", http.StatusOK, "ikke json", errs.InvalidResponse},
+		{"mangler data", http.StatusOK, `{}`, errs.InvalidResponse},
 	}
 	for _, tt := range tests {
-		c := testRegisterClient(t, func(w http.ResponseWriter, r *http.Request) {
+		c := registertest.NewClient(t, func(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(tt.status)
 			w.Write([]byte(tt.body))
 		})
-		_, err := c.QueryParties(context.Background(), []PartyUrn{PartyIDUrn(1)})
+		_, err := c.QueryParties(context.Background(), []register.PartyURN{register.PartyIDURN(1)})
 		if !errors.Is(err, tt.vil) {
 			t.Errorf("%s: err = %v", tt.navn, err)
 		}
@@ -209,11 +186,11 @@ func TestRegisterFeil(t *testing.T) {
 }
 
 func TestPartyUrn(t *testing.T) {
-	for fikk, vil := range map[PartyUrn]string{
-		PartyUUIDUrn("abc"):              "urn:altinn:party:uuid:abc",
-		BrukerIDUrn(42):                  "urn:altinn:user:id:42",
-		BrukernavnUrn("ola"):             "urn:altinn:party:username:ola",
-		IdportenEpostUrn("a@example.no"): "urn:altinn:person:idporten-email:a@example.no",
+	for fikk, vil := range map[register.PartyURN]string{
+		register.PartyUUIDURN("abc"):              "urn:altinn:party:uuid:abc",
+		register.UserIDURN(42):                    "urn:altinn:user:id:42",
+		register.UsernameURN("ola"):               "urn:altinn:party:username:ola",
+		register.IDPortenEmailURN("a@example.no"): "urn:altinn:person:idporten-email:a@example.no",
 	} {
 		if string(fikk) != vil {
 			t.Errorf("fikk %q, vil ha %q", fikk, vil)

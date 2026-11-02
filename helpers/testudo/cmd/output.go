@@ -7,6 +7,7 @@ package cmd
 import (
 	"bytes"
 	"encoding/csv"
+	"encoding/json"
 	"fmt"
 	"io"
 	"os"
@@ -14,17 +15,20 @@ import (
 	"strings"
 
 	"github.com/spf13/cobra"
+
+	"github.com/Altinn/altinn-platform-validation-tests/helpers/testudo/internal/errs"
+	"github.com/Altinn/altinn-platform-validation-tests/helpers/testudo/internal/register"
 )
 
 const (
-	formatTekst = "tekst"
+	formatTekst = "text"
 	formatJSON  = "json"
 	formatCSV   = "csv"
 )
 
 // utskriftValg er flaggene for utskrift.
 type utskriftValg struct {
-	// format er tekst, json eller csv. Tom betyr standard: tekst, eller json
+	// format er text, json eller csv. Tom betyr standard: text, eller json
 	// med --json.
 	format string
 	// kolonner er kommaseparerte CSV-kolonner. Tom betyr kommandoens standard.
@@ -36,14 +40,14 @@ type utskriftValg struct {
 func leggTilUtskriftFlagg(cmd *cobra.Command, v *utskriftValg, standardKolonner []string) {
 	cmd.Flags().StringVar(
 		&v.format, "format", "",
-		"Utskrift: tekst, json eller csv (standard: tekst, eller json med --json)",
+		"Utskrift: text, json eller csv (standard: text, eller json med --json)",
 	)
 	cmd.Flags().StringVar(
-		&v.kolonner, "kolonner", "",
+		&v.kolonner, "columns", "",
 		"Kommaseparerte kolonner med --format csv (standard: "+strings.Join(standardKolonner, ",")+")",
 	)
 	cmd.Flags().StringVar(
-		&v.ut, "ut", "",
+		&v.ut, "out", "",
 		"Fil resultatet skrives til (standard: stdout)",
 	)
 }
@@ -64,10 +68,10 @@ func (v utskriftValg) effektivtFormat(jsonOutput bool) string {
 func validerUtskrift[T any](v utskriftValg, jsonOutput bool, alle []kolonne[T], standard []string) error {
 	format := v.effektivtFormat(jsonOutput)
 	if !slices.Contains([]string{formatTekst, formatJSON, formatCSV}, format) {
-		return fmt.Errorf("%w: ukjent --format %q, bruk tekst, json eller csv", ErrInvalid, format)
+		return fmt.Errorf("%w: ukjent --format %q, bruk text, json eller csv", errs.Invalid, format)
 	}
 	if v.kolonner != "" && format != formatCSV {
-		return fmt.Errorf("%w: --kolonner virker bare med --format csv", ErrInvalid)
+		return fmt.Errorf("%w: --columns virker bare med --format csv", errs.Invalid)
 	}
 	if format == formatCSV {
 		_, err := velgKolonner(alle, v.kolonner, standard)
@@ -98,7 +102,7 @@ func velgKolonner[T any](alle []kolonne[T], spesifikasjon string, standard []str
 			for j, k := range alle {
 				tilgjengelige[j] = k.navn
 			}
-			return nil, fmt.Errorf("%w: ukjent kolonne %q, bruk en av %s", ErrInvalid, n, strings.Join(tilgjengelige, ","))
+			return nil, fmt.Errorf("%w: ukjent kolonne %q, bruk en av %s", errs.Invalid, n, strings.Join(tilgjengelige, ","))
 		}
 		valgt = append(valgt, alle[i])
 	}
@@ -160,4 +164,33 @@ func tallTekst[N ~uint32 | ~uint64](n N) string {
 		return ""
 	}
 	return fmt.Sprint(n)
+}
+
+// brukerID, partyID og partyUUID henter ID-er fra en part, eller tom tekst
+// når parten eller verdien mangler.
+func brukerID(p *register.Party) string {
+	if p == nil || p.User == nil {
+		return ""
+	}
+	return tallTekst(p.User.UserID)
+}
+
+func partyID(p *register.Party) string {
+	if p == nil {
+		return ""
+	}
+	return tallTekst(p.PartyID)
+}
+
+func partyUUID(p *register.Party) string {
+	if p == nil {
+		return ""
+	}
+	return p.PartyUUID
+}
+
+func skrivJSON(ut io.Writer, v any) error {
+	enc := json.NewEncoder(ut)
+	enc.SetIndent("", "  ")
+	return enc.Encode(v)
 }

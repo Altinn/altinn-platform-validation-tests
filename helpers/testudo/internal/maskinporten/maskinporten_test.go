@@ -1,4 +1,4 @@
-package cmd
+package maskinporten
 
 import (
 	"context"
@@ -22,6 +22,8 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/lestrrat-go/jwx/v4/jwk"
+
+	"github.com/Altinn/altinn-platform-validation-tests/helpers/testudo/internal/errs"
 )
 
 var testNoekkel = sync.OnceValue(func() *rsa.PrivateKey {
@@ -52,7 +54,7 @@ func testJWK(key *rsa.PrivateKey, kid string) string {
 // testJWKNoekkel er testnøkkelen som jwk.Key, med kid hvis den ikke er tom.
 func testJWKNoekkel(t *testing.T, kid string) jwk.Key {
 	t.Helper()
-	key, err := ParsePrivatNoekkelJWK(testJWK(testNoekkel(), kid))
+	key, err := ParsePrivateKeyJWK(testJWK(testNoekkel(), kid))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -123,7 +125,7 @@ func TestMaskinportenTokenOgCache(t *testing.T) {
 	defer srv.Close()
 	srvURL = srv.URL
 
-	c, err := NewMaskinportenClient(MaskinportenConfig{
+	c, err := NewClient(Config{
 		ClientID: "klient", JWK: testJWKNoekkel(t, "min-kid"), TokenURL: srv.URL,
 	}, "a:les", "b:skriv")
 	if err != nil {
@@ -171,7 +173,7 @@ func TestMaskinportenConsumerOrgOgUtenKid(t *testing.T) {
 	}))
 	defer srv.Close()
 
-	c, _ := NewMaskinportenClient(MaskinportenConfig{
+	c, _ := NewClient(Config{
 		ClientID: "klient", JWK: testJWKNoekkel(t, ""), ConsumerOrg: "991825827", TokenURL: srv.URL,
 	}, "x")
 	if _, err := c.Token(context.Background()); err != nil {
@@ -186,27 +188,27 @@ func TestMaskinportenFeilsvar(t *testing.T) {
 	}))
 	defer srv.Close()
 
-	c, _ := NewMaskinportenClient(MaskinportenConfig{
+	c, _ := NewClient(Config{
 		ClientID: "klient", JWK: testJWKNoekkel(t, ""), TokenURL: srv.URL,
 	}, "x")
 	_, err := c.Token(context.Background())
-	if !errors.Is(err, ErrInvalidResponse) || !strings.Contains(err.Error(), "invalid_scope: Scope finnes ikke") {
+	if !errors.Is(err, errs.InvalidResponse) || !strings.Contains(err.Error(), "invalid_scope: Scope finnes ikke") {
 		t.Errorf("err = %v", err)
 	}
 }
 
 func TestNewMaskinportenClientValiderer(t *testing.T) {
-	if _, err := NewMaskinportenClient(MaskinportenConfig{ClientID: "k"}, "x"); !errors.Is(err, ErrInvalid) {
+	if _, err := NewClient(Config{ClientID: "k"}, "x"); !errors.Is(err, errs.Invalid) {
 		t.Errorf("uten JWK: %v", err)
 	}
-	if _, err := NewMaskinportenClient(MaskinportenConfig{ClientID: "k", JWK: testJWKNoekkel(t, "")}); !errors.Is(err, ErrInvalid) {
+	if _, err := NewClient(Config{ClientID: "k", JWK: testJWKNoekkel(t, "")}); !errors.Is(err, errs.Invalid) {
 		t.Errorf("uten scope: %v", err)
 	}
 }
 
 func TestParsePrivatNoekkelJWK(t *testing.T) {
 	key := testNoekkel()
-	got, err := ParsePrivatNoekkelJWK(testJWK(key, "kid-1"))
+	got, err := ParsePrivateKeyJWK(testJWK(key, "kid-1"))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -226,7 +228,7 @@ func TestParsePrivatNoekkelJWK(t *testing.T) {
 		"offentlig nøkkel": string(offentligJSON),
 		"feil d":           strings.Replace(testJWK(key, "k"), `"d":"`+b64(key.D)+`"`, `"d":"`+b64(big.NewInt(12345))+`"`, 1),
 	} {
-		if _, err := ParsePrivatNoekkelJWK(s); !errors.Is(err, ErrInvalid) {
+		if _, err := ParsePrivateKeyJWK(s); !errors.Is(err, errs.Invalid) {
 			t.Errorf("%s: err = %v", navn, err)
 		}
 	}
@@ -235,7 +237,7 @@ func TestParsePrivatNoekkelJWK(t *testing.T) {
 func TestMaskinportenConfigFra(t *testing.T) {
 	key := testNoekkel()
 
-	cfg, err := MaskinportenConfigFra(func(k string) string {
+	cfg, err := ConfigFrom(func(k string) string {
 		return map[string]string{"MASKINPORTEN_CLIENT_ID": "c", "MASKINPORTEN_JWK": testJWK(key, "jwk-kid")}[k]
 	})
 	if err != nil {
@@ -250,7 +252,7 @@ func TestMaskinportenConfigFra(t *testing.T) {
 		"uten jwk":       {"MASKINPORTEN_CLIENT_ID": "c"},
 		"ugyldig jwk":    {"MASKINPORTEN_CLIENT_ID": "c", "MASKINPORTEN_JWK": "{"},
 	} {
-		if _, err := MaskinportenConfigFra(func(k string) string { return env[k] }); !errors.Is(err, ErrInvalid) {
+		if _, err := ConfigFrom(func(k string) string { return env[k] }); !errors.Is(err, errs.Invalid) {
 			t.Errorf("%s: err = %v", navn, err)
 		}
 	}
