@@ -8,8 +8,8 @@ package cmd
 //
 //	MASKINPORTEN_CLIENT_ID: '...'
 //	MASKINPORTEN_JWK: '{"kty":"RSA",...}'
-//	USERNAME_TEST_API: '...'
-//	PASSWORD_TEST_API: '...'
+//	TOKEN_GENERATOR_USERNAME: '...'
+//	TOKEN_GENERATOR_PASSWORD: '...'
 //	at23:
 //	  API_BASE_URL: 'https://platform.at23.altinn.cloud'
 //	  REGISTER_SUBSCRIPTION_KEY: '...'

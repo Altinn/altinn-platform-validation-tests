@@ -121,7 +121,7 @@ func TestInitConfigMedConfigFlagg(t *testing.T) {
 }
 
 func TestNyRegisterKlient(t *testing.T) {
-	felles := "USERNAME_TEST_API: b\nPASSWORD_TEST_API: p\n"
+	felles := "TOKEN_GENERATOR_USERNAME: b\nTOKEN_GENERATOR_PASSWORD: p\n"
 	tests := []struct {
 		navn    string
 		yaml    string

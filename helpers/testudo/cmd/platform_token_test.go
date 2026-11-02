@@ -102,12 +102,10 @@ func TestPlatformTokenConfigFra(t *testing.T) {
 		brukernavn string
 		ugyldig    bool
 	}{
-		{"K6-navn", map[string]string{"TOKEN_GENERATOR_USERNAME": "k6", "TOKEN_GENERATOR_PASSWORD": "p"}, "at22", "k6", false},
-		{"frontend-navn", map[string]string{"USERNAME_TEST_API": "fe", "PASSWORD_TEST_API": "p"}, "at22", "fe", false},
-		{"K6 går foran", map[string]string{"TOKEN_GENERATOR_USERNAME": "k6", "TOKEN_GENERATOR_PASSWORD": "p",
-			"USERNAME_TEST_API": "fe", "PASSWORD_TEST_API": "q"}, "at22", "k6", false},
-		{"mangler passord", map[string]string{"USERNAME_TEST_API": "fe"}, "at22", "", true},
-		{"mangler miljø", map[string]string{"USERNAME_TEST_API": "fe", "PASSWORD_TEST_API": "p"}, "", "", true},
+		{"ok", map[string]string{"TOKEN_GENERATOR_USERNAME": "k6", "TOKEN_GENERATOR_PASSWORD": "p"}, "at22", "k6", false},
+		{"frontend-navn", map[string]string{"USERNAME_TEST_API": "fe", "PASSWORD_TEST_API": "p"}, "at22", "", true},
+		{"mangler passord", map[string]string{"TOKEN_GENERATOR_USERNAME": "k6"}, "at22", "", true},
+		{"mangler miljø", map[string]string{"TOKEN_GENERATOR_USERNAME": "k6", "TOKEN_GENERATOR_PASSWORD": "p"}, "", "", true},
 	}
 	for _, tt := range tests {
 		cfg, err := PlatformTokenConfigFra(func(k string) string { return tt.env[k] }, tt.miljoe)

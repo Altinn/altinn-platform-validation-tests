@@ -45,17 +45,17 @@ type PlatformTokenConfig struct {
 	BaseURL string
 }
 
-// PlatformTokenConfigFra leser brukernavn og passord med hent. Navnene fra K6
-// (TOKEN_GENERATOR_USERNAME og TOKEN_GENERATOR_PASSWORD) går foran navnene fra
-// altinn-access-management-frontend (USERNAME_TEST_API og PASSWORD_TEST_API).
+// PlatformTokenConfigFra leser brukernavn og passord med hent, med de samme
+// navnene som K6 og Playwright bruker: TOKEN_GENERATOR_USERNAME og
+// TOKEN_GENERATOR_PASSWORD.
 func PlatformTokenConfigFra(hent func(string) string, miljoe string) (PlatformTokenConfig, error) {
 	cfg := PlatformTokenConfig{
-		Brukernavn: forste(hent("TOKEN_GENERATOR_USERNAME"), hent("USERNAME_TEST_API")),
-		Passord:    forste(hent("TOKEN_GENERATOR_PASSWORD"), hent("PASSWORD_TEST_API")),
+		Brukernavn: hent("TOKEN_GENERATOR_USERNAME"),
+		Passord:    hent("TOKEN_GENERATOR_PASSWORD"),
 		Miljoe:     miljoe,
 	}
 	if cfg.Brukernavn == "" || cfg.Passord == "" {
-		return cfg, fmt.Errorf("%w: TOKEN_GENERATOR_USERNAME og TOKEN_GENERATOR_PASSWORD (eller USERNAME_TEST_API og PASSWORD_TEST_API) må være satt", ErrInvalid)
+		return cfg, fmt.Errorf("%w: TOKEN_GENERATOR_USERNAME og TOKEN_GENERATOR_PASSWORD må være satt", ErrInvalid)
 	}
 	if miljoe == "" {
 		return cfg, fmt.Errorf("%w: miljø mangler", ErrInvalid)
@@ -146,14 +146,4 @@ func (g *PlatformTokenGenerator) hent(ctx context.Context, sti string, q url.Val
 		return "", fmt.Errorf("%w: token generator svarte uten token", ErrInvalidResponse)
 	}
 	return token, nil
-}
-
-// forste returnerer den første verdien som ikke er tom.
-func forste(verdier ...string) string {
-	for _, v := range verdier {
-		if v != "" {
-			return v
-		}
-	}
-	return ""
 }

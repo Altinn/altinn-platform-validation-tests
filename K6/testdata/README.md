@@ -22,8 +22,8 @@ Testudo leser nøkler og adresser fra `~/.testudo.yaml` (eller fila du gir med
 ```yaml
 MASKINPORTEN_CLIENT_ID: '...'
 MASKINPORTEN_JWK: '{"kty":"RSA",...}'   # privat nøkkel for Tenor
-USERNAME_TEST_API: '...'                # test token generator
-PASSWORD_TEST_API: '...'
+TOKEN_GENERATOR_USERNAME: '...'         # test token generator, som i K6 og Playwright
+TOKEN_GENERATOR_PASSWORD: '...'
 
 at23:                                   # én seksjon per miljø: at22, at23, tt02
   API_BASE_URL: 'https://platform.at23.altinn.cloud'
