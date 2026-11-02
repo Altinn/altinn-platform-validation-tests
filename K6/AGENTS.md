@@ -1,5 +1,7 @@
 # K6: arbeidsregler
 
+Les [ADR 0001: How we write K6 tests](../docs/adr/0001-how-we-write-k6-tests.md) før du skriver eller endrer en test.
+
 Les [repoets README](../README.md#important-patterns) for struktur, hjelpere og testmønstre. Bruk [tjenestedelegeringens README](api/tests/access-management/service-owner/connections/README.md) for konkrete eksempler på setup, CSV-data, `lazy()` og opprydding.
 
 - Bruk `setup()` til miljøvalidering og CSV-data via `helpers.js`. Velg rader med `getItemFromList()`; ikke tell iterasjoner selv eller sett antallet ut fra CSV-lengden. Fordel uavhengige rader med `segmentData(data, getNumberOfVUs())` når flere VU-er endrer tilstand.
