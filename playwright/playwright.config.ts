@@ -73,7 +73,7 @@ const nettlesere = {
     chromium: devices["Desktop Chrome"],
     // firefox: devices["Desktop Firefox"],
     edge: devices["Desktop Edge"],
-    webkit: devices["Desktop Safari"],
+    // webkit: devices["Desktop Safari"],
 };
 
 // Bare bokmål inntil appen slutter å mellomlagre språket, se #694.
