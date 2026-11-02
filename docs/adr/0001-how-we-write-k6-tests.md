@@ -1,6 +1,6 @@
 # ADR 0001: How we write K6 tests
 
-Status: Draft
+Status: Draft, to be validated with the Auth team
 Date: 2026-11-02
 
 ## Context
@@ -30,7 +30,7 @@ If you need a new check, put it in domain checks so the next test can use it. A 
 
 ### 3. Follow Swagger and the repo conventions
 
-Clients, methods and parameters are named and typed as in Swagger, even when Swagger is odd. Raise mismatches with the team that owns the service. VUs and iterations are set in `functional.yaml` and `smoke.yaml`, not in the test. Code and comments are written in English, and generated comments and `console.log` are cleaned up before the PR.
+Clients, methods and parameters are named and typed as in Swagger, even when Swagger is odd. Raise mismatches with the team that owns the service. VUs and iterations are set in `functional.yaml` and `smoke.yaml`, not in the test. Code and comments are written in English, with Norwegian only where it makes sense for the domain (`newTenorClient`, not `nyTenorKlient`). Generated comments and `console.log` are cleaned up before the PR.
 
 ## Template
 
