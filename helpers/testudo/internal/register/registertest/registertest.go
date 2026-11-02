@@ -62,8 +62,9 @@ func Empty(t *testing.T) *register.Client {
 }
 
 // Echo er et Register der alle parter finnes, for tester som ikke handler om
-// Register. Personer får partyUuid p-<fnr> og bruker, virksomheter
-// o-<orgnr>. Navn tas ikke med, så navnene fra Tenor brukes.
+// Register. Personer får partyUuid p-<fnr>, bruker og navnet PERSON <fnr>.
+// Virksomheter får partyUuid o-<orgnr>, navnet VIRKSOMHET <orgnr> og
+// unitType AS.
 func Echo(t *testing.T) *register.Client {
 	t.Helper()
 	return NewClient(t, func(w http.ResponseWriter, r *http.Request) {
@@ -71,9 +72,11 @@ func Echo(t *testing.T) *register.Client {
 		for i, u := range ReadQuery(t, r) {
 			id := u[strings.LastIndex(u, ":")+1:]
 			if strings.Contains(u, ":person:") {
-				data = append(data, fmt.Sprintf(`{"partyUuid":"p-%s","partyId":%d,"partyType":"person","personIdentifier":"%s","user":{"userId":%d}}`, id, 1000+i, id, 2000+i))
+				data = append(data, fmt.Sprintf(`{"partyUuid":"p-%s","partyId":%d,"partyType":"person","personIdentifier":"%s",`+
+					`"displayName":"PERSON %s","firstName":"PERSON","lastName":"%s","user":{"userId":%d}}`, id, 1000+i, id, id, id, 2000+i))
 			} else {
-				data = append(data, fmt.Sprintf(`{"partyUuid":"o-%s","partyId":%d,"partyType":"organization","organizationIdentifier":"%s"}`, id, 1000+i, id))
+				data = append(data, fmt.Sprintf(`{"partyUuid":"o-%s","partyId":%d,"partyType":"organization","organizationIdentifier":"%s",`+
+					`"displayName":"VIRKSOMHET %s","unitType":"AS"}`, id, 1000+i, id, id))
 			}
 		}
 		w.Write([]byte(`{"data":[` + strings.Join(data, ",") + `]}`))

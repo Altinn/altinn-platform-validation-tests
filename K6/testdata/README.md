@@ -164,7 +164,8 @@ lag $T/access-management-bff/access-packages/org-to-org/$ENV.csv $V2 \
 
 ### ssn og orgno
 
-Disse bruker bare kolonner fra Tenor, og har samme kolonner i yt01.
+Disse bruker bare organisasjonsnummer og fødselsnummer, og har samme kolonner
+i yt01.
 
 | Filer | Rader i dag |
 | --- | --- |

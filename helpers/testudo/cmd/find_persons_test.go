@@ -25,7 +25,8 @@ func TestRunPersonerUtskrift(t *testing.T) {
 		vil  string
 	}{
 		{"fnr", personerOptions{antall: 2}, "00000000001\n00000000002\n"},
-		{"navn", personerOptions{antall: 2, navn: true}, "00000000001\tPerson 1\n00000000002\tPerson 2\n"},
+		// Navnet er fra Register.
+		{"navn", personerOptions{antall: 2, navn: true}, "00000000001\tPERSON 00000000001\n00000000002\tPERSON 00000000002\n"},
 	}
 	for _, tt := range tests {
 		var ut, logg bytes.Buffer
@@ -45,7 +46,7 @@ func TestRunPersonerUtskrift(t *testing.T) {
 	if err := json.Unmarshal(ut.Bytes(), &personer); err != nil {
 		t.Fatal(err)
 	}
-	if len(personer) != 2 || personer[0]["foedselsnummer"] != "00000000001" || personer[0]["kildedata"] == nil {
+	if len(personer) != 2 || personer[0]["personIdentifier"] != "00000000001" || personer[0]["kildedata"] == nil {
 		t.Errorf("json = %s", ut.String())
 	}
 	if !strings.Contains(logg.String(), "fant bare 2 av 5") {
@@ -86,15 +87,18 @@ func TestRunPersonerJSONMedRegister(t *testing.T) {
 	if len(rader) != 2 {
 		t.Fatalf("rader = %d", len(rader))
 	}
-	// Feltene fra Tenor og Register ligger på samme nivå.
+	// Feltene fra Register ligger på samme nivå som kildedata fra Tenor.
 	foerste := rader[0]
-	if foerste["foedselsnummer"] != "00000000001" || foerste["navn"] != "Person 1" || foerste["kildedata"] == nil ||
+	if foerste["personIdentifier"] != "00000000001" || foerste["kildedata"] == nil ||
 		foerste["partyId"] != float64(501) || foerste["partyUuid"] != "u-1" ||
 		foerste["user"].(map[string]any)["userId"] != float64(20001) {
 		t.Errorf("første = %v", foerste)
 	}
-	if _, finnes := foerste["altinn"]; finnes {
-		t.Errorf("altinn skal ikke finnes lenger: %v", foerste)
+	// Ingenting annet fra Tenor.
+	for _, k := range []string{"foedselsnummer", "fornavn", "etternavn", "navn", "altinn"} {
+		if _, finnes := foerste[k]; finnes {
+			t.Errorf("%s skal ikke finnes: %v", k, foerste)
+		}
 	}
 }
 
@@ -141,13 +145,13 @@ func TestRunPersonerCSV(t *testing.T) {
 		t.Errorf("logg = %q", logg.String())
 	}
 
-	// Uten navn i Register brukes navnet fra Tenor.
+	// Navnene er fra Register, ikke fra Tenor (Person 1).
 	ut.Reset()
 	opts = &personerOptions{antall: 3, utskrift: utskriftValg{format: "csv", kolonner: "personIdentifier,firstName,lastName"}}
 	if err := runPersoner(context.Background(), tenor, registertest.Echo(t), &ut, &logg, opts); err != nil {
 		t.Fatal(err)
 	}
-	if !strings.HasPrefix(ut.String(), "personIdentifier,firstName,lastName\n00000000001,Person,1\n") {
+	if !strings.HasPrefix(ut.String(), "personIdentifier,firstName,lastName\n00000000001,PERSON,00000000001\n") {
 		t.Errorf("csv = %q", ut.String())
 	}
 }

@@ -25,7 +25,8 @@ func TestRunVirksomheterUtskrift(t *testing.T) {
 	if err := runVirksomheter(context.Background(), c, registertest.Echo(t), &ut, &logg, &virksomheterOptions{antall: 2}); err != nil {
 		t.Fatal(err)
 	}
-	vil := "000000001\tFIRMA 1 AS\t" + tenortest.LeaderSSN(1) + "\n000000002\tFIRMA 2 AS\t" + tenortest.LeaderSSN(2) + "\n"
+	// Navnet er fra Register, ikke fra Tenor (FIRMA 1 AS).
+	vil := "000000001\tVIRKSOMHET 000000001\t" + tenortest.LeaderSSN(1) + "\n000000002\tVIRKSOMHET 000000002\t" + tenortest.LeaderSSN(2) + "\n"
 	if ut.String() != vil {
 		t.Errorf("ut = %q", ut.String())
 	}
@@ -42,8 +43,8 @@ func TestRunVirksomheterUtskrift(t *testing.T) {
 	if err := json.Unmarshal(ut.Bytes(), &rader); err != nil {
 		t.Fatal(err)
 	}
-	if len(rader) != 2 || rader[0]["organisasjonsnummer"] != "000000001" || rader[0]["dagligLeder"] != tenortest.LeaderSSN(1) ||
-		rader[0]["kildedata"] == nil {
+	if len(rader) != 2 || rader[0]["organizationIdentifier"] != "000000001" || rader[0]["unitType"] != "AS" ||
+		rader[0]["dagligLederParty"].(map[string]any)["personIdentifier"] != tenortest.LeaderSSN(1) || rader[0]["kildedata"] == nil {
 		t.Errorf("json = %s", ut.String())
 	}
 	if !strings.Contains(logg.String(), "fant bare 2 av 5") {
@@ -79,9 +80,15 @@ func TestRunVirksomheterJSONMedRegister(t *testing.T) {
 		t.Fatalf("rader = %d", len(rader))
 	}
 	v := rader[0]
-	// Virksomheten i Register ligger på samme nivå som feltene fra Tenor.
-	if v["organisasjonsnummer"] != "000000001" || v["partyId"] != float64(601) || v["partyUuid"] != "o-1" {
+	// Virksomheten i Register ligger på samme nivå som kildedata fra Tenor.
+	if v["organizationIdentifier"] != "000000001" || v["partyId"] != float64(601) || v["partyUuid"] != "o-1" || v["kildedata"] == nil {
 		t.Errorf("virksomhet = %v", v)
+	}
+	// Ingenting annet fra Tenor.
+	for _, k := range []string{"organisasjonsnummer", "navn", "organisasjonsform", "dagligLeder"} {
+		if _, finnes := v[k]; finnes {
+			t.Errorf("%s skal ikke finnes: %v", k, v)
+		}
 	}
 	if d, ok := v["dagligLederParty"].(map[string]any); !ok || d["partyId"] != float64(701) {
 		t.Errorf("dagligLederParty = %v", v["dagligLederParty"])
@@ -101,9 +108,9 @@ func TestRunVirksomheterCSV(t *testing.T) {
 	})
 	reg := registertest.NewClient(t, func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, `{"data":[
-			{"partyUuid":"o-1","partyId":601,"organizationIdentifier":"000000001"},
+			{"partyUuid":"o-1","partyId":601,"organizationIdentifier":"000000001","displayName":"FIRMA EN AS"},
 			{"partyUuid":"p-1","partyId":701,"personIdentifier":"%s","lastName":"LEDER","user":{"userId":30001}},
-			{"partyUuid":"o-2","partyId":602,"organizationIdentifier":"000000002"}]}`, tenortest.LeaderSSN(1))
+			{"partyUuid":"o-2","partyId":602,"organizationIdentifier":"000000002","displayName":"FIRMA TO AS"}]}`, tenortest.LeaderSSN(1))
 	})
 
 	var ut, logg bytes.Buffer
@@ -112,7 +119,8 @@ func TestRunVirksomheterCSV(t *testing.T) {
 		t.Fatal(err)
 	}
 	// Virksomhet 2 er ikke med, fordi daglig leder ikke finnes i Register.
-	vil := "organizationIdentifier,displayName,partyId,partyUuid\n000000001,FIRMA 1 AS,601,o-1\n"
+	// Navnet er fra Register, ikke fra Tenor (FIRMA 1 AS).
+	vil := "organizationIdentifier,displayName,partyId,partyUuid\n000000001,FIRMA EN AS,601,o-1\n"
 	if ut.String() != vil {
 		t.Errorf("csv = %q", ut.String())
 	}
@@ -169,7 +177,7 @@ func TestRunVirksomheterRolleTekst(t *testing.T) {
 	if err := runVirksomheter(context.Background(), c, registertest.Echo(t), &ut, &logg, opts); err != nil {
 		t.Fatal(err)
 	}
-	if vil := tenortest.AuditorWithLeader + "\tREVISOR EN AS\t10000000001\trevisor\n"; ut.String() != vil {
+	if vil := tenortest.AuditorWithLeader + "\tVIRKSOMHET " + tenortest.AuditorWithLeader + "\t10000000001\trevisor\n"; ut.String() != vil {
 		t.Errorf("ut = %q", ut.String())
 	}
 	if !strings.Contains(logg.String(), "via klientene (revisorerOrgnr:*)") {
@@ -180,7 +188,7 @@ func TestRunVirksomheterRolleTekst(t *testing.T) {
 func TestRunVirksomheterRolleCSVOgJSON(t *testing.T) {
 	c := tenortest.AuditorClient(t)
 	parter := map[string]string{
-		string(register.OrganizationURN(tenortest.AuditorWithLeader)): `{"partyUuid":"f-1","partyId":801,"organizationIdentifier":"` + tenortest.AuditorWithLeader + `"}`,
+		string(register.OrganizationURN(tenortest.AuditorWithLeader)): `{"partyUuid":"f-1","partyId":801,"organizationIdentifier":"` + tenortest.AuditorWithLeader + `","displayName":"REVISOR EN AS"}`,
 		string(register.PersonURN("10000000001")):                     `{"partyUuid":"d-1","partyId":802,"personIdentifier":"10000000001"}`,
 	}
 	var antallUrns []int

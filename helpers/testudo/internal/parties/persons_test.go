@@ -43,8 +43,8 @@ func TestHentPersonerPaginererMedSeed(t *testing.T) {
 		t.Fatalf("fikk %d personer, vil ha 450", len(personer))
 	}
 	unike := map[string]bool{}
-	for _, p := range personer {
-		unike[p.Foedselsnummer] = true
+	for _, k := range personer {
+		unike[k.foedselsnummer] = true
 	}
 	if len(unike) != 450 {
 		t.Errorf("fikk %d unike personer", len(unike))
@@ -120,7 +120,8 @@ func TestFindPersonsByttesUtNaarDeIkkeFinnesIRegister(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(personer) != 2 || kall != 2 || personer[0].PartyUUID != "u-1" || personer[1].Foedselsnummer != "00000000003" {
+	if len(personer) != 2 || kall != 2 || personer[0].PartyUUID != "u-1" || personer[0].Kildedata == nil ||
+		personer[1].PersonIdentifier != "00000000003" {
 		t.Fatalf("personer = %+v, kall til Tenor = %d", personer, kall)
 	}
 	if !strings.Contains(logg.String(), "Register (at23): 1 personer fra Tenor finnes ikke og er byttet ut.") {
@@ -128,32 +129,19 @@ func TestFindPersonsByttesUtNaarDeIkkeFinnesIRegister(t *testing.T) {
 	}
 }
 
-func TestTilPerson(t *testing.T) {
-	kilde := `{"navn":[
-		{"fornavn":"GAMMEL","etternavn":"NAVN","erGjeldende":false},
-		{"fornavn":"OLA","mellomnavn":"","etternavn":"NORDMANN","erGjeldende":true}]}`
-	p, ok := tilPerson(tenor.Metadata{ID: "01010112345", Kildedata: kilde})
-	if !ok {
-		t.Fatal("ok = false")
-	}
-	if p.Navn != "OLA NORDMANN" || p.Fornavn != "OLA" || p.Etternavn != "NORDMANN" {
-		t.Errorf("person = %+v", p)
-	}
-	if string(p.Kildedata) != kilde {
-		t.Errorf("kildedata = %s", p.Kildedata)
+func TestTilPersonKandidat(t *testing.T) {
+	kilde := `{"navn":[{"fornavn":"OLA","etternavn":"NORDMANN","erGjeldende":true}]}`
+	k, ok := tilPersonKandidat(tenor.Metadata{ID: "01010112345", Kildedata: kilde})
+	if !ok || k.foedselsnummer != "01010112345" || string(k.kildedata) != kilde {
+		t.Errorf("k = %+v, ok = %v", k, ok)
 	}
 
-	p, ok = tilPerson(tenor.Metadata{ID: "01010112345", Kildedata: `{"navn":[{"fornavn":"KUN","etternavn":"EN"}]}`})
-	if !ok || p.Navn != "KUN EN" {
-		t.Errorf("uten erGjeldende: %+v", p)
+	k, ok = tilPersonKandidat(tenor.Metadata{ID: "01010112345", Kildedata: "ikke json"})
+	if !ok || k.kildedata != nil {
+		t.Errorf("ugyldig kildedata: %+v", k)
 	}
 
-	p, ok = tilPerson(tenor.Metadata{ID: "01010112345", Kildedata: "ikke json"})
-	if !ok || p.Navn != "" || p.Kildedata != nil {
-		t.Errorf("ugyldig kildedata: %+v", p)
-	}
-
-	if _, ok := tilPerson(tenor.Metadata{ID: "123"}); ok {
+	if _, ok := tilPersonKandidat(tenor.Metadata{ID: "123"}); ok {
 		t.Error("ugyldig fødselsnummer ble godtatt")
 	}
 }

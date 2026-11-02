@@ -29,8 +29,7 @@ func TestHentVirksomheter(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(v) != 2 || v[0].Organisasjonsnummer != "000000001" || v[0].Navn != "FIRMA 1 AS" ||
-		v[0].Organisasjonsform != "AS" || v[0].DagligLeder != tenortest.LeaderSSN(1) || v[0].Kildedata == nil {
+	if len(v) != 2 || v[0].organisasjonsnummer != "000000001" || v[0].dagligLeder != tenortest.LeaderSSN(1) || v[0].kildedata == nil {
 		t.Errorf("virksomheter = %+v", v)
 	}
 }
@@ -62,7 +61,7 @@ func TestHentVirksomheterKreverDagligLeder(t *testing.T) {
 		t.Fatalf("virksomheter = %d", len(v))
 	}
 	for _, x := range v {
-		if x.DagligLeder == "" {
+		if x.dagligLeder == "" {
 			t.Errorf("virksomhet uten daglig leder: %+v", x)
 		}
 	}
@@ -115,7 +114,8 @@ func TestFindOrganizationsKreverDagligLederIRegister(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(v) != 1 || v[0].PartyUUID != "o-1" || v[0].DagligLederParty == nil || v[0].DagligLederParty.PartyID != 701 {
+	if len(v) != 1 || v[0].OrganizationIdentifier != "000000001" || v[0].PartyUUID != "o-1" || v[0].Kildedata == nil ||
+		v[0].DagligLederParty.PersonIdentifier != tenortest.LeaderSSN(1) || v[0].DagligLederParty.PartyID != 701 {
 		t.Fatalf("virksomheter = %+v", v)
 	}
 	if !strings.Contains(logg.String(), "Register (at22): 1 virksomheter fra Tenor, eller daglig leder for dem, finnes ikke") {
@@ -153,18 +153,18 @@ func TestDagligLeder(t *testing.T) {
 	}
 }
 
-func TestTilVirksomhet(t *testing.T) {
+func TestTilVirksomhetKandidat(t *testing.T) {
 	// Orgnr fra kildedata når id mangler.
-	v, ok := tilVirksomhet(tenor.Metadata{Kildedata: `{"organisasjonsnummer":"123456789","navn":"X AS"}`})
-	if !ok || v.Organisasjonsnummer != "123456789" || v.Navn != "X AS" || v.DagligLeder != "" {
-		t.Errorf("v = %+v, ok = %v", v, ok)
+	k, ok := tilVirksomhetKandidat(tenor.Metadata{Kildedata: `{"organisasjonsnummer":"123456789","navn":"X AS"}`})
+	if !ok || k.organisasjonsnummer != "123456789" || k.dagligLeder != "" || k.kildedata == nil {
+		t.Errorf("k = %+v, ok = %v", k, ok)
 	}
 	// Ugyldig kildedata, men gyldig id.
-	v, ok = tilVirksomhet(tenor.Metadata{ID: "123456789", Kildedata: "ikke json"})
-	if !ok || v.Kildedata != nil || v.Navn != "" {
-		t.Errorf("ugyldig kildedata: %+v", v)
+	k, ok = tilVirksomhetKandidat(tenor.Metadata{ID: "123456789", Kildedata: "ikke json"})
+	if !ok || k.organisasjonsnummer != "123456789" || k.kildedata != nil {
+		t.Errorf("ugyldig kildedata: %+v", k)
 	}
-	if _, ok := tilVirksomhet(tenor.Metadata{ID: "01010112345"}); ok {
+	if _, ok := tilVirksomhetKandidat(tenor.Metadata{ID: "01010112345"}); ok {
 		t.Error("fødselsnummer ble godtatt som orgnr")
 	}
 }

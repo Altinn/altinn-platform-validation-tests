@@ -83,7 +83,7 @@ func tilretteleggerFraKlient(md tenor.Metadata, kode string) string {
 // Det gjøres i tre steg: klienter skannes til vi har nok unike kandidater,
 // kandidatenes egne dokumenter hentes mange om gangen, og så filtreres de på
 // daglig leder. Det hentes flere kandidater enn antall, siden noen forkastes.
-func hentTilretteleggere(ctx context.Context, c *tenor.Client, rolle Role, antall int) ([]Organization, error) {
+func hentTilretteleggere(ctx context.Context, c *tenor.Client, rolle Role, antall int) ([]virksomhetKandidat, error) {
 	kandidater := 2*antall + 10
 
 	// Mange klienter deler tilrettelegger, så bare klienter som gir en ny
@@ -107,18 +107,18 @@ func hentTilretteleggere(ctx context.Context, c *tenor.Client, rolle Role, antal
 	if err != nil {
 		return nil, err
 	}
-	tilretteleggere := make([]Organization, 0, len(orgnumre))
+	tilretteleggere := make([]virksomhetKandidat, 0, len(orgnumre))
 	for _, orgnr := range orgnumre {
 		md, ok := dokumenter[orgnr]
 		if !ok {
 			continue
 		}
-		v, ok := tilVirksomhet(md)
-		if !ok || v.DagligLeder == "" {
+		k, ok := tilVirksomhetKandidat(md)
+		if !ok || k.dagligLeder == "" {
 			continue
 		}
-		v.Rolle = rolle.Name
-		tilretteleggere = append(tilretteleggere, v)
+		k.rolle = rolle.Name
+		tilretteleggere = append(tilretteleggere, k)
 	}
 	return tilretteleggere[:min(antall, len(tilretteleggere))], nil
 }

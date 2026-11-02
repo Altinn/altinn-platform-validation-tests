@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"cmp"
 	"context"
 	"fmt"
 	"io"
@@ -27,17 +26,16 @@ type personerOptions struct {
 // standardPersonKolonner er CSV-kolonnene uten --columns.
 var standardPersonKolonner = []string{"personIdentifier", "userId", "partyId", "partyUuid"}
 
-// personKolonner er kolonnene en person kan skrives ut med i CSV. Navnene er
-// feltnavnene i Register (Party).
+// personKolonner er kolonnene en person kan skrives ut med i CSV. Navnene og
+// verdiene er feltene i Register (Party).
 var personKolonner = []kolonne[parties.Person]{
-	{navn: "personIdentifier", verdi: func(p parties.Person) string { return p.Foedselsnummer }},
+	{navn: "personIdentifier", verdi: func(p parties.Person) string { return p.PersonIdentifier }},
 	{navn: "userId", verdi: func(p parties.Person) string { return brukerID(&p.Party) }},
 	{navn: "partyId", verdi: func(p parties.Person) string { return partyID(&p.Party) }},
 	{navn: "partyUuid", verdi: func(p parties.Person) string { return p.PartyUUID }},
-	// Navnene fra Register når de finnes, ellers fra Tenor.
-	{navn: "displayName", verdi: func(p parties.Person) string { return cmp.Or(p.DisplayName, p.Navn) }},
-	{navn: "lastName", verdi: func(p parties.Person) string { return cmp.Or(p.LastName, p.Etternavn) }},
-	{navn: "firstName", verdi: func(p parties.Person) string { return cmp.Or(p.FirstName, p.Fornavn) }},
+	{navn: "displayName", verdi: func(p parties.Person) string { return p.DisplayName }},
+	{navn: "lastName", verdi: func(p parties.Person) string { return p.LastName }},
+	{navn: "firstName", verdi: func(p parties.Person) string { return p.FirstName }},
 }
 
 func newPersonsCmd() *cobra.Command {
@@ -80,7 +78,7 @@ func newPersonsCmd() *cobra.Command {
 	)
 	cmd.Flags().BoolVar(
 		&opts.navn, "name", false,
-		"Skriv ut navn (fornavn etternavn) ved siden av fnr",
+		"Skriv ut navnet (displayName i Register) ved siden av fnr",
 	)
 	cmd.Flags().BoolVar(
 		&opts.jsonOutput, "json", false,
@@ -141,9 +139,9 @@ func runPersoner(ctx context.Context, c *tenor.Client, reg *register.Client, ut,
 	}
 	for _, p := range personer {
 		if opts.navn {
-			fmt.Fprintf(ut, "%s\t%s\n", p.Foedselsnummer, p.Navn)
+			fmt.Fprintf(ut, "%s\t%s\n", p.PersonIdentifier, p.DisplayName)
 		} else {
-			fmt.Fprintln(ut, p.Foedselsnummer)
+			fmt.Fprintln(ut, p.PersonIdentifier)
 		}
 	}
 	return nil

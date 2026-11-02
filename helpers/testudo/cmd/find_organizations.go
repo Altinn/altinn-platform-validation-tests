@@ -29,26 +29,22 @@ type virksomheterOptions struct {
 // standardVirksomhetKolonner er CSV-kolonnene uten --columns.
 var standardVirksomhetKolonner = []string{"organizationIdentifier", "displayName", "partyId", "partyUuid"}
 
-// virksomhetKolonner er kolonnene en virksomhet kan skrives ut med i CSV.
-// Virksomhetens egne kolonner har feltnavnene i Register (Party). ssn, userId,
-// userPartyId, userPartyUuid og lastName er daglig leder.
+// virksomhetKolonner er kolonnene en virksomhet kan skrives ut med i CSV. Alle
+// verdiene er fra Register, utenom type, som er rollen. Virksomhetens egne
+// kolonner har feltnavnene i Register (Party). ssn, userId, userPartyId,
+// userPartyUuid og lastName er daglig leder.
 var virksomhetKolonner = []kolonne[parties.Organization]{
-	{navn: "organizationIdentifier", verdi: func(v parties.Organization) string { return v.Organisasjonsnummer }},
-	{navn: "displayName", verdi: func(v parties.Organization) string { return cmp.Or(v.DisplayName, v.Navn) }},
+	{navn: "organizationIdentifier", verdi: func(v parties.Organization) string { return v.OrganizationIdentifier }},
+	{navn: "displayName", verdi: func(v parties.Organization) string { return v.DisplayName }},
 	{navn: "partyId", verdi: func(v parties.Organization) string { return partyID(&v.Party) }},
 	{navn: "partyUuid", verdi: func(v parties.Organization) string { return v.PartyUUID }},
-	{navn: "unitType", verdi: func(v parties.Organization) string { return v.Organisasjonsform }},
+	{navn: "unitType", verdi: func(v parties.Organization) string { return v.UnitType }},
 	{navn: "type", verdi: func(v parties.Organization) string { return v.Rolle }},
-	{navn: "ssn", verdi: func(v parties.Organization) string { return v.DagligLeder }},
-	{navn: "userId", verdi: func(v parties.Organization) string { return brukerID(v.DagligLederParty) }},
-	{navn: "userPartyId", verdi: func(v parties.Organization) string { return partyID(v.DagligLederParty) }},
-	{navn: "userPartyUuid", verdi: func(v parties.Organization) string { return partyUUID(v.DagligLederParty) }},
-	{navn: "lastName", verdi: func(v parties.Organization) string {
-		if v.DagligLederParty == nil {
-			return ""
-		}
-		return v.DagligLederParty.LastName
-	}},
+	{navn: "ssn", verdi: func(v parties.Organization) string { return v.DagligLederParty.PersonIdentifier }},
+	{navn: "userId", verdi: func(v parties.Organization) string { return brukerID(&v.DagligLederParty) }},
+	{navn: "userPartyId", verdi: func(v parties.Organization) string { return partyID(&v.DagligLederParty) }},
+	{navn: "userPartyUuid", verdi: func(v parties.Organization) string { return v.DagligLederParty.PartyUUID }},
+	{navn: "lastName", verdi: func(v parties.Organization) string { return v.DagligLederParty.LastName }},
 }
 
 // valider sjekker flaggene før noe hentes. kqlSatt er om --kql ble oppgitt.
@@ -197,7 +193,7 @@ func runVirksomheter(ctx context.Context, c *tenor.Client, reg *register.Client,
 // rolle når den er satt.
 func skrivVirksomheterTekst(ut io.Writer, virksomheter []parties.Organization) {
 	for _, v := range virksomheter {
-		felt := []string{v.Organisasjonsnummer, v.Navn, v.DagligLeder}
+		felt := []string{v.OrganizationIdentifier, v.DisplayName, v.DagligLederParty.PersonIdentifier}
 		if v.Rolle != "" {
 			felt = append(felt, v.Rolle)
 		}

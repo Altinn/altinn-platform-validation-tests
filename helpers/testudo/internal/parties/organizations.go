@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"io"
 	"regexp"
-	"strings"
 
 	"github.com/Altinn/altinn-platform-validation-tests/helpers/testudo/internal/register"
 	"github.com/Altinn/altinn-platform-validation-tests/helpers/testudo/internal/tenor"
@@ -16,26 +15,31 @@ import (
 // DefaultOrganizationKQL gir aksjeselskaper, som i TS-versjonen.
 const DefaultOrganizationKQL = "organisasjonsform.kode:AS"
 
-// Organization er en virksomhet fra brreg-er-fr.
+// Organization er en virksomhet fra brreg-er-fr der både virksomheten og
+// daglig leder finnes i Register for miljøet. Alt om dem er fra Register. Fra
+// Tenor er bare Kildedata, og hvem som er daglig leder.
 type Organization struct {
-	Organisasjonsnummer string `json:"organisasjonsnummer"`
-	Navn                string `json:"navn"`
-	// Organisasjonsform er koden, f.eks. AS eller ENK.
-	Organisasjonsform string `json:"organisasjonsform,omitempty"`
-	// DagligLeder er fødselsnummeret til daglig leder, eller innehaver for
-	// enkeltpersonforetak.
-	DagligLeder string `json:"dagligLeder,omitempty"`
 	// Rolle er tilretteleggerrollen når virksomheten er hentet med en rolle.
 	Rolle string `json:"rolle,omitempty"`
-	// Kildedata er hele brreg-dokumentet.
+	// Kildedata er hele brreg-dokumentet fra Tenor.
 	Kildedata json.RawMessage `json:"kildedata,omitempty"`
-	// Party er virksomheten i Register. Virksomheter som ikke finnes i Register
-	// for miljøet blir ikke med, så den er alltid satt. I JSON ligger feltene
-	// fra Register på samme nivå som feltene fra Tenor.
+	// Party er virksomheten i Register. I JSON ligger feltene på samme nivå
+	// som rolle og kildedata.
 	register.Party
-	// DagligLederParty er daglig leder i Register. Virksomheter der daglig
-	// leder ikke finnes i Register blir ikke med, så den er alltid satt.
-	DagligLederParty *register.Party `json:"dagligLederParty,omitempty"`
+	// DagligLederParty er daglig leder, eller innehaver for
+	// enkeltpersonforetak, i Register.
+	DagligLederParty register.Party `json:"dagligLederParty"`
+}
+
+// virksomhetKandidat er en virksomhet fra Tenor som ikke er slått opp i
+// Register ennå.
+type virksomhetKandidat struct {
+	organisasjonsnummer string
+	// dagligLeder er fødselsnummeret til daglig leder, eller innehaver for
+	// enkeltpersonforetak.
+	dagligLeder string
+	rolle       string
+	kildedata   json.RawMessage
 }
 
 // OrganizationQuery er hvilke virksomheter FindOrganizations henter.
@@ -66,11 +70,11 @@ func FindOrganizations(ctx context.Context, c *tenor.Client, reg *register.Clien
 		if err != nil {
 			return nil, err
 		}
-		var nye []Organization
-		for _, v := range kandidater {
-			if !sett[v.Organisasjonsnummer] {
-				sett[v.Organisasjonsnummer] = true
-				nye = append(nye, v)
+		var nye []virksomhetKandidat
+		for _, k := range kandidater {
+			if !sett[k.organisasjonsnummer] {
+				sett[k.organisasjonsnummer] = true
+				nye = append(nye, k)
 			}
 		}
 		if len(nye) == 0 {
@@ -78,23 +82,27 @@ func FindOrganizations(ctx context.Context, c *tenor.Client, reg *register.Clien
 		}
 
 		ider := make([]string, 0, 2*len(nye))
-		for _, v := range nye {
-			ider = append(ider, v.Organisasjonsnummer, v.DagligLeder)
+		for _, k := range nye {
+			ider = append(ider, k.organisasjonsnummer, k.dagligLeder)
 		}
 		parter, err := reg.LookupIdentifiers(ctx, ider, registerFelt...)
 		if err != nil {
 			return nil, err
 		}
 
-		for _, v := range nye {
-			party, funnet := parter[v.Organisasjonsnummer]
-			leder, lederFunnet := parter[v.DagligLeder]
+		for _, k := range nye {
+			party, funnet := parter[k.organisasjonsnummer]
+			leder, lederFunnet := parter[k.dagligLeder]
 			if !funnet || !lederFunnet {
 				ikkeIRegister++
 				continue
 			}
-			v.Party, v.DagligLederParty = party, &leder
-			virksomheter = append(virksomheter, v)
+			virksomheter = append(virksomheter, Organization{
+				Rolle:            k.rolle,
+				Kildedata:        k.kildedata,
+				Party:            party,
+				DagligLederParty: leder,
+			})
 			if len(virksomheter) == q.Count {
 				break
 			}
@@ -109,7 +117,7 @@ func FindOrganizations(ctx context.Context, c *tenor.Client, reg *register.Clien
 // hentForValg henter antall virksomheter fra Tenor etter q: vanlige
 // virksomheter fra KQL, eller tilretteleggere med rollen. Ingenting er slått
 // opp i Register ennå.
-func hentForValg(ctx context.Context, c *tenor.Client, q OrganizationQuery, antall int) ([]Organization, error) {
+func hentForValg(ctx context.Context, c *tenor.Client, q OrganizationQuery, antall int) ([]virksomhetKandidat, error) {
 	if q.Role == "" {
 		return hentVirksomheter(ctx, c, cmp.Or(q.KQL, DefaultOrganizationKQL), antall)
 	}
@@ -160,41 +168,37 @@ func dagligLeder(grupper []rollegruppe) string {
 	return ""
 }
 
-// hentVirksomheter henter antall unike virksomheter fra brreg-er-fr som
-// matcher kql og har daglig leder eller innehaver. Tom kql gir
+// hentVirksomheter henter antall unike kandidater fra brreg-er-fr som matcher
+// kql og har daglig leder eller innehaver. Tom kql gir
 // DefaultOrganizationKQL.
-func hentVirksomheter(ctx context.Context, c *tenor.Client, kql string, antall int) ([]Organization, error) {
+func hentVirksomheter(ctx context.Context, c *tenor.Client, kql string, antall int) ([]virksomhetKandidat, error) {
 	if kql == "" {
 		kql = DefaultOrganizationKQL
 	}
 	// Roller kan ikke søkes på i KQL, så kravet om daglig leder sjekkes her.
 	harDagligLeder := func(md tenor.Metadata) bool {
-		v, ok := tilVirksomhet(md)
-		return ok && v.DagligLeder != ""
+		k, ok := tilVirksomhetKandidat(md)
+		return ok && k.dagligLeder != ""
 	}
 	dokumenter, err := c.FetchManyFiltered(ctx, tenor.SourceBrreg, kql, antall, harDagligLeder)
 	if err != nil {
 		return nil, err
 	}
-	virksomheter := make([]Organization, 0, len(dokumenter))
+	kandidater := make([]virksomhetKandidat, 0, len(dokumenter))
 	for _, md := range dokumenter {
-		if v, ok := tilVirksomhet(md); ok {
-			virksomheter = append(virksomheter, v)
+		if k, ok := tilVirksomhetKandidat(md); ok {
+			kandidater = append(kandidater, k)
 		}
 	}
-	return virksomheter, nil
+	return kandidater, nil
 }
 
-// tilVirksomhet gjør om et brreg-dokument til en Organization. Dokumenter uten
-// gyldig organisasjonsnummer hoppes over.
-func tilVirksomhet(md tenor.Metadata) (Organization, bool) {
+// tilVirksomhetKandidat gjør om et brreg-dokument til en kandidat. Dokumenter
+// uten gyldig organisasjonsnummer hoppes over.
+func tilVirksomhetKandidat(md tenor.Metadata) (virksomhetKandidat, bool) {
 	var kildedata struct {
-		Organisasjonsnummer string `json:"organisasjonsnummer"`
-		Navn                string `json:"navn"`
-		Organisasjonsform   struct {
-			Kode string `json:"kode"`
-		} `json:"organisasjonsform"`
-		Rollegrupper []rollegruppe `json:"rollegrupper"`
+		Organisasjonsnummer string        `json:"organisasjonsnummer"`
+		Rollegrupper        []rollegruppe `json:"rollegrupper"`
 	}
 	gyldigJSON := json.Unmarshal([]byte(md.Kildedata), &kildedata) == nil
 
@@ -203,18 +207,15 @@ func tilVirksomhet(md tenor.Metadata) (Organization, bool) {
 		orgnr = kildedata.Organisasjonsnummer
 	}
 	if !organisasjonsnummerRe.MatchString(orgnr) {
-		return Organization{}, false
+		return virksomhetKandidat{}, false
 	}
 
-	v := Organization{
-		Organisasjonsnummer: orgnr,
-		// Fjerner linjeskift, så ett navn ikke blir flere linjer i utskriften.
-		Navn:              strings.Join(strings.Fields(kildedata.Navn), " "),
-		Organisasjonsform: kildedata.Organisasjonsform.Kode,
-		DagligLeder:       dagligLeder(kildedata.Rollegrupper),
+	k := virksomhetKandidat{
+		organisasjonsnummer: orgnr,
+		dagligLeder:         dagligLeder(kildedata.Rollegrupper),
 	}
 	if gyldigJSON {
-		v.Kildedata = json.RawMessage(md.Kildedata)
+		k.kildedata = json.RawMessage(md.Kildedata)
 	}
-	return v, true
+	return k, true
 }

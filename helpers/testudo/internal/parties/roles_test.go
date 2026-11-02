@@ -20,15 +20,15 @@ func TestHentTilretteleggere(t *testing.T) {
 		t.Fatal(err)
 	}
 	// Revisoren uten daglig leder er filtrert bort, og rekkefølgen er beholdt.
-	if len(v) != 2 || v[0].Organisasjonsnummer != tenortest.AuditorWithLeader || v[1].Organisasjonsnummer != tenortest.AuditorWithLeader2 {
+	if len(v) != 2 || v[0].organisasjonsnummer != tenortest.AuditorWithLeader || v[1].organisasjonsnummer != tenortest.AuditorWithLeader2 {
 		t.Fatalf("v = %+v", v)
 	}
-	if v[0].Rolle != "revisor" || v[0].DagligLeder != "10000000001" || v[0].Navn != "REVISOR EN AS" {
+	if v[0].rolle != "revisor" || v[0].dagligLeder != "10000000001" {
 		t.Errorf("første = %+v", v[0])
 	}
 
 	v, _ = hentTilretteleggere(context.Background(), c, revisor, 1)
-	if len(v) != 1 || v[0].Organisasjonsnummer != tenortest.AuditorWithLeader {
+	if len(v) != 1 || v[0].organisasjonsnummer != tenortest.AuditorWithLeader {
 		t.Errorf("med antall 1: %+v", v)
 	}
 }

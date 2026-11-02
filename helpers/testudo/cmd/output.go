@@ -166,7 +166,7 @@ func tallTekst[N ~uint32 | ~uint64](n N) string {
 	return fmt.Sprint(n)
 }
 
-// brukerID, partyID og partyUUID henter ID-er fra en part, eller tom tekst
+// brukerID og partyID henter ID-er fra en part, eller tom tekst
 // når parten eller verdien mangler.
 func brukerID(p *register.Party) string {
 	if p == nil || p.User == nil {
@@ -180,13 +180,6 @@ func partyID(p *register.Party) string {
 		return ""
 	}
 	return tallTekst(p.PartyID)
-}
-
-func partyUUID(p *register.Party) string {
-	if p == nil {
-		return ""
-	}
-	return p.PartyUUID
 }
 
 func skrivJSON(ut io.Writer, v any) error {

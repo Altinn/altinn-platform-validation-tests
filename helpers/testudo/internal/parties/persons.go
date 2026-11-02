@@ -6,27 +6,26 @@ import (
 	"fmt"
 	"io"
 	"regexp"
-	"strings"
 	"time"
 
 	"github.com/Altinn/altinn-platform-validation-tests/helpers/testudo/internal/register"
 	"github.com/Altinn/altinn-platform-validation-tests/helpers/testudo/internal/tenor"
 )
 
-// Person er en testperson fra freg med parten fra Register. Personer som ikke
-// finnes i Register for miljøet blir ikke med, så Party er alltid satt. I JSON
-// ligger feltene fra Register (partyUuid, partyId, user og så videre) på samme
-// nivå som feltene fra Tenor.
+// Person er en testperson fra freg som finnes i Register for miljøet. Alt
+// utenom Kildedata er fra Register. I JSON ligger feltene fra Register
+// (personIdentifier, partyUuid, user og så videre) på samme nivå som
+// kildedata.
 type Person struct {
-	Foedselsnummer string `json:"foedselsnummer"`
-	Fornavn        string `json:"fornavn,omitempty"`
-	Mellomnavn     string `json:"mellomnavn,omitempty"`
-	Etternavn      string `json:"etternavn,omitempty"`
-	// Navn er fornavn, mellomnavn og etternavn med mellomrom.
-	Navn string `json:"navn,omitempty"`
-	// Kildedata er hele freg-dokumentet.
+	// Kildedata er hele freg-dokumentet fra Tenor.
 	Kildedata json.RawMessage `json:"kildedata,omitempty"`
 	register.Party
+}
+
+// personKandidat er en person fra Tenor som ikke er slått opp i Register ennå.
+type personKandidat struct {
+	foedselsnummer string
+	kildedata      json.RawMessage
 }
 
 var foedselsnummerRe = regexp.MustCompile(`^\d{11}$`)
@@ -57,11 +56,11 @@ func FindPersons(ctx context.Context, c *tenor.Client, reg *register.Client, kql
 		if err != nil {
 			return nil, err
 		}
-		var nye []Person
-		for _, p := range kandidater {
-			if !sett[p.Foedselsnummer] {
-				sett[p.Foedselsnummer] = true
-				nye = append(nye, p)
+		var nye []personKandidat
+		for _, k := range kandidater {
+			if !sett[k.foedselsnummer] {
+				sett[k.foedselsnummer] = true
+				nye = append(nye, k)
 			}
 		}
 		if len(nye) == 0 {
@@ -69,21 +68,20 @@ func FindPersons(ctx context.Context, c *tenor.Client, reg *register.Client, kql
 		}
 
 		fnr := make([]string, len(nye))
-		for i, p := range nye {
-			fnr[i] = p.Foedselsnummer
+		for i, k := range nye {
+			fnr[i] = k.foedselsnummer
 		}
 		parter, err := reg.LookupIdentifiers(ctx, fnr, registerFelt...)
 		if err != nil {
 			return nil, err
 		}
-		for _, p := range nye {
-			party, ok := parter[p.Foedselsnummer]
+		for _, k := range nye {
+			party, ok := parter[k.foedselsnummer]
 			if !ok {
 				ikkeIRegister++
 				continue
 			}
-			p.Party = party
-			personer = append(personer, p)
+			personer = append(personer, Person{Kildedata: k.kildedata, Party: party})
 			if len(personer) == count {
 				break
 			}
@@ -95,9 +93,9 @@ func FindPersons(ctx context.Context, c *tenor.Client, reg *register.Client, kql
 	return personer, nil
 }
 
-// hentPersoner henter antall unike testpersoner fra freg som matcher kql, uten
-// parten fra Register. Tom kql gir DefaultPersonKQL.
-func hentPersoner(ctx context.Context, c *tenor.Client, kql string, antall int) ([]Person, error) {
+// hentPersoner henter antall unike kandidater fra freg som matcher kql. Tom
+// kql gir DefaultPersonKQL.
+func hentPersoner(ctx context.Context, c *tenor.Client, kql string, antall int) ([]personKandidat, error) {
 	if kql == "" {
 		kql = DefaultPersonKQL(time.Now())
 	}
@@ -105,45 +103,25 @@ func hentPersoner(ctx context.Context, c *tenor.Client, kql string, antall int) 
 	if err != nil {
 		return nil, err
 	}
-	personer := make([]Person, 0, len(dokumenter))
+	kandidater := make([]personKandidat, 0, len(dokumenter))
 	for _, md := range dokumenter {
-		if p, ok := tilPerson(md); ok {
-			personer = append(personer, p)
+		if k, ok := tilPersonKandidat(md); ok {
+			kandidater = append(kandidater, k)
 		}
 	}
-	return personer, nil
+	return kandidater, nil
 }
 
-// tilPerson gjør om et freg-dokument til en Person. Dokumenter uten gyldig
-// fødselsnummer hoppes over.
-func tilPerson(md tenor.Metadata) (Person, bool) {
+// tilPersonKandidat gjør om et freg-dokument til en kandidat. Dokumenter uten
+// gyldig fødselsnummer hoppes over, og kildedata som ikke er gyldig JSON tas
+// ikke med.
+func tilPersonKandidat(md tenor.Metadata) (personKandidat, bool) {
 	if !foedselsnummerRe.MatchString(md.ID) {
-		return Person{}, false
+		return personKandidat{}, false
 	}
-	p := Person{Foedselsnummer: md.ID}
-
-	var kildedata struct {
-		Navn []struct {
-			Fornavn     string `json:"fornavn"`
-			Mellomnavn  string `json:"mellomnavn"`
-			Etternavn   string `json:"etternavn"`
-			ErGjeldende bool   `json:"erGjeldende"`
-		} `json:"navn"`
+	k := personKandidat{foedselsnummer: md.ID}
+	if json.Valid([]byte(md.Kildedata)) {
+		k.kildedata = json.RawMessage(md.Kildedata)
 	}
-	if err := json.Unmarshal([]byte(md.Kildedata), &kildedata); err != nil {
-		return p, true
-	}
-	p.Kildedata = json.RawMessage(md.Kildedata)
-
-	// Bruk gjeldende navn, ellers det første.
-	for i, n := range kildedata.Navn {
-		if i == 0 || n.ErGjeldende {
-			p.Fornavn, p.Mellomnavn, p.Etternavn = n.Fornavn, n.Mellomnavn, n.Etternavn
-		}
-		if n.ErGjeldende {
-			break
-		}
-	}
-	p.Navn = strings.Join(strings.Fields(p.Fornavn+" "+p.Mellomnavn+" "+p.Etternavn), " ")
-	return p, true
+	return k, true
 }
