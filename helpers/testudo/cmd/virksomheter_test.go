@@ -171,7 +171,7 @@ func TestRunVirksomheterUtskrift(t *testing.T) {
 	})
 
 	var ut, logg bytes.Buffer
-	if err := runVirksomheter(context.Background(), c, tomtRegister(t), &ut, &logg, &virksomheterOptions{antall: 2}); err != nil {
+	if err := runVirksomheter(context.Background(), c, ekkoRegister(t), &ut, &logg, &virksomheterOptions{antall: 2}); err != nil {
 		t.Fatal(err)
 	}
 	vil := "000000001\tFIRMA 1 AS\t" + lederFnr(1) + "\n000000002\tFIRMA 2 AS\t" + lederFnr(2) + "\n"
@@ -184,7 +184,7 @@ func TestRunVirksomheterUtskrift(t *testing.T) {
 
 	ut.Reset()
 	logg.Reset()
-	if err := runVirksomheter(context.Background(), c, tomtRegister(t), &ut, &logg, &virksomheterOptions{antall: 5, jsonOutput: true}); err != nil {
+	if err := runVirksomheter(context.Background(), c, ekkoRegister(t), &ut, &logg, &virksomheterOptions{antall: 5, jsonOutput: true}); err != nil {
 		t.Fatal(err)
 	}
 	var rader []map[string]any
@@ -213,10 +213,13 @@ func TestRunVirksomheterRegister(t *testing.T) {
 		if fmt.Sprint(urns) != fmt.Sprint(vil) {
 			t.Errorf("urns = %v", urns)
 		}
-		// Virksomhet 1 og lederen til virksomhet 2 finnes.
+		// Virksomhet 1 og lederen dens finnes. For virksomhet 2 finnes bare
+		// lederen, så den blir ikke med.
 		fmt.Fprintf(w, `{"data":[
 			{"partyUuid":"o-1","partyId":601,"partyType":"organization","organizationIdentifier":"000000001"},
-			{"partyUuid":"p-2","partyId":702,"partyType":"person","personIdentifier":"%s","user":{"userId":30002}}]}`, lederFnr(2))
+			{"partyUuid":"p-1","partyId":701,"partyType":"person","personIdentifier":"%s","user":{"userId":30001}},
+			{"partyUuid":"p-2","partyId":702,"partyType":"person","personIdentifier":"%s","user":{"userId":30002}}]}`,
+			lederFnr(1), lederFnr(2))
 	})
 
 	var ut, logg bytes.Buffer
@@ -228,15 +231,19 @@ func TestRunVirksomheterRegister(t *testing.T) {
 	if err := json.Unmarshal(ut.Bytes(), &rader); err != nil {
 		t.Fatalf("ikke JSON: %v\n%s", err, ut.String())
 	}
-	foerste, andre := rader[0], rader[1]
-	if a, ok := foerste["altinn"].(map[string]any); !ok || a["partyId"] != float64(601) ||
-		foerste["dagligLederAltinn"] != nil || foerste["altinnEnvironment"] != "at22" {
-		t.Errorf("første = %v", foerste)
+	if len(rader) != 1 {
+		t.Fatalf("rader = %d", len(rader))
 	}
-	if d, ok := andre["dagligLederAltinn"].(map[string]any); !ok || d["partyId"] != float64(702) || andre["altinn"] != nil {
-		t.Errorf("andre = %v", andre)
+	v := rader[0]
+	// Virksomheten i Register ligger på samme nivå som feltene fra Tenor.
+	if v["organisasjonsnummer"] != "000000001" || v["partyId"] != float64(601) || v["partyUuid"] != "o-1" {
+		t.Errorf("virksomhet = %v", v)
 	}
-	if !strings.Contains(logg.String(), "Register (at22): 2 identifikatorer mangler") {
+	if d, ok := v["dagligLederParty"].(map[string]any); !ok || d["partyId"] != float64(701) {
+		t.Errorf("dagligLederParty = %v", v["dagligLederParty"])
+	}
+	if !strings.Contains(logg.String(), "Register (at22): 1 virksomheter fra Tenor, eller daglig leder for dem, finnes ikke") ||
+		!strings.Contains(logg.String(), "fant bare 1 av 2") {
 		t.Errorf("logg = %q", logg.String())
 	}
 

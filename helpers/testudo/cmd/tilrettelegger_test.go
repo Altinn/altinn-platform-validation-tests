@@ -41,8 +41,8 @@ const (
 	revisorMedLeder2 = "900000003"
 )
 
-// tilretteleggerServer er en falsk Tenor med tre revisorer: to med daglig
-// leder og 3 og 2 klienter, og én uten daglig leder.
+// tilretteleggerServer er en falsk Tenor med tre revisorer, funnet via
+// klientene sine: to med daglig leder og én uten.
 func tilretteleggerServer(t *testing.T) *TenorClient {
 	t.Helper()
 	tilrettelegger := map[string]map[string]any{
@@ -50,30 +50,20 @@ func tilretteleggerServer(t *testing.T) *TenorClient {
 		revisorUtenLeder: brregDok(revisorUtenLeder, "REVISOR TO AS", "", ""),
 		revisorMedLeder2: brregDok(revisorMedLeder2, "REVISOR TRE AS", "10000000003", ""),
 	}
-	klienter := map[string][]map[string]any{
-		revisorMedLeder: {
-			brregDok("100000011", "KLIENT 11 AS", "", revisorMedLeder),
-			brregDok("100000012", "KLIENT 12 AS", "", revisorMedLeder),
-			brregDok("100000013", "KLIENT 13 AS", "", revisorMedLeder),
-		},
-		revisorUtenLeder: {brregDok("100000021", "KLIENT 21 AS", "", revisorUtenLeder)},
-		revisorMedLeder2: {
-			brregDok("100000031", "KLIENT 31 AS", "", revisorMedLeder2),
-			brregDok("100000032", "KLIENT 32 AS", "", revisorMedLeder2),
-		},
+	// Klientene i rekkefølge, så kandidatene blir revisor 1, 2 og 3. Revisor 1
+	// har to klienter, for å sjekke at samme revisor bare tas med én gang.
+	klienter := []map[string]any{
+		brregDok("100000011", "KLIENT 11 AS", "", revisorMedLeder),
+		brregDok("100000012", "KLIENT 12 AS", "", revisorMedLeder),
+		brregDok("100000021", "KLIENT 21 AS", "", revisorUtenLeder),
+		brregDok("100000031", "KLIENT 31 AS", "", revisorMedLeder2),
 	}
 
 	return testClient(t, func(w http.ResponseWriter, r *http.Request) {
 		kql := r.URL.Query().Get("kql")
-		antall := r.URL.Query().Get("antall")
 		switch {
 		case kql == "revisorerOrgnr:*":
-			// Klientene i rekkefølge, så kandidatene blir revisor 1, 2 og 3.
-			var alle []map[string]any
-			for _, f := range []string{revisorMedLeder, revisorUtenLeder, revisorMedLeder2} {
-				alle = append(alle, klienter[f]...)
-			}
-			svar(w, len(alle), alle...)
+			svar(w, len(klienter), klienter...)
 		case strings.HasPrefix(kql, "organisasjonsnummer:("):
 			var docs []map[string]any
 			for _, id := range strings.Split(strings.Trim(strings.TrimPrefix(kql, "organisasjonsnummer:"), "()"), " or ") {
@@ -82,14 +72,6 @@ func tilretteleggerServer(t *testing.T) *TenorClient {
 				}
 			}
 			svar(w, len(docs), docs...)
-		case strings.HasPrefix(kql, `revisorerOrgnr:"`):
-			orgnr := strings.Trim(strings.TrimPrefix(kql, "revisorerOrgnr:"), `"`)
-			if antall == "0" {
-				svar(w, len(klienter[orgnr]))
-				return
-			}
-			// Tilretteleggeren selv er med, for å sjekke at den hoppes over.
-			svar(w, len(klienter[orgnr])+1, append([]map[string]any{tilrettelegger[orgnr]}, klienter[orgnr]...)...)
 		default:
 			t.Errorf("uventet kql %q", kql)
 		}
@@ -100,7 +82,7 @@ func TestHentTilretteleggere(t *testing.T) {
 	c := tilretteleggerServer(t)
 	revisor, _ := finnTilretteleggerRolle("revisor")
 
-	v, err := hentTilretteleggere(context.Background(), c, revisor, 5, 0, io.Discard)
+	v, err := hentTilretteleggere(context.Background(), c, revisor, 5)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -108,52 +90,13 @@ func TestHentTilretteleggere(t *testing.T) {
 	if len(v) != 2 || v[0].Organisasjonsnummer != revisorMedLeder || v[1].Organisasjonsnummer != revisorMedLeder2 {
 		t.Fatalf("v = %+v", v)
 	}
-	if v[0].Rolle != "revisor" || v[0].DagligLeder != "10000000001" || v[0].Navn != "REVISOR EN AS" || v[0].AntallKlienter != 0 {
+	if v[0].Rolle != "revisor" || v[0].DagligLeder != "10000000001" || v[0].Navn != "REVISOR EN AS" {
 		t.Errorf("første = %+v", v[0])
 	}
 
-	v, _ = hentTilretteleggere(context.Background(), c, revisor, 1, 0, io.Discard)
+	v, _ = hentTilretteleggere(context.Background(), c, revisor, 1)
 	if len(v) != 1 || v[0].Organisasjonsnummer != revisorMedLeder {
 		t.Errorf("med -n 1: %+v", v)
-	}
-}
-
-func TestHentTilretteleggereMaksKlienter(t *testing.T) {
-	c := tilretteleggerServer(t)
-	revisor, _ := finnTilretteleggerRolle("revisor")
-
-	// Begge har høyst 3 klienter: færrest først.
-	v, err := hentTilretteleggere(context.Background(), c, revisor, 5, 3, io.Discard)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if len(v) != 2 || v[0].Organisasjonsnummer != revisorMedLeder2 || v[0].AntallKlienter != 2 ||
-		v[1].Organisasjonsnummer != revisorMedLeder || v[1].AntallKlienter != 3 {
-		t.Errorf("v = %+v", v)
-	}
-
-	// Bare den med 2 klienter.
-	v, _ = hentTilretteleggere(context.Background(), c, revisor, 5, 2, io.Discard)
-	if len(v) != 1 || v[0].Organisasjonsnummer != revisorMedLeder2 {
-		t.Errorf("maks 2: %+v", v)
-	}
-
-	// Ingen har bare 1 klient.
-	_, err = hentTilretteleggere(context.Background(), c, revisor, 5, 1, io.Discard)
-	if !errors.Is(err, ErrNotFound) || !strings.Contains(err.Error(), "ingen revisor med 1–1 klienter blant 2 kandidater") {
-		t.Errorf("maks 1: err = %v", err)
-	}
-}
-
-func TestHentKlienter(t *testing.T) {
-	c := tilretteleggerServer(t)
-	revisor, _ := finnTilretteleggerRolle("revisor")
-	k, err := hentKlienter(context.Background(), c, revisor, revisorMedLeder, 5)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if len(k) != 3 || k[0].Organisasjonsnummer != "100000011" || k[0].Kildedata != nil {
-		t.Errorf("klienter = %+v", k)
 	}
 }
 
@@ -187,13 +130,10 @@ func TestValiderVirksomhetValg(t *testing.T) {
 	}{
 		{"vanlig", virksomheterOptions{antall: 1}, false, ""},
 		{"vanlig med kql", virksomheterOptions{antall: 1}, true, ""},
-		{"rolle", virksomheterOptions{antall: 1, rolle: "revisor", klienter: 5, maksKlienter: 10}, false, ""},
+		{"rolle", virksomheterOptions{antall: 1, rolle: "revisor"}, false, ""},
 		{"antall 0", virksomheterOptions{}, false, "--antall"},
 		{"ukjent rolle", virksomheterOptions{antall: 1, rolle: "advokat"}, false, "ukjent --rolle"},
 		{"rolle og kql", virksomheterOptions{antall: 1, rolle: "revisor"}, true, "kan ikke brukes sammen"},
-		{"klienter uten rolle", virksomheterOptions{antall: 1, klienter: 5}, false, "krever --rolle"},
-		{"maks uten rolle", virksomheterOptions{antall: 1, maksKlienter: 5}, false, "krever --rolle"},
-		{"for mange klienter", virksomheterOptions{antall: 1, rolle: "revisor", klienter: 201}, false, "mellom 0 og 200"},
 	}
 	for _, tt := range tests {
 		err := tt.opts.valider(tt.kqlSatt)
@@ -212,13 +152,11 @@ func TestValiderVirksomhetValg(t *testing.T) {
 func TestRunVirksomheterRolleTekst(t *testing.T) {
 	c := tilretteleggerServer(t)
 	var ut, logg bytes.Buffer
-	opts := &virksomheterOptions{antall: 1, rolle: "revisor", klienter: 2, maksKlienter: 3}
-	if err := runVirksomheter(context.Background(), c, tomtRegister(t), &ut, &logg, opts); err != nil {
+	opts := &virksomheterOptions{antall: 1, rolle: "revisor"}
+	if err := runVirksomheter(context.Background(), c, ekkoRegister(t), &ut, &logg, opts); err != nil {
 		t.Fatal(err)
 	}
-	vil := revisorMedLeder2 + "\tREVISOR TRE AS\t10000000003\trevisor\t2 klienter\n" +
-		"  klient\t100000031\tKLIENT 31 AS\n  klient\t100000032\tKLIENT 32 AS\n"
-	if ut.String() != vil {
+	if vil := revisorMedLeder + "\tREVISOR EN AS\t10000000001\trevisor\n"; ut.String() != vil {
 		t.Errorf("ut = %q", ut.String())
 	}
 	if !strings.Contains(logg.String(), "via klientene (revisorerOrgnr:*)") {
@@ -226,13 +164,11 @@ func TestRunVirksomheterRolleTekst(t *testing.T) {
 	}
 }
 
-func TestRunVirksomheterRolleRegisterCSVOgJSON(t *testing.T) {
+func TestRunVirksomheterRolleCSVOgJSON(t *testing.T) {
 	c := tilretteleggerServer(t)
-	// Klient 12 finnes ikke i Register.
 	parter := map[string]string{
 		string(OrganisasjonUrn(revisorMedLeder)): `{"partyUuid":"f-1","partyId":801,"organizationIdentifier":"` + revisorMedLeder + `"}`,
 		string(PersonUrn("10000000001")):         `{"partyUuid":"d-1","partyId":802,"personIdentifier":"10000000001"}`,
-		string(OrganisasjonUrn("100000011")):     `{"partyUuid":"k-11","partyId":811,"organizationIdentifier":"100000011"}`,
 	}
 	var antallUrns []int
 	reg := testRegisterClient(t, func(w http.ResponseWriter, r *http.Request) {
@@ -248,27 +184,20 @@ func TestRunVirksomheterRolleRegisterCSVOgJSON(t *testing.T) {
 	})
 
 	var ut, logg bytes.Buffer
-	opts := &virksomheterOptions{antall: 1, rolle: "revisor", klienter: 2, env: "at23",
-		utskrift: utskriftValg{format: "csv"}}
+	opts := &virksomheterOptions{antall: 1, rolle: "revisor", env: "at23", utskrift: utskriftValg{format: "csv"}}
 	if err := runVirksomheter(context.Background(), c, reg, &ut, &logg, opts); err != nil {
 		t.Fatal(err)
 	}
-	vil := "organizationIdentifier,displayName,partyId,partyUuid,clientOrganizationIdentifier,clientDisplayName,clientPartyId,clientPartyUuid\n" +
-		revisorMedLeder + ",REVISOR EN AS,801,f-1,100000011,KLIENT 11 AS,811,k-11\n"
-	if ut.String() != vil {
+	if vil := "organizationIdentifier,displayName,partyId,partyUuid\n" + revisorMedLeder + ",REVISOR EN AS,801,f-1\n"; ut.String() != vil {
 		t.Errorf("csv = %q", ut.String())
 	}
-	if !strings.Contains(logg.String(), "Hoppet over 1 rader") {
-		t.Errorf("logg = %q", logg.String())
-	}
-	// Tilretteleggeren, daglig leder og de to klientene i samme kall.
-	if fmt.Sprint(antallUrns) != "[4]" {
+	// Tilretteleggeren og daglig leder i samme kall.
+	if fmt.Sprint(antallUrns) != "[2]" {
 		t.Errorf("urns per kall = %v", antallUrns)
 	}
 
 	// type-kolonnen gir rollen.
 	ut.Reset()
-	opts.klienter = 0
 	opts.utskrift.kolonner = "partyUuid,organizationIdentifier,type"
 	if err := runVirksomheter(context.Background(), c, reg, &ut, &logg, opts); err != nil {
 		t.Fatal(err)
@@ -277,26 +206,24 @@ func TestRunVirksomheterRolleRegisterCSVOgJSON(t *testing.T) {
 		t.Errorf("csv med type = %q", ut.String())
 	}
 
-	// JSON: klientene har altinn, og klienten som mangler har null.
+	// JSON: feltene fra Register på samme nivå, og daglig leder for seg.
 	ut.Reset()
-	opts.klienter = 2
 	opts.utskrift = utskriftValg{}
 	opts.jsonOutput = true
 	if err := runVirksomheter(context.Background(), c, reg, &ut, &logg, opts); err != nil {
 		t.Fatal(err)
 	}
-	var rader []struct {
-		Rolle    string `json:"rolle"`
-		Klienter []struct {
-			Organisasjonsnummer string          `json:"organisasjonsnummer"`
-			Altinn              json.RawMessage `json:"altinn"`
-		} `json:"klienter"`
-	}
+	var rader []map[string]any
 	if err := json.Unmarshal(ut.Bytes(), &rader); err != nil {
 		t.Fatalf("ikke JSON: %v\n%s", err, ut.String())
 	}
-	if len(rader) != 1 || rader[0].Rolle != "revisor" || len(rader[0].Klienter) != 2 ||
-		!strings.Contains(string(rader[0].Klienter[0].Altinn), `"k-11"`) || string(rader[0].Klienter[1].Altinn) != "null" {
-		t.Errorf("json = %s", ut.String())
+	if len(rader) != 1 || rader[0]["rolle"] != "revisor" || rader[0]["partyUuid"] != "f-1" {
+		t.Fatalf("json = %s", ut.String())
+	}
+	if d, ok := rader[0]["dagligLederParty"].(map[string]any); !ok || d["partyUuid"] != "d-1" {
+		t.Errorf("dagligLederParty = %v", rader[0]["dagligLederParty"])
+	}
+	if _, finnes := rader[0]["klienter"]; finnes {
+		t.Errorf("klienter skal ikke finnes: %v", rader[0])
 	}
 }

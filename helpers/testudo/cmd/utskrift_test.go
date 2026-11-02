@@ -137,14 +137,17 @@ func TestPersonerCSV(t *testing.T) {
 	if ut.String() != "personIdentifier,userId,partyId,partyUuid\n00000000001,20001,501,u-1\n" {
 		t.Errorf("csv = %q", ut.String())
 	}
-	if !strings.Contains(logg.String(), "Hoppet over 2 personer") {
+	// Person 3 er byttet ut fordi den ikke finnes i Register, og person 2 er
+	// hoppet over i CSV fordi den mangler bruker.
+	if !strings.Contains(logg.String(), "1 personer fra Tenor finnes ikke") ||
+		!strings.Contains(logg.String(), "Hoppet over 1 personer") {
 		t.Errorf("logg = %q", logg.String())
 	}
 
-	// Personer som ikke finnes i Register får navnet fra Tenor.
+	// Uten navn i Register brukes navnet fra Tenor.
 	ut.Reset()
 	opts = &personerOptions{antall: 3, utskrift: utskriftValg{format: "csv", kolonner: "personIdentifier,firstName,lastName"}}
-	if err := runPersoner(context.Background(), tenor, tomtRegister(t), &ut, &logg, opts); err != nil {
+	if err := runPersoner(context.Background(), tenor, ekkoRegister(t), &ut, &logg, opts); err != nil {
 		t.Fatal(err)
 	}
 	if !strings.HasPrefix(ut.String(), "personIdentifier,firstName,lastName\n00000000001,Person,1\n") {
@@ -168,12 +171,16 @@ func TestVirksomheterCSV(t *testing.T) {
 	if err := runVirksomheter(context.Background(), tenor, reg, &ut, &logg, opts); err != nil {
 		t.Fatal(err)
 	}
-	vil := "organizationIdentifier,displayName,partyId,partyUuid\n000000001,FIRMA 1 AS,601,o-1\n000000002,FIRMA 2 AS,602,o-2\n"
+	// Virksomhet 2 er ikke med, fordi daglig leder ikke finnes i Register.
+	vil := "organizationIdentifier,displayName,partyId,partyUuid\n000000001,FIRMA 1 AS,601,o-1\n"
 	if ut.String() != vil {
 		t.Errorf("csv = %q", ut.String())
 	}
+	if !strings.Contains(logg.String(), "1 virksomheter fra Tenor, eller daglig leder for dem, finnes ikke") {
+		t.Errorf("logg = %q", logg.String())
+	}
 
-	// Hele den kanoniske raden: virksomhet 2 mangler daglig leder i Register.
+	// Hele den kanoniske raden.
 	ut.Reset()
 	logg.Reset()
 	opts.utskrift.kolonner = "organizationIdentifier,partyId,partyUuid,ssn,userId,userPartyId,userPartyUuid,lastName"
@@ -184,20 +191,5 @@ func TestVirksomheterCSV(t *testing.T) {
 		"000000001,601,o-1," + lederFnr(1) + ",30001,701,p-1,LEDER\n"
 	if ut.String() != vil {
 		t.Errorf("csv = %q", ut.String())
-	}
-	if !strings.Contains(logg.String(), "Hoppet over 1 rader") {
-		t.Errorf("logg = %q", logg.String())
-	}
-}
-
-func TestVisningsnavn(t *testing.T) {
-	if got := visningsnavn(&Party{DisplayName: "FRA REGISTER"}, "FRA TENOR"); got != "FRA REGISTER" {
-		t.Errorf("med Register: %q", got)
-	}
-	if got := visningsnavn(&Party{}, "FRA TENOR"); got != "FRA TENOR" {
-		t.Errorf("Register uten displayName: %q", got)
-	}
-	if got := visningsnavn(nil, "FRA TENOR"); got != "FRA TENOR" {
-		t.Errorf("uten Register: %q", got)
 	}
 }

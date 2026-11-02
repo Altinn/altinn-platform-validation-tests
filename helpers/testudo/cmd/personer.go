@@ -4,6 +4,7 @@ Copyright © 2026 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
+	"cmp"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -29,25 +30,15 @@ var standardPersonKolonner = []string{"personIdentifier", "userId", "partyId", "
 
 // personKolonner er kolonnene en person kan skrives ut med i CSV. Navnene er
 // feltnavnene i Register (Party).
-var personKolonner = []kolonne[PersonMedAltinn]{
-	{navn: "personIdentifier", verdi: func(p PersonMedAltinn) string { return p.Foedselsnummer }},
-	{navn: "userId", verdi: func(p PersonMedAltinn) string { return brukerID(p.Altinn) }},
-	{navn: "partyId", verdi: func(p PersonMedAltinn) string { return partyID(p.Altinn) }},
-	{navn: "partyUuid", verdi: func(p PersonMedAltinn) string { return partyUUID(p.Altinn) }},
-	{navn: "displayName", verdi: func(p PersonMedAltinn) string { return visningsnavn(p.Altinn, p.Navn) }},
-	// Etternavnet fra Register når det finnes, ellers fra Tenor.
-	{navn: "lastName", verdi: func(p PersonMedAltinn) string {
-		if p.Altinn != nil && p.Altinn.LastName != "" {
-			return p.Altinn.LastName
-		}
-		return p.Etternavn
-	}},
-	{navn: "firstName", verdi: func(p PersonMedAltinn) string {
-		if p.Altinn != nil && p.Altinn.FirstName != "" {
-			return p.Altinn.FirstName
-		}
-		return p.Fornavn
-	}},
+var personKolonner = []kolonne[Person]{
+	{navn: "personIdentifier", verdi: func(p Person) string { return p.Foedselsnummer }},
+	{navn: "userId", verdi: func(p Person) string { return brukerID(&p.Party) }},
+	{navn: "partyId", verdi: func(p Person) string { return partyID(&p.Party) }},
+	{navn: "partyUuid", verdi: func(p Person) string { return p.PartyUUID }},
+	// Navnene fra Register når de finnes, ellers fra Tenor.
+	{navn: "displayName", verdi: func(p Person) string { return cmp.Or(p.DisplayName, p.Navn) }},
+	{navn: "lastName", verdi: func(p Person) string { return cmp.Or(p.LastName, p.Etternavn) }},
+	{navn: "firstName", verdi: func(p Person) string { return cmp.Or(p.FirstName, p.Fornavn) }},
 }
 
 func newPersonerCmd() *cobra.Command {
@@ -105,7 +96,10 @@ func newPersonerCmd() *cobra.Command {
 	return cmd
 }
 
-// Person er en testperson fra freg.
+// Person er en testperson fra freg med parten fra Register. Personer som ikke
+// finnes i Register for miljøet blir ikke med, så Party er alltid satt. I JSON
+// ligger feltene fra Register (partyUuid, partyId, user og så videre) på samme
+// nivå som feltene fra Tenor.
 type Person struct {
 	Foedselsnummer string `json:"foedselsnummer"`
 	Fornavn        string `json:"fornavn,omitempty"`
@@ -115,12 +109,17 @@ type Person struct {
 	Navn string `json:"navn,omitempty"`
 	// Kildedata er hele freg-dokumentet.
 	Kildedata json.RawMessage `json:"kildedata,omitempty"`
+	Party
 }
 
 var foedselsnummerRe = regexp.MustCompile(`^\d{11}$`)
 
-// hentPersoner henter antall unike testpersoner fra freg som matcher kql.
-// Tom kql gir bosatte, myndige personer.
+// maksRegisterRunder er hvor mange ganger det hentes nye kandidater fra Tenor
+// når noen ikke finnes i Register.
+const maksRegisterRunder = 5
+
+// hentPersoner henter antall unike testpersoner fra freg som matcher kql, uten
+// parten fra Register. Tom kql gir bosatte, myndige personer.
 func hentPersoner(ctx context.Context, c *TenorClient, kql string, antall int) ([]Person, error) {
 	if kql == "" {
 		kql = BosattMyndigKQL(time.Now())
@@ -134,6 +133,56 @@ func hentPersoner(ctx context.Context, c *TenorClient, kql string, antall int) (
 		if p, ok := tilPerson(md); ok {
 			personer = append(personer, p)
 		}
+	}
+	return personer, nil
+}
+
+// hentPersonerMedRegister henter antall personer som finnes både i Tenor og i
+// Register for miljoe. Personer som ikke finnes i Register byttes ut med nye
+// fra Tenor, i opptil maksRegisterRunder runder.
+func hentPersonerMedRegister(ctx context.Context, c *TenorClient, reg *RegisterClient, kql string, antall int, miljoe string, logg io.Writer) ([]Person, error) {
+	sett := map[string]bool{}
+	personer := make([]Person, 0, antall)
+	ikkeIRegister := 0
+	for runde := 0; runde < maksRegisterRunder && len(personer) < antall; runde++ {
+		kandidater, err := hentPersoner(ctx, c, kql, antall-len(personer))
+		if err != nil {
+			return nil, err
+		}
+		var nye []Person
+		for _, p := range kandidater {
+			if !sett[p.Foedselsnummer] {
+				sett[p.Foedselsnummer] = true
+				nye = append(nye, p)
+			}
+		}
+		if len(nye) == 0 {
+			break
+		}
+
+		fnr := make([]string, len(nye))
+		for i, p := range nye {
+			fnr[i] = p.Foedselsnummer
+		}
+		parter, err := reg.SlaaOppIdentifikatorer(ctx, fnr, registerFelt...)
+		if err != nil {
+			return nil, err
+		}
+		for _, p := range nye {
+			party, ok := parter[p.Foedselsnummer]
+			if !ok {
+				ikkeIRegister++
+				continue
+			}
+			p.Party = party
+			personer = append(personer, p)
+			if len(personer) == antall {
+				break
+			}
+		}
+	}
+	if ikkeIRegister > 0 {
+		fmt.Fprintf(logg, "Register (%s): %d personer fra Tenor finnes ikke og er byttet ut.\n", miljoe, ikkeIRegister)
 	}
 	return personer, nil
 }
@@ -172,24 +221,16 @@ func tilPerson(md TenorMetadata) (Person, bool) {
 	return p, true
 }
 
-// PersonMedAltinn er en person fra Tenor med parten fra Register. Altinn er
-// null når personen ikke finnes i miljøet.
-type PersonMedAltinn struct {
-	Person
-	Altinn            *Party `json:"altinn"`
-	AltinnEnvironment string `json:"altinnEnvironment"`
-}
-
 // runPersoner skriver personene til ut og meldinger til logg, som i
 // TS-versjonen: fnr per linje, fnr og navn med --navn, eller JSON med --json.
-// Hver person får parten fra Register (reg). Med --format csv skrives de
-// valgte kolonnene.
+// Bare personer som finnes i Register (reg) blir med. Med --format csv skrives
+// de valgte kolonnene.
 func runPersoner(ctx context.Context, c *TenorClient, reg *RegisterClient, ut, logg io.Writer, opts *personerOptions) error {
 	if reg == nil {
 		return fmt.Errorf("%w: mangler Register-klient", ErrInvalid)
 	}
 	format := opts.utskrift.effektivtFormat(opts.jsonOutput)
-	var kolonner []kolonne[PersonMedAltinn]
+	var kolonner []kolonne[Person]
 	if format == formatCSV {
 		var err error
 		if kolonner, err = velgKolonner(personKolonner, opts.utskrift.kolonner, standardPersonKolonner); err != nil {
@@ -203,42 +244,26 @@ func runPersoner(ctx context.Context, c *TenorClient, reg *RegisterClient, ut, l
 	}
 	fmt.Fprintf(logg, "Henter %d person(er) fra Tenor med KQL: %s\n", opts.antall, kql)
 
-	personer, err := hentPersoner(ctx, c, kql, opts.antall)
+	personer, err := hentPersonerMedRegister(ctx, c, reg, kql, opts.antall, opts.env, logg)
 	if err != nil {
 		return err
 	}
 	if len(personer) == 0 {
-		return fmt.Errorf("%w: ingen treff", ErrNotFound)
+		return fmt.Errorf("%w: ingen treff som finnes i Register for %s", ErrNotFound, opts.env)
 	}
 	if len(personer) < opts.antall {
 		fmt.Fprintf(logg, "Advarsel: fant bare %d av %d ønskede personer.\n", len(personer), opts.antall)
 	}
 
-	fnr := make([]string, len(personer))
-	for i, p := range personer {
-		fnr[i] = p.Foedselsnummer
-	}
-	parter, err := slaaOppIRegister(ctx, reg, fnr, opts.env, logg)
-	if err != nil {
-		return err
-	}
-	rader := make([]PersonMedAltinn, len(personer))
-	for i, p := range personer {
-		rader[i] = PersonMedAltinn{Person: p, AltinnEnvironment: opts.env}
-		if party, ok := parter[p.Foedselsnummer]; ok {
-			rader[i].Altinn = &party
-		}
-	}
-
 	switch format {
 	case formatCSV:
-		hoppetOver, err := skrivCSV(ut, rader, kolonner)
+		hoppetOver, err := skrivCSV(ut, personer, kolonner)
 		if hoppetOver > 0 {
-			fmt.Fprintf(logg, "Hoppet over %d personer som mangler verdier (f.eks. ikke i Register eller uten bruker).\n", hoppetOver)
+			fmt.Fprintf(logg, "Hoppet over %d personer som mangler verdier (f.eks. uten bruker).\n", hoppetOver)
 		}
 		return err
 	case formatJSON:
-		return skrivJSON(ut, rader)
+		return skrivJSON(ut, personer)
 	}
 	for _, p := range personer {
 		if opts.navn {

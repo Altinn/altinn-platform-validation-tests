@@ -4,6 +4,7 @@ Copyright © 2026 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
+	"cmp"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -21,82 +22,33 @@ type virksomheterOptions struct {
 	env        string
 	// rolle er revisor, regnskapsfoerer eller forretningsfoerer. Tom betyr
 	// vanlige virksomheter fra kql.
-	rolle string
-	// klienter er hvor mange klienter som tas med per tilrettelegger.
-	klienter int
-	// maksKlienter gir bare tilretteleggere med 1 til maksKlienter klienter.
-	maksKlienter int
-	utskrift     utskriftValg
+	rolle    string
+	utskrift utskriftValg
 }
 
 // standardVirksomhetKolonner er CSV-kolonnene uten --kolonner.
 var standardVirksomhetKolonner = []string{"organizationIdentifier", "displayName", "partyId", "partyUuid"}
 
-// standardKlientKolonner legges til standardkolonnene med --klienter.
-var standardKlientKolonner = []string{"clientOrganizationIdentifier", "clientDisplayName", "clientPartyId", "clientPartyUuid"}
-
-// virksomhetRad er én rad i CSV: en virksomhet, og med --klienter én av
-// klientene, så hver kombinasjon blir en egen rad.
-type virksomhetRad struct {
-	VirksomhetMedAltinn
-	Klient *KlientMedAltinn
-}
-
 // virksomhetKolonner er kolonnene en virksomhet kan skrives ut med i CSV.
 // Virksomhetens egne kolonner har feltnavnene i Register (Party). ssn, userId,
-// userPartyId, userPartyUuid og lastName er daglig leder, og client* er
-// klienten.
-var virksomhetKolonner = []kolonne[virksomhetRad]{
-	{navn: "organizationIdentifier", verdi: func(r virksomhetRad) string { return r.Organisasjonsnummer }},
-	{navn: "displayName", verdi: func(r virksomhetRad) string { return visningsnavn(r.Altinn, r.Navn) }},
-	{navn: "partyId", verdi: func(r virksomhetRad) string { return partyID(r.Altinn) }},
-	{navn: "partyUuid", verdi: func(r virksomhetRad) string { return partyUUID(r.Altinn) }},
-	{navn: "unitType", verdi: func(r virksomhetRad) string { return r.Organisasjonsform }},
-	{navn: "type", verdi: func(r virksomhetRad) string { return r.Rolle }},
-	{navn: "clientCount", verdi: func(r virksomhetRad) string { return tallTekst(uint64(r.AntallKlienter)) }},
-	{navn: "ssn", verdi: func(r virksomhetRad) string { return r.DagligLeder }},
-	{navn: "userId", verdi: func(r virksomhetRad) string { return brukerID(r.DagligLederAltinn) }},
-	{navn: "userPartyId", verdi: func(r virksomhetRad) string { return partyID(r.DagligLederAltinn) }},
-	{navn: "userPartyUuid", verdi: func(r virksomhetRad) string { return partyUUID(r.DagligLederAltinn) }},
-	{navn: "lastName", verdi: func(r virksomhetRad) string {
-		if r.DagligLederAltinn == nil {
+// userPartyId, userPartyUuid og lastName er daglig leder.
+var virksomhetKolonner = []kolonne[Virksomhet]{
+	{navn: "organizationIdentifier", verdi: func(v Virksomhet) string { return v.Organisasjonsnummer }},
+	{navn: "displayName", verdi: func(v Virksomhet) string { return cmp.Or(v.DisplayName, v.Navn) }},
+	{navn: "partyId", verdi: func(v Virksomhet) string { return partyID(&v.Party) }},
+	{navn: "partyUuid", verdi: func(v Virksomhet) string { return v.PartyUUID }},
+	{navn: "unitType", verdi: func(v Virksomhet) string { return v.Organisasjonsform }},
+	{navn: "type", verdi: func(v Virksomhet) string { return v.Rolle }},
+	{navn: "ssn", verdi: func(v Virksomhet) string { return v.DagligLeder }},
+	{navn: "userId", verdi: func(v Virksomhet) string { return brukerID(v.DagligLederParty) }},
+	{navn: "userPartyId", verdi: func(v Virksomhet) string { return partyID(v.DagligLederParty) }},
+	{navn: "userPartyUuid", verdi: func(v Virksomhet) string { return partyUUID(v.DagligLederParty) }},
+	{navn: "lastName", verdi: func(v Virksomhet) string {
+		if v.DagligLederParty == nil {
 			return ""
 		}
-		return r.DagligLederAltinn.LastName
+		return v.DagligLederParty.LastName
 	}},
-	{navn: "clientOrganizationIdentifier", verdi: func(r virksomhetRad) string {
-		if r.Klient == nil {
-			return ""
-		}
-		return r.Klient.Organisasjonsnummer
-	}},
-	{navn: "clientDisplayName", verdi: func(r virksomhetRad) string {
-		if r.Klient == nil {
-			return ""
-		}
-		return visningsnavn(r.Klient.Altinn, r.Klient.Navn)
-	}},
-	{navn: "clientPartyId", verdi: func(r virksomhetRad) string {
-		if r.Klient == nil {
-			return ""
-		}
-		return partyID(r.Klient.Altinn)
-	}},
-	{navn: "clientPartyUuid", verdi: func(r virksomhetRad) string {
-		if r.Klient == nil {
-			return ""
-		}
-		return partyUUID(r.Klient.Altinn)
-	}},
-}
-
-// standardKolonner er CSV-kolonnene uten --kolonner, med klientkolonnene når
-// klienter tas med.
-func (o *virksomheterOptions) standardKolonner() []string {
-	if o.klienter > 0 {
-		return append(append([]string{}, standardVirksomhetKolonner...), standardKlientKolonner...)
-	}
-	return standardVirksomhetKolonner
 }
 
 // valider sjekker flaggene før noe hentes. kqlSatt er om --kql ble oppgitt.
@@ -105,9 +57,6 @@ func (o *virksomheterOptions) valider(kqlSatt bool) error {
 		return fmt.Errorf("%w: --antall må være minst 1", ErrInvalid)
 	}
 	if o.rolle == "" {
-		if o.klienter != 0 || o.maksKlienter != 0 {
-			return fmt.Errorf("%w: --klienter og --maks-klienter krever --rolle", ErrInvalid)
-		}
 		return nil
 	}
 	if _, err := finnTilretteleggerRolle(o.rolle); err != nil {
@@ -115,12 +64,6 @@ func (o *virksomheterOptions) valider(kqlSatt bool) error {
 	}
 	if kqlSatt {
 		return fmt.Errorf("%w: --kql og --rolle kan ikke brukes sammen", ErrInvalid)
-	}
-	if o.klienter < 0 || o.klienter > TenorMaksPerSide {
-		return fmt.Errorf("%w: --klienter må være mellom 0 og %d", ErrInvalid, TenorMaksPerSide)
-	}
-	if o.maksKlienter < 0 {
-		return fmt.Errorf("%w: --maks-klienter kan ikke være negativ", ErrInvalid)
 	}
 	return nil
 }
@@ -134,16 +77,14 @@ func newVirksomheterCmd() *cobra.Command {
 		Long: `Hent virksomheter med daglig leder eller innehaver fra Tenor.
 
 Uten --rolle hentes aksjeselskaper. Med --rolle hentes revisorer,
-regnskapsførere eller forretningsførere, valgfritt med klientene sine.`,
+regnskapsførere eller forretningsførere.`,
 		Example: `  testudo tenor virksomheter -n 10
-  testudo tenor virksomheter --rolle regnskapsfoerer -n 5 --format csv
-  testudo tenor virksomheter --rolle revisor -n 1 --klienter 5
-  testudo tenor virksomheter --rolle revisor -n 1 --maks-klienter 10 --klienter 10`,
+  testudo tenor virksomheter --rolle regnskapsfoerer -n 5 --format csv`,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			if err := opts.valider(cmd.Flags().Changed("kql")); err != nil {
 				return err
 			}
-			if err := validerUtskrift(opts.utskrift, opts.jsonOutput, virksomhetKolonner, opts.standardKolonner()); err != nil {
+			if err := validerUtskrift(opts.utskrift, opts.jsonOutput, virksomhetKolonner, standardVirksomhetKolonner); err != nil {
 				return err
 			}
 			// Register settes opp før Tenor, så feil i konfigurasjonen kommer
@@ -170,14 +111,6 @@ regnskapsførere eller forretningsførere, valgfritt med klientene sine.`,
 	cmd.Flags().StringVarP(
 		&opts.rolle, "rolle", "r", "",
 		"Hent tilretteleggere: "+rolleNavn(),
-	)
-	cmd.Flags().IntVar(
-		&opts.klienter, "klienter", 0,
-		"Ta med opptil så mange klienter per tilrettelegger (krever --rolle)",
-	)
-	cmd.Flags().IntVar(
-		&opts.maksKlienter, "maks-klienter", 0,
-		"Bare tilretteleggere med 1 til så mange klienter, færrest først (krever --rolle)",
 	)
 	cmd.Flags().StringVar(
 		&opts.kql, "kql", standardVirksomhetKQL,
@@ -207,34 +140,18 @@ type Virksomhet struct {
 	Organisasjonsform string `json:"organisasjonsform,omitempty"`
 	// DagligLeder er fødselsnummeret til daglig leder, eller innehaver for
 	// enkeltpersonforetak.
-	DagligLeder string `json:"dagligLeder"`
+	DagligLeder string `json:"dagligLeder,omitempty"`
 	// Rolle er tilretteleggerrollen med --rolle.
 	Rolle string `json:"rolle,omitempty"`
-	// AntallKlienter er satt med --maks-klienter.
-	AntallKlienter int64 `json:"antallKlienter,omitempty"`
-	// Klienter er satt med --klienter.
-	Klienter []Virksomhet `json:"klienter,omitempty"`
 	// Kildedata er hele brreg-dokumentet.
 	Kildedata json.RawMessage `json:"kildedata,omitempty"`
-}
-
-// VirksomhetMedAltinn er en virksomhet fra Tenor med parten fra Register.
-// Altinn er null når virksomheten ikke finnes i miljøet.
-type VirksomhetMedAltinn struct {
-	Virksomhet
-	Altinn            *Party `json:"altinn"`
-	AltinnEnvironment string `json:"altinnEnvironment"`
-	// DagligLederAltinn er parten til daglig leder, eller null.
-	DagligLederAltinn *Party `json:"dagligLederAltinn"`
-	// Klienter erstatter Virksomhet.Klienter i JSON, siden et felt på dette
-	// nivået går foran et felt med samme navn i den innebygde structen.
-	Klienter []KlientMedAltinn `json:"klienter,omitempty"`
-}
-
-// KlientMedAltinn er en klient fra Tenor med parten fra Register.
-type KlientMedAltinn struct {
-	Virksomhet
-	Altinn *Party `json:"altinn"`
+	// Party er virksomheten i Register. Virksomheter som ikke finnes i Register
+	// for miljøet blir ikke med, så den er alltid satt. I JSON ligger feltene
+	// fra Register på samme nivå som feltene fra Tenor.
+	Party
+	// DagligLederParty er daglig leder i Register. Virksomheter der daglig
+	// leder ikke finnes i Register blir ikke med, så den er alltid satt.
+	DagligLederParty *Party `json:"dagligLederParty,omitempty"`
 }
 
 var organisasjonsnummerRe = regexp.MustCompile(`^\d{9}$`)
@@ -338,52 +255,54 @@ func tilVirksomhet(md TenorMetadata) (Virksomhet, bool) {
 
 // runVirksomheter skriver virksomhetene til ut og meldinger til logg: orgnr,
 // navn og daglig leder per linje, eller JSON med --json. Med --rolle hentes
-// tilretteleggere i stedet, valgfritt med klienter. Hver virksomhet, daglig
-// leder og klient får parten fra Register (reg). Med --format csv skrives de
-// valgte kolonnene, én rad per klient med --klienter.
+// tilretteleggere i stedet. Hver virksomhet og daglig leder får parten fra
+// Register (reg). Med --format csv skrives de valgte kolonnene.
 func runVirksomheter(ctx context.Context, c *TenorClient, reg *RegisterClient, ut, logg io.Writer, opts *virksomheterOptions) error {
 	if reg == nil {
 		return fmt.Errorf("%w: mangler Register-klient", ErrInvalid)
 	}
 	format := opts.utskrift.effektivtFormat(opts.jsonOutput)
-	var kolonner []kolonne[virksomhetRad]
+	var kolonner []kolonne[Virksomhet]
 	if format == formatCSV {
 		var err error
-		if kolonner, err = velgKolonner(virksomhetKolonner, opts.utskrift.kolonner, opts.standardKolonner()); err != nil {
+		if kolonner, err = velgKolonner(virksomhetKolonner, opts.utskrift.kolonner, standardVirksomhetKolonner); err != nil {
 			return err
 		}
 	}
 
-	virksomheter, err := hentForValg(ctx, c, logg, opts)
+	if opts.rolle == "" {
+		kql := cmp.Or(opts.kql, standardVirksomhetKQL)
+		fmt.Fprintf(logg, "Henter %d virksomheter fra Tenor med KQL: %s\n", opts.antall, kql)
+	} else {
+		rolle, err := finnTilretteleggerRolle(opts.rolle)
+		if err != nil {
+			return err
+		}
+		fmt.Fprintf(logg, "Henter %d %s-virksomheter fra Tenor via klientene (%s)\n", opts.antall, rolle.navn, Finnes(rolle.felt))
+	}
+
+	virksomheter, err := hentVirksomheterMedRegister(ctx, c, reg, logg, opts)
 	if err != nil {
 		return err
 	}
 	if len(virksomheter) == 0 {
-		return fmt.Errorf("%w: ingen treff", ErrNotFound)
+		return fmt.Errorf("%w: ingen treff som finnes i Register for %s", ErrNotFound, opts.env)
 	}
 	if len(virksomheter) < opts.antall {
 		fmt.Fprintf(logg, "Advarsel: fant bare %d av %d ønskede virksomheter.\n", len(virksomheter), opts.antall)
 	}
 
-	rader := make([]VirksomhetMedAltinn, len(virksomheter))
-	for i, v := range virksomheter {
-		rader[i] = VirksomhetMedAltinn{Virksomhet: v}
-	}
-	if err := berikVirksomheter(ctx, reg, rader, opts.env, logg); err != nil {
-		return err
-	}
-
 	switch format {
 	case formatCSV:
-		hoppetOver, err := skrivCSV(ut, csvRader(rader, opts.klienter > 0), kolonner)
+		hoppetOver, err := skrivCSV(ut, virksomheter, kolonner)
 		if hoppetOver > 0 {
-			fmt.Fprintf(logg, "Hoppet over %d rader som mangler verdier (f.eks. ikke i Register).\n", hoppetOver)
+			fmt.Fprintf(logg, "Hoppet over %d rader som mangler verdier (f.eks. daglig leder uten bruker).\n", hoppetOver)
 		}
 		if err != nil {
 			return err
 		}
 	case formatJSON:
-		if err := skrivJSON(ut, rader); err != nil {
+		if err := skrivJSON(ut, virksomheter); err != nil {
 			return err
 		}
 	default:
@@ -393,100 +312,83 @@ func runVirksomheter(ctx context.Context, c *TenorClient, reg *RegisterClient, u
 	return nil
 }
 
-// hentForValg henter virksomhetene etter flaggene: vanlige virksomheter fra
-// kql, eller tilretteleggere med --rolle, med klienter med --klienter.
-func hentForValg(ctx context.Context, c *TenorClient, logg io.Writer, opts *virksomheterOptions) ([]Virksomhet, error) {
+// hentForValg henter antall virksomheter fra Tenor etter flaggene: vanlige
+// virksomheter fra kql, eller tilretteleggere med --rolle. Ingenting er slått
+// opp i Register ennå.
+func hentForValg(ctx context.Context, c *TenorClient, logg io.Writer, opts *virksomheterOptions, antall int) ([]Virksomhet, error) {
 	if opts.rolle == "" {
-		kql := opts.kql
-		if kql == "" {
-			kql = standardVirksomhetKQL
-		}
-		fmt.Fprintf(logg, "Henter %d virksomheter fra Tenor med KQL: %s\n", opts.antall, kql)
-		return hentVirksomheter(ctx, c, kql, opts.antall)
+		return hentVirksomheter(ctx, c, cmp.Or(opts.kql, standardVirksomhetKQL), antall)
 	}
 
 	rolle, err := finnTilretteleggerRolle(opts.rolle)
 	if err != nil {
 		return nil, err
 	}
-	fmt.Fprintf(logg, "Henter %d %s-virksomheter fra Tenor via klientene (%s)\n", opts.antall, rolle.navn, Finnes(rolle.felt))
-	virksomheter, err := hentTilretteleggere(ctx, c, rolle, opts.antall, opts.maksKlienter, logg)
-	if err != nil {
-		return nil, err
-	}
-	if opts.klienter > 0 {
-		for i := range virksomheter {
-			if virksomheter[i].Klienter, err = hentKlienter(ctx, c, rolle, virksomheter[i].Organisasjonsnummer, opts.klienter); err != nil {
-				return nil, err
+	return hentTilretteleggere(ctx, c, rolle, antall)
+}
+
+// hentVirksomheterMedRegister henter opts.antall virksomheter der både
+// virksomheten og daglig leder finnes i Register for opts.env. Andre byttes ut
+// med nye fra Tenor, i opptil maksRegisterRunder runder. Virksomhetene og
+// daglige ledere i en runde slås opp i samme kall.
+func hentVirksomheterMedRegister(ctx context.Context, c *TenorClient, reg *RegisterClient, logg io.Writer, opts *virksomheterOptions) ([]Virksomhet, error) {
+	sett := map[string]bool{}
+	virksomheter := make([]Virksomhet, 0, opts.antall)
+	ikkeIRegister := 0
+	for runde := 0; runde < maksRegisterRunder && len(virksomheter) < opts.antall; runde++ {
+		kandidater, err := hentForValg(ctx, c, logg, opts, opts.antall-len(virksomheter))
+		if err != nil {
+			return nil, err
+		}
+		var nye []Virksomhet
+		for _, v := range kandidater {
+			if !sett[v.Organisasjonsnummer] {
+				sett[v.Organisasjonsnummer] = true
+				nye = append(nye, v)
 			}
 		}
+		if len(nye) == 0 {
+			break
+		}
+
+		ider := make([]string, 0, 2*len(nye))
+		for _, v := range nye {
+			ider = append(ider, v.Organisasjonsnummer, v.DagligLeder)
+		}
+		parter, err := reg.SlaaOppIdentifikatorer(ctx, ider, registerFelt...)
+		if err != nil {
+			return nil, err
+		}
+
+		for _, v := range nye {
+			party, funnet := parter[v.Organisasjonsnummer]
+			leder, lederFunnet := parter[v.DagligLeder]
+			if !funnet || !lederFunnet {
+				ikkeIRegister++
+				continue
+			}
+			v.Party, v.DagligLederParty = party, &leder
+			virksomheter = append(virksomheter, v)
+			if len(virksomheter) == opts.antall {
+				break
+			}
+		}
+	}
+	if ikkeIRegister > 0 {
+		fmt.Fprintf(logg, "Register (%s): %d virksomheter fra Tenor, eller daglig leder for dem, finnes ikke og er byttet ut.\n", opts.env, ikkeIRegister)
 	}
 	return virksomheter, nil
 }
 
-// berikVirksomheter slår opp virksomhetene, daglige ledere og klientene i
-// Register i samme kall.
-func berikVirksomheter(ctx context.Context, reg *RegisterClient, rader []VirksomhetMedAltinn, miljoe string, logg io.Writer) error {
-	ider := make([]string, 0, 2*len(rader))
-	for _, r := range rader {
-		ider = append(ider, r.Organisasjonsnummer, r.DagligLeder)
-		for _, k := range r.Virksomhet.Klienter {
-			ider = append(ider, k.Organisasjonsnummer)
-		}
-	}
-	parter, err := slaaOppIRegister(ctx, reg, ider, miljoe, logg)
-	if err != nil {
-		return err
-	}
-	finn := func(id string) *Party {
-		if p, ok := parter[id]; ok {
-			return &p
-		}
-		return nil
-	}
-	for i := range rader {
-		r := &rader[i]
-		r.AltinnEnvironment = miljoe
-		r.Altinn = finn(r.Organisasjonsnummer)
-		r.DagligLederAltinn = finn(r.DagligLeder)
-		for _, k := range r.Virksomhet.Klienter {
-			r.Klienter = append(r.Klienter, KlientMedAltinn{Virksomhet: k, Altinn: finn(k.Organisasjonsnummer)})
-		}
-	}
-	return nil
-}
-
-// csvRader gjør om virksomhetene til CSV-rader. Med klienter blir det én rad
-// per klient, og en tilrettelegger uten klienter gir ingen rad.
-func csvRader(rader []VirksomhetMedAltinn, medKlienter bool) []virksomhetRad {
-	ut := make([]virksomhetRad, 0, len(rader))
-	for _, r := range rader {
-		if !medKlienter {
-			ut = append(ut, virksomhetRad{VirksomhetMedAltinn: r})
-			continue
-		}
-		for i := range r.Klienter {
-			ut = append(ut, virksomhetRad{VirksomhetMedAltinn: r, Klient: &r.Klienter[i]})
-		}
-	}
-	return ut
-}
-
 // skrivVirksomheterTekst skriver orgnr, navn og daglig leder per linje, med
-// rolle og antall klienter når de er kjent, og klientene innrykket under.
+// rolle når den er satt.
 func skrivVirksomheterTekst(ut io.Writer, virksomheter []Virksomhet) {
 	for _, v := range virksomheter {
 		felt := []string{v.Organisasjonsnummer, v.Navn, v.DagligLeder}
 		if v.Rolle != "" {
 			felt = append(felt, v.Rolle)
 		}
-		if v.AntallKlienter > 0 {
-			felt = append(felt, fmt.Sprintf("%d klienter", v.AntallKlienter))
-		}
 		fmt.Fprintln(ut, strings.Join(felt, "\t"))
-		for _, k := range v.Klienter {
-			fmt.Fprintf(ut, "  klient\t%s\t%s\n", k.Organisasjonsnummer, k.Navn)
-		}
 	}
 }
 

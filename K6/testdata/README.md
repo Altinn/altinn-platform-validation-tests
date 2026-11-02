@@ -324,7 +324,7 @@ finner:
 - `authorization/pdp-authorize/` instansdelegeringer og `single-rights`.
 - `access-management/consent/lookup`, `get-authorized-parties/for-system-user`,
   `for-user-dialogporten-with-filter`, `dialogporten/serviceowner/should-send-notification`.
-- `register/ccr-role-client-*.csv`: testudo har ikke organisasjonsformen til
-  klienten som kolonne.
+- `register/ccr-role-client-*.csv`: trenger klientene til tilretteleggeren, og
+  dem henter ikke testudo.
 - `register/register-usernames-*.csv`, `resource-registry/*` og
   `access-management/service-owner/connections/service-owners`.
