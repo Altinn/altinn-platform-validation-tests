@@ -28,8 +28,7 @@ func TestRunPersonerRegister(t *testing.T) {
 	})
 
 	var ut, logg bytes.Buffer
-	// --register gir JSON også uten --json.
-	err := runPersoner(context.Background(), tenor, reg, &ut, &logg, &personerOptions{antall: 2, register: true, env: "at23"})
+	err := runPersoner(context.Background(), tenor, reg, &ut, &logg, &personerOptions{antall: 2, jsonOutput: true, env: "at23"})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -59,10 +58,19 @@ func TestRunPersonerRegister(t *testing.T) {
 }
 
 func TestRunPersonerRegisterUtenKlient(t *testing.T) {
-	err := runPersoner(context.Background(), nil, nil, &bytes.Buffer{}, &bytes.Buffer{}, &personerOptions{antall: 1, register: true})
+	err := runPersoner(context.Background(), nil, nil, &bytes.Buffer{}, &bytes.Buffer{}, &personerOptions{antall: 1})
 	if !errors.Is(err, ErrInvalid) {
 		t.Errorf("err = %v", err)
 	}
+}
+
+// tomtRegister er et Register der ingen parter finnes, for tester som ikke
+// handler om Register.
+func tomtRegister(t *testing.T) *RegisterClient {
+	t.Helper()
+	return testRegisterClient(t, func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte(`{"data":[]}`))
+	})
 }
 
 // medKonfig laster YAML som config-fil i viper så lenge testen varer.

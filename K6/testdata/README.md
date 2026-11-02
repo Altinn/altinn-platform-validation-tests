@@ -25,7 +25,7 @@ MASKINPORTEN_JWK: '{"kty":"RSA",...}'   # privat nøkkel for Tenor
 TOKEN_GENERATOR_USERNAME: '...'         # test token generator, som i K6 og Playwright
 TOKEN_GENERATOR_PASSWORD: '...'
 
-at23:                                   # én seksjon per miljø: at22, at23, tt02
+at23:                                   # én seksjon per miljø: at22, at23, tt02, yt01
   API_BASE_URL: 'https://platform.at23.altinn.cloud'
   REGISTER_SUBSCRIPTION_KEY: '...'
 ```
@@ -33,7 +33,7 @@ at23:                                   # én seksjon per miljø: at22, at23, tt
 ```bash
 cd helpers/testudo
 T=../../K6/testdata
-ENV=at23   # at22, at23 eller tt02
+ENV=at23   # at22, at23, tt02 eller yt01
 
 # lag <fil> <kolonnenavn i filen> <testudo-argumenter>
 # Kjører testudo, bytter første linje til kolonnenavnene filen bruker, og
@@ -50,10 +50,11 @@ Testudo bruker feltnavnene fra Register (`personIdentifier`, `partyUuid` og så
 videre), mens filene her bruker andre navn. Oppskriftene ber derfor om
 kolonnene i samme rekkefølge som filen, og `lag` bytter ut første linje.
 
-`--register` slår opp partene i Register for miljøet. Rader der en part ikke
-finnes, eller mangler en verdi (for eksempel en person uten bruker), hoppes
-over. Filer uten `--register` trenger bare Tenor, og kan derfor også lages
-for yt01. Det er ikke sjekket at alle partene finnes i yt01.
+Testudo slår alltid opp partene i Register for miljøet i `--env`. Rader der en
+part ikke finnes, eller mangler en verdi (for eksempel en person uten bruker),
+hoppes over. Oppskriftene for yt01-filer som bruker ID-er fra Register (for
+eksempel `request/yt01.csv` og v2-filene) er ikke med ennå. Noen av dem har
+andre kolonner enn i de andre miljøene.
 
 Testudo skriver LF-linjeskift, som `.gitattributes` ber om. Flere av filene
 her har CRLF i dag, så diffen viser at hver linje er endret.
@@ -86,14 +87,14 @@ her har CRLF i dag, så diffen viser at hver linje er endret.
 
 ```bash
 # Kolonnene er de samme som testudo bruker, så her trengs ikke lag.
-go run . tenor personer -n 10 --env $ENV --register --format csv --kolonner userId \
+go run . tenor personer -n 10 --env $ENV --format csv --kolonner userId \
   --ut $T/portaler/$ENV/userids.csv
 
 lag $T/access-management/consent/consenter-persons/$ENV.csv ssn,partyUuid,userId,partyId \
-  personer -n 1000 --env $ENV --register --kolonner personIdentifier,partyUuid,userId,partyId
+  personer -n 1000 --env $ENV --kolonner personIdentifier,partyUuid,userId,partyId
 
 lag $T/access-management/enduser/client-delegations-v2/agents/$ENV.csv pid,partyUuid,partyId,userId,lastName,name \
-  personer -n 20 --env $ENV --register --kolonner personIdentifier,partyUuid,partyId,userId,lastName,displayName
+  personer -n 20 --env $ENV --kolonner personIdentifier,partyUuid,partyId,userId,lastName,displayName
 ```
 
 ## Virksomheter med daglig leder
@@ -111,11 +112,11 @@ testudo er daglig leder. `partyId` og `partyUuid` er virksomheten.
 
 ```bash
 lag $T/access-management/enduser/request/$ENV.csv pid,partyUuid,orgUuid,orgNo,lastName,userId,partyId \
-  virksomheter -n 198 --env $ENV --register \
+  virksomheter -n 198 --env $ENV \
   --kolonner ssn,userPartyUuid,partyUuid,organizationIdentifier,lastName,userId,userPartyId
 
 lag $T/access-management/enduser/activity-log/$ENV.csv pid,partyUuid,orgUuid,orgNo,lastName \
-  virksomheter -n 10 --env $ENV --register \
+  virksomheter -n 10 --env $ENV \
   --kolonner ssn,userPartyUuid,partyUuid,organizationIdentifier,lastName
 ```
 
@@ -130,13 +131,13 @@ lag $T/access-management/enduser/activity-log/$ENV.csv pid,partyUuid,orgUuid,org
 
 ```bash
 lag $T/access-management/enduser/connections/at23.csv ssn,partyUuid,userId,orgUuid,orgNo,lastName \
-  virksomheter -n 9 --env at23 --register \
+  virksomheter -n 9 --env at23 \
   --kolonner ssn,userPartyUuid,userId,partyUuid,organizationIdentifier,lastName
 
 # Det samme for open-client-admin og access-management-bff/consent.
 lag $T/access-management/resource-owner/maskinporten-schema/$ENV.csv \
   ssn,partyUuid,userId,orgUuid,orgNo,lastName,userPartyId,partyId \
-  virksomheter -n 9 --env $ENV --register \
+  virksomheter -n 9 --env $ENV \
   --kolonner ssn,userPartyUuid,userId,partyUuid,organizationIdentifier,lastName,userPartyId,partyId
 ```
 
@@ -157,13 +158,13 @@ V2=orgNo,partyId,ssn,userId,userPartyId,orgUuid,partyUuid,lastName
 V2_TESTUDO=organizationIdentifier,partyId,ssn,userId,userPartyId,partyUuid,userPartyUuid,lastName
 
 lag $T/access-management-bff/access-packages/org-to-org/$ENV.csv $V2 \
-  virksomheter -n 6 --env $ENV --register --kolonner $V2_TESTUDO
+  virksomheter -n 6 --env $ENV --kolonner $V2_TESTUDO
 # Det samme for de andre filene i tabellen, med antall rader fra tabellen.
 ```
 
 ### ssn og orgno
 
-Disse trenger ikke Register, og kan derfor også lages for yt01.
+Disse bruker bare kolonner fra Tenor, og har samme kolonner i yt01.
 
 | Filer | Rader i dag |
 | --- | --- |
@@ -173,14 +174,14 @@ Disse trenger ikke Register, og kan derfor også lages for yt01.
 
 ```bash
 lag $T/authorization/pdp-authorize/orgs-dagl-$ENV.csv orgno,ssn \
-  virksomheter -n 9 --kolonner organizationIdentifier,ssn
+  virksomheter -n 9 --env $ENV --kolonner organizationIdentifier,ssn
 
 lag $T/access-management/resource-owner/get-authorized-parties/$ENV.csv orgno,ssn \
-  virksomheter -n 9 --kolonner organizationIdentifier,ssn
+  virksomheter -n 9 --env $ENV --kolonner organizationIdentifier,ssn
 
 # Merk den omvendte rekkefølgen.
 lag $T/dialogporten/endusers/$ENV/endusers.csv ssn,orgno \
-  virksomheter -n 28 --kolonner ssn,organizationIdentifier
+  virksomheter -n 28 --env $ENV --kolonner ssn,organizationIdentifier
 ```
 
 ### pid
@@ -195,9 +196,9 @@ seg, så de ikke har de samme personene.
 
 ```bash
 lag $T/access-management/resource-owner/authorized-parties/authorization-boundaries/$ENV.csv pid \
-  virksomheter -n 10 --kolonner ssn
+  virksomheter -n 10 --env $ENV --kolonner ssn
 lag $T/access-management/resource-owner/authorized-parties/org-code-filter/$ENV.csv pid \
-  virksomheter -n 10 --kolonner ssn
+  virksomheter -n 10 --env $ENV --kolonner ssn
 ```
 
 ### subject-lookup-forms
@@ -211,7 +212,7 @@ lag $T/access-management/resource-owner/authorized-parties/org-code-filter/$ENV.
 ```bash
 lag $T/access-management/resource-owner/authorized-parties/subject-lookup-forms/$ENV.csv \
   orgno,orgPartyUuid,pid,userId,partyId,partyUuid \
-  virksomheter -n 10 --env $ENV --register \
+  virksomheter -n 10 --env $ENV \
   --kolonner organizationIdentifier,partyUuid,ssn,userId,userPartyId,userPartyUuid
 ```
 
@@ -222,9 +223,9 @@ Raden for 313490114 må være med (se [over](#før-du-erstatter-en-fil)), og
 
 ```bash
 K=organizationIdentifier,partyId,partyUuid,unitType,userId,userPartyUuid,ssn
-go run . tenor virksomheter -n 1 --kql organisasjonsnummer:313490114 --env $ENV --register \
+go run . tenor virksomheter -n 1 --kql organisasjonsnummer:313490114 --env $ENV \
   --format csv --kolonner $K --ut fast.csv &&
-go run . tenor virksomheter -n 199 --env $ENV --register --format csv --kolonner $K --ut ny.csv &&
+go run . tenor virksomheter -n 199 --env $ENV --format csv --kolonner $K --ut ny.csv &&
 { echo orgNo,orgPartyId,orgPartyUuid,orgType,role,userId,userPartyUuid,userPid
   tail -n +2 fast.csv; tail -n +2 ny.csv; } |
   awk -F, -v OFS=, 'NR > 1 { $4 = $4 OFS "dagligleder" } 1' \
@@ -237,14 +238,14 @@ rm fast.csv ny.csv
 ```bash
 # access-management/consent/consentee-orgs/{at22,at23,tt02,yt01}.csv, 20 rader
 lag $T/access-management/consent/consentee-orgs/$ENV.csv orgNo \
-  virksomheter -n 20 --kolonner organizationIdentifier
+  virksomheter -n 20 --env $ENV --kolonner organizationIdentifier
 
 # authentication/change-request-system-user/vendors.csv, 200 rader, samme fil for alle miljøer
 lag $T/authentication/change-request-system-user/vendors.csv orgNo,name \
   virksomheter -n 200 --kolonner organizationIdentifier,displayName
 
 # access-management/service-owner/connections/recipients/{at22,at23,tt02}.csv, 200 rader
-go run . tenor virksomheter -n 200 --format csv --kolonner organizationIdentifier --ut ny.csv &&
+go run . tenor virksomheter -n 200 --env $ENV --format csv --kolonner organizationIdentifier --ut ny.csv &&
 { echo recipientType,recipientIdentifier; tail -n +2 ny.csv | sed 's/^/organization,/'; } \
   > $T/access-management/service-owner/connections/recipients/$ENV.csv && rm ny.csv
 ```
@@ -265,9 +266,9 @@ Ti av hver rolle. Filen er også utgangspunktet for generatorene i
 
 ```bash
 K=partyUuid,organizationIdentifier,type
-go run . tenor virksomheter -r revisor -n 10 --env $ENV --register --format csv --kolonner $K --ut revisor.csv &&
-go run . tenor virksomheter -r regnskapsfoerer -n 10 --env $ENV --register --format csv --kolonner $K --ut regnskapsfoerer.csv &&
-go run . tenor virksomheter -r forretningsfoerer -n 10 --env $ENV --register --format csv --kolonner $K --ut forretningsfoerer.csv &&
+go run . tenor virksomheter -r revisor -n 10 --env $ENV --format csv --kolonner $K --ut revisor.csv &&
+go run . tenor virksomheter -r regnskapsfoerer -n 10 --env $ENV --format csv --kolonner $K --ut regnskapsfoerer.csv &&
+go run . tenor virksomheter -r forretningsfoerer -n 10 --env $ENV --format csv --kolonner $K --ut forretningsfoerer.csv &&
 { echo organizationUuid,organizationId,type
   tail -q -n +2 revisor.csv regnskapsfoerer.csv forretningsfoerer.csv | staving; } \
   > $T/register/organizations-$ENV.csv &&
@@ -281,10 +282,10 @@ Rundt 50 av hver: vanlige AS-er (`orgType` er `AS`) og de tre rollene
 
 ```bash
 K=organizationIdentifier,partyId,partyUuid,userId,userPartyUuid,ssn
-go run . tenor virksomheter -n 50 --env $ENV --register --format csv --kolonner $K,unitType --ut as.csv &&
-go run . tenor virksomheter -r revisor -n 50 --env $ENV --register --format csv --kolonner $K,type --ut revisor.csv &&
-go run . tenor virksomheter -r regnskapsfoerer -n 50 --env $ENV --register --format csv --kolonner $K,type --ut regnskapsfoerer.csv &&
-go run . tenor virksomheter -r forretningsfoerer -n 50 --env $ENV --register --format csv --kolonner $K,type --ut forretningsfoerer.csv &&
+go run . tenor virksomheter -n 50 --env $ENV --format csv --kolonner $K,unitType --ut as.csv &&
+go run . tenor virksomheter -r revisor -n 50 --env $ENV --format csv --kolonner $K,type --ut revisor.csv &&
+go run . tenor virksomheter -r regnskapsfoerer -n 50 --env $ENV --format csv --kolonner $K,type --ut regnskapsfoerer.csv &&
+go run . tenor virksomheter -r forretningsfoerer -n 50 --env $ENV --format csv --kolonner $K,type --ut forretningsfoerer.csv &&
 { echo orgNo,partyId,orgUuid,userId,userPartyUuid,ssn,orgType
   tail -q -n +2 as.csv revisor.csv regnskapsfoerer.csv forretningsfoerer.csv | staving; } \
   > $T/authentication/system-user-request/$ENV.csv &&
@@ -300,8 +301,8 @@ eiendomsklienter, så de hentes fra filen som ligger der.
 F=$T/authentication/system-user-client-delegation/$ENV.csv
 K=organizationIdentifier,partyId,partyUuid,userId,userPartyUuid,ssn,type
 grep ',forretningsforer' $F | tr -d '\r' > ff.csv
-go run . tenor virksomheter -r revisor -n 4 --env $ENV --register --format csv --kolonner $K --ut revisor.csv &&
-go run . tenor virksomheter -r regnskapsfoerer -n 3 --env $ENV --register --format csv --kolonner $K --ut regnskap.csv &&
+go run . tenor virksomheter -r revisor -n 4 --env $ENV --format csv --kolonner $K --ut revisor.csv &&
+go run . tenor virksomheter -r regnskapsfoerer -n 3 --env $ENV --format csv --kolonner $K --ut regnskap.csv &&
 { echo orgNo,partyId,orgUuid,userId,userPartyUuid,ssn,orgType
   tail -q -n +2 revisor.csv regnskap.csv | staving; cat ff.csv; } > $F &&
 rm ff.csv revisor.csv regnskap.csv
@@ -312,8 +313,6 @@ rm ff.csv revisor.csv regnskap.csv
 Disse trenger data som må finnes i miljøet fra før, eller parter testudo ikke
 finner:
 
-- yt01-variantene av filene over som trenger `--register`. Testudo kjenner bare
-  at22, at23 og tt02.
 - `access-management/enduser/activity-log/yt01.csv`: virksomhetene er valgt
   fordi `testdataGeneration/activity-log-data.js` har fylt opp loggene deres.
 - `access-management/resource-owner/authorized-parties/` med

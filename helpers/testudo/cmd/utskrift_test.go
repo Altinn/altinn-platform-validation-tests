@@ -17,23 +17,22 @@ type testRad struct{ a, b string }
 
 var testKolonner = []kolonne[testRad]{
 	{navn: "a", verdi: func(r testRad) string { return r.a }},
-	{navn: "b", register: true, verdi: func(r testRad) string { return r.b }},
+	{navn: "b", verdi: func(r testRad) string { return r.b }},
 }
 
 func TestEffektivtFormat(t *testing.T) {
 	tests := []struct {
-		format         string
-		json, register bool
-		vil            string
+		format string
+		json   bool
+		vil    string
 	}{
-		{"", false, false, formatTekst},
-		{"", true, false, formatJSON},
-		{"", false, true, formatJSON},
-		{"csv", false, true, formatCSV},
-		{"tekst", false, true, formatTekst},
+		{"", false, formatTekst},
+		{"", true, formatJSON},
+		{"csv", true, formatCSV},
+		{"tekst", true, formatTekst},
 	}
 	for _, tt := range tests {
-		if got := (utskriftValg{format: tt.format}).effektivtFormat(tt.json, tt.register); got != tt.vil {
+		if got := (utskriftValg{format: tt.format}).effektivtFormat(tt.json); got != tt.vil {
 			t.Errorf("%+v: fikk %q, vil ha %q", tt, got, tt.vil)
 		}
 	}
@@ -42,21 +41,19 @@ func TestEffektivtFormat(t *testing.T) {
 func TestValiderUtskrift(t *testing.T) {
 	standard := []string{"a"}
 	tests := []struct {
-		navn     string
-		v        utskriftValg
-		register bool
-		ugyldig  string
+		navn    string
+		v       utskriftValg
+		ugyldig string
 	}{
-		{"tekst", utskriftValg{}, false, ""},
-		{"csv med standard", utskriftValg{format: "csv"}, false, ""},
-		{"csv med register-kolonne", utskriftValg{format: "csv", kolonner: "a,b"}, true, ""},
-		{"ukjent format", utskriftValg{format: "xml"}, false, "ukjent --format"},
-		{"kolonner uten csv", utskriftValg{kolonner: "a"}, false, "bare med --format csv"},
-		{"ukjent kolonne", utskriftValg{format: "csv", kolonner: "a,c"}, false, `ukjent kolonne "c", bruk en av a,b`},
-		{"register-kolonne uten --register", utskriftValg{format: "csv", kolonner: "b"}, false, "kolonnen b kommer fra Register"},
+		{"tekst", utskriftValg{}, ""},
+		{"csv med standard", utskriftValg{format: "csv"}, ""},
+		{"csv med valgte kolonner", utskriftValg{format: "csv", kolonner: "a,b"}, ""},
+		{"ukjent format", utskriftValg{format: "xml"}, "ukjent --format"},
+		{"kolonner uten csv", utskriftValg{kolonner: "a"}, "bare med --format csv"},
+		{"ukjent kolonne", utskriftValg{format: "csv", kolonner: "a,c"}, `ukjent kolonne "c", bruk en av a,b`},
 	}
 	for _, tt := range tests {
-		err := validerUtskrift(tt.v, false, tt.register, testKolonner, standard)
+		err := validerUtskrift(tt.v, false, testKolonner, standard)
 		if tt.ugyldig == "" {
 			if err != nil {
 				t.Errorf("%s: %v", tt.navn, err)
@@ -70,7 +67,7 @@ func TestValiderUtskrift(t *testing.T) {
 }
 
 func TestSkrivCSV(t *testing.T) {
-	kolonner, err := velgKolonner(testKolonner, " b , a", nil, true)
+	kolonner, err := velgKolonner(testKolonner, " b , a", nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -133,7 +130,7 @@ func TestPersonerCSV(t *testing.T) {
 	})
 
 	var ut, logg bytes.Buffer
-	opts := &personerOptions{antall: 3, register: true, env: "at23", utskrift: utskriftValg{format: "csv"}}
+	opts := &personerOptions{antall: 3, env: "at23", utskrift: utskriftValg{format: "csv"}}
 	if err := runPersoner(context.Background(), tenor, reg, &ut, &logg, opts); err != nil {
 		t.Fatal(err)
 	}
@@ -144,10 +141,10 @@ func TestPersonerCSV(t *testing.T) {
 		t.Errorf("logg = %q", logg.String())
 	}
 
-	// Uten --register: bare Tenor-kolonner, etternavn fra Tenor.
+	// Personer som ikke finnes i Register får navnet fra Tenor.
 	ut.Reset()
 	opts = &personerOptions{antall: 3, utskrift: utskriftValg{format: "csv", kolonner: "personIdentifier,firstName,lastName"}}
-	if err := runPersoner(context.Background(), tenor, nil, &ut, &logg, opts); err != nil {
+	if err := runPersoner(context.Background(), tenor, tomtRegister(t), &ut, &logg, opts); err != nil {
 		t.Fatal(err)
 	}
 	if !strings.HasPrefix(ut.String(), "personIdentifier,firstName,lastName\n00000000001,Person,1\n") {
@@ -167,7 +164,7 @@ func TestVirksomheterCSV(t *testing.T) {
 	})
 
 	var ut, logg bytes.Buffer
-	opts := &virksomheterOptions{antall: 2, register: true, env: "at23", utskrift: utskriftValg{format: "csv"}}
+	opts := &virksomheterOptions{antall: 2, env: "at23", utskrift: utskriftValg{format: "csv"}}
 	if err := runVirksomheter(context.Background(), tenor, reg, &ut, &logg, opts); err != nil {
 		t.Fatal(err)
 	}

@@ -171,7 +171,7 @@ func TestRunVirksomheterUtskrift(t *testing.T) {
 	})
 
 	var ut, logg bytes.Buffer
-	if err := runVirksomheter(context.Background(), c, nil, &ut, &logg, &virksomheterOptions{antall: 2}); err != nil {
+	if err := runVirksomheter(context.Background(), c, tomtRegister(t), &ut, &logg, &virksomheterOptions{antall: 2}); err != nil {
 		t.Fatal(err)
 	}
 	vil := "000000001\tFIRMA 1 AS\t" + lederFnr(1) + "\n000000002\tFIRMA 2 AS\t" + lederFnr(2) + "\n"
@@ -184,7 +184,7 @@ func TestRunVirksomheterUtskrift(t *testing.T) {
 
 	ut.Reset()
 	logg.Reset()
-	if err := runVirksomheter(context.Background(), c, nil, &ut, &logg, &virksomheterOptions{antall: 5, jsonOutput: true}); err != nil {
+	if err := runVirksomheter(context.Background(), c, tomtRegister(t), &ut, &logg, &virksomheterOptions{antall: 5, jsonOutput: true}); err != nil {
 		t.Fatal(err)
 	}
 	var rader []map[string]any
@@ -220,7 +220,7 @@ func TestRunVirksomheterRegister(t *testing.T) {
 	})
 
 	var ut, logg bytes.Buffer
-	err := runVirksomheter(context.Background(), tenor, reg, &ut, &logg, &virksomheterOptions{antall: 2, register: true, env: "at22"})
+	err := runVirksomheter(context.Background(), tenor, reg, &ut, &logg, &virksomheterOptions{antall: 2, jsonOutput: true, env: "at22"})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -240,7 +240,7 @@ func TestRunVirksomheterRegister(t *testing.T) {
 		t.Errorf("logg = %q", logg.String())
 	}
 
-	if err := runVirksomheter(context.Background(), tenor, nil, &ut, &logg, &virksomheterOptions{antall: 1, register: true}); !errors.Is(err, ErrInvalid) {
+	if err := runVirksomheter(context.Background(), tenor, nil, &ut, &logg, &virksomheterOptions{antall: 1}); !errors.Is(err, ErrInvalid) {
 		t.Errorf("uten Register-klient: err = %v", err)
 	}
 }

@@ -213,7 +213,7 @@ func TestRunVirksomheterRolleTekst(t *testing.T) {
 	c := tilretteleggerServer(t)
 	var ut, logg bytes.Buffer
 	opts := &virksomheterOptions{antall: 1, rolle: "revisor", klienter: 2, maksKlienter: 3}
-	if err := runVirksomheter(context.Background(), c, nil, &ut, &logg, opts); err != nil {
+	if err := runVirksomheter(context.Background(), c, tomtRegister(t), &ut, &logg, opts); err != nil {
 		t.Fatal(err)
 	}
 	vil := revisorMedLeder2 + "\tREVISOR TRE AS\t10000000003\trevisor\t2 klienter\n" +
@@ -248,7 +248,7 @@ func TestRunVirksomheterRolleRegisterCSVOgJSON(t *testing.T) {
 	})
 
 	var ut, logg bytes.Buffer
-	opts := &virksomheterOptions{antall: 1, rolle: "revisor", klienter: 2, register: true, env: "at23",
+	opts := &virksomheterOptions{antall: 1, rolle: "revisor", klienter: 2, env: "at23",
 		utskrift: utskriftValg{format: "csv"}}
 	if err := runVirksomheter(context.Background(), c, reg, &ut, &logg, opts); err != nil {
 		t.Fatal(err)
@@ -281,6 +281,7 @@ func TestRunVirksomheterRolleRegisterCSVOgJSON(t *testing.T) {
 	ut.Reset()
 	opts.klienter = 2
 	opts.utskrift = utskriftValg{}
+	opts.jsonOutput = true
 	if err := runVirksomheter(context.Background(), c, reg, &ut, &logg, opts); err != nil {
 		t.Fatal(err)
 	}

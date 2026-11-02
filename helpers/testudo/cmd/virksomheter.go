@@ -17,7 +17,6 @@ import (
 type virksomheterOptions struct {
 	antall     int
 	kql        string
-	register   bool
 	jsonOutput bool
 	env        string
 	// rolle er revisor, regnskapsfoerer eller forretningsfoerer. Tom betyr
@@ -50,16 +49,16 @@ type virksomhetRad struct {
 var virksomhetKolonner = []kolonne[virksomhetRad]{
 	{navn: "organizationIdentifier", verdi: func(r virksomhetRad) string { return r.Organisasjonsnummer }},
 	{navn: "displayName", verdi: func(r virksomhetRad) string { return visningsnavn(r.Altinn, r.Navn) }},
-	{navn: "partyId", register: true, verdi: func(r virksomhetRad) string { return partyID(r.Altinn) }},
-	{navn: "partyUuid", register: true, verdi: func(r virksomhetRad) string { return partyUUID(r.Altinn) }},
+	{navn: "partyId", verdi: func(r virksomhetRad) string { return partyID(r.Altinn) }},
+	{navn: "partyUuid", verdi: func(r virksomhetRad) string { return partyUUID(r.Altinn) }},
 	{navn: "unitType", verdi: func(r virksomhetRad) string { return r.Organisasjonsform }},
 	{navn: "type", verdi: func(r virksomhetRad) string { return r.Rolle }},
 	{navn: "clientCount", verdi: func(r virksomhetRad) string { return tallTekst(uint64(r.AntallKlienter)) }},
 	{navn: "ssn", verdi: func(r virksomhetRad) string { return r.DagligLeder }},
-	{navn: "userId", register: true, verdi: func(r virksomhetRad) string { return brukerID(r.DagligLederAltinn) }},
-	{navn: "userPartyId", register: true, verdi: func(r virksomhetRad) string { return partyID(r.DagligLederAltinn) }},
-	{navn: "userPartyUuid", register: true, verdi: func(r virksomhetRad) string { return partyUUID(r.DagligLederAltinn) }},
-	{navn: "lastName", register: true, verdi: func(r virksomhetRad) string {
+	{navn: "userId", verdi: func(r virksomhetRad) string { return brukerID(r.DagligLederAltinn) }},
+	{navn: "userPartyId", verdi: func(r virksomhetRad) string { return partyID(r.DagligLederAltinn) }},
+	{navn: "userPartyUuid", verdi: func(r virksomhetRad) string { return partyUUID(r.DagligLederAltinn) }},
+	{navn: "lastName", verdi: func(r virksomhetRad) string {
 		if r.DagligLederAltinn == nil {
 			return ""
 		}
@@ -77,13 +76,13 @@ var virksomhetKolonner = []kolonne[virksomhetRad]{
 		}
 		return visningsnavn(r.Klient.Altinn, r.Klient.Navn)
 	}},
-	{navn: "clientPartyId", register: true, verdi: func(r virksomhetRad) string {
+	{navn: "clientPartyId", verdi: func(r virksomhetRad) string {
 		if r.Klient == nil {
 			return ""
 		}
 		return partyID(r.Klient.Altinn)
 	}},
-	{navn: "clientPartyUuid", register: true, verdi: func(r virksomhetRad) string {
+	{navn: "clientPartyUuid", verdi: func(r virksomhetRad) string {
 		if r.Klient == nil {
 			return ""
 		}
@@ -137,24 +136,21 @@ func newVirksomheterCmd() *cobra.Command {
 Uten --rolle hentes aksjeselskaper. Med --rolle hentes revisorer,
 regnskapsførere eller forretningsførere, valgfritt med klientene sine.`,
 		Example: `  testudo tenor virksomheter -n 10
-  testudo tenor virksomheter --rolle regnskapsfoerer -n 5 --register --format csv
+  testudo tenor virksomheter --rolle regnskapsfoerer -n 5 --format csv
   testudo tenor virksomheter --rolle revisor -n 1 --klienter 5
   testudo tenor virksomheter --rolle revisor -n 1 --maks-klienter 10 --klienter 10`,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			if err := opts.valider(cmd.Flags().Changed("kql")); err != nil {
 				return err
 			}
-			if err := validerUtskrift(opts.utskrift, opts.jsonOutput, opts.register, virksomhetKolonner, opts.standardKolonner()); err != nil {
+			if err := validerUtskrift(opts.utskrift, opts.jsonOutput, virksomhetKolonner, opts.standardKolonner()); err != nil {
 				return err
 			}
 			// Register settes opp før Tenor, så feil i konfigurasjonen kommer
 			// før vi henter noe.
-			var reg *RegisterClient
-			if opts.register {
-				var err error
-				if reg, err = nyRegisterKlient(opts.env); err != nil {
-					return err
-				}
+			reg, err := nyRegisterKlient(opts.env)
+			if err != nil {
+				return err
 			}
 			c, err := nyTenorKlient()
 			if err != nil {
@@ -188,12 +184,8 @@ regnskapsførere eller forretningsførere, valgfritt med klientene sine.`,
 		"Egendefinert KQL, for de som kjenner Tenor (kan ikke brukes med --rolle)",
 	)
 	cmd.Flags().BoolVar(
-		&opts.register, "register", false,
-		"Berik med Altinn-ID-er fra Register (impliserer JSON)",
-	)
-	cmd.Flags().BoolVar(
 		&opts.jsonOutput, "json", false,
-		"Skriv ut som JSON",
+		"Skriv ut som JSON, med partene fra Register",
 	)
 	cmd.Flags().StringVar(
 		&opts.env, "env", "tt02",
@@ -346,18 +338,18 @@ func tilVirksomhet(md TenorMetadata) (Virksomhet, bool) {
 
 // runVirksomheter skriver virksomhetene til ut og meldinger til logg: orgnr,
 // navn og daglig leder per linje, eller JSON med --json. Med --rolle hentes
-// tilretteleggere i stedet, valgfritt med klienter. Med --register får hver
-// virksomhet, daglig leder og klient parten fra Register (reg). Med --format
-// csv skrives de valgte kolonnene, én rad per klient med --klienter.
+// tilretteleggere i stedet, valgfritt med klienter. Hver virksomhet, daglig
+// leder og klient får parten fra Register (reg). Med --format csv skrives de
+// valgte kolonnene, én rad per klient med --klienter.
 func runVirksomheter(ctx context.Context, c *TenorClient, reg *RegisterClient, ut, logg io.Writer, opts *virksomheterOptions) error {
-	if opts.register && reg == nil {
-		return fmt.Errorf("%w: --register krever en Register-klient", ErrInvalid)
+	if reg == nil {
+		return fmt.Errorf("%w: mangler Register-klient", ErrInvalid)
 	}
-	format := opts.utskrift.effektivtFormat(opts.jsonOutput, opts.register)
+	format := opts.utskrift.effektivtFormat(opts.jsonOutput)
 	var kolonner []kolonne[virksomhetRad]
 	if format == formatCSV {
 		var err error
-		if kolonner, err = velgKolonner(virksomhetKolonner, opts.utskrift.kolonner, opts.standardKolonner(), opts.register); err != nil {
+		if kolonner, err = velgKolonner(virksomhetKolonner, opts.utskrift.kolonner, opts.standardKolonner()); err != nil {
 			return err
 		}
 	}
@@ -377,10 +369,8 @@ func runVirksomheter(ctx context.Context, c *TenorClient, reg *RegisterClient, u
 	for i, v := range virksomheter {
 		rader[i] = VirksomhetMedAltinn{Virksomhet: v}
 	}
-	if opts.register {
-		if err := berikVirksomheter(ctx, reg, rader, opts.env, logg); err != nil {
-			return err
-		}
+	if err := berikVirksomheter(ctx, reg, rader, opts.env, logg); err != nil {
+		return err
 	}
 
 	switch format {
@@ -393,11 +383,7 @@ func runVirksomheter(ctx context.Context, c *TenorClient, reg *RegisterClient, u
 			return err
 		}
 	case formatJSON:
-		var data any = virksomheter
-		if opts.register {
-			data = rader
-		}
-		if err := skrivJSON(ut, data); err != nil {
+		if err := skrivJSON(ut, rader); err != nil {
 			return err
 		}
 	default:
@@ -479,15 +465,8 @@ func csvRader(rader []VirksomhetMedAltinn, medKlienter bool) []virksomhetRad {
 			ut = append(ut, virksomhetRad{VirksomhetMedAltinn: r})
 			continue
 		}
-		// Uten --register er klientene bare i Virksomhet.Klienter.
-		klienter := r.Klienter
-		if klienter == nil {
-			for _, k := range r.Virksomhet.Klienter {
-				klienter = append(klienter, KlientMedAltinn{Virksomhet: k})
-			}
-		}
-		for i := range klienter {
-			ut = append(ut, virksomhetRad{VirksomhetMedAltinn: r, Klient: &klienter[i]})
+		for i := range r.Klienter {
+			ut = append(ut, virksomhetRad{VirksomhetMedAltinn: r, Klient: &r.Klienter[i]})
 		}
 	}
 	return ut

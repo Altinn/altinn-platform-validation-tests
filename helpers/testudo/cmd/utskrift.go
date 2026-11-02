@@ -25,7 +25,7 @@ const (
 // utskriftValg er flaggene for utskrift.
 type utskriftValg struct {
 	// format er tekst, json eller csv. Tom betyr standard: tekst, eller json
-	// med --json eller --register.
+	// med --json.
 	format string
 	// kolonner er kommaseparerte CSV-kolonner. Tom betyr kommandoens standard.
 	kolonner string
@@ -36,7 +36,7 @@ type utskriftValg struct {
 func leggTilUtskriftFlagg(cmd *cobra.Command, v *utskriftValg, standardKolonner []string) {
 	cmd.Flags().StringVar(
 		&v.format, "format", "",
-		"Utskrift: tekst, json eller csv (standard: tekst, eller json med --json/--register)",
+		"Utskrift: tekst, json eller csv (standard: tekst, eller json med --json)",
 	)
 	cmd.Flags().StringVar(
 		&v.kolonner, "kolonner", "",
@@ -49,11 +49,11 @@ func leggTilUtskriftFlagg(cmd *cobra.Command, v *utskriftValg, standardKolonner 
 }
 
 // effektivtFormat avgjør formatet når --format ikke er satt.
-func (v utskriftValg) effektivtFormat(jsonOutput, register bool) string {
+func (v utskriftValg) effektivtFormat(jsonOutput bool) string {
 	switch {
 	case v.format != "":
 		return v.format
-	case jsonOutput || register:
+	case jsonOutput:
 		return formatJSON
 	default:
 		return formatTekst
@@ -61,8 +61,8 @@ func (v utskriftValg) effektivtFormat(jsonOutput, register bool) string {
 }
 
 // valider sjekker format og kolonner før noe hentes.
-func validerUtskrift[T any](v utskriftValg, jsonOutput, register bool, alle []kolonne[T], standard []string) error {
-	format := v.effektivtFormat(jsonOutput, register)
+func validerUtskrift[T any](v utskriftValg, jsonOutput bool, alle []kolonne[T], standard []string) error {
+	format := v.effektivtFormat(jsonOutput)
 	if !slices.Contains([]string{formatTekst, formatJSON, formatCSV}, format) {
 		return fmt.Errorf("%w: ukjent --format %q, bruk tekst, json eller csv", ErrInvalid, format)
 	}
@@ -70,7 +70,7 @@ func validerUtskrift[T any](v utskriftValg, jsonOutput, register bool, alle []ko
 		return fmt.Errorf("%w: --kolonner virker bare med --format csv", ErrInvalid)
 	}
 	if format == formatCSV {
-		_, err := velgKolonner(alle, v.kolonner, standard, register)
+		_, err := velgKolonner(alle, v.kolonner, standard)
 		return err
 	}
 	return nil
@@ -78,15 +78,13 @@ func validerUtskrift[T any](v utskriftValg, jsonOutput, register bool, alle []ko
 
 // kolonne er en CSV-kolonne for rader av typen T.
 type kolonne[T any] struct {
-	navn string
-	// register betyr at verdien kommer fra Register og krever --register.
-	register bool
-	verdi    func(T) string
+	navn  string
+	verdi func(T) string
 }
 
 // velgKolonner slår opp kolonnene i spesifikasjon (kommaseparert), eller
 // standard hvis den er tom.
-func velgKolonner[T any](alle []kolonne[T], spesifikasjon string, standard []string, register bool) ([]kolonne[T], error) {
+func velgKolonner[T any](alle []kolonne[T], spesifikasjon string, standard []string) ([]kolonne[T], error) {
 	navn := standard
 	if spesifikasjon != "" {
 		navn = strings.Split(spesifikasjon, ",")
@@ -101,9 +99,6 @@ func velgKolonner[T any](alle []kolonne[T], spesifikasjon string, standard []str
 				tilgjengelige[j] = k.navn
 			}
 			return nil, fmt.Errorf("%w: ukjent kolonne %q, bruk en av %s", ErrInvalid, n, strings.Join(tilgjengelige, ","))
-		}
-		if alle[i].register && !register {
-			return nil, fmt.Errorf("%w: kolonnen %s kommer fra Register og krever --register", ErrInvalid, n)
 		}
 		valgt = append(valgt, alle[i])
 	}
