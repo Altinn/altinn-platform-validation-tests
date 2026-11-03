@@ -77,12 +77,12 @@ func tilretteleggerFraKlient(md tenor.Metadata, kode string) string {
 	return ""
 }
 
-// hentTilretteleggere henter antall tilretteleggere med rollen og daglig leder
-// eller innehaver.
+// hentTilretteleggere henter antall tilretteleggere med rollen og leder (se
+// leder).
 //
 // Det gjøres i tre steg: klienter skannes til vi har nok unike kandidater,
 // kandidatenes egne dokumenter hentes mange om gangen, og så filtreres de på
-// daglig leder. Det hentes flere kandidater enn antall, siden noen forkastes.
+// leder. Det hentes flere kandidater enn antall, siden noen forkastes.
 func hentTilretteleggere(ctx context.Context, c *tenor.Client, rolle Role, antall int) ([]virksomhetKandidat, error) {
 	kandidater := 2*antall + 10
 
@@ -114,7 +114,7 @@ func hentTilretteleggere(ctx context.Context, c *tenor.Client, rolle Role, antal
 			continue
 		}
 		k, ok := tilVirksomhetKandidat(md)
-		if !ok || k.dagligLeder == "" {
+		if !ok || k.leder == "" {
 			continue
 		}
 		k.rolle = rolle.Name

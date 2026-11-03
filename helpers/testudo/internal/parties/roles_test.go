@@ -23,7 +23,7 @@ func TestHentTilretteleggere(t *testing.T) {
 	if len(v) != 2 || v[0].organisasjonsnummer != tenortest.AuditorWithLeader || v[1].organisasjonsnummer != tenortest.AuditorWithLeader2 {
 		t.Fatalf("v = %+v", v)
 	}
-	if v[0].rolle != "revisor" || v[0].dagligLeder != "10000000001" {
+	if v[0].rolle != "revisor" || v[0].leder != "10000000001" {
 		t.Errorf("første = %+v", v[0])
 	}
 

@@ -44,7 +44,7 @@ func TestRunVirksomheterUtskrift(t *testing.T) {
 		t.Fatal(err)
 	}
 	if len(rader) != 2 || rader[0]["organizationIdentifier"] != "000000001" || rader[0]["unitType"] != "AS" ||
-		rader[0]["dagligLederParty"].(map[string]any)["personIdentifier"] != tenortest.LeaderSSN(1) || rader[0]["kildedata"] == nil {
+		rader[0]["lederParty"].(map[string]any)["personIdentifier"] != tenortest.LeaderSSN(1) || rader[0]["kildedata"] == nil {
 		t.Errorf("json = %s", ut.String())
 	}
 	if !strings.Contains(logg.String(), "fant bare 2 av 5") {
@@ -85,13 +85,13 @@ func TestRunVirksomheterJSONMedRegister(t *testing.T) {
 		t.Errorf("virksomhet = %v", v)
 	}
 	// Ingenting annet fra Tenor.
-	for _, k := range []string{"organisasjonsnummer", "navn", "organisasjonsform", "dagligLeder"} {
+	for _, k := range []string{"organisasjonsnummer", "navn", "organisasjonsform", "dagligLeder", "dagligLederParty"} {
 		if _, finnes := v[k]; finnes {
 			t.Errorf("%s skal ikke finnes: %v", k, v)
 		}
 	}
-	if d, ok := v["dagligLederParty"].(map[string]any); !ok || d["partyId"] != float64(701) {
-		t.Errorf("dagligLederParty = %v", v["dagligLederParty"])
+	if d, ok := v["lederParty"].(map[string]any); !ok || d["partyId"] != float64(701) {
+		t.Errorf("lederParty = %v", v["lederParty"])
 	}
 	if !strings.Contains(logg.String(), "fant bare 1 av 2") {
 		t.Errorf("logg = %q", logg.String())
@@ -124,7 +124,7 @@ func TestRunVirksomheterCSV(t *testing.T) {
 	if ut.String() != vil {
 		t.Errorf("csv = %q", ut.String())
 	}
-	if !strings.Contains(logg.String(), "1 virksomheter fra Tenor, eller daglig leder for dem, finnes ikke") {
+	if !strings.Contains(logg.String(), "1 virksomheter fra Tenor, eller lederen deres, finnes ikke") {
 		t.Errorf("logg = %q", logg.String())
 	}
 
@@ -144,20 +144,25 @@ func TestRunVirksomheterCSV(t *testing.T) {
 
 func TestValiderVirksomhetValg(t *testing.T) {
 	tests := []struct {
-		navn    string
-		opts    virksomheterOptions
-		kqlSatt bool
-		feil    string
+		navn       string
+		opts       virksomheterOptions
+		antallSatt bool
+		feil       string
 	}{
 		{"vanlig", virksomheterOptions{antall: 1}, false, ""},
-		{"vanlig med kql", virksomheterOptions{antall: 1}, true, ""},
+		{"organisasjonsformer", virksomheterOptions{antall: 1, organisasjonsformer: []string{"enk", "ESEK", "brl", "nuf"}}, true, ""},
+		{"ukjent organisasjonsform", virksomheterOptions{antall: 1, organisasjonsformer: []string{"SA"}}, false, "ukjent --unit-type"},
+		{"orgno", virksomheterOptions{antall: 10, orgnr: []string{"313490114", "310418672"}}, false, ""},
+		{"ugyldig orgno", virksomheterOptions{orgnr: []string{"12345"}}, false, "--orgno"},
+		{"orgno og count", virksomheterOptions{antall: 1, orgnr: []string{"313490114"}}, true, "--count kan ikke brukes med --orgno"},
 		{"rolle", virksomheterOptions{antall: 1, rolle: "revisor"}, false, ""},
 		{"antall 0", virksomheterOptions{}, false, "--count"},
 		{"ukjent rolle", virksomheterOptions{antall: 1, rolle: "advokat"}, false, "ukjent --role"},
-		{"rolle og kql", virksomheterOptions{antall: 1, rolle: "revisor"}, true, "kan ikke brukes sammen"},
+		{"rolle og organisasjonsform", virksomheterOptions{antall: 1, rolle: "revisor", organisasjonsformer: []string{"AS"}}, false, "--role og --unit-type kan ikke brukes sammen"},
+		{"orgno og rolle", virksomheterOptions{rolle: "revisor", orgnr: []string{"313490114"}}, false, "--orgno og --role kan ikke brukes sammen"},
 	}
 	for _, tt := range tests {
-		err := tt.opts.valider(tt.kqlSatt)
+		err := tt.opts.valider(tt.antallSatt)
 		if tt.feil == "" {
 			if err != nil {
 				t.Errorf("%s: %v", tt.navn, err)
@@ -167,6 +172,39 @@ func TestValiderVirksomhetValg(t *testing.T) {
 		if !errors.Is(err, errs.Invalid) || !strings.Contains(err.Error(), tt.feil) {
 			t.Errorf("%s: err = %v", tt.navn, err)
 		}
+	}
+}
+
+func TestRunVirksomheterOrganisasjonsformer(t *testing.T) {
+	var kql string
+	c := tenortest.NewClient(t, func(w http.ResponseWriter, r *http.Request) {
+		kql = r.URL.Query().Get("kql")
+		w.Write(tenortest.BrregResponse(t, 2, 1, 1, 3))
+	})
+	var ut, logg bytes.Buffer
+	opts := &virksomheterOptions{antall: 2, organisasjonsformer: []string{"enk", "nuf"}}
+	if err := runVirksomheter(context.Background(), c, registertest.Echo(t), &ut, &logg, opts); err != nil {
+		t.Fatal(err)
+	}
+	if vil := `organisasjonsform.kode:("ENK" or "NUF")`; kql != vil || !strings.Contains(logg.String(), vil) {
+		t.Errorf("kql = %q, logg = %q", kql, logg.String())
+	}
+}
+
+func TestRunVirksomheterOrgnr(t *testing.T) {
+	c := tenortest.AuditorClient(t)
+	var ut, logg bytes.Buffer
+	// Revisoren uten daglig leder blir ikke med, så det blir 1 av 2.
+	opts := &virksomheterOptions{antall: 10, orgnr: []string{tenortest.AuditorWithoutLeader, tenortest.AuditorWithLeader}}
+	if err := runVirksomheter(context.Background(), c, registertest.Echo(t), &ut, &logg, opts); err != nil {
+		t.Fatal(err)
+	}
+	if vil := tenortest.AuditorWithLeader + "\tVIRKSOMHET " + tenortest.AuditorWithLeader + "\t10000000001\n"; ut.String() != vil {
+		t.Errorf("ut = %q", ut.String())
+	}
+	if !strings.Contains(logg.String(), "Henter 2 virksomheter fra Tenor: "+tenortest.AuditorWithoutLeader) ||
+		!strings.Contains(logg.String(), "fant bare 1 av 2") {
+		t.Errorf("logg = %q", logg.String())
 	}
 }
 
@@ -241,8 +279,8 @@ func TestRunVirksomheterRolleCSVOgJSON(t *testing.T) {
 	if len(rader) != 1 || rader[0]["rolle"] != "revisor" || rader[0]["partyUuid"] != "f-1" {
 		t.Fatalf("json = %s", ut.String())
 	}
-	if d, ok := rader[0]["dagligLederParty"].(map[string]any); !ok || d["partyUuid"] != "d-1" {
-		t.Errorf("dagligLederParty = %v", rader[0]["dagligLederParty"])
+	if d, ok := rader[0]["lederParty"].(map[string]any); !ok || d["partyUuid"] != "d-1" {
+		t.Errorf("lederParty = %v", rader[0]["lederParty"])
 	}
 	if _, finnes := rader[0]["klienter"]; finnes {
 		t.Errorf("klienter skal ikke finnes: %v", rader[0])

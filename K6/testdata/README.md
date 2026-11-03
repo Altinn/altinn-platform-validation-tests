@@ -103,6 +103,10 @@ Aksjeselskaper med daglig leder, som er standard i `find organizations`.
 Kolonnene `ssn`, `userId`, `userPartyId`, `userPartyUuid` og `lastName` i
 testudo er daglig leder. `partyId` og `partyUuid` er virksomheten.
 
+Andre organisasjonsformer velges med `--unit-type`: `ENK`, `ESEK`, `BRL` og
+`NUF`, eller flere med komma. For `ENK` er lederen innehaver, og for `ESEK` og
+`BRL`, som sjelden har daglig leder, styreleder.
+
 ### pid, partyUuid, orgUuid, orgNo, lastName, …
 
 | Filer | Rader i dag |
@@ -224,7 +228,7 @@ Raden for 313490114 må være med (se [over](#før-du-erstatter-en-fil)), og
 
 ```bash
 K=organizationIdentifier,partyId,partyUuid,unitType,userId,userPartyUuid,ssn
-go run . find organizations -n 1 --kql organisasjonsnummer:313490114 --env $ENV \
+go run . find organizations --orgno 313490114 --env $ENV \
   --format csv --columns $K --out fast.csv &&
 go run . find organizations -n 199 --env $ENV --format csv --columns $K --out ny.csv &&
 { echo orgNo,orgPartyId,orgPartyUuid,orgType,role,userId,userPartyUuid,userPid
