@@ -27,11 +27,11 @@ func TestHentVirksomheter(t *testing.T) {
 		}
 		w.Write(tenortest.BrregResponse(t, 2, 1, 1, 3))
 	})
-	v, err := hentVirksomheter(context.Background(), c, OrganizationKQL(nil), 5)
+	v, err := hentVirksomheter(context.Background(), c, OrganizationKQL(nil), PersonRole{}, 5)
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(v) != 2 || v[0].organisasjonsnummer != "000000001" || v[0].leder != tenortest.LeaderSSN(1) || v[0].kildedata == nil {
+	if len(v) != 2 || v[0].organisasjonsnummer != "000000001" || v[0].person != tenortest.LeaderSSN(1) || v[0].kildedata == nil {
 		t.Errorf("virksomheter = %+v", v)
 	}
 }
@@ -55,7 +55,7 @@ func TestHentVirksomheterKreverDagligLeder(t *testing.T) {
 		w.Write(tenortest.BrregResponse(t, 1000, seed, start, start+3))
 	})
 
-	v, err := hentVirksomheter(context.Background(), c, OrganizationKQL(nil), 4)
+	v, err := hentVirksomheter(context.Background(), c, OrganizationKQL(nil), PersonRole{}, 4)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -63,7 +63,7 @@ func TestHentVirksomheterKreverDagligLeder(t *testing.T) {
 		t.Fatalf("virksomheter = %d", len(v))
 	}
 	for _, x := range v {
-		if x.leder == "" {
+		if x.person == "" {
 			t.Errorf("virksomhet uten daglig leder: %+v", x)
 		}
 	}
@@ -80,7 +80,7 @@ func TestHentVirksomheterStopperNaarAlleErSett(t *testing.T) {
 		// 3 treff totalt, bare 2 har daglig leder.
 		w.Write(tenortest.BrregResponse(t, 3, 1, 1, 4))
 	})
-	v, err := hentVirksomheter(context.Background(), c, OrganizationKQL(nil), 10)
+	v, err := hentVirksomheter(context.Background(), c, OrganizationKQL(nil), PersonRole{}, 10)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -117,11 +117,39 @@ func TestFindOrganizationsKreverDagligLederIRegister(t *testing.T) {
 		t.Fatal(err)
 	}
 	if len(v) != 1 || v[0].OrganizationIdentifier != "000000001" || v[0].PartyUUID != "o-1" || v[0].Kildedata == nil ||
-		v[0].LederParty.PersonIdentifier != tenortest.LeaderSSN(1) || v[0].LederParty.PartyID != 701 {
+		v[0].PersonRolle != "daglig-leder" || v[0].Person.PersonIdentifier != tenortest.LeaderSSN(1) || v[0].Person.PartyID != 701 {
 		t.Fatalf("virksomheter = %+v", v)
 	}
-	if !strings.Contains(logg.String(), "Register (at22): 1 virksomheter fra Tenor, eller lederen deres, finnes ikke") {
+	if !strings.Contains(logg.String(), "Register (at22): 1 virksomheter fra Tenor, eller personen i dem, finnes ikke") {
 		t.Errorf("logg = %q", logg.String())
+	}
+}
+
+func TestFindOrganizationsMedPersonrolle(t *testing.T) {
+	c := tenortest.NewClient(t, func(w http.ResponseWriter, r *http.Request) {
+		w.Write(tenortest.BrregResponse(t, 3, 1, 1, 4))
+	})
+	// Virksomhet 3 har ingen daglig leder, men styreleder, så alle tre blir med.
+	v, err := FindOrganizations(context.Background(), c, registertest.Echo(t), OrganizationQuery{Count: 3, PersonRole: "styreleder"}, &bytes.Buffer{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(v) != 3 || v[2].OrganizationIdentifier != "000000003" || v[2].PersonRolle != "styreleder" ||
+		v[2].Person.PersonIdentifier != tenortest.ChairSSN(3) {
+		t.Fatalf("virksomheter = %+v", v)
+	}
+
+	if _, err := FindOrganizations(context.Background(), c, registertest.Echo(t), OrganizationQuery{Count: 1, PersonRole: "styrekaptein"}, &bytes.Buffer{}); !errors.Is(err, errs.Invalid) {
+		t.Errorf("ukjent personrolle: err = %v", err)
+	}
+}
+
+func TestFindPersonRole(t *testing.T) {
+	if r, err := FindPersonRole("styremedlem"); err != nil || r.Code != "MEDL" {
+		t.Errorf("r = %+v, err = %v", r, err)
+	}
+	if _, err := FindPersonRole("MEDL"); !errors.Is(err, errs.Invalid) || !strings.Contains(err.Error(), "daglig-leder, innehaver, styreleder") {
+		t.Errorf("err = %v", err)
 	}
 }
 
@@ -173,43 +201,57 @@ func TestLeder(t *testing.T) {
 	const styre = `{"type":{"kode":"STYR"},"roller":[
 		{"type":{"kode":"MEDL"},"person":{"foedselsnummer":"11111111111"}},
 		{"type":{"kode":"LEDE"},"person":{"foedselsnummer":"55555555555"},"fratraadt":"N"}]}`
+	dagl := func(fnr string) string {
+		return `{"type":{"kode":"DAGL"},"roller":[{"type":{"kode":"DAGL"},"person":{"foedselsnummer":"` + fnr + `"},"fratraadt":"N"}]}`
+	}
 	tests := []struct {
-		navn, form, grupper, vil string
+		navn, form, grupper, vil, kode string
 	}{
-		{"DAGL", "AS", `[{"type":{"kode":"DAGL"},"roller":[{"person":{"foedselsnummer":"22222222222"},"fratraadt":"N"}]}]`, "22222222222"},
-		{"INNH", "ENK", `[{"type":{"kode":"INNH"},"roller":[{"person":{"foedselsnummer":"33333333333"}}]}]`, "33333333333"},
+		{"DAGL", "AS", `[` + dagl("22222222222") + `]`, "22222222222", "DAGL"},
+		{"INNH", "ENK", `[{"type":{"kode":"INNH"},"roller":[{"type":{"kode":"INNH"},"person":{"foedselsnummer":"33333333333"}}]}]`, "33333333333", "INNH"},
 		{"DAGL går foran INNH", "ENK",
-			`[{"type":{"kode":"INNH"},"roller":[{"person":{"foedselsnummer":"33333333333"}}]},
-			  {"type":{"kode":"DAGL"},"roller":[{"person":{"foedselsnummer":"22222222222"}}]}]`, "22222222222"},
+			`[{"type":{"kode":"INNH"},"roller":[{"type":{"kode":"INNH"},"person":{"foedselsnummer":"33333333333"}}]},` + dagl("22222222222") + `]`, "22222222222", "DAGL"},
 		{"fratrådt hoppes over", "AS",
-			`[{"type":{"kode":"DAGL"},"roller":[{"person":{"foedselsnummer":"44444444444"},"fratraadt":"J"},
-			                                     {"person":{"foedselsnummer":"22222222222"},"fratraadt":"N"}]}]`, "22222222222"},
-		{"tom person hoppes over", "AS", `[{"type":{"kode":"DAGL"},"roller":[{"person":{},"fritekst":[]}]}]`, ""},
-		{"styreleder i borettslag", "BRL", `[` + styre + `]`, "55555555555"},
-		{"styreleder i eierseksjonssameie", "ESEK", `[` + styre + `]`, "55555555555"},
-		{"DAGL går foran styreleder", "BRL", `[` + styre + `,{"type":{"kode":"DAGL"},"roller":[{"person":{"foedselsnummer":"22222222222"}}]}]`, "22222222222"},
-		{"bare styre i AS", "AS", `[` + styre + `]`, ""},
-		{"ingen roller", "AS", `[]`, ""},
+			`[{"type":{"kode":"DAGL"},"roller":[{"type":{"kode":"DAGL"},"person":{"foedselsnummer":"44444444444"},"fratraadt":"J"},
+			                                     {"type":{"kode":"DAGL"},"person":{"foedselsnummer":"22222222222"},"fratraadt":"N"}]}]`, "22222222222", "DAGL"},
+		{"tom person hoppes over", "AS", `[{"type":{"kode":"DAGL"},"roller":[{"type":{"kode":"DAGL"},"person":{},"fritekst":[]}]}]`, "", ""},
+		{"styreleder i borettslag", "BRL", `[` + styre + `]`, "55555555555", "LEDE"},
+		{"styreleder i eierseksjonssameie", "ESEK", `[` + styre + `]`, "55555555555", "LEDE"},
+		{"DAGL går foran styreleder", "BRL", `[` + styre + `,` + dagl("22222222222") + `]`, "22222222222", "DAGL"},
+		{"bare styre i AS", "AS", `[` + styre + `]`, "", ""},
+		{"ingen roller", "AS", `[]`, "", ""},
 	}
 	for _, tt := range tests {
-		if got := leder(tt.form, les(tt.grupper)); got != tt.vil {
-			t.Errorf("%s: fikk %q, vil ha %q", tt.navn, got, tt.vil)
+		if fnr, kode := leder(tt.form, les(tt.grupper)); fnr != tt.vil || kode != tt.kode {
+			t.Errorf("%s: fikk %q (%s), vil ha %q (%s)", tt.navn, fnr, kode, tt.vil, tt.kode)
 		}
+	}
+
+	// Med en valgt rolle brukes rollekoden, uansett rollegruppe.
+	if fnr := personMedRolle(les(`[`+styre+`]`), "MEDL"); fnr != "11111111111" {
+		t.Errorf("styremedlem: %q", fnr)
 	}
 }
 
 func TestTilVirksomhetKandidat(t *testing.T) {
 	// Orgnr fra kildedata når id mangler.
-	k, ok := tilVirksomhetKandidat(tenor.Metadata{Kildedata: `{"organisasjonsnummer":"123456789","navn":"X AS"}`})
-	if !ok || k.organisasjonsnummer != "123456789" || k.leder != "" || k.kildedata == nil {
+	k, ok := tilVirksomhetKandidat(tenor.Metadata{Kildedata: `{"organisasjonsnummer":"123456789","navn":"X AS"}`}, PersonRole{})
+	if !ok || k.organisasjonsnummer != "123456789" || k.person != "" || k.kildedata == nil {
 		t.Errorf("k = %+v, ok = %v", k, ok)
 	}
+	// Med personrolle er personen den med rollen, og rollen får navnet fra
+	// Access Management.
+	kilde := `{"organisasjonsnummer":"123456789","rollegrupper":[{"type":{"kode":"STYR"},"roller":[{"type":{"kode":"NEST"},"person":{"foedselsnummer":"77777777777"}}]}]}`
+	nest, _ := FindPersonRole("nestleder")
+	if k, _ := tilVirksomhetKandidat(tenor.Metadata{Kildedata: kilde}, nest); k.person != "77777777777" || k.personRolle != "nestleder" {
+		t.Errorf("nestleder: %+v", k)
+	}
 	// Ugyldig kildedata, men gyldig id.
-	k, ok = tilVirksomhetKandidat(tenor.Metadata{ID: "123456789", Kildedata: "ikke json"})
+	k, ok = tilVirksomhetKandidat(tenor.Metadata{ID: "123456789", Kildedata: "ikke json"}, PersonRole{})
 	if !ok || k.organisasjonsnummer != "123456789" || k.kildedata != nil {
 		t.Errorf("ugyldig kildedata: %+v", k)
 	}
-	if _, ok := tilVirksomhetKandidat(tenor.Metadata{ID: "01010112345"}); ok {
+	if _, ok := tilVirksomhetKandidat(tenor.Metadata{ID: "01010112345"}, PersonRole{}); ok {
 		t.Error("fødselsnummer ble godtatt som orgnr")
 	}
 }

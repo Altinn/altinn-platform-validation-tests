@@ -43,8 +43,8 @@ func ValidOrganizationNumber(s string) bool {
 }
 
 // Organization er en virksomhet fra brreg-er-fr der både virksomheten og
-// lederen finnes i Register for miljøet. Alt om dem er fra Register. Fra
-// Tenor er bare Kildedata, og hvem som er leder.
+// personen finnes i Register for miljøet. Alt om dem er fra Register. Fra
+// Tenor er bare Kildedata, og hvem personen er.
 type Organization struct {
 	// Rolle er tilretteleggerrollen når virksomheten er hentet med en rolle.
 	Rolle string `json:"rolle,omitempty"`
@@ -53,20 +53,23 @@ type Organization struct {
 	// Party er virksomheten i Register. I JSON ligger feltene på samme nivå
 	// som rolle og kildedata.
 	register.Party
-	// LederParty er lederen i Register: daglig leder, innehaver for
-	// enkeltpersonforetak, eller styreleder for borettslag og
-	// eierseksjonssameier uten daglig leder.
-	LederParty register.Party `json:"lederParty"`
+	// PersonRolle er rollen Person har i virksomheten, med navnet i
+	// PersonRoles, f.eks. daglig-leder eller styreleder.
+	PersonRolle string `json:"personRolle"`
+	// Person er personen med PersonRolle i Register. Uten valgt personrolle
+	// er det lederen (se leder).
+	Person register.Party `json:"person"`
 }
 
 // virksomhetKandidat er en virksomhet fra Tenor som ikke er slått opp i
 // Register ennå.
 type virksomhetKandidat struct {
 	organisasjonsnummer string
-	// leder er fødselsnummeret til lederen, se leder.
-	leder     string
-	rolle     string
-	kildedata json.RawMessage
+	// person er fødselsnummeret til personen med personRolle.
+	person      string
+	personRolle string
+	rolle       string
+	kildedata   json.RawMessage
 }
 
 // OrganizationQuery er hvilke virksomheter FindOrganizations henter. Bare ett
@@ -83,24 +86,36 @@ type OrganizationQuery struct {
 	// Role er navnet på en rolle i Roles. Da hentes tilretteleggere med den
 	// rollen.
 	Role string
+	// PersonRole er navnet på en rolle i PersonRoles. Da hentes bare
+	// virksomheter der en person har rollen, og Person er den personen. Tom
+	// gir lederen.
+	PersonRole string
 	// Env er miljøet i Register.
 	Env string
 }
 
-// FindOrganizations henter q.Count virksomheter med leder (se leder) der både
-// virksomheten og lederen finnes i Register for q.Env. Andre byttes ut med
-// nye fra Tenor, i opptil maksRegisterRunder runder, og hvor mange som ble
-// byttet ut skrives til log. Virksomhetene og lederne i en runde slås opp i
-// samme kall.
+// FindOrganizations henter q.Count virksomheter med en person med rollen
+// q.PersonRole, eller med leder, der både virksomheten og personen finnes i
+// Register for q.Env. Andre byttes ut med nye fra Tenor, i opptil
+// maksRegisterRunder runder, og hvor mange som ble byttet ut skrives til log.
+// Virksomhetene og personene i en runde slås opp i samme kall.
 func FindOrganizations(ctx context.Context, c *tenor.Client, reg *register.Client, q OrganizationQuery, log io.Writer) ([]Organization, error) {
 	if len(q.OrganizationNumbers) > 0 {
 		q.Count = len(q.OrganizationNumbers)
 	}
+	var personrolle PersonRole
+	if q.PersonRole != "" {
+		var err error
+		if personrolle, err = FindPersonRole(q.PersonRole); err != nil {
+			return nil, err
+		}
+	}
+
 	sett := map[string]bool{}
 	virksomheter := make([]Organization, 0, q.Count)
 	ikkeIRegister := 0
 	for runde := 0; runde < maksRegisterRunder && len(virksomheter) < q.Count; runde++ {
-		kandidater, err := hentForValg(ctx, c, q, q.Count-len(virksomheter))
+		kandidater, err := hentForValg(ctx, c, q, personrolle, q.Count-len(virksomheter))
 		if err != nil {
 			return nil, err
 		}
@@ -117,7 +132,7 @@ func FindOrganizations(ctx context.Context, c *tenor.Client, reg *register.Clien
 
 		ider := make([]string, 0, 2*len(nye))
 		for _, k := range nye {
-			ider = append(ider, k.organisasjonsnummer, k.leder)
+			ider = append(ider, k.organisasjonsnummer, k.person)
 		}
 		parter, err := reg.LookupIdentifiers(ctx, ider, registerFelt...)
 		if err != nil {
@@ -126,16 +141,17 @@ func FindOrganizations(ctx context.Context, c *tenor.Client, reg *register.Clien
 
 		for _, k := range nye {
 			party, funnet := parter[k.organisasjonsnummer]
-			leder, lederFunnet := parter[k.leder]
-			if !funnet || !lederFunnet {
+			person, personFunnet := parter[k.person]
+			if !funnet || !personFunnet {
 				ikkeIRegister++
 				continue
 			}
 			virksomheter = append(virksomheter, Organization{
-				Rolle:      k.rolle,
-				Kildedata:  k.kildedata,
-				Party:      party,
-				LederParty: leder,
+				Rolle:       k.rolle,
+				Kildedata:   k.kildedata,
+				Party:       party,
+				PersonRolle: k.personRolle,
+				Person:      person,
 			})
 			if len(virksomheter) == q.Count {
 				break
@@ -143,26 +159,28 @@ func FindOrganizations(ctx context.Context, c *tenor.Client, reg *register.Clien
 		}
 	}
 	if ikkeIRegister > 0 {
-		fmt.Fprintf(log, "Register (%s): %d virksomheter fra Tenor, eller lederen deres, finnes ikke og er byttet ut.\n", q.Env, ikkeIRegister)
+		fmt.Fprintf(log, "Register (%s): %d virksomheter fra Tenor, eller personen i dem, finnes ikke og er byttet ut.\n", q.Env, ikkeIRegister)
 	}
 	return virksomheter, nil
 }
 
 // hentForValg henter antall virksomheter fra Tenor etter q: bestemte
 // virksomheter, tilretteleggere med rollen, eller virksomheter med
-// organisasjonsformene. Ingenting er slått opp i Register ennå.
-func hentForValg(ctx context.Context, c *tenor.Client, q OrganizationQuery, antall int) ([]virksomhetKandidat, error) {
+// organisasjonsformene. Bare virksomheter med en person med personrolle,
+// eller med leder når den er tom, blir med. Ingenting er slått opp i Register
+// ennå.
+func hentForValg(ctx context.Context, c *tenor.Client, q OrganizationQuery, personrolle PersonRole, antall int) ([]virksomhetKandidat, error) {
 	switch {
 	case len(q.OrganizationNumbers) > 0:
-		return hentBestemteVirksomheter(ctx, c, q.OrganizationNumbers)
+		return hentBestemteVirksomheter(ctx, c, q.OrganizationNumbers, personrolle)
 	case q.Role != "":
 		rolle, err := FindRole(q.Role)
 		if err != nil {
 			return nil, err
 		}
-		return hentTilretteleggere(ctx, c, rolle, antall)
+		return hentTilretteleggere(ctx, c, rolle, personrolle, antall)
 	default:
-		return hentVirksomheter(ctx, c, OrganizationKQL(q.UnitTypes), antall)
+		return hentVirksomheter(ctx, c, OrganizationKQL(q.UnitTypes), personrolle, antall)
 	}
 }
 
@@ -192,7 +210,7 @@ type rollegruppe struct {
 		Kode string `json:"kode"`
 	} `json:"type"`
 	Roller []struct {
-		// Type er rollen i gruppen, f.eks. LEDE eller MEDL i STYR.
+		// Type er rollen, f.eks. DAGL, eller LEDE og MEDL i STYR.
 		Type struct {
 			Kode string `json:"kode"`
 		} `json:"type"`
@@ -210,29 +228,29 @@ type rollegruppe struct {
 }
 
 // leder returnerer fødselsnummeret til daglig leder (DAGL), eller til
-// innehaver (INNH) hvis det ikke finnes noen daglig leder. Borettslag og
-// eierseksjonssameier har sjelden daglig leder, så for dem er det styreleder
-// (LEDE i STYR) når det ikke finnes daglig leder. Fratrådte roller og roller
-// uten fødselsnummer hoppes over.
-func leder(organisasjonsform string, grupper []rollegruppe) string {
-	if fnr := personMedRolle(grupper, "DAGL", ""); fnr != "" {
-		return fnr
-	}
+// innehaver (INNH) hvis det ikke finnes noen daglig leder, og koden for
+// rollen. Borettslag og eierseksjonssameier har sjelden daglig leder, så for
+// dem er det styreleder (LEDE) når det ikke finnes daglig leder.
+func leder(organisasjonsform string, grupper []rollegruppe) (fnr, kode string) {
+	koder := []string{"DAGL", "INNH"}
 	if slices.Contains(styreledetUnitTypes, organisasjonsform) {
-		return personMedRolle(grupper, "STYR", "LEDE")
+		koder = []string{"DAGL", "LEDE"}
 	}
-	return personMedRolle(grupper, "INNH", "")
+	for _, kode := range koder {
+		if fnr := personMedRolle(grupper, kode); fnr != "" {
+			return fnr, kode
+		}
+	}
+	return "", ""
 }
 
-// personMedRolle returnerer fødselsnummeret til den første personen i
-// rollegruppen gruppe, med rollen rolle når den ikke er tom.
-func personMedRolle(grupper []rollegruppe, gruppe, rolle string) string {
+// personMedRolle returnerer fødselsnummeret til den første personen med
+// rollekoden, f.eks. DAGL eller MEDL. Fratrådte roller og roller uten
+// fødselsnummer hoppes over.
+func personMedRolle(grupper []rollegruppe, kode string) string {
 	for _, g := range grupper {
-		if g.Type.Kode != gruppe {
-			continue
-		}
 		for _, r := range g.Roller {
-			if (rolle == "" || r.Type.Kode == rolle) && r.Fratraadt != "J" && foedselsnummerRe.MatchString(r.Person.Foedselsnummer) {
+			if r.Type.Kode == kode && r.Fratraadt != "J" && foedselsnummerRe.MatchString(r.Person.Foedselsnummer) {
 				return r.Person.Foedselsnummer
 			}
 		}
@@ -241,20 +259,20 @@ func personMedRolle(grupper []rollegruppe, gruppe, rolle string) string {
 }
 
 // hentVirksomheter henter antall unike kandidater fra brreg-er-fr som matcher
-// kql og har leder.
-func hentVirksomheter(ctx context.Context, c *tenor.Client, kql string, antall int) ([]virksomhetKandidat, error) {
-	// Roller kan ikke søkes på i KQL, så kravet om leder sjekkes her.
-	harLeder := func(md tenor.Metadata) bool {
-		k, ok := tilVirksomhetKandidat(md)
-		return ok && k.leder != ""
+// kql og har en person med personrolle, eller leder når den er tom.
+func hentVirksomheter(ctx context.Context, c *tenor.Client, kql string, personrolle PersonRole, antall int) ([]virksomhetKandidat, error) {
+	// Roller kan ikke søkes på i KQL, så kravet om personen sjekkes her.
+	harPerson := func(md tenor.Metadata) bool {
+		k, ok := tilVirksomhetKandidat(md, personrolle)
+		return ok && k.person != ""
 	}
-	dokumenter, err := c.FetchManyFiltered(ctx, tenor.SourceBrreg, kql, antall, harLeder)
+	dokumenter, err := c.FetchManyFiltered(ctx, tenor.SourceBrreg, kql, antall, harPerson)
 	if err != nil {
 		return nil, err
 	}
 	kandidater := make([]virksomhetKandidat, 0, len(dokumenter))
 	for _, md := range dokumenter {
-		if k, ok := tilVirksomhetKandidat(md); ok {
+		if k, ok := tilVirksomhetKandidat(md, personrolle); ok {
 			kandidater = append(kandidater, k)
 		}
 	}
@@ -262,9 +280,9 @@ func hentVirksomheter(ctx context.Context, c *tenor.Client, kql string, antall i
 }
 
 // hentBestemteVirksomheter henter virksomhetene med organisasjonsnumrene, i
-// samme rekkefølge. De som ikke finnes i Tenor eller mangler leder hoppes
+// samme rekkefølge. De som ikke finnes i Tenor eller mangler personen hoppes
 // over.
-func hentBestemteVirksomheter(ctx context.Context, c *tenor.Client, orgnumre []string) ([]virksomhetKandidat, error) {
+func hentBestemteVirksomheter(ctx context.Context, c *tenor.Client, orgnumre []string, personrolle PersonRole) ([]virksomhetKandidat, error) {
 	dokumenter, err := hentPaaOrganisasjonsnummer(ctx, c, orgnumre)
 	if err != nil {
 		return nil, err
@@ -275,16 +293,17 @@ func hentBestemteVirksomheter(ctx context.Context, c *tenor.Client, orgnumre []s
 		if !ok {
 			continue
 		}
-		if k, ok := tilVirksomhetKandidat(md); ok && k.leder != "" {
+		if k, ok := tilVirksomhetKandidat(md, personrolle); ok && k.person != "" {
 			kandidater = append(kandidater, k)
 		}
 	}
 	return kandidater, nil
 }
 
-// tilVirksomhetKandidat gjør om et brreg-dokument til en kandidat. Dokumenter
-// uten gyldig organisasjonsnummer hoppes over.
-func tilVirksomhetKandidat(md tenor.Metadata) (virksomhetKandidat, bool) {
+// tilVirksomhetKandidat gjør om et brreg-dokument til en kandidat, med
+// personen med personrolle, eller lederen når den er tom. Dokumenter uten
+// gyldig organisasjonsnummer hoppes over.
+func tilVirksomhetKandidat(md tenor.Metadata, personrolle PersonRole) (virksomhetKandidat, bool) {
 	var kildedata struct {
 		Organisasjonsnummer string `json:"organisasjonsnummer"`
 		Organisasjonsform   struct {
@@ -302,9 +321,12 @@ func tilVirksomhetKandidat(md tenor.Metadata) (virksomhetKandidat, bool) {
 		return virksomhetKandidat{}, false
 	}
 
-	k := virksomhetKandidat{
-		organisasjonsnummer: orgnr,
-		leder:               leder(kildedata.Organisasjonsform.Kode, kildedata.Rollegrupper),
+	k := virksomhetKandidat{organisasjonsnummer: orgnr}
+	if personrolle.Code != "" {
+		k.person = personMedRolle(kildedata.Rollegrupper, personrolle.Code)
+		k.personRolle = personrolle.Name
+	} else if fnr, kode := leder(kildedata.Organisasjonsform.Kode, kildedata.Rollegrupper); fnr != "" {
+		k.person, k.personRolle = fnr, personRoleByCode(kode).Name
 	}
 	if gyldigJSON {
 		k.kildedata = json.RawMessage(md.Kildedata)

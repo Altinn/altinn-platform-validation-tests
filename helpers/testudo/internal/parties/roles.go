@@ -77,13 +77,13 @@ func tilretteleggerFraKlient(md tenor.Metadata, kode string) string {
 	return ""
 }
 
-// hentTilretteleggere henter antall tilretteleggere med rollen og leder (se
-// leder).
+// hentTilretteleggere henter antall tilretteleggere med rollen og en person
+// med personrolle, eller leder når den er tom.
 //
 // Det gjøres i tre steg: klienter skannes til vi har nok unike kandidater,
 // kandidatenes egne dokumenter hentes mange om gangen, og så filtreres de på
-// leder. Det hentes flere kandidater enn antall, siden noen forkastes.
-func hentTilretteleggere(ctx context.Context, c *tenor.Client, rolle Role, antall int) ([]virksomhetKandidat, error) {
+// personen. Det hentes flere kandidater enn antall, siden noen forkastes.
+func hentTilretteleggere(ctx context.Context, c *tenor.Client, rolle Role, personrolle PersonRole, antall int) ([]virksomhetKandidat, error) {
 	kandidater := 2*antall + 10
 
 	// Mange klienter deler tilrettelegger, så bare klienter som gir en ny
@@ -113,8 +113,8 @@ func hentTilretteleggere(ctx context.Context, c *tenor.Client, rolle Role, antal
 		if !ok {
 			continue
 		}
-		k, ok := tilVirksomhetKandidat(md)
-		if !ok || k.leder == "" {
+		k, ok := tilVirksomhetKandidat(md, personrolle)
+		if !ok || k.person == "" {
 			continue
 		}
 		k.rolle = rolle.Name

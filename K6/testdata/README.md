@@ -107,6 +107,21 @@ Andre organisasjonsformer velges med `--unit-type`: `ENK`, `ESEK`, `BRL` og
 `NUF`, eller flere med komma. For `ENK` er lederen innehaver, og for `ESEK` og
 `BRL`, som sjelden har daglig leder, styreleder.
 
+Med `--person-role` er personen i kolonnene en med en annen rolle fra
+Enhetsregisteret, f.eks. `styreleder`, `styremedlem`, `varamedlem`,
+`kontaktperson` eller `prokurist` (`--help` lister alle). Rollene har navnene
+fra Access Management, og kolonnen `personRole` sier hvilken rolle personen
+har. Flere roller i samme virksomhet hentes med `--orgno`:
+
+```bash
+go run . find organizations -n 5 --env $ENV --format csv \
+  --columns organizationIdentifier --out orgs.csv &&
+go run . find organizations --orgno $(tail -n +2 orgs.csv | paste -sd,) \
+  --person-role styreleder --env $ENV --format csv --columns organizationIdentifier,personRole,ssn
+```
+
+Virksomheter uten styreleder i Register blir ikke med i den andre listen.
+
 ### pid, partyUuid, orgUuid, orgNo, lastName, …
 
 | Filer | Rader i dag |

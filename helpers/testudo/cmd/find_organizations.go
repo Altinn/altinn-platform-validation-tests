@@ -25,18 +25,21 @@ type virksomheterOptions struct {
 	// orgnr er bestemte virksomheter som hentes.
 	orgnr []string
 	// rolle er revisor, regnskapsfoerer eller forretningsfoerer.
-	rolle    string
-	utskrift utskriftValg
+	rolle string
+	// personrolle er rollen personen i virksomheten har, f.eks. styreleder.
+	// Tom betyr lederen.
+	personrolle string
+	utskrift    utskriftValg
 }
 
 // standardVirksomhetKolonner er CSV-kolonnene uten --columns.
 var standardVirksomhetKolonner = []string{"organizationIdentifier", "displayName", "partyId", "partyUuid"}
 
 // virksomhetKolonner er kolonnene en virksomhet kan skrives ut med i CSV. Alle
-// verdiene er fra Register, utenom type, som er rollen. Virksomhetens egne
-// kolonner har feltnavnene i Register (Party). ssn, userId, userPartyId,
-// userPartyUuid og lastName er lederen: daglig leder, innehaver eller
-// styreleder.
+// verdiene er fra Register, utenom type, som er tilretteleggerrollen, og
+// personRole. Virksomhetens egne kolonner har feltnavnene i Register (Party).
+// ssn, userId, userPartyId, userPartyUuid og lastName er personen med
+// personRole: lederen, eller rollen i --person-role.
 var virksomhetKolonner = []kolonne[parties.Organization]{
 	{navn: "organizationIdentifier", verdi: func(v parties.Organization) string { return v.OrganizationIdentifier }},
 	{navn: "displayName", verdi: func(v parties.Organization) string { return v.DisplayName }},
@@ -44,11 +47,12 @@ var virksomhetKolonner = []kolonne[parties.Organization]{
 	{navn: "partyUuid", verdi: func(v parties.Organization) string { return v.PartyUUID }},
 	{navn: "unitType", verdi: func(v parties.Organization) string { return v.UnitType }},
 	{navn: "type", verdi: func(v parties.Organization) string { return v.Rolle }},
-	{navn: "ssn", verdi: func(v parties.Organization) string { return v.LederParty.PersonIdentifier }},
-	{navn: "userId", verdi: func(v parties.Organization) string { return brukerID(&v.LederParty) }},
-	{navn: "userPartyId", verdi: func(v parties.Organization) string { return partyID(&v.LederParty) }},
-	{navn: "userPartyUuid", verdi: func(v parties.Organization) string { return v.LederParty.PartyUUID }},
-	{navn: "lastName", verdi: func(v parties.Organization) string { return v.LederParty.LastName }},
+	{navn: "personRole", verdi: func(v parties.Organization) string { return v.PersonRolle }},
+	{navn: "ssn", verdi: func(v parties.Organization) string { return v.Person.PersonIdentifier }},
+	{navn: "userId", verdi: func(v parties.Organization) string { return brukerID(&v.Person) }},
+	{navn: "userPartyId", verdi: func(v parties.Organization) string { return partyID(&v.Person) }},
+	{navn: "userPartyUuid", verdi: func(v parties.Organization) string { return v.Person.PartyUUID }},
+	{navn: "lastName", verdi: func(v parties.Organization) string { return v.Person.LastName }},
 }
 
 // valider sjekker flaggene før noe hentes. antallSatt er om --count ble
@@ -67,6 +71,11 @@ func (o *virksomheterOptions) valider(antallSatt bool) error {
 	if o.rolle != "" {
 		if _, err := parties.FindRole(o.rolle); err != nil {
 			return fmt.Errorf("%w: ukjent --role %q, bruk en av %s", errs.Invalid, o.rolle, parties.RoleNames())
+		}
+	}
+	if o.personrolle != "" {
+		if _, err := parties.FindPersonRole(o.personrolle); err != nil {
+			return fmt.Errorf("%w: ukjent --person-role %q, bruk en av %s", errs.Invalid, o.personrolle, parties.PersonRoleNames())
 		}
 	}
 
@@ -109,15 +118,17 @@ func newOrganizationsCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "organizations",
 		Short: "Hent virksomheter fra Tenor i bulk",
-		Long: `Hent virksomheter med leder fra Tenor. Lederen er daglig leder, innehaver
-for enkeltpersonforetak, eller styreleder for borettslag og eierseksjonssameier
-uten daglig leder.
+		Long: `Hent virksomheter med en person fra Tenor. Personen er lederen: daglig leder,
+innehaver for enkeltpersonforetak, eller styreleder for borettslag og
+eierseksjonssameier uten daglig leder. Med --person-role er det en person med
+den rollen i Enhetsregisteret, f.eks. styreleder eller styremedlem.
 
 Uten flagg hentes aksjeselskaper. Velg andre organisasjonsformer med
 --unit-type, bestemte virksomheter med --orgno, eller revisorer,
 regnskapsførere og forretningsførere med --role.`,
 		Example: `  testudo find organizations -n 10
   testudo find organizations --unit-type enk,nuf -n 5 --format csv
+  testudo find organizations --person-role styremedlem -n 5 --format csv --columns organizationIdentifier,personRole,ssn
   testudo find organizations --orgno 313490114 --format csv
   testudo find organizations --role regnskapsfoerer -n 5 --format csv`,
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -160,6 +171,10 @@ regnskapsførere og forretningsførere med --role.`,
 		&opts.rolle, "role", "r", "",
 		"Hent tilretteleggere: "+parties.RoleNames(),
 	)
+	cmd.Flags().StringVar(
+		&opts.personrolle, "person-role", "",
+		"Personen har denne rollen i virksomheten (standard: lederen): "+parties.PersonRoleNames(),
+	)
 	cmd.Flags().BoolVar(
 		&opts.jsonOutput, "json", false,
 		"Skriv ut som JSON, med partene fra Register",
@@ -174,8 +189,9 @@ regnskapsførere og forretningsførere med --role.`,
 }
 
 // runVirksomheter skriver virksomhetene til ut og meldinger til logg: orgnr,
-// navn og leder per linje, eller JSON med --json. Hver virksomhet og leder får
-// parten fra Register (reg). Med --format csv skrives de valgte kolonnene.
+// navn og personen per linje, eller JSON med --json. Hver virksomhet og person
+// får parten fra Register (reg). Med --format csv skrives de valgte
+// kolonnene.
 func runVirksomheter(ctx context.Context, c *tenor.Client, reg *register.Client, ut, logg io.Writer, opts *virksomheterOptions) error {
 	if reg == nil {
 		return fmt.Errorf("%w: mangler Register-klient", errs.Invalid)
@@ -190,17 +206,21 @@ func runVirksomheter(ctx context.Context, c *tenor.Client, reg *register.Client,
 	}
 
 	antall := opts.onsketAntall()
+	person := "lederen"
+	if opts.personrolle != "" {
+		person = opts.personrolle
+	}
 	switch {
 	case len(opts.orgnr) > 0:
-		fmt.Fprintf(logg, "Henter %d virksomheter fra Tenor: %s\n", antall, strings.Join(opts.orgnr, ", "))
+		fmt.Fprintf(logg, "Henter %d virksomheter med %s fra Tenor: %s\n", antall, person, strings.Join(opts.orgnr, ", "))
 	case opts.rolle != "":
 		rolle, err := parties.FindRole(opts.rolle)
 		if err != nil {
 			return err
 		}
-		fmt.Fprintf(logg, "Henter %d %s-virksomheter fra Tenor via klientene (%s)\n", antall, rolle.Name, tenor.Exists(rolle.Field))
+		fmt.Fprintf(logg, "Henter %d %s-virksomheter med %s fra Tenor via klientene (%s)\n", antall, rolle.Name, person, tenor.Exists(rolle.Field))
 	default:
-		fmt.Fprintf(logg, "Henter %d virksomheter fra Tenor med KQL: %s\n", antall, parties.OrganizationKQL(opts.organisasjonsformer))
+		fmt.Fprintf(logg, "Henter %d virksomheter med %s fra Tenor med KQL: %s\n", antall, person, parties.OrganizationKQL(opts.organisasjonsformer))
 	}
 
 	virksomheter, err := parties.FindOrganizations(ctx, c, reg, parties.OrganizationQuery{
@@ -208,6 +228,7 @@ func runVirksomheter(ctx context.Context, c *tenor.Client, reg *register.Client,
 		UnitTypes:           opts.organisasjonsformer,
 		OrganizationNumbers: opts.orgnr,
 		Role:                opts.rolle,
+		PersonRole:          opts.personrolle,
 		Env:                 opts.env,
 	}, logg)
 	if err != nil {
@@ -224,7 +245,7 @@ func runVirksomheter(ctx context.Context, c *tenor.Client, reg *register.Client,
 	case formatCSV:
 		hoppetOver, err := skrivCSV(ut, virksomheter, kolonner)
 		if hoppetOver > 0 {
-			fmt.Fprintf(logg, "Hoppet over %d rader som mangler verdier (f.eks. leder uten bruker).\n", hoppetOver)
+			fmt.Fprintf(logg, "Hoppet over %d rader som mangler verdier (f.eks. personen uten bruker).\n", hoppetOver)
 		}
 		if err != nil {
 			return err
@@ -240,11 +261,11 @@ func runVirksomheter(ctx context.Context, c *tenor.Client, reg *register.Client,
 	return nil
 }
 
-// skrivVirksomheterTekst skriver orgnr, navn og leder per linje, med rolle når
-// den er satt.
+// skrivVirksomheterTekst skriver orgnr, navn og personen per linje, med
+// tilretteleggerrolle når den er satt.
 func skrivVirksomheterTekst(ut io.Writer, virksomheter []parties.Organization) {
 	for _, v := range virksomheter {
-		felt := []string{v.OrganizationIdentifier, v.DisplayName, v.LederParty.PersonIdentifier}
+		felt := []string{v.OrganizationIdentifier, v.DisplayName, v.Person.PersonIdentifier}
 		if v.Rolle != "" {
 			felt = append(felt, v.Rolle)
 		}

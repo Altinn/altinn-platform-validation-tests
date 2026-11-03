@@ -48,9 +48,27 @@ func LeaderSSN(i int) string {
 	return fmt.Sprintf("%011d", 50000000000+i)
 }
 
+// ChairSSN er fødselsnummeret til styreleder i virksomhet i i BrregResponse.
+func ChairSSN(i int) string {
+	return fmt.Sprintf("%011d", 60000000000+i)
+}
+
+// rolle er en aktiv rolle i en rollegruppe, med en person eller en virksomhet.
+func rolle(kode, person, virksomhet string) map[string]any {
+	r := map[string]any{"type": map[string]string{"kode": kode}, "fratraadt": "N"}
+	if person != "" {
+		r["person"] = map[string]string{"foedselsnummer": person}
+	}
+	if virksomhet != "" {
+		r["virksomhet"] = map[string]string{"organisasjonsnummer": virksomhet}
+	}
+	return r
+}
+
 // BrregResponse lager et Tenor-svar med aksjeselskaper med løpenummer
-// from..to-1, med navnet "FIRMA <i> AS". Virksomheter med løpenummer delelig
-// med 3 har ingen daglig leder.
+// from..to-1, med navnet "FIRMA <i> AS". Alle har styreleder (ChairSSN) og et
+// styremedlem, men virksomheter med løpenummer delelig med 3 har ingen daglig
+// leder.
 func BrregResponse(t *testing.T, hits int64, seed int32, from, to int) []byte {
 	t.Helper()
 	docs := []map[string]any{}
@@ -58,11 +76,11 @@ func BrregResponse(t *testing.T, hits int64, seed int32, from, to int) []byte {
 		orgnr := fmt.Sprintf("%09d", i)
 		roller := []map[string]any{
 			{"type": map[string]string{"kode": "STYR"},
-				"roller": []map[string]any{{"person": map[string]string{"foedselsnummer": "11111111111"}, "fratraadt": "N"}}},
+				"roller": []map[string]any{rolle("MEDL", "11111111111", ""), rolle("LEDE", ChairSSN(i), "")}},
 		}
 		if i%3 != 0 {
 			roller = append(roller, map[string]any{"type": map[string]string{"kode": "DAGL"},
-				"roller": []map[string]any{{"person": map[string]string{"foedselsnummer": LeaderSSN(i)}, "fratraadt": "N"}}})
+				"roller": []map[string]any{rolle("DAGL", LeaderSSN(i), "")}})
 		}
 		kilde, _ := json.Marshal(map[string]any{
 			"organisasjonsnummer": orgnr,
@@ -84,11 +102,11 @@ func BrregDoc(orgnr, name, leader, auditor string) map[string]any {
 	grupper := []map[string]any{}
 	if leader != "" {
 		grupper = append(grupper, map[string]any{"type": map[string]string{"kode": "DAGL"},
-			"roller": []map[string]any{{"person": map[string]string{"foedselsnummer": leader}, "fratraadt": "N"}}})
+			"roller": []map[string]any{rolle("DAGL", leader, "")}})
 	}
 	if auditor != "" {
 		grupper = append(grupper, map[string]any{"type": map[string]string{"kode": "REVI"},
-			"roller": []map[string]any{{"virksomhet": map[string]string{"organisasjonsnummer": auditor}, "fratraadt": "N"}}})
+			"roller": []map[string]any{rolle("REVI", "", auditor)}})
 	}
 	kilde, _ := json.Marshal(map[string]any{"organisasjonsnummer": orgnr, "navn": name, "rollegrupper": grupper})
 	return map[string]any{"tenorMetadata": map[string]any{"id": orgnr, "kildedata": string(kilde)}}

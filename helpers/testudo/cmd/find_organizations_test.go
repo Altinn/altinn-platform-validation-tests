@@ -44,7 +44,7 @@ func TestRunVirksomheterUtskrift(t *testing.T) {
 		t.Fatal(err)
 	}
 	if len(rader) != 2 || rader[0]["organizationIdentifier"] != "000000001" || rader[0]["unitType"] != "AS" ||
-		rader[0]["lederParty"].(map[string]any)["personIdentifier"] != tenortest.LeaderSSN(1) || rader[0]["kildedata"] == nil {
+		rader[0]["person"].(map[string]any)["personIdentifier"] != tenortest.LeaderSSN(1) || rader[0]["kildedata"] == nil {
 		t.Errorf("json = %s", ut.String())
 	}
 	if !strings.Contains(logg.String(), "fant bare 2 av 5") {
@@ -85,13 +85,13 @@ func TestRunVirksomheterJSONMedRegister(t *testing.T) {
 		t.Errorf("virksomhet = %v", v)
 	}
 	// Ingenting annet fra Tenor.
-	for _, k := range []string{"organisasjonsnummer", "navn", "organisasjonsform", "dagligLeder", "dagligLederParty"} {
+	for _, k := range []string{"organisasjonsnummer", "navn", "organisasjonsform", "dagligLeder", "dagligLederParty", "lederParty"} {
 		if _, finnes := v[k]; finnes {
 			t.Errorf("%s skal ikke finnes: %v", k, v)
 		}
 	}
-	if d, ok := v["lederParty"].(map[string]any); !ok || d["partyId"] != float64(701) {
-		t.Errorf("lederParty = %v", v["lederParty"])
+	if d, ok := v["person"].(map[string]any); !ok || d["partyId"] != float64(701) {
+		t.Errorf("person = %v", v["person"])
 	}
 	if !strings.Contains(logg.String(), "fant bare 1 av 2") {
 		t.Errorf("logg = %q", logg.String())
@@ -124,7 +124,7 @@ func TestRunVirksomheterCSV(t *testing.T) {
 	if ut.String() != vil {
 		t.Errorf("csv = %q", ut.String())
 	}
-	if !strings.Contains(logg.String(), "1 virksomheter fra Tenor, eller lederen deres, finnes ikke") {
+	if !strings.Contains(logg.String(), "1 virksomheter fra Tenor, eller personen i dem, finnes ikke") {
 		t.Errorf("logg = %q", logg.String())
 	}
 
@@ -160,6 +160,10 @@ func TestValiderVirksomhetValg(t *testing.T) {
 		{"ukjent rolle", virksomheterOptions{antall: 1, rolle: "advokat"}, false, "ukjent --role"},
 		{"rolle og organisasjonsform", virksomheterOptions{antall: 1, rolle: "revisor", organisasjonsformer: []string{"AS"}}, false, "--role og --unit-type kan ikke brukes sammen"},
 		{"orgno og rolle", virksomheterOptions{rolle: "revisor", orgnr: []string{"313490114"}}, false, "--orgno og --role kan ikke brukes sammen"},
+		// --person-role kan brukes med alle de andre.
+		{"personrolle", virksomheterOptions{antall: 1, personrolle: "styremedlem", organisasjonsformer: []string{"BRL"}}, false, ""},
+		{"personrolle og orgno", virksomheterOptions{personrolle: "styreleder", orgnr: []string{"313490114"}}, false, ""},
+		{"ukjent personrolle", virksomheterOptions{antall: 1, personrolle: "LEDE"}, false, "ukjent --person-role"},
 	}
 	for _, tt := range tests {
 		err := tt.opts.valider(tt.antallSatt)
@@ -172,6 +176,34 @@ func TestValiderVirksomhetValg(t *testing.T) {
 		if !errors.Is(err, errs.Invalid) || !strings.Contains(err.Error(), tt.feil) {
 			t.Errorf("%s: err = %v", tt.navn, err)
 		}
+	}
+}
+
+func TestRunVirksomheterPersonrolle(t *testing.T) {
+	c := tenortest.NewClient(t, func(w http.ResponseWriter, r *http.Request) {
+		w.Write(tenortest.BrregResponse(t, 3, 1, 1, 4))
+	})
+	var ut, logg bytes.Buffer
+	// Virksomhet 3 har ingen daglig leder, men styreleder.
+	opts := &virksomheterOptions{antall: 3, personrolle: "styreleder", utskrift: utskriftValg{format: "csv", kolonner: "organizationIdentifier,personRole,ssn"}}
+	if err := runVirksomheter(context.Background(), c, registertest.Echo(t), &ut, &logg, opts); err != nil {
+		t.Fatal(err)
+	}
+	if !strings.HasSuffix(ut.String(), "000000003,styreleder,"+tenortest.ChairSSN(3)+"\n") || strings.Count(ut.String(), "\n") != 4 {
+		t.Errorf("csv = %q", ut.String())
+	}
+	if !strings.Contains(logg.String(), "Henter 3 virksomheter med styreleder fra Tenor") {
+		t.Errorf("logg = %q", logg.String())
+	}
+
+	// Uten --person-role er personen lederen, og personRole sier hvilken rolle.
+	ut.Reset()
+	opts.personrolle = ""
+	if err := runVirksomheter(context.Background(), c, registertest.Echo(t), &ut, &logg, opts); err != nil {
+		t.Fatal(err)
+	}
+	if !strings.Contains(ut.String(), "000000001,daglig-leder,"+tenortest.LeaderSSN(1)+"\n") {
+		t.Errorf("csv uten personrolle = %q", ut.String())
 	}
 }
 
@@ -202,7 +234,7 @@ func TestRunVirksomheterOrgnr(t *testing.T) {
 	if vil := tenortest.AuditorWithLeader + "\tVIRKSOMHET " + tenortest.AuditorWithLeader + "\t10000000001\n"; ut.String() != vil {
 		t.Errorf("ut = %q", ut.String())
 	}
-	if !strings.Contains(logg.String(), "Henter 2 virksomheter fra Tenor: "+tenortest.AuditorWithoutLeader) ||
+	if !strings.Contains(logg.String(), "Henter 2 virksomheter med lederen fra Tenor: "+tenortest.AuditorWithoutLeader) ||
 		!strings.Contains(logg.String(), "fant bare 1 av 2") {
 		t.Errorf("logg = %q", logg.String())
 	}
@@ -279,8 +311,8 @@ func TestRunVirksomheterRolleCSVOgJSON(t *testing.T) {
 	if len(rader) != 1 || rader[0]["rolle"] != "revisor" || rader[0]["partyUuid"] != "f-1" {
 		t.Fatalf("json = %s", ut.String())
 	}
-	if d, ok := rader[0]["lederParty"].(map[string]any); !ok || d["partyUuid"] != "d-1" {
-		t.Errorf("lederParty = %v", rader[0]["lederParty"])
+	if d, ok := rader[0]["person"].(map[string]any); !ok || d["partyUuid"] != "d-1" {
+		t.Errorf("person = %v", rader[0]["person"])
 	}
 	if _, finnes := rader[0]["klienter"]; finnes {
 		t.Errorf("klienter skal ikke finnes: %v", rader[0])

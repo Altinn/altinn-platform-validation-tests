@@ -15,7 +15,7 @@ func TestHentTilretteleggere(t *testing.T) {
 	c := tenortest.AuditorClient(t)
 	revisor, _ := FindRole("revisor")
 
-	v, err := hentTilretteleggere(context.Background(), c, revisor, 5)
+	v, err := hentTilretteleggere(context.Background(), c, revisor, PersonRole{}, 5)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -23,11 +23,11 @@ func TestHentTilretteleggere(t *testing.T) {
 	if len(v) != 2 || v[0].organisasjonsnummer != tenortest.AuditorWithLeader || v[1].organisasjonsnummer != tenortest.AuditorWithLeader2 {
 		t.Fatalf("v = %+v", v)
 	}
-	if v[0].rolle != "revisor" || v[0].leder != "10000000001" {
+	if v[0].rolle != "revisor" || v[0].person != "10000000001" {
 		t.Errorf("første = %+v", v[0])
 	}
 
-	v, _ = hentTilretteleggere(context.Background(), c, revisor, 1)
+	v, _ = hentTilretteleggere(context.Background(), c, revisor, PersonRole{}, 1)
 	if len(v) != 1 || v[0].organisasjonsnummer != tenortest.AuditorWithLeader {
 		t.Errorf("med antall 1: %+v", v)
 	}
