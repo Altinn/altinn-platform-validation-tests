@@ -12,7 +12,7 @@ Client delegation is hard to test without the right data. A test needs an organi
 The files in [K6/testdata/access-management/enduser/client-organizations](../../K6/testdata/access-management/enduser/client-organizations) are shared test data for functional tests of client delegation in at22, at23 and tt02. K6 tests, Playwright tests and exploratory testing can all use them.
 
 - `<environment>.csv` has one row per organization with clients, one per profile: `revisor`, `regnskapsforer`, `forretningsforer`, `revisor-jordbruk` (auditor clients, some with agriculture packages) and `egendefinert` (custom clients with 1-3 access packages). Each row has the person who logs in (`pid`, `userId`, `partyId`, `partyUuid`), the organization to act for (`orgNo`, `orgPartyId`, `orgUuid`) and the number of clients.
-- `clients/<environment>.csv` has one row per client: the organization it belongs to (`orgNo`), the client (`clientOrgNo`, `clientName`, `clientType`), its roles, whether it has both a role from Enhetsregisteret and a custom relation (`hasErRoleAndCustom`), and its access packages.
+- `clients/<environment>.csv` has a selection of each organization's clients: one client for each combination of client type, roles, Enhetsregisteret role plus custom relation (`hasErRoleAndCustom`) and access packages. Each row has the organization it belongs to (`orgNo`) and the client (`clientOrgNo`, `clientName`, `clientType`). The full lists are too large to keep here (the two auditors have around 5,500 and 6,000 clients each), and a test that needs the full volume logs in as the organization instead. `clientCount` has the real number.
 
 All persons and organizations are synthetic Tenor data. The IDs are specific to each environment.
 
