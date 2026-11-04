@@ -1,0 +1,34 @@
+pid,orgNo,orgName,clientOrgNo,clientName,clientType,roles,hasErRoleAndCustom,packages
+23812849735,313588270,FALSK SIST TIGER AS,210000992,LYS NØDVENDIG TIGER AS,AS,revisor,false,ansvarlig-revisor revisormedarbeider
+23812849735,313588270,FALSK SIST TIGER AS,210015272,SAMEIET VASSEN KNUSLETE LØVE,ESEK,revisor,false,ansvarlig-revisor revisormedarbeider
+23812849735,313588270,FALSK SIST TIGER AS,210020632,LATTERMILD ALTETENDE STRUTS AB,NUF,revisor,false,ansvarlig-revisor revisormedarbeider
+23812849735,313588270,FALSK SIST TIGER AS,210048952,GREI FALSK MINK ANS,ANS,revisor,false,ansvarlig-revisor revisormedarbeider
+23812849735,313588270,FALSK SIST TIGER AS,210060022,VERDIPAPIRFONDET GJENNOMSIKTIG HENSYNSFULL KENGURU,VPFO,revisor,false,ansvarlig-revisor revisormedarbeider
+23812849735,313588270,FALSK SIST TIGER AS,210092072,OFFISIELL LANG LEOPARD ASA,ASA,revisor,false,ansvarlig-revisor revisormedarbeider
+23812849735,313588270,FALSK SIST TIGER AS,210162682,KS RASTLØS NETT GEPARD,KS,revisor,false,ansvarlig-revisor revisormedarbeider
+23812849735,313588270,FALSK SIST TIGER AS,210235272,GRUNN PÅPASSELIG APE,FLI,revisor,false,ansvarlig-revisor revisormedarbeider
+23812849735,313588270,FALSK SIST TIGER AS,210252312,TROFAST ULIK TIGER AS,AS,regnskapsforer,false,regnskapsforer-lonn regnskapsforer-med-signeringsrettighet regnskapsforer-uten-signeringsrettighet
+23812849735,313588270,FALSK SIST TIGER AS,210354662,BORETTSLAGET INTRIKAT ULLEN HEST,BRL,revisor,false,ansvarlig-revisor revisormedarbeider
+23812849735,313588270,FALSK SIST TIGER AS,210371052,STIFTELSEN MUSKULØS DEDIKERT KROKODILLE,STI,revisor,false,ansvarlig-revisor revisormedarbeider
+23812849735,313588270,FALSK SIST TIGER AS,210539492,TRADISJONSBUNDEN LYSEBLÅ TIGER AS,AS,rettighetshaver,false,jordbruk dyrehold skogbruk
+23812849735,313588270,FALSK SIST TIGER AS,210668152,PARTREDERIET GOD HURTIG MOSKUS,PRE,revisor,false,ansvarlig-revisor revisormedarbeider
+23812849735,313588270,FALSK SIST TIGER AS,211022272,UTROLIG HORISONTAL HUND DA,DA,revisor,false,ansvarlig-revisor revisormedarbeider
+23812849735,313588270,FALSK SIST TIGER AS,211742372,GRETTEN OPPRØMT KATT KRÅKESØLV,ENK,revisor,false,ansvarlig-revisor revisormedarbeider
+23812849735,313588270,FALSK SIST TIGER AS,213458752,HISTORISK GJENSIDIG PUMA BBL,BBL,revisor,false,ansvarlig-revisor revisormedarbeider
+23812849735,313588270,FALSK SIST TIGER AS,214131102,LIKEGYLDIG FORETAKSOM SKILPADDE BA,BA,revisor,false,ansvarlig-revisor revisormedarbeider
+23812849735,313588270,FALSK SIST TIGER AS,310032476,RELEVANT KOSTBAR NISE PENSJONSKASSE,PK,revisor,false,ansvarlig-revisor revisormedarbeider
+23812849735,313588270,FALSK SIST TIGER AS,310037524,OPERATIV TREIG IMPALA SAMEIE,SAM,revisor,false,ansvarlig-revisor revisormedarbeider
+23812849735,313588270,FALSK SIST TIGER AS,310038180,MOTIVERT KONSEKVENT KAIMAN HF,SÆR,revisor,false,ansvarlig-revisor revisormedarbeider
+23812849735,313588270,FALSK SIST TIGER AS,310191884,KONSENTRISK MUSKULØS EKORN SF,SF,revisor,false,ansvarlig-revisor revisormedarbeider
+23812849735,313588270,FALSK SIST TIGER AS,310244414,STYRBAR IVRIG ISBJØRN SA,SA,revisor,false,ansvarlig-revisor revisormedarbeider
+23812849735,313588270,FALSK SIST TIGER AS,310521248,OVERFØLSOM EKSAKT GIRAFF SPAREBANK,SPA,revisor,false,ansvarlig-revisor revisormedarbeider
+23812849735,313588270,FALSK SIST TIGER AS,310768804,TRÅDLØS DISTINGVERT INSEKT,ANNA,revisor,false,ansvarlig-revisor revisormedarbeider
+23812849735,313588270,FALSK SIST TIGER AS,310796646,MINKENDE SELVTILFREDS TIGER AS,AS,revisor rettighetshaver,true,ansvarlig-revisor revisormedarbeider jordbruk
+23812849735,313588270,FALSK SIST TIGER AS,311088556,KRY VILJESTERK ALLIGATOR,GFS,revisor,false,ansvarlig-revisor revisormedarbeider
+23812849735,313588270,FALSK SIST TIGER AS,312230941,NATURLIG KONKURRANSEDYKTIG TIGER AS,AS,revisor rettighetshaver,true,ansvarlig-revisor revisormedarbeider jordbruk skogbruk
+23812849735,313588270,FALSK SIST TIGER AS,312540215,IVRIG UPRESIS STRUTS AS,NUF,regnskapsforer,false,regnskapsforer-lonn regnskapsforer-med-signeringsrettighet regnskapsforer-uten-signeringsrettighet
+23812849735,313588270,FALSK SIST TIGER AS,313056120,BETYDELIG SPISS TIGER AS,AS,revisor rettighetshaver,true,ansvarlig-revisor revisormedarbeider dyrehold skogbruk jordbruk
+23812849735,313588270,FALSK SIST TIGER AS,313113108,GLUPSK SKYFRI TIGER AS,AS,rettighetshaver,false,jordbruk fiske
+23812849735,313588270,FALSK SIST TIGER AS,313170837,ALLSIDIG LYSTIG TIGER AS,AS,rettighetshaver,false,jordbruk
+23812849735,313588270,FALSK SIST TIGER AS,313243869,FESTLIG USENSUELL BILLE IKS,IKS,revisor,false,ansvarlig-revisor revisormedarbeider
+23812849735,313588270,FALSK SIST TIGER AS,313600750,LETT STRENG TIGER AS,AS,regnskapsforer revisor,false,regnskapsforer-lonn regnskapsforer-med-signeringsrettighet regnskapsforer-uten-signeringsrettighet ansvarlig-revisor revisormedarbeider
