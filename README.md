@@ -5,6 +5,7 @@
 ## Important Folders
 - The [K6/clients](K6/clients) has API clients to abstract the communication with the different APIs listed in [Altinn Studio Docs](https://docs.altinn.studio/nb/api/).
 - The [K6/testdata](K6/testdata) has test data used in the various tests.
+  - Organizations with clients (auditors, accountants, business managers) for client delegation are in [K6/testdata/access-management/enduser/client-organizations](K6/testdata/access-management/enduser/client-organizations), see [ADR 0003: Client organization test data for functional tests](docs/adr/0003-client-organization-test-data.md).
 - The [K6/api/building-blocks](K6/api/building-blocks) folder has code that wraps the api client calls and does basic http status code checks, tries to parse response bodies, adds retry logic, etc.
 - The [K6/api/domain-checks](K6/api/domain-checks) has reusable checks that should be used within the test files themselves (i.e. most checks should be created here and not in the test files themselves).
 - The [K6/api/tests](K6/api/tests) has the actual test files.

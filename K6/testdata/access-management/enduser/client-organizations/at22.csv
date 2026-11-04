@@ -1,0 +1,6 @@
+profile,pid,userId,partyId,partyUuid,name,orgNo,orgPartyId,orgUuid,orgName,clientCount,description
+revisor,11866598926,20997106,51147604,d02f838c-8d95-489c-92a6-ae064f5c6866,OPTIMISTISK HANDEL,314239822,51235094,fc4356c0-ad47-42fc-9fea-b13cdeb917bc,FULLKOMMEN FAST TIGER AS,5484,Klienter fra Enhetsregisteret (revisor)
+regnskapsforer,04847494625,20313921,50723227,3f965796-46ca-4781-9192-6664e2cd8047,KOMPLETT SØNDAG,310149969,51235347,b43b1767-6149-4c41-8fab-86eead0eaea1,SOSIAL NONFIGURATIV TIGER AS,191,Klienter fra Enhetsregisteret (regnskapsforer)
+forretningsforer,23885997783,20049928,50249946,07b47d2f-546b-46f8-9eb7-36140c481bbe,OPPRIKTIG LIKNING,210486372,51239239,43e624e8-64c4-4102-b4cc-13e8f3f76b62,NYSGJERRIG FORNEM PUMA BBL,302,Klienter fra Enhetsregisteret (forretningsforer)
+egendefinert,06915799130,20751003,50960728,9c3b1d09-02a6-4657-b72c-79b75a91ecc1,UROKKELIG SEILBÅT,314103742,51678239,17da4686-859c-4877-8575-8488aa70b7a0,KONTANT USENSUELL TIGER AS,10,10 egendefinerte klienter med 1-3 tilgangspakker
+revisor-jordbruk,23812849735,20013170,51167940,8de3f24d-ec72-4a00-8e89-181fd813d410,OKSYDERT TELEFONKATALOG,313588270,51235098,ea9611a5-65bf-4635-8ff5-0f03a44dd022,FALSK SIST TIGER AS,5944,"Revisor-klienter fra ER, noen med jordbruk-pakker i tillegg, og noen med bare jordbruk-pakker"
