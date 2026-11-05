@@ -120,8 +120,75 @@ func TestFindOrganizationsKreverDagligLederIRegister(t *testing.T) {
 		v[0].PersonRolle != "daglig-leder" || v[0].Person.PersonIdentifier != tenortest.LeaderSSN(1) || v[0].Person.PartyID != 701 {
 		t.Fatalf("virksomheter = %+v", v)
 	}
-	if !strings.Contains(logg.String(), "Register (at22): 1 virksomheter fra Tenor, eller personen i dem, finnes ikke") {
+	if !strings.Contains(logg.String(), "Register (at22): 1 virksomheter fra Tenor, eller personen eller hovedenheten deres, finnes ikke") {
 		t.Errorf("logg = %q", logg.String())
+	}
+}
+
+func TestFindOrganizationsUnderenheter(t *testing.T) {
+	c := tenortest.SubunitClient(t)
+	// Standard er underenheter av AS, én per hovedenhet. Hovedenheten med to
+	// underenheter gir den første, AS-et uten daglig leder ingen, og ENK-et
+	// er ikke med i søket.
+	v, err := FindOrganizations(context.Background(), c, registertest.Echo(t), OrganizationQuery{Count: 3, Subunits: true}, &bytes.Buffer{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(v) != 1 || v[0].OrganizationIdentifier != tenortest.SubunitWithLeader {
+		t.Fatalf("virksomheter = %+v", v)
+	}
+	if u := v[0]; u.Hovedenhet == nil || u.Hovedenhet.OrganizationIdentifier != tenortest.MainUnitWithLeader ||
+		u.Person.PersonIdentifier != tenortest.MainUnitLeader || u.PersonRolle != "daglig-leder" || u.Kildedata == nil {
+		t.Errorf("underenhet = %+v, hovedenhet = %+v", u, u.Hovedenhet)
+	}
+
+	// Hovedenheter med minst to underenheter: bare den med daglig leder.
+	v, err = FindOrganizations(context.Background(), c, registertest.Echo(t), OrganizationQuery{Count: 3, Subunits: true, MinSubunits: 2}, &bytes.Buffer{})
+	if err != nil || len(v) != 1 || v[0].Hovedenhet == nil || v[0].Hovedenhet.OrganizationIdentifier != tenortest.MainUnitWithLeader {
+		t.Fatalf("minst to: virksomheter = %+v, err = %v", v, err)
+	}
+	if v, err = FindOrganizations(context.Background(), c, registertest.Echo(t), OrganizationQuery{Count: 3, Subunits: true, MinSubunits: 3}, &bytes.Buffer{}); err != nil || len(v) != 0 {
+		t.Fatalf("minst tre: virksomheter = %+v, err = %v", v, err)
+	}
+
+	// Uten Subunits er det hovedenheten selv som hentes.
+	v, err = FindOrganizations(context.Background(), c, registertest.Echo(t), OrganizationQuery{Count: 3, MinSubunits: 2}, &bytes.Buffer{})
+	if err != nil || len(v) != 1 || v[0].OrganizationIdentifier != tenortest.MainUnitWithLeader || v[0].Hovedenhet != nil {
+		t.Fatalf("hovedenheter med minst to: virksomheter = %+v, err = %v", v, err)
+	}
+
+	// Underenheter av ENK.
+	v, err = FindOrganizations(context.Background(), c, registertest.Echo(t), OrganizationQuery{Count: 3, Subunits: true, UnitTypes: []string{"enk"}}, &bytes.Buffer{})
+	if err != nil || len(v) != 1 || v[0].OrganizationIdentifier != tenortest.SubunitOfENK ||
+		v[0].PersonRolle != "innehaver" || v[0].Person.PersonIdentifier != tenortest.MainUnitOwner {
+		t.Fatalf("av ENK: virksomheter = %+v, err = %v", v, err)
+	}
+
+	// Uten Subunits blir underenheter ikke hentet.
+	if kql := OrganizationKQL(nil); strings.Contains(kql, "BEDR") {
+		t.Errorf("kql = %q", kql)
+	}
+
+	// Med --orgno virker det også, uansett hovedenhetens form.
+	v, err = FindOrganizations(context.Background(), c, registertest.Echo(t), OrganizationQuery{OrganizationNumbers: []string{tenortest.SubunitWithLeader2}}, &bytes.Buffer{})
+	if err != nil || len(v) != 1 || v[0].Hovedenhet == nil || v[0].Hovedenhet.OrganizationIdentifier != tenortest.MainUnitWithLeader {
+		t.Fatalf("med orgnr: virksomheter = %+v, err = %v", v, err)
+	}
+
+	// Hovedenheten må finnes i Register.
+	utenHovedenhet := registertest.NewClient(t, func(w http.ResponseWriter, r *http.Request) {
+		var data []string
+		for _, u := range registertest.ReadQuery(t, r) {
+			if !strings.HasSuffix(u, ":"+tenortest.MainUnitWithLeader) {
+				data = append(data, `{"partyUuid":"x","personIdentifier":"`+u[strings.LastIndex(u, ":")+1:]+`","organizationIdentifier":"`+u[strings.LastIndex(u, ":")+1:]+`"}`)
+			}
+		}
+		w.Write([]byte(`{"data":[` + strings.Join(data, ",") + `]}`))
+	})
+	var logg bytes.Buffer
+	v, err = FindOrganizations(context.Background(), c, utenHovedenhet, OrganizationQuery{Count: 3, Subunits: true, Env: "at23"}, &logg)
+	if err != nil || len(v) != 0 || !strings.Contains(logg.String(), "1 virksomheter fra Tenor, eller personen eller hovedenheten deres, finnes ikke") {
+		t.Errorf("uten hovedenhet i Register: virksomheter = %+v, err = %v, logg = %q", v, err, logg.String())
 	}
 }
 
@@ -177,6 +244,23 @@ func TestOrganizationKQL(t *testing.T) {
 	} {
 		if got := OrganizationKQL(tt.typer); got != tt.vil {
 			t.Errorf("%v: fikk %q, vil ha %q", tt.typer, got, tt.vil)
+		}
+	}
+}
+
+func TestOrganizationQueryKQL(t *testing.T) {
+	for _, tt := range []struct {
+		q   OrganizationQuery
+		vil string
+	}{
+		{OrganizationQuery{}, `organisasjonsform.kode:"AS"`},
+		{OrganizationQuery{MinSubunits: 2}, `(organisasjonsform.kode:"AS") AND (antallUnderenheter>=2)`},
+		// Hovedenheter må ha minst én underenhet.
+		{OrganizationQuery{Subunits: true}, `(organisasjonsform.kode:"AS") AND (antallUnderenheter>=1)`},
+		{OrganizationQuery{Subunits: true, MinSubunits: 3, UnitTypes: []string{"enk"}}, `(organisasjonsform.kode:"ENK") AND (antallUnderenheter>=3)`},
+	} {
+		if got := tt.q.KQL(); got != tt.vil {
+			t.Errorf("%+v: fikk %q, vil ha %q", tt.q, got, tt.vil)
 		}
 	}
 }
@@ -253,5 +337,19 @@ func TestTilVirksomhetKandidat(t *testing.T) {
 	}
 	if _, ok := tilVirksomhetKandidat(tenor.Metadata{ID: "01010112345"}, PersonRole{}); ok {
 		t.Error("fødselsnummer ble godtatt som orgnr")
+	}
+
+	// Underenhet: hovedenheten fra rollen, ellers fra underenhet.hovedenhet,
+	// og ingen person.
+	for navn, tt := range map[string]struct{ kilde, vil string }{
+		"rolle": {`{"organisasjonsnummer":"800000001","organisasjonsform":{"kode":"AAFY"},"underenhet":{"hovedenhet":"900000009"},
+			"rollegrupper":[{"type":{"kode":"AAFY"},"roller":[{"type":{"kode":"AAFY"},"virksomhet":{"organisasjonsnummer":"900000001"}}]}]}`, "900000001"},
+		"bare feltet": {`{"organisasjonsnummer":"800000001","organisasjonsform":{"kode":"BEDR"},"underenhet":{"hovedenhet":"900000002"}}`, "900000002"},
+		"ingen":       {`{"organisasjonsnummer":"800000001","organisasjonsform":{"kode":"BEDR"}}`, ""},
+	} {
+		k, ok := tilVirksomhetKandidat(tenor.Metadata{Kildedata: tt.kilde}, PersonRole{})
+		if !ok || k.hovedenhet != tt.vil || k.person != "" || k.harPersonEllerHovedenhet() != (tt.vil != "") {
+			t.Errorf("%s: k = %+v", navn, k)
+		}
 	}
 }

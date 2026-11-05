@@ -124,7 +124,7 @@ func TestRunVirksomheterCSV(t *testing.T) {
 	if ut.String() != vil {
 		t.Errorf("csv = %q", ut.String())
 	}
-	if !strings.Contains(logg.String(), "1 virksomheter fra Tenor, eller personen i dem, finnes ikke") {
+	if !strings.Contains(logg.String(), "1 virksomheter fra Tenor, eller personen eller hovedenheten deres, finnes ikke") {
 		t.Errorf("logg = %q", logg.String())
 	}
 
@@ -164,6 +164,15 @@ func TestValiderVirksomhetValg(t *testing.T) {
 		{"personrolle", virksomheterOptions{antall: 1, personrolle: "styremedlem", organisasjonsformer: []string{"BRL"}}, false, ""},
 		{"personrolle og orgno", virksomheterOptions{personrolle: "styreleder", orgnr: []string{"313490114"}}, false, ""},
 		{"ukjent personrolle", virksomheterOptions{antall: 1, personrolle: "LEDE"}, false, "ukjent --person-role"},
+		{"underenheter", virksomheterOptions{antall: 1, underenheter: true, organisasjonsformer: []string{"ENK"}}, false, ""},
+		{"BEDR er ikke en organisasjonsform", virksomheterOptions{antall: 1, organisasjonsformer: []string{"BEDR"}}, false, "ukjent --unit-type"},
+		{"underenheter og orgno", virksomheterOptions{underenheter: true, orgnr: []string{"313490114"}}, false, "--subunits kan ikke brukes med --orgno eller --role"},
+		{"underenheter og rolle", virksomheterOptions{antall: 1, underenheter: true, rolle: "revisor"}, false, "--subunits kan ikke brukes"},
+		{"minst underenheter", virksomheterOptions{antall: 1, minUnderenheter: 2}, false, ""},
+		{"minst underenheter med subunits", virksomheterOptions{antall: 1, minUnderenheter: 2, underenheter: true, organisasjonsformer: []string{"ENK"}}, false, ""},
+		{"negativt minst", virksomheterOptions{antall: 1, minUnderenheter: -1}, false, "--min-subunits kan ikke være negativ"},
+		{"minst og orgno", virksomheterOptions{minUnderenheter: 2, orgnr: []string{"313490114"}}, false, "--min-subunits kan ikke brukes med --orgno eller --role"},
+		{"minst og rolle", virksomheterOptions{antall: 1, minUnderenheter: 2, rolle: "revisor"}, false, "--min-subunits kan ikke brukes"},
 	}
 	for _, tt := range tests {
 		err := tt.opts.valider(tt.antallSatt)
@@ -176,6 +185,32 @@ func TestValiderVirksomhetValg(t *testing.T) {
 		if !errors.Is(err, errs.Invalid) || !strings.Contains(err.Error(), tt.feil) {
 			t.Errorf("%s: err = %v", tt.navn, err)
 		}
+	}
+}
+
+func TestRunVirksomheterUnderenheter(t *testing.T) {
+	c := tenortest.SubunitClient(t)
+	var ut, logg bytes.Buffer
+	opts := &virksomheterOptions{antall: 1, underenheter: true, utskrift: utskriftValg{format: "csv",
+		kolonner: "organizationIdentifier,mainUnitOrganizationIdentifier,mainUnitPartyUuid,mainUnitDisplayName,personRole,ssn"}}
+	if err := runVirksomheter(context.Background(), c, registertest.Echo(t), &ut, &logg, opts); err != nil {
+		t.Fatal(err)
+	}
+	vil := "organizationIdentifier,mainUnitOrganizationIdentifier,mainUnitPartyUuid,mainUnitDisplayName,personRole,ssn\n" +
+		tenortest.SubunitWithLeader + "," + tenortest.MainUnitWithLeader + ",o-" + tenortest.MainUnitWithLeader +
+		",VIRKSOMHET " + tenortest.MainUnitWithLeader + ",daglig-leder," + tenortest.MainUnitLeader + "\n"
+	if ut.String() != vil {
+		t.Errorf("csv = %q", ut.String())
+	}
+
+	// Tekst: hovedenheten sist.
+	ut.Reset()
+	opts.utskrift = utskriftValg{}
+	if err := runVirksomheter(context.Background(), c, registertest.Echo(t), &ut, &logg, opts); err != nil {
+		t.Fatal(err)
+	}
+	if vil := tenortest.SubunitWithLeader + "\tVIRKSOMHET " + tenortest.SubunitWithLeader + "\t" + tenortest.MainUnitLeader + "\t" + tenortest.MainUnitWithLeader + "\n"; ut.String() != vil {
+		t.Errorf("tekst = %q", ut.String())
 	}
 }
 

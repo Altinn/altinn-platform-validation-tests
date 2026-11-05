@@ -22,6 +22,12 @@ type virksomheterOptions struct {
 	// organisasjonsformer er organisasjonsformene, f.eks. AS eller ENK. Tom
 	// betyr aksjeselskaper.
 	organisasjonsformer []string
+	// underenheter henter underenheter av virksomheter med
+	// organisasjonsformene.
+	underenheter bool
+	// minUnderenheter er hvor mange underenheter virksomhetene, eller
+	// hovedenhetene med --subunits, må ha minst. 0 betyr ingen krav.
+	minUnderenheter int
 	// orgnr er bestemte virksomheter som hentes.
 	orgnr []string
 	// rolle er revisor, regnskapsfoerer eller forretningsfoerer.
@@ -39,7 +45,9 @@ var standardVirksomhetKolonner = []string{"organizationIdentifier", "displayName
 // verdiene er fra Register, utenom type, som er tilretteleggerrollen, og
 // personRole. Virksomhetens egne kolonner har feltnavnene i Register (Party).
 // ssn, userId, userPartyId, userPartyUuid og lastName er personen med
-// personRole: lederen, eller rollen i --person-role.
+// personRole: lederen, eller rollen i --person-role. mainUnit-kolonnene er
+// hovedenheten til en underenhet (rollen hovedenhet i Register, overordnetEnhet i
+// Enhetsregisteret), og tomme for andre virksomheter.
 var virksomhetKolonner = []kolonne[parties.Organization]{
 	{navn: "organizationIdentifier", verdi: func(v parties.Organization) string { return v.OrganizationIdentifier }},
 	{navn: "displayName", verdi: func(v parties.Organization) string { return v.DisplayName }},
@@ -53,6 +61,20 @@ var virksomhetKolonner = []kolonne[parties.Organization]{
 	{navn: "userPartyId", verdi: func(v parties.Organization) string { return partyID(&v.Person) }},
 	{navn: "userPartyUuid", verdi: func(v parties.Organization) string { return v.Person.PartyUUID }},
 	{navn: "lastName", verdi: func(v parties.Organization) string { return v.Person.LastName }},
+	{navn: "mainUnitOrganizationIdentifier", verdi: func(v parties.Organization) string { return hovedenhet(v).OrganizationIdentifier }},
+	{navn: "mainUnitDisplayName", verdi: func(v parties.Organization) string { return hovedenhet(v).DisplayName }},
+	{navn: "mainUnitPartyId", verdi: func(v parties.Organization) string { return partyID(v.Hovedenhet) }},
+	{navn: "mainUnitPartyUuid", verdi: func(v parties.Organization) string { return hovedenhet(v).PartyUUID }},
+	{navn: "mainUnitUnitType", verdi: func(v parties.Organization) string { return hovedenhet(v).UnitType }},
+}
+
+// hovedenhet er hovedenheten til v, eller en tom part når v ikke er en
+// underenhet.
+func hovedenhet(v parties.Organization) register.Party {
+	if v.Hovedenhet == nil {
+		return register.Party{}
+	}
+	return *v.Hovedenhet
 }
 
 // valider sjekker flaggene før noe hentes. antallSatt er om --count ble
@@ -90,6 +112,17 @@ func (o *virksomheterOptions) valider(antallSatt bool) error {
 		slices.Sort(valgt)
 		return fmt.Errorf("%w: %s kan ikke brukes sammen", errs.Invalid, strings.Join(valgt, " og "))
 	}
+	// --subunits velger organisasjonsformen til hovedenhetene, så den virker
+	// bare med --unit-type.
+	if o.underenheter && (len(o.orgnr) > 0 || o.rolle != "") {
+		return fmt.Errorf("%w: --subunits kan ikke brukes med --orgno eller --role", errs.Invalid)
+	}
+	if o.minUnderenheter < 0 {
+		return fmt.Errorf("%w: --min-subunits kan ikke være negativ", errs.Invalid)
+	}
+	if o.minUnderenheter > 0 && (len(o.orgnr) > 0 || o.rolle != "") {
+		return fmt.Errorf("%w: --min-subunits kan ikke brukes med --orgno eller --role", errs.Invalid)
+	}
 
 	if len(o.orgnr) > 0 {
 		if antallSatt {
@@ -125,9 +158,19 @@ den rollen i Enhetsregisteret, f.eks. styreleder eller styremedlem.
 
 Uten flagg hentes aksjeselskaper. Velg andre organisasjonsformer med
 --unit-type, bestemte virksomheter med --orgno, eller revisorer,
-regnskapsførere og forretningsførere med --role.`,
+regnskapsførere og forretningsførere med --role.
+
+Med --subunits hentes underenheter (BEDR og AAFY) av virksomheter med
+organisasjonsformene i --unit-type, i stedet for virksomhetene selv, én per
+hovedenhet. Underenheter har ingen personer selv, så personen er fra
+hovedenheten, og mainUnit-kolonnene er hovedenheten.
+
+--min-subunits krever at virksomhetene har minst så mange underenheter, eller
+med --subunits at hovedenhetene har det.`,
 		Example: `  testudo find organizations -n 10
   testudo find organizations --unit-type enk,nuf -n 5 --format csv
+  testudo find organizations --subunits -n 5 --format csv --columns organizationIdentifier,mainUnitOrganizationIdentifier,ssn
+  testudo find organizations --min-subunits 2 -n 5 --format csv
   testudo find organizations --person-role styremedlem -n 5 --format csv --columns organizationIdentifier,personRole,ssn
   testudo find organizations --orgno 313490114 --format csv
   testudo find organizations --role regnskapsfoerer -n 5 --format csv`,
@@ -162,6 +205,14 @@ regnskapsførere og forretningsførere med --role.`,
 	cmd.Flags().StringSliceVar(
 		&opts.organisasjonsformer, "unit-type", nil,
 		"Kommaseparerte organisasjonsformer: "+strings.Join(parties.UnitTypes, ", ")+" (standard: "+parties.DefaultUnitType+")",
+	)
+	cmd.Flags().IntVar(
+		&opts.minUnderenheter, "min-subunits", 0,
+		"Bare virksomheter, eller hovedenheter med --subunits, med minst så mange underenheter",
+	)
+	cmd.Flags().BoolVar(
+		&opts.underenheter, "subunits", false,
+		"Hent underenheter (BEDR og AAFY) av virksomheter med organisasjonsformene i --unit-type",
 	)
 	cmd.Flags().StringSliceVar(
 		&opts.orgnr, "orgno", nil,
@@ -206,6 +257,16 @@ func runVirksomheter(ctx context.Context, c *tenor.Client, reg *register.Client,
 	}
 
 	antall := opts.onsketAntall()
+	q := parties.OrganizationQuery{
+		Count:               antall,
+		UnitTypes:           opts.organisasjonsformer,
+		Subunits:            opts.underenheter,
+		MinSubunits:         opts.minUnderenheter,
+		OrganizationNumbers: opts.orgnr,
+		Role:                opts.rolle,
+		PersonRole:          opts.personrolle,
+		Env:                 opts.env,
+	}
 	person := "lederen"
 	if opts.personrolle != "" {
 		person = opts.personrolle
@@ -219,18 +280,13 @@ func runVirksomheter(ctx context.Context, c *tenor.Client, reg *register.Client,
 			return err
 		}
 		fmt.Fprintf(logg, "Henter %d %s-virksomheter med %s fra Tenor via klientene (%s)\n", antall, rolle.Name, person, tenor.Exists(rolle.Field))
+	case opts.underenheter:
+		fmt.Fprintf(logg, "Henter %d underenheter fra Tenor, én per hovedenhet med %s og KQL: %s\n", antall, person, q.KQL())
 	default:
-		fmt.Fprintf(logg, "Henter %d virksomheter med %s fra Tenor med KQL: %s\n", antall, person, parties.OrganizationKQL(opts.organisasjonsformer))
+		fmt.Fprintf(logg, "Henter %d virksomheter med %s fra Tenor med KQL: %s\n", antall, person, q.KQL())
 	}
 
-	virksomheter, err := parties.FindOrganizations(ctx, c, reg, parties.OrganizationQuery{
-		Count:               antall,
-		UnitTypes:           opts.organisasjonsformer,
-		OrganizationNumbers: opts.orgnr,
-		Role:                opts.rolle,
-		PersonRole:          opts.personrolle,
-		Env:                 opts.env,
-	}, logg)
+	virksomheter, err := parties.FindOrganizations(ctx, c, reg, q, logg)
 	if err != nil {
 		return err
 	}
@@ -245,7 +301,7 @@ func runVirksomheter(ctx context.Context, c *tenor.Client, reg *register.Client,
 	case formatCSV:
 		hoppetOver, err := skrivCSV(ut, virksomheter, kolonner)
 		if hoppetOver > 0 {
-			fmt.Fprintf(logg, "Hoppet over %d rader som mangler verdier (f.eks. personen uten bruker).\n", hoppetOver)
+			fmt.Fprintf(logg, "Hoppet over %d rader som mangler verdier (f.eks. personen uten bruker, eller mainUnit-kolonner for en virksomhet som ikke er underenhet).\n", hoppetOver)
 		}
 		if err != nil {
 			return err
@@ -262,12 +318,15 @@ func runVirksomheter(ctx context.Context, c *tenor.Client, reg *register.Client,
 }
 
 // skrivVirksomheterTekst skriver orgnr, navn og personen per linje, med
-// tilretteleggerrolle når den er satt.
+// tilretteleggerrolle og hovedenhet når de er satt.
 func skrivVirksomheterTekst(ut io.Writer, virksomheter []parties.Organization) {
 	for _, v := range virksomheter {
 		felt := []string{v.OrganizationIdentifier, v.DisplayName, v.Person.PersonIdentifier}
 		if v.Rolle != "" {
 			felt = append(felt, v.Rolle)
+		}
+		if v.Hovedenhet != nil {
+			felt = append(felt, v.Hovedenhet.OrganizationIdentifier)
 		}
 		fmt.Fprintln(ut, strings.Join(felt, "\t"))
 	}
