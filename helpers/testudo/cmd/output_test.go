@@ -103,6 +103,15 @@ func TestWithOutFile(t *testing.T) {
 		t.Errorf("log = %q", log.String())
 	}
 
+	// Missing folders are created.
+	nested := filepath.Join(t.TempDir(), "a", "b", "out.csv")
+	if err := withOutFile(nested, &stdout, &log, write); err != nil {
+		t.Fatal(err)
+	}
+	if b, _ := os.ReadFile(nested); string(b) != "content" {
+		t.Errorf("file in new folder = %q", b)
+	}
+
 	// An error along the way leaves no file.
 	failPath := filepath.Join(t.TempDir(), "fail.csv")
 	err := withOutFile(failPath, &stdout, &log, func(out io.Writer) error {

@@ -168,13 +168,13 @@ from the hovedenhet, and the hovedenhet columns describe the hovedenhet.
 
 --min-subunits requires the organizations to have at least that many
 underenheter, or with --subunits, the hovedenheter.`,
-		Example: `  testudo find organizations -n 10
-  testudo find organizations --unit-type enk,nuf -n 5 --format csv
-  testudo find organizations --subunits -n 5 --format csv --columns organizationIdentifier,hovedenhetOrganizationIdentifier,ssn
-  testudo find organizations --min-subunits 2 -n 5 --format csv
-  testudo find organizations --person-role styremedlem -n 5 --format csv --columns organizationIdentifier,personRole,ssn
+		Example: `  testudo find organizations --count 10
+  testudo find organizations --unit-type enk,nuf --count 5 --format csv
+  testudo find organizations --subunits --count 5 --format csv --columns organizationIdentifier,hovedenhetOrganizationIdentifier,ssn
+  testudo find organizations --min-subunits 2 --count 5 --format csv
+  testudo find organizations --person-role styremedlem --count 5 --format csv --columns organizationIdentifier,personRole,ssn
   testudo find organizations --orgno 313490114 --format csv
-  testudo find organizations --role regnskapsfoerer -n 5 --format csv`,
+  testudo find organizations --role regnskapsfoerer --count 5 --format csv`,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			if err := opts.validate(cmd.Flags().Changed("count")); err != nil {
 				return err
@@ -199,8 +199,8 @@ underenheter, or with --subunits, the hovedenheter.`,
 		},
 	}
 
-	cmd.Flags().IntVarP(
-		&opts.count, "count", "n", 10,
+	cmd.Flags().IntVar(
+		&opts.count, "count", 10,
 		"Number of organizations to fetch",
 	)
 	cmd.Flags().StringSliceVar(
@@ -219,8 +219,8 @@ underenheter, or with --subunits, the hovedenheter.`,
 		&opts.organizationNumbers, "orgno", nil,
 		"Comma-separated organization numbers to fetch",
 	)
-	cmd.Flags().StringVarP(
-		&opts.role, "role", "r", "",
+	cmd.Flags().StringVar(
+		&opts.role, "role", "",
 		"Fetch tilretteleggere: "+parties.RoleNames(),
 	)
 	cmd.Flags().StringVar(

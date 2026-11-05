@@ -11,6 +11,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"path/filepath"
 	"slices"
 	"strings"
 
@@ -145,7 +146,7 @@ func writeCSV[T any](out io.Writer, rows []T, columns []column[T]) (int, error) 
 
 // withOutFile runs write against stdout, or against a buffer that is written
 // to path when write finishes without error, so a failed run does not leave a
-// half-written file.
+// half-written file. Folders in path that do not exist are created.
 func withOutFile(path string, stdout, log io.Writer, write func(io.Writer) error) error {
 	if path == "" {
 		return write(stdout)
@@ -153,6 +154,9 @@ func withOutFile(path string, stdout, log io.Writer, write func(io.Writer) error
 	var buf bytes.Buffer
 	if err := write(&buf); err != nil {
 		return err
+	}
+	if err := os.MkdirAll(filepath.Dir(path), 0o755); err != nil {
+		return fmt.Errorf("create folder for %s: %w", path, err)
 	}
 	if err := os.WriteFile(path, buf.Bytes(), 0o644); err != nil {
 		return fmt.Errorf("write %s: %w", path, err)

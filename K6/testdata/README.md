@@ -91,14 +91,14 @@ files here have CRLF today, so the diff shows every line as changed.
 
 ```bash
 # The columns are the same as testudo uses, so `generate` is not needed here.
-go run . find persons -n 10 --env $ENV --format csv --columns userId \
+go run . find persons --count 10 --env $ENV --format csv --columns userId \
   --out $T/portaler/$ENV/userids.csv
 
 generate $T/access-management/consent/consenter-persons/$ENV.csv ssn,partyUuid,userId,partyId \
-  persons -n 1000 --env $ENV --columns personIdentifier,partyUuid,userId,partyId
+  persons --count 1000 --env $ENV --columns personIdentifier,partyUuid,userId,partyId
 
 generate $T/access-management/enduser/client-delegations-v2/agents/$ENV.csv pid,partyUuid,partyId,userId,lastName,name \
-  persons -n 20 --env $ENV --columns personIdentifier,partyUuid,partyId,userId,lastName,displayName
+  persons --count 20 --env $ENV --columns personIdentifier,partyUuid,partyId,userId,lastName,displayName
 ```
 
 ## Organizations with a daglig leder
@@ -118,7 +118,7 @@ names from Access Management, and the column `personRole` says which role the
 person has. Get several roles in the same organization with `--orgno`:
 
 ```bash
-go run . find organizations -n 5 --env $ENV --format csv \
+go run . find organizations --count 5 --env $ENV --format csv \
   --columns organizationIdentifier --out orgs.csv &&
 go run . find organizations --orgno $(tail -n +2 orgs.csv | paste -sd,) \
   --person-role styreleder --env $ENV --format csv --columns organizationIdentifier,personRole,ssn
@@ -139,7 +139,7 @@ same role for `ParentId`. Without `--subunits` the columns are empty, so the
 rows are skipped in CSV.
 
 ```bash
-go run . find organizations --subunits -n 5 --env $ENV --format csv \
+go run . find organizations --subunits --count 5 --env $ENV --format csv \
   --columns organizationIdentifier,partyUuid,hovedenhetOrganizationIdentifier,hovedenhetPartyUuid,ssn
 ```
 
@@ -152,7 +152,7 @@ hovedenheter.
 
 ```bash
 # AS companies with at least two underenheter.
-go run . find organizations --min-subunits 2 -n 5 --env $ENV --format csv
+go run . find organizations --min-subunits 2 --count 5 --env $ENV --format csv
 ```
 
 ### pid, partyUuid, orgUuid, orgNo, lastName, …
@@ -164,11 +164,11 @@ go run . find organizations --min-subunits 2 -n 5 --env $ENV --format csv
 
 ```bash
 generate $T/access-management/enduser/request/$ENV.csv pid,partyUuid,orgUuid,orgNo,lastName,userId,partyId \
-  organizations -n 198 --env $ENV \
+  organizations --count 198 --env $ENV \
   --columns ssn,userPartyUuid,partyUuid,organizationIdentifier,lastName,userId,userPartyId
 
 generate $T/access-management/enduser/activity-log/$ENV.csv pid,partyUuid,orgUuid,orgNo,lastName \
-  organizations -n 10 --env $ENV \
+  organizations --count 10 --env $ENV \
   --columns ssn,userPartyUuid,partyUuid,organizationIdentifier,lastName
 ```
 
@@ -183,13 +183,13 @@ generate $T/access-management/enduser/activity-log/$ENV.csv pid,partyUuid,orgUui
 
 ```bash
 generate $T/access-management/enduser/connections/at23.csv ssn,partyUuid,userId,orgUuid,orgNo,lastName \
-  organizations -n 9 --env at23 \
+  organizations --count 9 --env at23 \
   --columns ssn,userPartyUuid,userId,partyUuid,organizationIdentifier,lastName
 
 # The same for open-client-admin and access-management-bff/consent.
 generate $T/access-management/resource-owner/maskinporten-schema/$ENV.csv \
   ssn,partyUuid,userId,orgUuid,orgNo,lastName,userPartyId,partyId \
-  organizations -n 9 --env $ENV \
+  organizations --count 9 --env $ENV \
   --columns ssn,userPartyUuid,userId,partyUuid,organizationIdentifier,lastName,userPartyId,partyId
 ```
 
@@ -210,7 +210,7 @@ V2=orgNo,partyId,ssn,userId,userPartyId,orgUuid,partyUuid,lastName
 V2_TESTUDO=organizationIdentifier,partyId,ssn,userId,userPartyId,partyUuid,userPartyUuid,lastName
 
 generate $T/access-management-bff/access-packages/org-to-org/$ENV.csv $V2 \
-  organizations -n 6 --env $ENV --columns $V2_TESTUDO
+  organizations --count 6 --env $ENV --columns $V2_TESTUDO
 # The same for the other files in the table, with the row count from the table.
 ```
 
@@ -227,14 +227,14 @@ columns in yt01.
 
 ```bash
 generate $T/authorization/pdp-authorize/orgs-dagl-$ENV.csv orgno,ssn \
-  organizations -n 9 --env $ENV --columns organizationIdentifier,ssn
+  organizations --count 9 --env $ENV --columns organizationIdentifier,ssn
 
 generate $T/access-management/resource-owner/get-authorized-parties/$ENV.csv orgno,ssn \
-  organizations -n 9 --env $ENV --columns organizationIdentifier,ssn
+  organizations --count 9 --env $ENV --columns organizationIdentifier,ssn
 
 # Note the reverse order.
 generate $T/dialogporten/endusers/$ENV/endusers.csv ssn,orgno \
-  organizations -n 28 --env $ENV --columns ssn,organizationIdentifier
+  organizations --count 28 --env $ENV --columns ssn,organizationIdentifier
 ```
 
 ### pid
@@ -249,9 +249,9 @@ files one at a time, so they do not have the same persons.
 
 ```bash
 generate $T/access-management/resource-owner/authorized-parties/authorization-boundaries/$ENV.csv pid \
-  organizations -n 10 --env $ENV --columns ssn
+  organizations --count 10 --env $ENV --columns ssn
 generate $T/access-management/resource-owner/authorized-parties/org-code-filter/$ENV.csv pid \
-  organizations -n 10 --env $ENV --columns ssn
+  organizations --count 10 --env $ENV --columns ssn
 ```
 
 ### subject-lookup-forms
@@ -265,7 +265,7 @@ generate $T/access-management/resource-owner/authorized-parties/org-code-filter/
 The file uses the default names from testudo, so it does not need `generate`:
 
 ```bash
-go run . find organizations -n 10 --env $ENV --format csv \
+go run . find organizations --count 10 --env $ENV --format csv \
   --columns organizationIdentifier,partyUuid,ssn,userId,userPartyId,userPartyUuid \
   --out $T/access-management/resource-owner/authorized-parties/subject-lookup-forms/$ENV.csv
 ```
@@ -279,7 +279,7 @@ and `role` is always `dagligleder`.
 K=organizationIdentifier,partyId,partyUuid,unitType,userId,userPartyUuid,ssn
 go run . find organizations --orgno 313490114 --env $ENV \
   --format csv --columns $K --out fixed.csv &&
-go run . find organizations -n 199 --env $ENV --format csv --columns $K --out new.csv &&
+go run . find organizations --count 199 --env $ENV --format csv --columns $K --out new.csv &&
 { echo orgNo,orgPartyId,orgPartyUuid,orgType,role,userId,userPartyUuid,userPid
   tail -n +2 fixed.csv; tail -n +2 new.csv; } |
   awk -F, -v OFS=, 'NR > 1 { $4 = $4 OFS "dagligleder" } 1' \
@@ -292,14 +292,14 @@ rm fixed.csv new.csv
 ```bash
 # access-management/consent/consentee-orgs/{at22,at23,tt02,yt01}.csv, 20 rows
 generate $T/access-management/consent/consentee-orgs/$ENV.csv orgNo \
-  organizations -n 20 --env $ENV --columns organizationIdentifier
+  organizations --count 20 --env $ENV --columns organizationIdentifier
 
 # authentication/change-request-system-user/vendors.csv, 200 rows, same file for all environments
 generate $T/authentication/change-request-system-user/vendors.csv orgNo,name \
-  organizations -n 200 --columns organizationIdentifier,displayName
+  organizations --count 200 --columns organizationIdentifier,displayName
 
 # access-management/service-owner/connections/recipients/{at22,at23,tt02}.csv, 200 rows
-go run . find organizations -n 200 --env $ENV --format csv --columns organizationIdentifier --out new.csv &&
+go run . find organizations --count 200 --env $ENV --format csv --columns organizationIdentifier --out new.csv &&
 { echo recipientType,recipientIdentifier; tail -n +2 new.csv | sed 's/^/organization,/'; } \
   > $T/access-management/service-owner/connections/recipients/$ENV.csv && rm new.csv
 ```
@@ -320,9 +320,9 @@ Ten of each role. The file is also the starting point for the generators in
 
 ```bash
 K=partyUuid,organizationIdentifier,type
-go run . find organizations -r revisor -n 10 --env $ENV --format csv --columns $K --out revisor.csv &&
-go run . find organizations -r regnskapsfoerer -n 10 --env $ENV --format csv --columns $K --out regnskapsfoerer.csv &&
-go run . find organizations -r forretningsfoerer -n 10 --env $ENV --format csv --columns $K --out forretningsfoerer.csv &&
+go run . find organizations --role revisor --count 10 --env $ENV --format csv --columns $K --out revisor.csv &&
+go run . find organizations --role regnskapsfoerer --count 10 --env $ENV --format csv --columns $K --out regnskapsfoerer.csv &&
+go run . find organizations --role forretningsfoerer --count 10 --env $ENV --format csv --columns $K --out forretningsfoerer.csv &&
 { echo organizationUuid,organizationId,type
   tail -q -n +2 revisor.csv regnskapsfoerer.csv forretningsfoerer.csv | fix_spelling; } \
   > $T/register/organizations-$ENV.csv &&
@@ -336,10 +336,10 @@ About 50 of each: plain AS companies (`orgType` is `AS`) and the three roles
 
 ```bash
 K=organizationIdentifier,partyId,partyUuid,userId,userPartyUuid,ssn
-go run . find organizations -n 50 --env $ENV --format csv --columns $K,unitType --out as.csv &&
-go run . find organizations -r revisor -n 50 --env $ENV --format csv --columns $K,type --out revisor.csv &&
-go run . find organizations -r regnskapsfoerer -n 50 --env $ENV --format csv --columns $K,type --out regnskapsfoerer.csv &&
-go run . find organizations -r forretningsfoerer -n 50 --env $ENV --format csv --columns $K,type --out forretningsfoerer.csv &&
+go run . find organizations --count 50 --env $ENV --format csv --columns $K,unitType --out as.csv &&
+go run . find organizations --role revisor --count 50 --env $ENV --format csv --columns $K,type --out revisor.csv &&
+go run . find organizations --role regnskapsfoerer --count 50 --env $ENV --format csv --columns $K,type --out regnskapsfoerer.csv &&
+go run . find organizations --role forretningsfoerer --count 50 --env $ENV --format csv --columns $K,type --out forretningsfoerer.csv &&
 { echo orgNo,partyId,orgUuid,userId,userPartyUuid,ssn,orgType
   tail -q -n +2 as.csv revisor.csv regnskapsfoerer.csv forretningsfoerer.csv | fix_spelling; } \
   > $T/authentication/system-user-request/$ENV.csv &&
@@ -355,8 +355,8 @@ property clients, so they are taken from the current file.
 F=$T/authentication/system-user-client-delegation/$ENV.csv
 K=organizationIdentifier,partyId,partyUuid,userId,userPartyUuid,ssn,type
 grep ',forretningsforer' $F | tr -d '\r' > kept.csv
-go run . find organizations -r revisor -n 4 --env $ENV --format csv --columns $K --out revisor.csv &&
-go run . find organizations -r regnskapsfoerer -n 3 --env $ENV --format csv --columns $K --out regnskapsfoerer.csv &&
+go run . find organizations --role revisor --count 4 --env $ENV --format csv --columns $K --out revisor.csv &&
+go run . find organizations --role regnskapsfoerer --count 3 --env $ENV --format csv --columns $K --out regnskapsfoerer.csv &&
 { echo orgNo,partyId,orgUuid,userId,userPartyUuid,ssn,orgType
   tail -q -n +2 revisor.csv regnskapsfoerer.csv | fix_spelling; cat kept.csv; } > $F &&
 rm kept.csv revisor.csv regnskapsfoerer.csv

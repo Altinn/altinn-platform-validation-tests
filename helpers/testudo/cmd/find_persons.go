@@ -68,8 +68,8 @@ func newPersonsCmd() *cobra.Command {
 		},
 	}
 
-	cmd.Flags().IntVarP(
-		&opts.count, "count", "n", 1,
+	cmd.Flags().IntVar(
+		&opts.count, "count", 1,
 		"Number of persons to fetch",
 	)
 	cmd.Flags().StringVar(
