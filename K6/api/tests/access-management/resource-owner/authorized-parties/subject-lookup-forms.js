@@ -48,7 +48,7 @@ export default function (data) {
         // Each baseline is the group's return value rather than a variable assigned inside
         // the callback, which control flow analysis does not follow.
         const personBaseline = group("A person can be looked up by national identity number", function () {
-            const parties = lookup(new AuthorizedPartiesRequestBuilder().withPerson(row.pid).build());
+            const parties = lookup(new AuthorizedPartiesRequestBuilder().withPerson(row.ssn).build());
 
             AuthorizedPartiesDomainChecks.CheckResponseIsNonEmptyPartyArray(parties);
 
@@ -68,19 +68,19 @@ export default function (data) {
         });
 
         group("The party id form resolves to the same parties", function () {
-            const parties = lookup(new AuthorizedPartiesRequestBuilder().withPartyId(row.partyId).build());
+            const parties = lookup(new AuthorizedPartiesRequestBuilder().withPartyId(row.userPartyId).build());
 
             AuthorizedPartiesDomainChecks.CheckPartyUuidsMatchBaseline(parties, personBaseline);
         });
 
         group("The person uuid form resolves to the same parties", function () {
-            const parties = lookup(new AuthorizedPartiesRequestBuilder().withPersonUuid(row.partyUuid).build());
+            const parties = lookup(new AuthorizedPartiesRequestBuilder().withPersonUuid(row.userPartyUuid).build());
 
             AuthorizedPartiesDomainChecks.CheckPartyUuidsMatchBaseline(parties, personBaseline);
         });
 
         const organisationBaseline = group("An organisation can be the subject too", function () {
-            const parties = lookup(new AuthorizedPartiesRequestBuilder().withOrganization(row.orgno).build());
+            const parties = lookup(new AuthorizedPartiesRequestBuilder().withOrganization(row.organizationIdentifier).build());
 
             AuthorizedPartiesDomainChecks.CheckResponseIsNonEmptyPartyArray(parties);
 
@@ -91,7 +91,7 @@ export default function (data) {
         // than returning, in case a form is added after it.
         if (organisationBaseline.length > 0) {
             group("The organisation uuid form resolves to the same parties", function () {
-                const parties = lookup(new AuthorizedPartiesRequestBuilder().withOrganizationUuid(row.orgPartyUuid).build());
+                const parties = lookup(new AuthorizedPartiesRequestBuilder().withOrganizationUuid(row.partyUuid).build());
 
                 AuthorizedPartiesDomainChecks.CheckPartyUuidsMatchBaseline(parties, organisationBaseline);
             });

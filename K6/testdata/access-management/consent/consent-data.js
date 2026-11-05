@@ -1,12 +1,9 @@
 import { fail, group } from "k6";
 import exec from "k6/execution";
 
-import { ApproveConsentContextBuilder } from "../../../../../clients/access-management-bff/consent/index.js";
-import { randomItem, uuidv4 } from "../../../../../common-imports.js";
-import { requireEnv } from "../../../../../helpers.js";
-import { EnterpriseCreateConsentRequest } from "../../../../building-blocks/access-management/consent-enterprise/index.js";
-import { ApproveConsentRequest } from "../../../../building-blocks/access-management-bff/consent/index.js";
-import { ConsentDomainChecks } from "../../../../domain-checks/access-management/consent.js";
+import { EnterpriseCreateConsentRequest } from "../../../api/building-blocks/access-management/consent-enterprise/index.js";
+import { ApproveConsentRequest } from "../../../api/building-blocks/access-management-bff/consent/index.js";
+import { ConsentDomainChecks } from "../../../api/domain-checks/access-management/consent.js";
 import {
     createConsentRequest,
     getClients,
@@ -17,7 +14,10 @@ import {
     lookupConsentValidTo,
     organizationUrn,
     personUrn,
-} from "../commons.js";
+} from "../../../api/tests/access-management/consent/commons.js";
+import { ApproveConsentContextBuilder } from "../../../clients/access-management-bff/consent/index.js";
+import { randomItem, uuidv4 } from "../../../common-imports.js";
+import { requireEnv } from "../../../helpers.js";
 
 // How many rows of consent data to generate.
 const LOOKUPS = __ENV.LOOKUPS ? parseInt(__ENV.LOOKUPS) : 20;

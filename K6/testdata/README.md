@@ -122,6 +122,33 @@ go run . find organizations --orgno $(tail -n +2 orgs.csv | paste -sd,) \
 
 Virksomheter uten styreleder i Register blir ikke med i den andre listen.
 
+Med `--subunits` hentes underenheter (`BEDR` og `AAFY`) av virksomheter med
+organisasjonsformene i `--unit-type` (standard `AS`), i stedet for
+virksomhetene selv, én per hovedenhet. Underenheter har ingen personer selv, så
+personen er fra hovedenheten, med samme regler som over. Kolonnene
+`mainUnitOrganizationIdentifier`, `mainUnitDisplayName`, `mainUnitPartyId`,
+`mainUnitPartyUuid` og `mainUnitUnitType` er hovedenheten. Navnet følger Register,
+der koblingen er rollen `hovedenhet` fra underenheten til hovedenheten, og
+Enhetsregisteret, der underenheten har hovedenheten i `overordnetEnhet`. Access
+Management bruker den samme rollen til `ParentId`. Uten `--subunits` er
+kolonnene tomme, så radene hoppes over i CSV.
+
+```bash
+go run . find organizations --subunits -n 5 --env $ENV --format csv \
+  --columns organizationIdentifier,partyUuid,mainUnitOrganizationIdentifier,mainUnitPartyUuid,ssn
+```
+
+Underenheter av eierseksjonssameier og borettslag er `AAFY`, med styreleder som
+person: `--subunits --unit-type esek,brl`.
+
+`--min-subunits N` krever minst N underenheter: uten `--subunits` får du
+hovedenhetene selv, og med `--subunits` underenheter av slike hovedenheter.
+
+```bash
+# Aksjeselskaper med minst to underenheter.
+go run . find organizations --min-subunits 2 -n 5 --env $ENV --format csv
+```
+
 ### pid, partyUuid, orgUuid, orgNo, lastName, …
 
 | Filer | Rader i dag |
@@ -224,16 +251,17 @@ lag $T/access-management/resource-owner/authorized-parties/org-code-filter/$ENV.
 ### subject-lookup-forms
 
 > [!CAUTION]
-> Generatoren i K6 (`testdataGeneration/subject-lookup-forms-data.js`) tar bare
+> Generatoren (`access-management/resource-owner/authorized-parties/subject-lookup-forms-data.js`) tar bare
 > med rader der authorized-parties svarer med en liste som ikke er tom, både
 > for personen og virksomheten. Testudo kan ikke sjekke det, så noen rader kan
 > bli avvist av testen.
 
+Filen bruker standardnavnene fra testudo, så den trenger ikke `lag`:
+
 ```bash
-lag $T/access-management/resource-owner/authorized-parties/subject-lookup-forms/$ENV.csv \
-  orgno,orgPartyUuid,pid,userId,partyId,partyUuid \
-  organizations -n 10 --env $ENV \
-  --columns organizationIdentifier,partyUuid,ssn,userId,userPartyId,userPartyUuid
+go run . find organizations -n 10 --env $ENV --format csv \
+  --columns organizationIdentifier,partyUuid,ssn,userId,userPartyId,userPartyUuid \
+  --out $T/access-management/resource-owner/authorized-parties/subject-lookup-forms/$ENV.csv
 ```
 
 ### change-request-system-user/end-users
@@ -282,7 +310,7 @@ staving() { sed 's/regnskapsfoerer$/regnskapsforer/; s/forretningsfoerer$/forret
 ### register/organizations-{at22,at23,tt02}.csv
 
 Ti av hver rolle. Filen er også utgangspunktet for generatorene i
-`api/tests/access-management/resource-owner/authorized-parties/testdataGeneration`.
+`access-management/resource-owner/authorized-parties/`.
 
 ```bash
 K=partyUuid,organizationIdentifier,type
@@ -328,6 +356,22 @@ go run . find organizations -r regnskapsfoerer -n 3 --env $ENV --format csv --co
 rm ff.csv revisor.csv regnskap.csv
 ```
 
+## Generatorer i K6
+
+Noen filer lages av k6-skript som ligger her i `testdata`, ved siden av dataene
+de skriver. De spør API-ene som testene bruker, og skriver radene ut som CSV:
+
+| Generator | Skriver |
+| --- | --- |
+| `access-management/consent/consent-data.js` | `access-management/consent/lookup/` |
+| `access-management/resource-owner/authorized-parties/subject-lookup-forms-data.js` | `subject-lookup-forms` |
+| `access-management/resource-owner/authorized-parties/accounting-firm-data.js` | `clients-and-key-role-parties`, `access-information-flags`, `key-role-filter`, `party-filter`, `resource-filter` |
+| `access-management/resource-owner/authorized-parties/subject-only-data.js` | `authorization-boundaries`, `org-code-filter` |
+
+De kjøres med `k6 run`, f.eks.
+`k6 run K6/testdata/access-management/resource-owner/authorized-parties/accounting-firm-data.js`.
+Se README-en til testene for hvilke miljøvariabler de trenger.
+
 ## Kan ikke lages med testudo
 
 Disse trenger data som må finnes i miljøet fra før, eller parter testudo ikke
@@ -338,7 +382,8 @@ finner:
 - `access-management/resource-owner/authorized-parties/` med
   regnskapsførere og klienter (`clients-and-key-role-parties`,
   `access-information-flags`, `key-role-filter`, `party-filter`,
-  `resource-filter`): bruk `testdataGeneration/accounting-firm-data.js`.
+  `resource-filter`): bruk generatoren i
+  `access-management/resource-owner/authorized-parties/accounting-firm-data.js`.
 - `access-management/enduser/client-delegations-v2/*.csv`: agent, klient,
   `roleCode` og `resource` i samme rad.
 - `authorization/pdp-authorize/` instansdelegeringer og `single-rights`.
