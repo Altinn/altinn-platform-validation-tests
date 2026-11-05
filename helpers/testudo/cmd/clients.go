@@ -1,6 +1,6 @@
 package cmd
 
-// Klientene, satt opp fra konfigurasjonen.
+// The clients, set up from the configuration.
 
 import (
 	"cmp"
@@ -16,9 +16,9 @@ import (
 	"github.com/Altinn/altinn-platform-validation-tests/helpers/testudo/internal/tenor"
 )
 
-// nyTenorKlient lager en Tenor-klient med Maskinporten-token, med
-// MASKINPORTEN_CLIENT_ID og MASKINPORTEN_JWK fra konfigurasjonen.
-func nyTenorKlient() (*tenor.Client, error) {
+// newTenorClient creates a Tenor client with a Maskinporten token, using
+// MASKINPORTEN_CLIENT_ID and MASKINPORTEN_JWK from the configuration.
+func newTenorClient() (*tenor.Client, error) {
 	cfg, err := maskinporten.ConfigFrom(config.For(""))
 	if err != nil {
 		return nil, config.WithHint(err)
@@ -30,51 +30,51 @@ func nyTenorKlient() (*tenor.Client, error) {
 	return tenor.NewClient(tenor.DefaultBaseURL, mp), nil
 }
 
-// nyRegisterKlient lager en Register-klient for miljoe med platform-token fra
-// test token generator.
-func nyRegisterKlient(miljoe string) (*register.Client, error) {
-	o, err := lesRegisterOppsett(miljoe)
+// newRegisterClient creates a Register client for env with a platform token
+// from the test token generator.
+func newRegisterClient(env string) (*register.Client, error) {
+	s, err := readRegisterSetup(env)
 	if err != nil {
 		return nil, err
 	}
-	pt, err := platformtoken.NewGenerator(o.token)
+	pt, err := platformtoken.NewGenerator(s.token)
 	if err != nil {
 		return nil, err
 	}
-	return register.NewClient(o.baseURL, o.noekkel, pt), nil
+	return register.NewClient(s.baseURL, s.key, pt), nil
 }
 
-// registerOppsett er det nyRegisterKlient leser fra konfigurasjonen.
-type registerOppsett struct {
+// registerSetup is what newRegisterClient reads from the configuration.
+type registerSetup struct {
 	baseURL string
-	noekkel string
+	key     string
 	token   platformtoken.Config
 }
 
-// lesRegisterOppsett leser API_BASE_URL og subscription key fra seksjonen for
-// miljoe i konfigurasjonen. Subscription key kan også hete
-// <MILJOE>_REGISTER_SUBSCRIPTION_KEY, som i frontend.
-func lesRegisterOppsett(miljoe string) (registerOppsett, error) {
-	if !slices.Contains(config.Environments, miljoe) {
-		return registerOppsett{}, fmt.Errorf("%w: ukjent miljø %q, bruk en av %s", errs.Invalid, miljoe, strings.Join(config.Environments, ", "))
+// readRegisterSetup reads API_BASE_URL and the subscription key from the
+// section for env in the configuration. The subscription key can also be
+// named <ENV>_REGISTER_SUBSCRIPTION_KEY, as in the frontend.
+func readRegisterSetup(env string) (registerSetup, error) {
+	if !slices.Contains(config.Environments, env) {
+		return registerSetup{}, fmt.Errorf("%w: unknown environment %q, use one of %s", errs.Invalid, env, strings.Join(config.Environments, ", "))
 	}
-	hent := config.For(miljoe)
-	if navn := hent("ENV_NAME"); navn != "" && !strings.EqualFold(navn, miljoe) {
-		return registerOppsett{}, fmt.Errorf("%w: ENV_NAME er %q, men --env er %q", errs.Invalid, navn, miljoe)
+	get := config.For(env)
+	if name := get("ENV_NAME"); name != "" && !strings.EqualFold(name, env) {
+		return registerSetup{}, fmt.Errorf("%w: ENV_NAME is %q, but --env is %q", errs.Invalid, name, env)
 	}
-	o := registerOppsett{
-		baseURL: hent("API_BASE_URL"),
-		noekkel: cmp.Or(hent(strings.ToUpper(miljoe)+"_REGISTER_SUBSCRIPTION_KEY"), hent("REGISTER_SUBSCRIPTION_KEY")),
+	s := registerSetup{
+		baseURL: get("API_BASE_URL"),
+		key:     cmp.Or(get(strings.ToUpper(env)+"_REGISTER_SUBSCRIPTION_KEY"), get("REGISTER_SUBSCRIPTION_KEY")),
 	}
-	if o.baseURL == "" {
-		return registerOppsett{}, config.WithHint(fmt.Errorf("%w: API_BASE_URL mangler for %s", errs.Invalid, miljoe))
+	if s.baseURL == "" {
+		return registerSetup{}, config.WithHint(fmt.Errorf("%w: API_BASE_URL is missing for %s", errs.Invalid, env))
 	}
-	if o.noekkel == "" {
-		return registerOppsett{}, config.WithHint(fmt.Errorf("%w: REGISTER_SUBSCRIPTION_KEY mangler for %s", errs.Invalid, miljoe))
+	if s.key == "" {
+		return registerSetup{}, config.WithHint(fmt.Errorf("%w: REGISTER_SUBSCRIPTION_KEY is missing for %s", errs.Invalid, env))
 	}
 	var err error
-	if o.token, err = platformtoken.ConfigFrom(hent, miljoe); err != nil {
-		return registerOppsett{}, config.WithHint(err)
+	if s.token, err = platformtoken.ConfigFrom(get, env); err != nil {
+		return registerSetup{}, config.WithHint(err)
 	}
-	return o, nil
+	return s, nil
 }

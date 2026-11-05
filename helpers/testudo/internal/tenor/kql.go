@@ -1,7 +1,7 @@
 package tenor
 
-// Hjelpere for å bygge KQL-spørringer mot Tenor. Feltnavn og verdier for freg
-// er hentet fra Tenor sin "Avansert søk"-dokumentasjon for Folkeregisteret.
+// Helpers for building KQL queries for Tenor. Field names and values for freg
+// are taken from Tenor's "Avansert søk" documentation for Folkeregisteret.
 
 import (
 	"fmt"
@@ -9,10 +9,10 @@ import (
 	"time"
 )
 
-// KQLDateFormat er datoformatet Tenor bruker i KQL, f.eks. foedselsdato>1970-01-01.
+// KQLDateFormat is the date format Tenor uses in KQL, e.g. foedselsdato>1970-01-01.
 const KQLDateFormat = "2006-01-02"
 
-// Comparison er en operator for tall- og datofelt.
+// Comparison is an operator for number and date fields.
 type Comparison string
 
 const (
@@ -22,104 +22,106 @@ const (
 	LessOrEqual    Comparison = "<="
 )
 
-// Eq gir felt:"verdi". Verdien siteres, så mellomrom og spesialtegn er trygt.
-func Eq(felt, verdi string) string {
-	return felt + ":" + sitat(verdi)
+// Eq gives field:"value". The value is quoted, so spaces and special
+// characters are safe.
+func Eq(field, value string) string {
+	return field + ":" + quote(value)
 }
 
-// OneOf gir felt:("a" or "b" ...).
-func OneOf(felt string, verdier ...string) string {
-	siterte := make([]string, len(verdier))
-	for i, v := range verdier {
-		siterte[i] = sitat(v)
+// OneOf gives field:("a" or "b" ...).
+func OneOf(field string, values ...string) string {
+	quoted := make([]string, len(values))
+	for i, v := range values {
+		quoted[i] = quote(v)
 	}
-	return felt + ":(" + strings.Join(siterte, " or ") + ")"
+	return field + ":(" + strings.Join(quoted, " or ") + ")"
 }
 
-// Exists gir felt:*, som treffer alle dokumenter som har feltet uansett verdi.
-func Exists(felt string) string {
-	return felt + ":*"
+// Exists gives field:*, which matches all documents that have the field,
+// whatever the value.
+func Exists(field string) string {
+	return field + ":*"
 }
 
-// Bool gir felt:true eller felt:false for boolske felt.
-func Bool(felt string, verdi bool) string {
-	return fmt.Sprintf("%s:%t", felt, verdi)
+// Bool gives field:true or field:false for boolean fields.
+func Bool(field string, value bool) string {
+	return fmt.Sprintf("%s:%t", field, value)
 }
 
-// Compare gir f.eks. navnLengde>50 eller foedselsdato>=1970-01-01.
-func Compare(felt string, op Comparison, verdi string) string {
-	return felt + string(op) + verdi
+// Compare gives e.g. navnLengde>50 or foedselsdato>=1970-01-01.
+func Compare(field string, op Comparison, value string) string {
+	return field + string(op) + value
 }
 
-// Range gir felt:[fra to til]. Tom grense blir *, dvs. åpen.
-func Range(felt, fra, til string) string {
-	if fra == "" {
-		fra = "*"
+// Range gives field:[from to to]. An empty bound becomes *, i.e. open.
+func Range(field, from, to string) string {
+	if from == "" {
+		from = "*"
 	}
-	if til == "" {
-		til = "*"
+	if to == "" {
+		to = "*"
 	}
-	return fmt.Sprintf("%s:[%s to %s]", felt, fra, til)
+	return fmt.Sprintf("%s:[%s to %s]", field, from, to)
 }
 
-// DateRange er Range med datoer. Null-tid blir åpen grense.
-func DateRange(felt string, fra, til time.Time) string {
-	return Range(felt, formaterDato(fra), formaterDato(til))
+// DateRange is Range with dates. A zero time becomes an open bound.
+func DateRange(field string, from, to time.Time) string {
+	return Range(field, formatDate(from), formatDate(to))
 }
 
-// Nested søker i et nestet objekt, f.eks.
+// Nested searches in a nested object, e.g.
 // Nested("tenorRelasjoner.arbeidsforhold", Eq("ansettelsesform", "fast")).
-func Nested(felt, indre string) string {
-	return felt + ":{" + indre + "}"
+func Nested(field, inner string) string {
+	return field + ":{" + inner + "}"
 }
 
-// And slår sammen deluttrykk med AND. Tomme deler hoppes over.
-func And(deler ...string) string {
-	return kombiner(" AND ", deler)
+// And joins subexpressions with AND. Empty parts are skipped.
+func And(parts ...string) string {
+	return combine(" AND ", parts)
 }
 
-// Or slår sammen deluttrykk med OR. Tomme deler hoppes over.
-func Or(deler ...string) string {
-	return kombiner(" OR ", deler)
+// Or joins subexpressions with OR. Empty parts are skipped.
+func Or(parts ...string) string {
+	return combine(" OR ", parts)
 }
 
-// Not negerer et uttrykk.
-func Not(uttrykk string) string {
-	return "NOT (" + uttrykk + ")"
+// Not negates an expression.
+func Not(expr string) string {
+	return "NOT (" + expr + ")"
 }
 
-func kombiner(sep string, deler []string) string {
-	ikkeTomme := make([]string, 0, len(deler))
-	for _, d := range deler {
+func combine(sep string, parts []string) string {
+	nonEmpty := make([]string, 0, len(parts))
+	for _, d := range parts {
 		if d = strings.TrimSpace(d); d != "" {
-			ikkeTomme = append(ikkeTomme, d)
+			nonEmpty = append(nonEmpty, d)
 		}
 	}
-	if len(ikkeTomme) == 1 {
-		return ikkeTomme[0]
+	if len(nonEmpty) == 1 {
+		return nonEmpty[0]
 	}
-	for i, d := range ikkeTomme {
-		ikkeTomme[i] = "(" + d + ")"
+	for i, d := range nonEmpty {
+		nonEmpty[i] = "(" + d + ")"
 	}
-	return strings.Join(ikkeTomme, sep)
+	return strings.Join(nonEmpty, sep)
 }
 
-func sitat(v string) string {
+func quote(v string) string {
 	v = strings.ReplaceAll(v, `\`, `\\`)
 	v = strings.ReplaceAll(v, `"`, `\"`)
 	return `"` + v + `"`
 }
 
-func formaterDato(t time.Time) string {
+func formatDate(t time.Time) string {
 	if t.IsZero() {
 		return ""
 	}
 	return t.Format(KQLDateFormat)
 }
 
-// Feltnavn i freg (Folkeregisteret).
+// Field names in freg (Folkeregisteret).
 const (
-	// Adresse
+	// Address
 	FregAdresseBeskyttelse                 = "adresseBeskyttelse"
 	FregAdresseGradering                   = "adresseGradering"
 	FregBorMedFar                          = "borMedFar"
@@ -147,7 +149,7 @@ const (
 	FregAdresseSpesialtegn                 = "adresseSpesialtegn"
 	FregSisteBoKommune                     = "sisteBoKommune"
 
-	// Navn
+	// Name
 	FregEtternavn        = "etternavn"
 	FregFlereFornavn     = "flereFornavn"
 	FregFornavn          = "fornavn"
@@ -157,15 +159,15 @@ const (
 	FregVisningnavn      = "visningnavn"
 	FregNavnSpesialtegn  = "navnSpesialtegn"
 
-	// Inn- og utflytting
+	// Immigration and emigration
 	FregHarInnflytting = "harInnflytting"
 	FregHarUtflytting  = "harUtflytting"
 
-	// Sivilstand
+	// Marital status
 	FregHarSivilstandHistorikk = "harSivilstandHistorikk"
 	FregSivilstand             = "sivilstand"
 
-	// Fødselsdato, identifikasjon og status
+	// Date of birth, identification and status
 	FregHarAvvikFdato                  = "harAvvikFdato"
 	FregFoedselsdato                   = "foedselsdato"
 	FregID                             = "id"
@@ -176,11 +178,11 @@ const (
 	FregUtenlandskPersonidentifikasjon = "utenlandskPersonidentifikasjon"
 	FregPersonstatus                   = "personstatus"
 
-	// Dødsfall
+	// Death
 	FregDoedsdato          = "doedsdato"
 	FregKontaktinfoDoedsbo = "kontaktinfoDoedsbo"
 
-	// Familierelasjoner
+	// Family relations
 	FregAntallBarn                                      = "antallBarn"
 	FregForeldreansvar                                  = "foreldreansvar"
 	FregHarDoedfoedtBarn                                = "harDoedfoedtBarn"
@@ -194,14 +196,14 @@ const (
 	FregRelatertPersonsRolle                            = "relatertPersonsRolle"
 	FregHarRelatertPersonUtenFolkeregisteridentifikator = "harRelatertPersonUtenFolkeregisteridentifikator"
 
-	// Diverse
+	// Miscellaneous
 	FregFalskIdentitet         = "falskIdentitet"
 	FregFoedeland              = "foedeland"
 	FregHarOpphold             = "harOpphold"
 	FregOppholdstillatelseType = "oppholdstillatelseType"
 	FregKjoenn                 = "kjoenn"
 
-	// Statsborgerskap
+	// Citizenship
 	FregNorskStatsborgerskap        = "norskStatsborgerskap"
 	FregStatsborgerskap             = "statsborgerskap"
 	FregFlereStatsborgerskap        = "flereStatsborgerskap"
@@ -211,13 +213,13 @@ const (
 	FregUtgaattStatsborgerskap      = "utgaattStatsborgerskap"
 	FregHarStatsborgerskapHistorikk = "harStatsborgerskapHistorikk"
 
-	// Vergemål og rettslig handleevne
+	// Guardianship and legal capacity
 	FregVergemaalType           = "vergemaalType"
 	FregVergeTjenestevirksomhet = "vergeTjenestevirksomhet"
 	FregVergeTjenesteoppgave    = "vergeTjenesteoppgave"
 	FregHarRettsligHandleevne   = "harRettsligHandleevne"
 
-	// Tenor-data, relasjoner og hendelser
+	// Tenor data, relations and events
 	FregTenorOpprettet  = "tenorMetadata.opprettet"
 	FregTenorOppdatert  = "tenorMetadata.oppdatert"
 	FregTenorRelasjoner = "tenorRelasjoner"
@@ -225,8 +227,8 @@ const (
 	FregSisteHendelse   = "sisteHendelse"
 )
 
-// Verdier for freg-felt. Bare verdiene dokumentasjonen nevner er tatt med;
-// feltene kan ha flere.
+// Values for freg fields. Only the values the documentation mentions are
+// included; the fields can have more.
 const (
 	PersonstatusBosatt = "bosatt"
 

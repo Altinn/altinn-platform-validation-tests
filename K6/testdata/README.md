@@ -1,31 +1,33 @@
-# Testdata
+# Test data
 
-Dette dokumentet viser hvordan CSV-filene her kan lages på nytt med
-[testudo](../../helpers/testudo). Bare filene som kan lages med testudo alene er
-med. Filer som trenger delegeringer, samtykker, systembrukere eller annet som
-må finnes i miljøet fra før, er listet [nederst](#kan-ikke-lages-med-testudo).
+This document shows how to make the CSV files here again with
+[testudo](../../helpers/testudo). Only the files that testudo can make on its
+own are included. Files that need delegations, consents, system users or other
+things that must already exist in the environment are listed
+[at the bottom](#cannot-be-made-with-testudo).
 
 > [!WARNING]
-> Testudo trekker nye, tilfeldige personer og virksomheter fra Tenor hver gang.
-> En fil som lages på nytt får andre identiteter enn i dag, og de samme
-> identitetene går ikke lenger igjen på tvers av miljøene. Les
-> [Før du erstatter en fil](#før-du-erstatter-en-fil) først, og kjør testene som
-> leser filen før du committer.
+> Testudo picks new, random persons and organizations from Tenor every time.
+> A file that is made again gets other identities than today, and the same
+> identities no longer appear across the environments. Read
+> [Before you replace a file](#before-you-replace-a-file) first, and run the
+> tests that read the file before you commit.
 
-## Oppsett
+## Setup
 
-Kjør alt fra `helpers/testudo`, med Git Bash eller en annen bash.
+Run everything from `helpers/testudo`, with Git Bash or another bash.
 
-Testudo leser nøkler og adresser fra `~/.testudo.yaml` (eller fila du gir med
-`--config`). Miljøvariabler med samme navn går foran. Fila skal ikke committes:
+Testudo reads keys and addresses from `~/.testudo.yaml` (or the file you give
+with `--config`). Environment variables with the same name take precedence. Do
+not commit the file:
 
 ```yaml
 MASKINPORTEN_CLIENT_ID: '...'
-MASKINPORTEN_JWK: '{"kty":"RSA",...}'   # privat nøkkel for Tenor
-TOKEN_GENERATOR_USERNAME: '...'         # test token generator, som i K6 og Playwright
+MASKINPORTEN_JWK: '{"kty":"RSA",...}'   # private key for Tenor
+TOKEN_GENERATOR_USERNAME: '...'         # test token generator, as in K6 and Playwright
 TOKEN_GENERATOR_PASSWORD: '...'
 
-at23:                                   # én seksjon per miljø: at22, at23, tt02, yt01
+at23:                                   # one section per environment: at22, at23, tt02, yt01
   API_BASE_URL: 'https://platform.at23.altinn.cloud'
   REGISTER_SUBSCRIPTION_KEY: '...'
 ```
@@ -33,85 +35,87 @@ at23:                                   # én seksjon per miljø: at22, at23, tt
 ```bash
 cd helpers/testudo
 T=../../K6/testdata
-ENV=at23   # at22, at23, tt02 eller yt01
+ENV=at23   # at22, at23, tt02 or yt01
 
-# lag <fil> <kolonnenavn i filen> <testudo-argumenter>
-# Kjører testudo, bytter første linje til kolonnenavnene filen bruker, og
-# skriver over filen bare når alt gikk bra.
-lag() {
-  local fil=$1 header=$2
+# generate <file> <column names in the file> <testudo arguments>
+# Runs testudo, replaces the first line with the column names the file uses,
+# and overwrites the file only when everything went well.
+generate() {
+  local file=$1 header=$2
   shift 2
-  go run . find "$@" --format csv --out ny.csv &&
-    { echo "$header"; tail -n +2 ny.csv; } > "$fil" && rm ny.csv
+  go run . find "$@" --format csv --out new.csv &&
+    { echo "$header"; tail -n +2 new.csv; } > "$file" && rm new.csv
 }
 ```
 
-Testudo bruker feltnavnene fra Register (`personIdentifier`, `partyUuid` og så
-videre), mens filene her bruker andre navn. Oppskriftene ber derfor om
-kolonnene i samme rekkefølge som filen, og `lag` bytter ut første linje.
+Testudo uses the field names from Register (`personIdentifier`, `partyUuid` and
+so on), while the files here use other names. The recipes therefore ask for the
+columns in the same order as the file, and `generate` replaces the first line.
 
-Testudo slår alltid opp partene i Register for miljøet i `--env`. Rader der en
-part ikke finnes, eller mangler en verdi (for eksempel en person uten bruker),
-hoppes over. Oppskriftene for yt01-filer som bruker ID-er fra Register (for
-eksempel `request/yt01.csv` og v2-filene) er ikke med ennå. Noen av dem har
-andre kolonner enn i de andre miljøene.
+Testudo always looks up the parties in Register for the environment in `--env`.
+Rows where a party does not exist, or lacks a value (for example a person
+without a user), are skipped. The recipes for yt01 files that use IDs from
+Register (for example `request/yt01.csv` and the v2 files) are not included
+yet. Some of them have other columns than in the other environments.
 
-Testudo skriver LF-linjeskift, som `.gitattributes` ber om. Flere av filene
-her har CRLF i dag, så diffen viser at hver linje er endret.
+Testudo writes LF line endings, as `.gitattributes` asks for. Several of the
+files here have CRLF today, so the diff shows every line as changed.
 
-## Før du erstatter en fil
+## Before you replace a file
 
-- **Nye identiteter.** Filene har i dag de samme personene og virksomhetene i
-  alle miljøer. Etter en ny generering er det ikke lenger slik.
-- **Kjente avhengigheter:**
-  - `authentication/change-request-system-user/end-users-<env>.csv` må ha
-    raden for 313490114, som har en forhåndsopprettet systembruker med 120
-    endringsforespørsler (se `PAGINATION_SYSTEM_ID` i
+- **New identities.** Today the files have the same persons and organizations
+  in all environments. After a new generation this is no longer true.
+- **Known dependencies:**
+  - `authentication/change-request-system-user/end-users-<env>.csv` must have
+    the row for 313490114, which has a pre-created system user with 120
+    change requests (see `PAGINATION_SYSTEM_ID` in
     `api/tests/authentication/change-request-system-user/commons.js`).
-    Oppskriften tar den med.
-  - Forretningsførerne i `authentication/system-user-client-delegation` må ha
-    eiendomsklienter. Det kan ikke testudo sjekke, så oppskriften beholder dem.
-- **Ikke sjekket:** om testene i `access-management-bff/export` forventer at
-  partene allerede har delegeringer. Testene som lager egne delegeringer
-  (access-packages, single-rights, instance-delegation) trenger det ikke.
-- **Etternavn.** Register gir etternavn med store bokstaver. Noen filer har
-  små bokstaver i dag.
+    The recipe includes it.
+  - The forretningsførere in `authentication/system-user-client-delegation`
+    must have property clients. Testudo cannot check that, so the recipe keeps
+    them.
+- **Not checked:** whether the tests in `access-management-bff/export` expect
+  the parties to already have delegations. The tests that make their own
+  delegations (access-packages, single-rights, instance-delegation) do not
+  need it.
+- **Last names.** Register gives last names in upper case. Some files have
+  lower case today.
 
-## Personer
+## Persons
 
-| Filer | Rader i dag |
+| Files | Rows today |
 | --- | --- |
 | `portaler/{at23,tt02}/userids.csv` | 10 |
 | `access-management/consent/consenter-persons/{at22,at23,tt02}.csv` | 1000 |
 | `access-management/enduser/client-delegations-v2/agents/{at22,at23,tt02}.csv` | 20 |
 
 ```bash
-# Kolonnene er de samme som testudo bruker, så her trengs ikke lag.
+# The columns are the same as testudo uses, so `generate` is not needed here.
 go run . find persons -n 10 --env $ENV --format csv --columns userId \
   --out $T/portaler/$ENV/userids.csv
 
-lag $T/access-management/consent/consenter-persons/$ENV.csv ssn,partyUuid,userId,partyId \
+generate $T/access-management/consent/consenter-persons/$ENV.csv ssn,partyUuid,userId,partyId \
   persons -n 1000 --env $ENV --columns personIdentifier,partyUuid,userId,partyId
 
-lag $T/access-management/enduser/client-delegations-v2/agents/$ENV.csv pid,partyUuid,partyId,userId,lastName,name \
+generate $T/access-management/enduser/client-delegations-v2/agents/$ENV.csv pid,partyUuid,partyId,userId,lastName,name \
   persons -n 20 --env $ENV --columns personIdentifier,partyUuid,partyId,userId,lastName,displayName
 ```
 
-## Virksomheter med daglig leder
+## Organizations with a daglig leder
 
-Aksjeselskaper med daglig leder, som er standard i `find organizations`.
-Kolonnene `ssn`, `userId`, `userPartyId`, `userPartyUuid` og `lastName` i
-testudo er daglig leder. `partyId` og `partyUuid` er virksomheten.
+AS companies with a daglig leder, which is the default in `find organizations`.
+The columns `ssn`, `userId`, `userPartyId`, `userPartyUuid` and `lastName` in
+testudo are the daglig leder. `partyId` and `partyUuid` are the organization.
 
-Andre organisasjonsformer velges med `--unit-type`: `ENK`, `ESEK`, `BRL` og
-`NUF`, eller flere med komma. For `ENK` er lederen innehaver, og for `ESEK` og
-`BRL`, som sjelden har daglig leder, styreleder.
+Choose other organisasjonsformer with `--unit-type`: `ENK`, `ESEK`, `BRL` and
+`NUF`, or several separated by commas. For `ENK` the person is the innehaver,
+and for `ESEK` and `BRL`, which rarely have a daglig leder, the styreleder.
 
-Med `--person-role` er personen i kolonnene en med en annen rolle fra
-Enhetsregisteret, f.eks. `styreleder`, `styremedlem`, `varamedlem`,
-`kontaktperson` eller `prokurist` (`--help` lister alle). Rollene har navnene
-fra Access Management, og kolonnen `personRole` sier hvilken rolle personen
-har. Flere roller i samme virksomhet hentes med `--orgno`:
+With `--person-role` the person in the columns has another role from
+Enhetsregisteret, e.g. `styreleder`, `styremedlem`, `varamedlem`,
+`kontaktperson` or `prokurist` (`--help` lists them all). The roles have the
+names from Access Management, and the column `personRole` says which role the
+person has. Get several roles in the same organization with `--orgno`:
 
 ```bash
 go run . find organizations -n 5 --env $ENV --format csv \
@@ -120,55 +124,57 @@ go run . find organizations --orgno $(tail -n +2 orgs.csv | paste -sd,) \
   --person-role styreleder --env $ENV --format csv --columns organizationIdentifier,personRole,ssn
 ```
 
-Virksomheter uten styreleder i Register blir ikke med i den andre listen.
+Organizations without a styreleder in Register are left out of the second list.
 
-Med `--subunits` hentes underenheter (`BEDR` og `AAFY`) av virksomheter med
-organisasjonsformene i `--unit-type` (standard `AS`), i stedet for
-virksomhetene selv, én per hovedenhet. Underenheter har ingen personer selv, så
-personen er fra hovedenheten, med samme regler som over. Kolonnene
-`mainUnitOrganizationIdentifier`, `mainUnitDisplayName`, `mainUnitPartyId`,
-`mainUnitPartyUuid` og `mainUnitUnitType` er hovedenheten. Navnet følger Register,
-der koblingen er rollen `hovedenhet` fra underenheten til hovedenheten, og
-Enhetsregisteret, der underenheten har hovedenheten i `overordnetEnhet`. Access
-Management bruker den samme rollen til `ParentId`. Uten `--subunits` er
-kolonnene tomme, så radene hoppes over i CSV.
+With `--subunits` you get underenheter (`BEDR` and `AAFY`) of organizations
+with the organisasjonsformer in `--unit-type` (default `AS`), instead of the
+organizations themselves, one per hovedenhet. Underenheter have no persons of
+their own, so the person is from the hovedenhet, with the same rules as above.
+The columns `hovedenhetOrganizationIdentifier`, `hovedenhetDisplayName`,
+`hovedenhetPartyId`, `hovedenhetPartyUuid` and `hovedenhetUnitType` are the
+hovedenhet. The name follows Register, where the link is the role `hovedenhet`
+from the underenhet to the hovedenhet, and Enhetsregisteret, where the
+underenhet has the hovedenhet in `overordnetEnhet`. Access Management uses the
+same role for `ParentId`. Without `--subunits` the columns are empty, so the
+rows are skipped in CSV.
 
 ```bash
 go run . find organizations --subunits -n 5 --env $ENV --format csv \
-  --columns organizationIdentifier,partyUuid,mainUnitOrganizationIdentifier,mainUnitPartyUuid,ssn
+  --columns organizationIdentifier,partyUuid,hovedenhetOrganizationIdentifier,hovedenhetPartyUuid,ssn
 ```
 
-Underenheter av eierseksjonssameier og borettslag er `AAFY`, med styreleder som
-person: `--subunits --unit-type esek,brl`.
+Underenheter of `ESEK` and `BRL` organizations are `AAFY`, with the styreleder
+as the person: `--subunits --unit-type esek,brl`.
 
-`--min-subunits N` krever minst N underenheter: uten `--subunits` får du
-hovedenhetene selv, og med `--subunits` underenheter av slike hovedenheter.
+`--min-subunits N` requires at least N underenheter: without `--subunits` you
+get the hovedenheter themselves, and with `--subunits` underenheter of such
+hovedenheter.
 
 ```bash
-# Aksjeselskaper med minst to underenheter.
+# AS companies with at least two underenheter.
 go run . find organizations --min-subunits 2 -n 5 --env $ENV --format csv
 ```
 
 ### pid, partyUuid, orgUuid, orgNo, lastName, …
 
-| Filer | Rader i dag |
+| Files | Rows today |
 | --- | --- |
 | `access-management/enduser/request/{at22,at23,tt02}.csv` | 197, 198, 985 |
 | `access-management/enduser/activity-log/{at22,at23}.csv` | 10 |
 
 ```bash
-lag $T/access-management/enduser/request/$ENV.csv pid,partyUuid,orgUuid,orgNo,lastName,userId,partyId \
+generate $T/access-management/enduser/request/$ENV.csv pid,partyUuid,orgUuid,orgNo,lastName,userId,partyId \
   organizations -n 198 --env $ENV \
   --columns ssn,userPartyUuid,partyUuid,organizationIdentifier,lastName,userId,userPartyId
 
-lag $T/access-management/enduser/activity-log/$ENV.csv pid,partyUuid,orgUuid,orgNo,lastName \
+generate $T/access-management/enduser/activity-log/$ENV.csv pid,partyUuid,orgUuid,orgNo,lastName \
   organizations -n 10 --env $ENV \
   --columns ssn,userPartyUuid,partyUuid,organizationIdentifier,lastName
 ```
 
 ### ssn, partyUuid, userId, orgUuid, orgNo, lastName, …
 
-| Filer | Rader i dag |
+| Files | Rows today |
 | --- | --- |
 | `access-management/enduser/connections/at23.csv` | 9 |
 | `access-management/resource-owner/maskinporten-schema/{at23,tt02}.csv` | 9 |
@@ -176,12 +182,12 @@ lag $T/access-management/enduser/activity-log/$ENV.csv pid,partyUuid,orgUuid,org
 | `access-management-bff/consent/{at23,tt02}.csv` | 9 |
 
 ```bash
-lag $T/access-management/enduser/connections/at23.csv ssn,partyUuid,userId,orgUuid,orgNo,lastName \
+generate $T/access-management/enduser/connections/at23.csv ssn,partyUuid,userId,orgUuid,orgNo,lastName \
   organizations -n 9 --env at23 \
   --columns ssn,userPartyUuid,userId,partyUuid,organizationIdentifier,lastName
 
-# Det samme for open-client-admin og access-management-bff/consent.
-lag $T/access-management/resource-owner/maskinporten-schema/$ENV.csv \
+# The same for open-client-admin and access-management-bff/consent.
+generate $T/access-management/resource-owner/maskinporten-schema/$ENV.csv \
   ssn,partyUuid,userId,orgUuid,orgNo,lastName,userPartyId,partyId \
   organizations -n 9 --env $ENV \
   --columns ssn,userPartyUuid,userId,partyUuid,organizationIdentifier,lastName,userPartyId,partyId
@@ -189,12 +195,12 @@ lag $T/access-management/resource-owner/maskinporten-schema/$ENV.csv \
 
 ### orgNo, partyId, ssn, userId, userPartyId, orgUuid, partyUuid, lastName
 
-Her er `partyId` virksomheten og `partyUuid` daglig leder.
+Here `partyId` is the organization and `partyUuid` is the daglig leder.
 
-| Filer i `access-management-bff/` og `correspondence/` | Rader i dag |
+| Files in `access-management-bff/` and `correspondence/` | Rows today |
 | --- | --- |
 | `access-packages/{org-to-org,user-to-user}/{at23,tt02}.csv` | 5–6 |
-| `export/{at23,tt02}/*.csv` (seks filer per miljø) | 5–6 |
+| `export/{at23,tt02}/*.csv` (six files per environment) | 5–6 |
 | `instance-delegation/{at23,tt02}/{org-user,user-user}.csv` | 505 |
 | `single-rights/{at23,tt02}/{org-org,user-user}.csv` | 5 |
 | `correspondence/{at23,tt02}/fullmakt-user-user.csv` | 5 |
@@ -203,60 +209,60 @@ Her er `partyId` virksomheten og `partyUuid` daglig leder.
 V2=orgNo,partyId,ssn,userId,userPartyId,orgUuid,partyUuid,lastName
 V2_TESTUDO=organizationIdentifier,partyId,ssn,userId,userPartyId,partyUuid,userPartyUuid,lastName
 
-lag $T/access-management-bff/access-packages/org-to-org/$ENV.csv $V2 \
+generate $T/access-management-bff/access-packages/org-to-org/$ENV.csv $V2 \
   organizations -n 6 --env $ENV --columns $V2_TESTUDO
-# Det samme for de andre filene i tabellen, med antall rader fra tabellen.
+# The same for the other files in the table, with the row count from the table.
 ```
 
-### ssn og orgno
+### ssn and orgno
 
-Disse bruker bare organisasjonsnummer og fødselsnummer, og har samme kolonner
-i yt01.
+These only use organization number and fødselsnummer, and have the same
+columns in yt01.
 
-| Filer | Rader i dag |
+| Files | Rows today |
 | --- | --- |
 | `authorization/pdp-authorize/orgs-dagl-{at22,tt02,yt01}.csv` | 9, 9, 9999 |
 | `access-management/resource-owner/get-authorized-parties/{at22,tt02,yt01}.csv` | 9, 9, 9999 |
 | `dialogporten/{endusers,graphql,serviceowner}/{at23,tt02,yt01}/endusers.csv` | 28, 97, 2798 |
 
 ```bash
-lag $T/authorization/pdp-authorize/orgs-dagl-$ENV.csv orgno,ssn \
+generate $T/authorization/pdp-authorize/orgs-dagl-$ENV.csv orgno,ssn \
   organizations -n 9 --env $ENV --columns organizationIdentifier,ssn
 
-lag $T/access-management/resource-owner/get-authorized-parties/$ENV.csv orgno,ssn \
+generate $T/access-management/resource-owner/get-authorized-parties/$ENV.csv orgno,ssn \
   organizations -n 9 --env $ENV --columns organizationIdentifier,ssn
 
-# Merk den omvendte rekkefølgen.
-lag $T/dialogporten/endusers/$ENV/endusers.csv ssn,orgno \
+# Note the reverse order.
+generate $T/dialogporten/endusers/$ENV/endusers.csv ssn,orgno \
   organizations -n 28 --env $ENV --columns ssn,organizationIdentifier
 ```
 
 ### pid
 
-Personene trenger bare å være noen authorized-parties svarer for. Generatoren i
-K6 bruker daglige ledere, så det gjør oppskriften også. Lag filene hver for
-seg, så de ikke har de samme personene.
+The persons only need to be someone that authorized-parties returns parties
+for. The generator in K6 uses daglige ledere, so the recipe does too. Make the
+files one at a time, so they do not have the same persons.
 
-| Filer i `access-management/resource-owner/authorized-parties/` | Rader i dag |
+| Files in `access-management/resource-owner/authorized-parties/` | Rows today |
 | --- | --- |
 | `{authorization-boundaries,org-code-filter}/{at22,at23,tt02,yt01}.csv` | 10 |
 
 ```bash
-lag $T/access-management/resource-owner/authorized-parties/authorization-boundaries/$ENV.csv pid \
+generate $T/access-management/resource-owner/authorized-parties/authorization-boundaries/$ENV.csv pid \
   organizations -n 10 --env $ENV --columns ssn
-lag $T/access-management/resource-owner/authorized-parties/org-code-filter/$ENV.csv pid \
+generate $T/access-management/resource-owner/authorized-parties/org-code-filter/$ENV.csv pid \
   organizations -n 10 --env $ENV --columns ssn
 ```
 
 ### subject-lookup-forms
 
 > [!CAUTION]
-> Generatoren (`access-management/resource-owner/authorized-parties/subject-lookup-forms-data.js`) tar bare
-> med rader der authorized-parties svarer med en liste som ikke er tom, både
-> for personen og virksomheten. Testudo kan ikke sjekke det, så noen rader kan
-> bli avvist av testen.
+> The generator (`access-management/resource-owner/authorized-parties/subject-lookup-forms-data.js`) only
+> keeps rows where authorized-parties returns a list that is not empty, both
+> for the person and the organization. Testudo cannot check that, so the test
+> may reject some rows.
 
-Filen bruker standardnavnene fra testudo, så den trenger ikke `lag`:
+The file uses the default names from testudo, so it does not need `generate`:
 
 ```bash
 go run . find organizations -n 10 --env $ENV --format csv \
@@ -266,50 +272,50 @@ go run . find organizations -n 10 --env $ENV --format csv \
 
 ### change-request-system-user/end-users
 
-Raden for 313490114 må være med (se [over](#før-du-erstatter-en-fil)), og
-`role` er alltid `dagligleder`.
+The row for 313490114 must be included (see [above](#before-you-replace-a-file)),
+and `role` is always `dagligleder`.
 
 ```bash
 K=organizationIdentifier,partyId,partyUuid,unitType,userId,userPartyUuid,ssn
 go run . find organizations --orgno 313490114 --env $ENV \
-  --format csv --columns $K --out fast.csv &&
-go run . find organizations -n 199 --env $ENV --format csv --columns $K --out ny.csv &&
+  --format csv --columns $K --out fixed.csv &&
+go run . find organizations -n 199 --env $ENV --format csv --columns $K --out new.csv &&
 { echo orgNo,orgPartyId,orgPartyUuid,orgType,role,userId,userPartyUuid,userPid
-  tail -n +2 fast.csv; tail -n +2 ny.csv; } |
+  tail -n +2 fixed.csv; tail -n +2 new.csv; } |
   awk -F, -v OFS=, 'NR > 1 { $4 = $4 OFS "dagligleder" } 1' \
   > $T/authentication/change-request-system-user/end-users-$ENV.csv &&
-rm fast.csv ny.csv
+rm fixed.csv new.csv
 ```
 
-## Virksomheter uten person
+## Organizations without a person
 
 ```bash
-# access-management/consent/consentee-orgs/{at22,at23,tt02,yt01}.csv, 20 rader
-lag $T/access-management/consent/consentee-orgs/$ENV.csv orgNo \
+# access-management/consent/consentee-orgs/{at22,at23,tt02,yt01}.csv, 20 rows
+generate $T/access-management/consent/consentee-orgs/$ENV.csv orgNo \
   organizations -n 20 --env $ENV --columns organizationIdentifier
 
-# authentication/change-request-system-user/vendors.csv, 200 rader, samme fil for alle miljøer
-lag $T/authentication/change-request-system-user/vendors.csv orgNo,name \
+# authentication/change-request-system-user/vendors.csv, 200 rows, same file for all environments
+generate $T/authentication/change-request-system-user/vendors.csv orgNo,name \
   organizations -n 200 --columns organizationIdentifier,displayName
 
-# access-management/service-owner/connections/recipients/{at22,at23,tt02}.csv, 200 rader
-go run . find organizations -n 200 --env $ENV --format csv --columns organizationIdentifier --out ny.csv &&
-{ echo recipientType,recipientIdentifier; tail -n +2 ny.csv | sed 's/^/organization,/'; } \
-  > $T/access-management/service-owner/connections/recipients/$ENV.csv && rm ny.csv
+# access-management/service-owner/connections/recipients/{at22,at23,tt02}.csv, 200 rows
+go run . find organizations -n 200 --env $ENV --format csv --columns organizationIdentifier --out new.csv &&
+{ echo recipientType,recipientIdentifier; tail -n +2 new.csv | sed 's/^/organization,/'; } \
+  > $T/access-management/service-owner/connections/recipients/$ENV.csv && rm new.csv
 ```
 
 ## Tilretteleggere
 
-Testudo staver rollene `regnskapsfoerer` og `forretningsfoerer`, mens filene
-bruker `regnskapsforer` og `forretningsforer`. Oppskriftene retter det.
+Testudo spells the roles `regnskapsfoerer` and `forretningsfoerer`, while the
+files use `regnskapsforer` and `forretningsforer`. The recipes fix that.
 
 ```bash
-staving() { sed 's/regnskapsfoerer$/regnskapsforer/; s/forretningsfoerer$/forretningsforer/'; }
+fix_spelling() { sed 's/regnskapsfoerer$/regnskapsforer/; s/forretningsfoerer$/forretningsforer/'; }
 ```
 
 ### register/organizations-{at22,at23,tt02}.csv
 
-Ti av hver rolle. Filen er også utgangspunktet for generatorene i
+Ten of each role. The file is also the starting point for the generators in
 `access-management/resource-owner/authorized-parties/`.
 
 ```bash
@@ -318,15 +324,15 @@ go run . find organizations -r revisor -n 10 --env $ENV --format csv --columns $
 go run . find organizations -r regnskapsfoerer -n 10 --env $ENV --format csv --columns $K --out regnskapsfoerer.csv &&
 go run . find organizations -r forretningsfoerer -n 10 --env $ENV --format csv --columns $K --out forretningsfoerer.csv &&
 { echo organizationUuid,organizationId,type
-  tail -q -n +2 revisor.csv regnskapsfoerer.csv forretningsfoerer.csv | staving; } \
+  tail -q -n +2 revisor.csv regnskapsfoerer.csv forretningsfoerer.csv | fix_spelling; } \
   > $T/register/organizations-$ENV.csv &&
 rm revisor.csv regnskapsfoerer.csv forretningsfoerer.csv
 ```
 
 ### authentication/system-user-request/{at22,at23,tt02}.csv
 
-Rundt 50 av hver: vanlige AS-er (`orgType` er `AS`) og de tre rollene
-(`orgType` er rollen).
+About 50 of each: plain AS companies (`orgType` is `AS`) and the three roles
+(`orgType` is the role).
 
 ```bash
 K=organizationIdentifier,partyId,partyUuid,userId,userPartyUuid,ssn
@@ -335,61 +341,63 @@ go run . find organizations -r revisor -n 50 --env $ENV --format csv --columns $
 go run . find organizations -r regnskapsfoerer -n 50 --env $ENV --format csv --columns $K,type --out regnskapsfoerer.csv &&
 go run . find organizations -r forretningsfoerer -n 50 --env $ENV --format csv --columns $K,type --out forretningsfoerer.csv &&
 { echo orgNo,partyId,orgUuid,userId,userPartyUuid,ssn,orgType
-  tail -q -n +2 as.csv revisor.csv regnskapsfoerer.csv forretningsfoerer.csv | staving; } \
+  tail -q -n +2 as.csv revisor.csv regnskapsfoerer.csv forretningsfoerer.csv | fix_spelling; } \
   > $T/authentication/system-user-request/$ENV.csv &&
 rm as.csv revisor.csv regnskapsfoerer.csv forretningsfoerer.csv
 ```
 
 ### authentication/system-user-client-delegation/{at22,at23,tt02}.csv
 
-Revisorer og regnskapsførere lages på nytt. Forretningsførerne må ha
-eiendomsklienter, så de hentes fra filen som ligger der.
+Revisorer and regnskapsførere are made again. The forretningsførere must have
+property clients, so they are taken from the current file.
 
 ```bash
 F=$T/authentication/system-user-client-delegation/$ENV.csv
 K=organizationIdentifier,partyId,partyUuid,userId,userPartyUuid,ssn,type
-grep ',forretningsforer' $F | tr -d '\r' > ff.csv
+grep ',forretningsforer' $F | tr -d '\r' > kept.csv
 go run . find organizations -r revisor -n 4 --env $ENV --format csv --columns $K --out revisor.csv &&
-go run . find organizations -r regnskapsfoerer -n 3 --env $ENV --format csv --columns $K --out regnskap.csv &&
+go run . find organizations -r regnskapsfoerer -n 3 --env $ENV --format csv --columns $K --out regnskapsfoerer.csv &&
 { echo orgNo,partyId,orgUuid,userId,userPartyUuid,ssn,orgType
-  tail -q -n +2 revisor.csv regnskap.csv | staving; cat ff.csv; } > $F &&
-rm ff.csv revisor.csv regnskap.csv
+  tail -q -n +2 revisor.csv regnskapsfoerer.csv | fix_spelling; cat kept.csv; } > $F &&
+rm kept.csv revisor.csv regnskapsfoerer.csv
 ```
 
-## Generatorer i K6
+## Generators in K6
 
-Noen filer lages av k6-skript som ligger her i `testdata`, ved siden av dataene
-de skriver. De spør API-ene som testene bruker, og skriver radene ut som CSV:
+Some files are made by k6 scripts that live here in `testdata`, next to the
+data they write. They query the APIs that the tests use, and write the rows as
+CSV:
 
-| Generator | Skriver |
+| Generator | Writes |
 | --- | --- |
 | `access-management/consent/consent-data.js` | `access-management/consent/lookup/` |
 | `access-management/resource-owner/authorized-parties/subject-lookup-forms-data.js` | `subject-lookup-forms` |
 | `access-management/resource-owner/authorized-parties/accounting-firm-data.js` | `clients-and-key-role-parties`, `access-information-flags`, `key-role-filter`, `party-filter`, `resource-filter` |
 | `access-management/resource-owner/authorized-parties/subject-only-data.js` | `authorization-boundaries`, `org-code-filter` |
 
-De kjøres med `k6 run`, f.eks.
+Run them with `k6 run`, e.g.
 `k6 run K6/testdata/access-management/resource-owner/authorized-parties/accounting-firm-data.js`.
-Se README-en til testene for hvilke miljøvariabler de trenger.
+See the README for the tests for the environment variables they need.
 
-## Kan ikke lages med testudo
+## Cannot be made with testudo
 
-Disse trenger data som må finnes i miljøet fra før, eller parter testudo ikke
-finner:
+These need data that must already exist in the environment, or parties that
+testudo does not find:
 
-- `access-management/enduser/activity-log/yt01.csv`: virksomhetene er valgt
-  fordi `testdataGeneration/activity-log-data.js` har fylt opp loggene deres.
-- `access-management/resource-owner/authorized-parties/` med
-  regnskapsførere og klienter (`clients-and-key-role-parties`,
+- `access-management/enduser/activity-log/yt01.csv`: the organizations are
+  chosen because `testdataGeneration/activity-log-data.js` has filled up their
+  logs.
+- `access-management/resource-owner/authorized-parties/` with
+  regnskapsførere and clients (`clients-and-key-role-parties`,
   `access-information-flags`, `key-role-filter`, `party-filter`,
-  `resource-filter`): bruk generatoren i
+  `resource-filter`): use the generator in
   `access-management/resource-owner/authorized-parties/accounting-firm-data.js`.
-- `access-management/enduser/client-delegations-v2/*.csv`: agent, klient,
-  `roleCode` og `resource` i samme rad.
-- `authorization/pdp-authorize/` instansdelegeringer og `single-rights`.
+- `access-management/enduser/client-delegations-v2/*.csv`: agent, client,
+  `roleCode` and `resource` in the same row.
+- `authorization/pdp-authorize/` instance delegations and `single-rights`.
 - `access-management/consent/lookup`, `get-authorized-parties/for-system-user`,
   `for-user-dialogporten-with-filter`, `dialogporten/serviceowner/should-send-notification`.
-- `register/ccr-role-client-*.csv`: trenger klientene til tilretteleggeren, og
-  dem henter ikke testudo.
-- `register/register-usernames-*.csv`, `resource-registry/*` og
+- `register/ccr-role-client-*.csv`: needs the clients of the tilrettelegger,
+  and testudo does not fetch them.
+- `register/register-usernames-*.csv`, `resource-registry/*` and
   `access-management/service-owner/connections/service-owners`.

@@ -8,18 +8,19 @@ import (
 	"github.com/Altinn/altinn-platform-validation-tests/helpers/testudo/internal/errs"
 )
 
-// PersonRole er en rolle en person kan ha i en virksomhet i
-// Enhetsregisteret, og som Access Management importerer.
+// PersonRole is a role a person can have in an organization in
+// Enhetsregisteret, and that Access Management imports.
 type PersonRole struct {
-	// Name er rollekoden i Access Management og Register, f.eks. styreleder.
+	// Name is the role code in Access Management and Register, e.g.
+	// styreleder.
 	Name string
-	// Code er rollekoden i brreg-dokumentet fra Tenor, f.eks. LEDE.
+	// Code is the role code in the brreg document from Tenor, e.g. LEDE.
 	Code string
 }
 
-// PersonRoles er personrollene FindOrganizations kan hente. Det er rollene
-// Access Management importerer fra Enhetsregisteret og som personer har i
-// Tenor.
+// PersonRoles are the person roles FindOrganizations can fetch. They are the
+// roles Access Management imports from Enhetsregisteret and that persons have
+// in Tenor.
 var PersonRoles = []PersonRole{
 	{Name: "daglig-leder", Code: "DAGL"},
 	{Name: "innehaver", Code: "INNH"},
@@ -40,30 +41,31 @@ var PersonRoles = []PersonRole{
 	{Name: "signerer-fellesskap", Code: "SIFE"},
 	{Name: "signerer-hver-for-seg", Code: "SIHV"},
 	{Name: "stifter", Code: "STFT"},
-	// Skrivemåten er Access Management sin.
+	// The spelling is Access Management's.
 	{Name: "elektronisk-signeringsrettig", Code: "ESGR"},
 	{Name: "elektronisk-signeringsrett-tildeler", Code: "ETDL"},
 }
 
-// PersonRoleNames er navnene i PersonRoles, til hjelpetekst og feilmeldinger.
+// PersonRoleNames are the names in PersonRoles, for help texts and error
+// messages.
 func PersonRoleNames() string {
-	navn := make([]string, len(PersonRoles))
+	names := make([]string, len(PersonRoles))
 	for i, r := range PersonRoles {
-		navn[i] = r.Name
+		names[i] = r.Name
 	}
-	return strings.Join(navn, ", ")
+	return strings.Join(names, ", ")
 }
 
-// FindPersonRole slår opp personrollen med navnet.
+// FindPersonRole looks up the person role with the name.
 func FindPersonRole(name string) (PersonRole, error) {
 	i := slices.IndexFunc(PersonRoles, func(r PersonRole) bool { return r.Name == name })
 	if i < 0 {
-		return PersonRole{}, fmt.Errorf("%w: ukjent personrolle %q, bruk en av %s", errs.Invalid, name, PersonRoleNames())
+		return PersonRole{}, fmt.Errorf("%w: unknown person role %q, use one of %s", errs.Invalid, name, PersonRoleNames())
 	}
 	return PersonRoles[i], nil
 }
 
-// personRoleByCode slår opp personrollen med koden fra Tenor.
+// personRoleByCode looks up the person role with the code from Tenor.
 func personRoleByCode(code string) PersonRole {
 	i := slices.IndexFunc(PersonRoles, func(r PersonRole) bool { return r.Code == code })
 	return PersonRoles[i]

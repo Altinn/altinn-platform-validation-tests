@@ -1,6 +1,6 @@
-// Package cmd er kommandolinjen til testudo. Kommandoene leser flagg og
-// konfigurasjon, setter opp klientene og skriver ut resultatet. Resten ligger
-// i internal/.
+// Package cmd is the testudo command line. The commands read flags and
+// configuration, set up the clients and print the result. The rest lives in
+// internal/.
 package cmd
 
 import (
@@ -11,7 +11,7 @@ import (
 	"github.com/Altinn/altinn-platform-validation-tests/helpers/testudo/internal/config"
 )
 
-// Execute kjører testudo. Den kalles fra main.
+// Execute runs testudo. It is called from main.
 func Execute() {
 	if err := newRootCmd().Execute(); err != nil {
 		os.Exit(1)
@@ -19,19 +19,19 @@ func Execute() {
 }
 
 func newRootCmd() *cobra.Command {
-	var configFil string
+	var configFile string
 	root := &cobra.Command{
 		Use:   "testudo",
-		Short: "Testdata for testene i altinn-platform-validation-tests",
-		Long: `testudo finner testpersoner og virksomheter som finnes både i Tenor og i
-Altinn Register, og skriver dem ut som tekst, JSON eller CSV.`,
-		// Config-fila leses før kommandoen kjører. Ingenting skrives til
-		// stdout her, siden stdout er resultatet.
+		Short: "Test data for the tests in altinn-platform-validation-tests",
+		Long: `testudo finds test persons and organizations that exist both in Tenor and in
+Altinn Register, and prints them as text, JSON or CSV.`,
+		// The config file is read before the command runs. Nothing is written
+		// to stdout here, since stdout is the result.
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
-			return config.Load(configFil)
+			return config.Load(configFile)
 		},
 	}
-	root.PersistentFlags().StringVar(&configFil, "config", "", "config file (default is $HOME/.testudo.yaml)")
+	root.PersistentFlags().StringVar(&configFile, "config", "", "config file (default is $HOME/.testudo.yaml)")
 	root.AddCommand(newFindCmd())
 	return root
 }

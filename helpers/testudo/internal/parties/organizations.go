@@ -15,274 +15,278 @@ import (
 	"github.com/Altinn/altinn-platform-validation-tests/helpers/testudo/internal/tenor"
 )
 
-// UnitTypes er organisasjonsformene FindOrganizations kan hente, med kodene
-// fra Enhetsregisteret: aksjeselskap, enkeltpersonforetak,
-// eierseksjonssameie, borettslag og norskregistrert utenlandsk foretak.
-// Underenhetene deres hentes med OrganizationQuery.Subunits.
+// UnitTypes are the unit types FindOrganizations can fetch, with the codes
+// from Enhetsregisteret: aksjeselskap, enkeltpersonforetak,
+// eierseksjonssameie, borettslag and norskregistrert utenlandsk foretak.
+// Their underenheter are fetched with OrganizationQuery.Subunits.
 var UnitTypes = []string{"AS", "ENK", "ESEK", "BRL", "NUF"}
 
-// DefaultUnitType er organisasjonsformen som hentes når ingen er valgt.
+// DefaultUnitType is the unit type fetched when none is chosen.
 const DefaultUnitType = "AS"
 
-// styreledetUnitTypes er organisasjonsformene som sjelden har daglig leder,
-// og der styreleder er lederen.
-var styreledetUnitTypes = []string{"ESEK", "BRL"}
+// styrelederUnitTypes are the unit types that rarely have a daglig leder,
+// and where the styreleder is the leader.
+var styrelederUnitTypes = []string{"ESEK", "BRL"}
 
-// underenhetUnitTypes er underenhetene, av nærings- og
-// ikke-næringsdrivende hovedenheter. De har ingen personroller selv, så
-// personen er fra hovedenheten, som er rollen med samme kode (BEDR eller
-// AAFY) i Enhetsregisteret. Access Management setter ParentId fra den.
+// underenhetUnitTypes are the underenheter, of hovedenheter with and without
+// business activity. They have no person roles of their own, so the person
+// is from the hovedenhet, which is the role with the same code (BEDR or
+// AAFY) in Enhetsregisteret. Access Management sets ParentId from it.
 var underenhetUnitTypes = []string{"BEDR", "AAFY"}
 
-// FindUnitType slår opp organisasjonsformen i UnitTypes, uansett store eller
-// små bokstaver.
+// FindUnitType looks up the unit type in UnitTypes, ignoring case.
 func FindUnitType(name string) (string, error) {
-	kode := strings.ToUpper(name)
-	if !slices.Contains(UnitTypes, kode) {
-		return "", fmt.Errorf("%w: ukjent organisasjonsform %q, bruk en av %s", errs.Invalid, name, strings.Join(UnitTypes, ", "))
+	code := strings.ToUpper(name)
+	if !slices.Contains(UnitTypes, code) {
+		return "", fmt.Errorf("%w: unknown unit type %q, use one of %s", errs.Invalid, name, strings.Join(UnitTypes, ", "))
 	}
-	return kode, nil
+	return code, nil
 }
 
-// ValidOrganizationNumber er om s ser ut som et organisasjonsnummer (9
-// siffer).
+// ValidOrganizationNumber reports whether s looks like an organization
+// number (9 digits).
 func ValidOrganizationNumber(s string) bool {
-	return organisasjonsnummerRe.MatchString(s)
+	return organizationNumberRe.MatchString(s)
 }
 
-// Organization er en virksomhet fra brreg-er-fr der både virksomheten og
-// personen finnes i Register for miljøet. Alt om dem er fra Register. Fra
-// Tenor er bare Kildedata, og hvem personen er.
+// Organization is an organization from brreg-er-fr where both the
+// organization and the person exist in Register for the environment.
+// Everything about them is from Register. Only Kildedata, and who the person
+// is, is from Tenor.
 type Organization struct {
-	// Rolle er tilretteleggerrollen når virksomheten er hentet med en rolle.
-	Rolle string `json:"rolle,omitempty"`
-	// Kildedata er hele brreg-dokumentet fra Tenor.
+	// Role is the tilrettelegger role when the organization was fetched with
+	// a role.
+	Role string `json:"role,omitempty"`
+	// Kildedata is the whole brreg document from Tenor.
 	Kildedata json.RawMessage `json:"kildedata,omitempty"`
-	// Party er virksomheten i Register. I JSON ligger feltene på samme nivå
-	// som rolle og kildedata.
+	// Party is the organization in Register. In JSON its fields are at the
+	// same level as role and kildedata.
 	register.Party
-	// PersonRolle er rollen Person har i virksomheten, med navnet i
-	// PersonRoles, f.eks. daglig-leder eller styreleder.
-	PersonRolle string `json:"personRolle"`
-	// Person er personen med PersonRolle i Register. Uten valgt personrolle
-	// er det lederen (se leder). For underenheter er personen fra
-	// hovedenheten.
+	// PersonRole is the role Person has in the organization, with the name in
+	// PersonRoles, e.g. daglig-leder or styreleder.
+	PersonRole string `json:"personRole"`
+	// Person is the person with PersonRole in Register. Without a chosen
+	// person role it is the leader (see leader). For underenheter the person
+	// is from the hovedenhet.
 	Person register.Party `json:"person"`
-	// Hovedenhet er hovedenheten i Register når virksomheten er en
-	// underenhet (BEDR eller AAFY).
+	// Hovedenhet is the hovedenhet in Register when the organization is an
+	// underenhet (BEDR or AAFY).
 	Hovedenhet *register.Party `json:"hovedenhet,omitempty"`
 }
 
-// virksomhetKandidat er en virksomhet fra Tenor som ikke er slått opp i
-// Register ennå.
-type virksomhetKandidat struct {
-	organisasjonsnummer string
-	// person er fødselsnummeret til personen med personRolle. For
-	// underenheter er det tomt til hovedenheten er hentet.
-	person      string
-	personRolle string
-	// hovedenhet er organisasjonsnummeret til hovedenheten når virksomheten
-	// er en underenhet.
+// organizationCandidate is an organization from Tenor that has not been
+// looked up in Register yet.
+type organizationCandidate struct {
+	organizationIdentifier string
+	// person is the fødselsnummer of the person with personRole. For
+	// underenheter it is empty until the hovedenhet has been fetched.
+	person     string
+	personRole string
+	// hovedenhet is the organization number of the hovedenhet when the
+	// organization is an underenhet.
 	hovedenhet string
-	rolle      string
+	role       string
 	kildedata  json.RawMessage
 }
 
-// OrganizationQuery er hvilke virksomheter FindOrganizations henter. Bare ett
-// av UnitTypes, OrganizationNumbers og Role kan brukes.
+// OrganizationQuery is which organizations FindOrganizations fetches. Only
+// one of UnitTypes, OrganizationNumbers and Role can be used.
 type OrganizationQuery struct {
-	// Count er hvor mange virksomheter som hentes. Med OrganizationNumbers er
-	// det antallet organisasjonsnumre.
+	// Count is how many organizations are fetched. With OrganizationNumbers
+	// it is the number of organization numbers.
 	Count int
-	// UnitTypes er organisasjonsformene i UnitTypes, f.eks. AS eller ENK. Tom
-	// gir DefaultUnitType.
+	// UnitTypes are the unit types in UnitTypes, e.g. AS or ENK. Empty gives
+	// DefaultUnitType.
 	UnitTypes []string
-	// Subunits henter underenheter (BEDR og AAFY) av virksomheter med
-	// organisasjonsformene i UnitTypes, i stedet for virksomhetene selv.
+	// Subunits fetches underenheter (BEDR and AAFY) of organizations with the
+	// unit types in UnitTypes, instead of the organizations themselves.
 	Subunits bool
-	// MinSubunits henter bare virksomheter med minst så mange underenheter,
-	// eller med Subunits underenheter av slike. 0 betyr ingen krav, men med
-	// Subunits må hovedenheten ha minst én.
+	// MinSubunits fetches only organizations with at least this many
+	// underenheter, or with Subunits underenheter of such organizations. 0
+	// means no requirement, but with Subunits the hovedenhet must have at
+	// least one.
 	MinSubunits int
-	// OrganizationNumbers er virksomhetene som hentes.
+	// OrganizationNumbers are the organizations to fetch.
 	OrganizationNumbers []string
-	// Role er navnet på en rolle i Roles. Da hentes tilretteleggere med den
-	// rollen.
+	// Role is the name of a role in Roles. Then tilretteleggere with that
+	// role are fetched.
 	Role string
-	// PersonRole er navnet på en rolle i PersonRoles. Da hentes bare
-	// virksomheter der en person har rollen, og Person er den personen. Tom
-	// gir lederen.
+	// PersonRole is the name of a role in PersonRoles. Then only
+	// organizations where a person has the role are fetched, and Person is
+	// that person. Empty gives the leader.
 	PersonRole string
-	// Env er miljøet i Register.
+	// Env is the environment in Register.
 	Env string
 }
 
-// FindOrganizations henter q.Count virksomheter med en person med rollen
-// q.PersonRole, eller med leder, der både virksomheten og personen finnes i
-// Register for q.Env. For underenheter er personen fra hovedenheten, som også
-// må finnes i Register. Andre byttes ut med nye fra Tenor, i opptil
-// maksRegisterRunder runder, og hvor mange som ble byttet ut skrives til log.
-// Alle partene i en runde slås opp i samme kall.
+// FindOrganizations fetches q.Count organizations with a person with the role
+// q.PersonRole, or with a leader, where both the organization and the person
+// exist in Register for q.Env. For underenheter the person is from the
+// hovedenhet, which must also exist in Register. Others are replaced with new
+// ones from Tenor, in up to maxRegisterRounds rounds, and how many were
+// replaced is written to log. All the parties in a round are looked up in the
+// same call.
 func FindOrganizations(ctx context.Context, c *tenor.Client, reg *register.Client, q OrganizationQuery, log io.Writer) ([]Organization, error) {
 	if len(q.OrganizationNumbers) > 0 {
 		q.Count = len(q.OrganizationNumbers)
 	}
-	var personrolle PersonRole
+	var personRole PersonRole
 	if q.PersonRole != "" {
 		var err error
-		if personrolle, err = FindPersonRole(q.PersonRole); err != nil {
+		if personRole, err = FindPersonRole(q.PersonRole); err != nil {
 			return nil, err
 		}
 	}
 
-	sett := map[string]bool{}
-	virksomheter := make([]Organization, 0, q.Count)
-	ikkeIRegister := 0
-	for runde := 0; runde < maksRegisterRunder && len(virksomheter) < q.Count; runde++ {
-		kandidater, err := hentForValg(ctx, c, q, personrolle, q.Count-len(virksomheter))
+	seen := map[string]bool{}
+	organizations := make([]Organization, 0, q.Count)
+	notInRegister := 0
+	for round := 0; round < maxRegisterRounds && len(organizations) < q.Count; round++ {
+		candidates, err := fetchForQuery(ctx, c, q, personRole, q.Count-len(organizations))
 		if err != nil {
 			return nil, err
 		}
-		var nye []virksomhetKandidat
-		for _, k := range kandidater {
-			if !sett[k.organisasjonsnummer] {
-				sett[k.organisasjonsnummer] = true
-				nye = append(nye, k)
+		var unseen []organizationCandidate
+		for _, k := range candidates {
+			if !seen[k.organizationIdentifier] {
+				seen[k.organizationIdentifier] = true
+				unseen = append(unseen, k)
 			}
 		}
-		if len(nye) == 0 {
+		if len(unseen) == 0 {
 			break
 		}
 
-		ider := make([]string, 0, 3*len(nye))
-		for _, k := range nye {
-			ider = append(ider, k.organisasjonsnummer, k.person)
+		ids := make([]string, 0, 3*len(unseen))
+		for _, k := range unseen {
+			ids = append(ids, k.organizationIdentifier, k.person)
 			if k.hovedenhet != "" {
-				ider = append(ider, k.hovedenhet)
+				ids = append(ids, k.hovedenhet)
 			}
 		}
-		parter, err := reg.LookupIdentifiers(ctx, ider, registerFelt...)
+		partyByID, err := reg.LookupIdentifiers(ctx, ids, registerFields...)
 		if err != nil {
 			return nil, err
 		}
 
-		for _, k := range nye {
-			party, funnet := parter[k.organisasjonsnummer]
-			person, personFunnet := parter[k.person]
+		for _, k := range unseen {
+			party, found := partyByID[k.organizationIdentifier]
+			person, personFound := partyByID[k.person]
 			var hovedenhet *register.Party
 			if k.hovedenhet != "" {
-				if h, ok := parter[k.hovedenhet]; ok {
+				if h, ok := partyByID[k.hovedenhet]; ok {
 					hovedenhet = &h
 				} else {
-					funnet = false
+					found = false
 				}
 			}
-			if !funnet || !personFunnet {
-				ikkeIRegister++
+			if !found || !personFound {
+				notInRegister++
 				continue
 			}
-			virksomheter = append(virksomheter, Organization{
-				Rolle:       k.rolle,
-				Kildedata:   k.kildedata,
-				Party:       party,
-				PersonRolle: k.personRolle,
-				Person:      person,
-				Hovedenhet:  hovedenhet,
+			organizations = append(organizations, Organization{
+				Role:       k.role,
+				Kildedata:  k.kildedata,
+				Party:      party,
+				PersonRole: k.personRole,
+				Person:     person,
+				Hovedenhet: hovedenhet,
 			})
-			if len(virksomheter) == q.Count {
+			if len(organizations) == q.Count {
 				break
 			}
 		}
 	}
-	if ikkeIRegister > 0 {
-		fmt.Fprintf(log, "Register (%s): %d virksomheter fra Tenor, eller personen eller hovedenheten deres, finnes ikke og er byttet ut.\n", q.Env, ikkeIRegister)
+	if notInRegister > 0 {
+		fmt.Fprintf(log, "Register (%s): %d organizations from Tenor, or their person or hovedenhet, do not exist and were replaced.\n", q.Env, notInRegister)
 	}
-	return virksomheter, nil
+	return organizations, nil
 }
 
-// hentForValg henter antall virksomheter fra Tenor etter q: bestemte
-// virksomheter, tilretteleggere med rollen, eller virksomheter med
-// organisasjonsformene. Bare virksomheter med en person med personrolle,
-// eller med leder når den er tom, blir med. Ingenting er slått opp i Register
-// ennå.
-func hentForValg(ctx context.Context, c *tenor.Client, q OrganizationQuery, personrolle PersonRole, antall int) ([]virksomhetKandidat, error) {
+// fetchForQuery fetches count organizations from Tenor according to q: given
+// organizations, tilretteleggere with the role, or organizations with the
+// unit types. Only organizations with a person with personRole, or with a
+// leader when it is empty, are kept. Nothing has been looked up in Register
+// yet.
+func fetchForQuery(ctx context.Context, c *tenor.Client, q OrganizationQuery, personRole PersonRole, count int) ([]organizationCandidate, error) {
 	switch {
 	case len(q.OrganizationNumbers) > 0:
-		kandidater, err := hentBestemteVirksomheter(ctx, c, q.OrganizationNumbers, personrolle)
+		candidates, err := fetchGivenOrganizations(ctx, c, q.OrganizationNumbers, personRole)
 		if err != nil {
 			return nil, err
 		}
-		return medHovedenheter(ctx, c, kandidater, personrolle)
+		return withHovedenheter(ctx, c, candidates, personRole)
 	case q.Role != "":
-		rolle, err := FindRole(q.Role)
+		role, err := FindRole(q.Role)
 		if err != nil {
 			return nil, err
 		}
-		return hentTilretteleggere(ctx, c, rolle, personrolle, antall)
+		return fetchTilretteleggere(ctx, c, role, personRole, count)
 	case q.Subunits:
-		return hentUnderenheter(ctx, c, q.KQL(), personrolle, antall)
+		return fetchUnderenheter(ctx, c, q.KQL(), personRole, count)
 	default:
-		kandidater, err := hentVirksomheter(ctx, c, q.KQL(), personrolle, antall)
+		candidates, err := fetchOrganizations(ctx, c, q.KQL(), personRole, count)
 		if err != nil {
 			return nil, err
 		}
-		// Gjør ingenting uten underenheter blant kandidatene.
-		return medHovedenheter(ctx, c, kandidater, personrolle)
+		// Does nothing when there are no underenheter among the candidates.
+		return withHovedenheter(ctx, c, candidates, personRole)
 	}
 }
 
-// KQL er søket etter virksomhetene med organisasjonsformene i q.UnitTypes,
-// eller etter hovedenhetene når q.Subunits er satt. Med q.MinSubunits, eller
-// q.Subunits, må de ha minst så mange underenheter.
+// KQL is the search for the organizations with the unit types in
+// q.UnitTypes, or for the hovedenheter when q.Subunits is set. With
+// q.MinSubunits, or q.Subunits, they must have at least that many
+// underenheter.
 func (q OrganizationQuery) KQL() string {
 	if !q.Subunits && q.MinSubunits <= 0 {
 		return OrganizationKQL(q.UnitTypes)
 	}
-	minst := strconv.Itoa(max(1, q.MinSubunits))
-	return tenor.And(OrganizationKQL(q.UnitTypes), tenor.Compare("antallUnderenheter", tenor.GreaterOrEqual, minst))
+	atLeast := strconv.Itoa(max(1, q.MinSubunits))
+	return tenor.And(OrganizationKQL(q.UnitTypes), tenor.Compare("antallUnderenheter", tenor.GreaterOrEqual, atLeast))
 }
 
-// underenheterPerSoek er hvor mange hovedenheter underenhetene hentes for i
-// ett søk med erUnderenhet.hovedenhet:(a or b ...). En hovedenhet kan ha
-// mange underenheter, og et søk gir høyst tenor.MaxPerPage.
-const underenheterPerSoek = 20
+// underenheterPerSearch is how many hovedenheter the underenheter are fetched
+// for in one search with erUnderenhet.hovedenhet:(a or b ...). A hovedenhet
+// can have many underenheter, and a search gives at most tenor.MaxPerPage.
+const underenheterPerSearch = 20
 
-// hentUnderenheter henter antall underenheter (BEDR og AAFY), én per
-// hovedenhet. Hovedenhetene matcher kql, som må kreve underenheter, og har en
-// person med personrolle, eller leder, som underenheten får.
-func hentUnderenheter(ctx context.Context, c *tenor.Client, kql string, personrolle PersonRole, antall int) ([]virksomhetKandidat, error) {
-	hovedenheter, err := hentVirksomheter(ctx, c, kql, personrolle, antall)
+// fetchUnderenheter fetches count underenheter (BEDR and AAFY), one per
+// hovedenhet. The hovedenheter match kql, which must require underenheter,
+// and have a person with personRole, or a leader, whom the underenhet gets.
+func fetchUnderenheter(ctx context.Context, c *tenor.Client, kql string, personRole PersonRole, count int) ([]organizationCandidate, error) {
+	hovedenheter, err := fetchOrganizations(ctx, c, kql, personRole, count)
 	if err != nil {
 		return nil, err
 	}
-	orgnumre := make([]string, len(hovedenheter))
+	organizationNumbers := make([]string, len(hovedenheter))
 	for i, h := range hovedenheter {
-		orgnumre[i] = h.organisasjonsnummer
+		organizationNumbers[i] = h.organizationIdentifier
 	}
-	underenheter, err := hentForsteUnderenhet(ctx, c, orgnumre)
+	underenheter, err := fetchFirstUnderenhet(ctx, c, organizationNumbers)
 	if err != nil {
 		return nil, err
 	}
 
-	kandidater := make([]virksomhetKandidat, 0, len(hovedenheter))
+	candidates := make([]organizationCandidate, 0, len(hovedenheter))
 	for _, h := range hovedenheter {
-		u, ok := underenheter[h.organisasjonsnummer]
+		u, ok := underenheter[h.organizationIdentifier]
 		if !ok {
 			continue
 		}
-		u.person, u.personRolle = h.person, h.personRolle
-		kandidater = append(kandidater, u)
+		u.person, u.personRole = h.person, h.personRole
+		candidates = append(candidates, u)
 	}
-	return kandidater, nil
+	return candidates, nil
 }
 
-// hentForsteUnderenhet henter den første underenheten Tenor gir for hver av
-// hovedenhetene, mange om gangen. Hovedenheter der ingen underenhet kom med,
-// er ikke med i svaret.
-func hentForsteUnderenhet(ctx context.Context, c *tenor.Client, hovedenheter []string) (map[string]virksomhetKandidat, error) {
-	underenheter := make(map[string]virksomhetKandidat, len(hovedenheter))
-	for start := 0; start < len(hovedenheter); start += underenheterPerSoek {
-		batch := hovedenheter[start:min(start+underenheterPerSoek, len(hovedenheter))]
+// fetchFirstUnderenhet fetches the first underenhet Tenor gives for each of
+// the hovedenheter, many at a time. Hovedenheter that got no underenhet are
+// not in the result.
+func fetchFirstUnderenhet(ctx context.Context, c *tenor.Client, hovedenheter []string) (map[string]organizationCandidate, error) {
+	underenheter := make(map[string]organizationCandidate, len(hovedenheter))
+	for start := 0; start < len(hovedenheter); start += underenheterPerSearch {
+		batch := hovedenheter[start:min(start+underenheterPerSearch, len(hovedenheter))]
 		res, err := c.Search(ctx, tenor.SourceBrreg, tenor.SearchParams{
 			KQL:    "erUnderenhet.hovedenhet:(" + strings.Join(batch, " or ") + ")",
 			Antall: tenor.Ptr[int32](tenor.MaxPerPage),
@@ -296,8 +300,8 @@ func hentForsteUnderenhet(ctx context.Context, c *tenor.Client, hovedenheter []s
 			if err != nil {
 				continue
 			}
-			u, ok := tilVirksomhetKandidat(md, PersonRole{})
-			if _, finnes := underenheter[u.hovedenhet]; ok && u.hovedenhet != "" && !finnes {
+			u, ok := toOrganizationCandidate(md, PersonRole{})
+			if _, exists := underenheter[u.hovedenhet]; ok && u.hovedenhet != "" && !exists {
 				underenheter[u.hovedenhet] = u
 			}
 		}
@@ -305,109 +309,110 @@ func hentForsteUnderenhet(ctx context.Context, c *tenor.Client, hovedenheter []s
 	return underenheter, nil
 }
 
-// medHovedenheter henter hovedenhetene til underenhetene blant kandidatene,
-// mange om gangen, og gir underenhetene personen med personrolle, eller
-// lederen, fra hovedenheten. Underenheter der hovedenheten ikke finnes i
-// Tenor eller mangler personen forkastes. Andre kandidater er uendret.
-func medHovedenheter(ctx context.Context, c *tenor.Client, kandidater []virksomhetKandidat, personrolle PersonRole) ([]virksomhetKandidat, error) {
-	var orgnumre []string
-	for _, k := range kandidater {
-		if k.hovedenhet != "" && !slices.Contains(orgnumre, k.hovedenhet) {
-			orgnumre = append(orgnumre, k.hovedenhet)
+// withHovedenheter fetches the hovedenheter of the underenheter among the
+// candidates, many at a time, and gives the underenheter the person with
+// personRole, or the leader, from the hovedenhet. Underenheter whose
+// hovedenhet does not exist in Tenor or lacks the person are dropped. Other
+// candidates are unchanged.
+func withHovedenheter(ctx context.Context, c *tenor.Client, candidates []organizationCandidate, personRole PersonRole) ([]organizationCandidate, error) {
+	var organizationNumbers []string
+	for _, k := range candidates {
+		if k.hovedenhet != "" && !slices.Contains(organizationNumbers, k.hovedenhet) {
+			organizationNumbers = append(organizationNumbers, k.hovedenhet)
 		}
 	}
-	if len(orgnumre) == 0 {
-		return kandidater, nil
+	if len(organizationNumbers) == 0 {
+		return candidates, nil
 	}
-	dokumenter, err := hentPaaOrganisasjonsnummer(ctx, c, orgnumre)
+	documents, err := fetchByOrganizationNumber(ctx, c, organizationNumbers)
 	if err != nil {
 		return nil, err
 	}
-	beholdt := make([]virksomhetKandidat, 0, len(kandidater))
-	for _, k := range kandidater {
+	kept := make([]organizationCandidate, 0, len(candidates))
+	for _, k := range candidates {
 		if k.hovedenhet != "" {
-			md, ok := dokumenter[k.hovedenhet]
+			md, ok := documents[k.hovedenhet]
 			if !ok {
 				continue
 			}
-			h, ok := tilVirksomhetKandidat(md, personrolle)
+			h, ok := toOrganizationCandidate(md, personRole)
 			if !ok || h.person == "" {
 				continue
 			}
-			k.person, k.personRolle = h.person, h.personRolle
+			k.person, k.personRole = h.person, h.personRole
 		}
-		beholdt = append(beholdt, k)
+		kept = append(kept, k)
 	}
-	return beholdt, nil
+	return kept, nil
 }
 
-// OrganizationKQL gir KQL for virksomheter med organisasjonsformene. Tom gir
-// DefaultUnitType.
+// OrganizationKQL gives KQL for organizations with the unit types. Empty
+// gives DefaultUnitType.
 func OrganizationKQL(unitTypes []string) string {
-	koder := make([]string, len(unitTypes))
+	codes := make([]string, len(unitTypes))
 	for i, t := range unitTypes {
-		koder[i] = strings.ToUpper(t)
+		codes[i] = strings.ToUpper(t)
 	}
-	switch len(koder) {
+	switch len(codes) {
 	case 0:
 		return tenor.Eq("organisasjonsform.kode", DefaultUnitType)
 	case 1:
-		return tenor.Eq("organisasjonsform.kode", koder[0])
+		return tenor.Eq("organisasjonsform.kode", codes[0])
 	default:
-		return tenor.OneOf("organisasjonsform.kode", koder...)
+		return tenor.OneOf("organisasjonsform.kode", codes...)
 	}
 }
 
-var organisasjonsnummerRe = regexp.MustCompile(`^\d{9}$`)
+var organizationNumberRe = regexp.MustCompile(`^\d{9}$`)
 
-// rollegruppe er en gruppe i rollegrupper i et brreg-dokument, f.eks. DAGL
-// eller STYR.
+// rollegruppe is a group in rollegrupper in a brreg document, e.g. DAGL or
+// STYR.
 type rollegruppe struct {
 	Type struct {
 		Kode string `json:"kode"`
 	} `json:"type"`
 	Roller []struct {
-		// Type er rollen, f.eks. DAGL, eller LEDE og MEDL i STYR.
+		// Type is the role, e.g. DAGL, or LEDE and MEDL in STYR.
 		Type struct {
 			Kode string `json:"kode"`
 		} `json:"type"`
 		Person struct {
 			Foedselsnummer string `json:"foedselsnummer"`
 		} `json:"person"`
-		// Virksomhet er satt når rollen holdes av en virksomhet, f.eks. en
+		// Virksomhet is set when the role is held by an organization, e.g. a
 		// revisor.
 		Virksomhet struct {
 			Organisasjonsnummer string `json:"organisasjonsnummer"`
 		} `json:"virksomhet"`
-		// Fratraadt er "J" eller "N".
+		// Fratraadt is "J" or "N".
 		Fratraadt string `json:"fratraadt"`
 	} `json:"roller"`
 }
 
-// leder returnerer fødselsnummeret til daglig leder (DAGL), eller til
-// innehaver (INNH) hvis det ikke finnes noen daglig leder, og koden for
-// rollen. Borettslag og eierseksjonssameier har sjelden daglig leder, så for
-// dem er det styreleder (LEDE) når det ikke finnes daglig leder.
-func leder(organisasjonsform string, grupper []rollegruppe) (fnr, kode string) {
-	koder := []string{"DAGL", "INNH"}
-	if slices.Contains(styreledetUnitTypes, organisasjonsform) {
-		koder = []string{"DAGL", "LEDE"}
+// leader returns the fødselsnummer of the daglig leder (DAGL), or of the
+// innehaver (INNH) if there is no daglig leder, and the code for the role.
+// Borettslag and eierseksjonssameier rarely have a daglig leder, so for them
+// it is the styreleder (LEDE) when there is no daglig leder.
+func leader(unitType string, groups []rollegruppe) (personIdentifier, code string) {
+	codes := []string{"DAGL", "INNH"}
+	if slices.Contains(styrelederUnitTypes, unitType) {
+		codes = []string{"DAGL", "LEDE"}
 	}
-	for _, kode := range koder {
-		if fnr := personMedRolle(grupper, kode); fnr != "" {
-			return fnr, kode
+	for _, code := range codes {
+		if personIdentifier := personWithRole(groups, code); personIdentifier != "" {
+			return personIdentifier, code
 		}
 	}
 	return "", ""
 }
 
-// personMedRolle returnerer fødselsnummeret til den første personen med
-// rollekoden, f.eks. DAGL eller MEDL. Fratrådte roller og roller uten
-// fødselsnummer hoppes over.
-func personMedRolle(grupper []rollegruppe, kode string) string {
-	for _, g := range grupper {
+// personWithRole returns the fødselsnummer of the first person with the role
+// code, e.g. DAGL or MEDL. Resigned roles and roles without a fødselsnummer
+// are skipped.
+func personWithRole(groups []rollegruppe, code string) string {
+	for _, g := range groups {
 		for _, r := range g.Roller {
-			if r.Type.Kode == kode && r.Fratraadt != "J" && foedselsnummerRe.MatchString(r.Person.Foedselsnummer) {
+			if r.Type.Kode == code && r.Fratraadt != "J" && personIdentifierRe.MatchString(r.Person.Foedselsnummer) {
 				return r.Person.Foedselsnummer
 			}
 		}
@@ -415,12 +420,12 @@ func personMedRolle(grupper []rollegruppe, kode string) string {
 	return ""
 }
 
-// virksomhetMedRolle returnerer organisasjonsnummeret til den første
-// virksomheten med rollekoden, f.eks. BEDR.
-func virksomhetMedRolle(grupper []rollegruppe, kode string) string {
-	for _, g := range grupper {
+// organizationWithRole returns the organization number of the first
+// organization with the role code, e.g. BEDR.
+func organizationWithRole(groups []rollegruppe, code string) string {
+	for _, g := range groups {
 		for _, r := range g.Roller {
-			if r.Type.Kode == kode && r.Fratraadt != "J" && organisasjonsnummerRe.MatchString(r.Virksomhet.Organisasjonsnummer) {
+			if r.Type.Kode == code && r.Fratraadt != "J" && organizationNumberRe.MatchString(r.Virksomhet.Organisasjonsnummer) {
 				return r.Virksomhet.Organisasjonsnummer
 			}
 		}
@@ -428,62 +433,63 @@ func virksomhetMedRolle(grupper []rollegruppe, kode string) string {
 	return ""
 }
 
-// harPersonEllerHovedenhet er om kandidaten har personen, eller er en
-// underenhet som kan få den fra hovedenheten.
-func (k virksomhetKandidat) harPersonEllerHovedenhet() bool {
+// hasPersonOrHovedenhet reports whether the candidate has the person, or is
+// an underenhet that can get it from the hovedenhet.
+func (k organizationCandidate) hasPersonOrHovedenhet() bool {
 	return k.person != "" || k.hovedenhet != ""
 }
 
-// hentVirksomheter henter antall unike kandidater fra brreg-er-fr som matcher
-// kql og har en person med personrolle, eller leder når den er tom.
-// Underenheter tas med når de har hovedenhet, og må få personen med
-// medHovedenheter.
-func hentVirksomheter(ctx context.Context, c *tenor.Client, kql string, personrolle PersonRole, antall int) ([]virksomhetKandidat, error) {
-	// Ikke alle rollene i PersonRoles har søkefelt i Tenor (f.eks. prokurist),
-	// så kravet om personen sjekkes her.
-	harPerson := func(md tenor.Metadata) bool {
-		k, ok := tilVirksomhetKandidat(md, personrolle)
-		return ok && k.harPersonEllerHovedenhet()
+// fetchOrganizations fetches count unique candidates from brreg-er-fr that
+// match kql and have a person with personRole, or a leader when it is empty.
+// Underenheter are included when they have a hovedenhet, and must get the
+// person with withHovedenheter.
+func fetchOrganizations(ctx context.Context, c *tenor.Client, kql string, personRole PersonRole, count int) ([]organizationCandidate, error) {
+	// Not all the roles in PersonRoles have a search field in Tenor (e.g.
+	// prokurist), so the person requirement is checked here.
+	hasPerson := func(md tenor.Metadata) bool {
+		k, ok := toOrganizationCandidate(md, personRole)
+		return ok && k.hasPersonOrHovedenhet()
 	}
-	dokumenter, err := c.FetchManyFiltered(ctx, tenor.SourceBrreg, kql, antall, harPerson)
+	documents, err := c.FetchManyFiltered(ctx, tenor.SourceBrreg, kql, count, hasPerson)
 	if err != nil {
 		return nil, err
 	}
-	kandidater := make([]virksomhetKandidat, 0, len(dokumenter))
-	for _, md := range dokumenter {
-		if k, ok := tilVirksomhetKandidat(md, personrolle); ok {
-			kandidater = append(kandidater, k)
+	candidates := make([]organizationCandidate, 0, len(documents))
+	for _, md := range documents {
+		if k, ok := toOrganizationCandidate(md, personRole); ok {
+			candidates = append(candidates, k)
 		}
 	}
-	return kandidater, nil
+	return candidates, nil
 }
 
-// hentBestemteVirksomheter henter virksomhetene med organisasjonsnumrene, i
-// samme rekkefølge. De som ikke finnes i Tenor eller mangler personen hoppes
-// over. Underenheter må få personen med medHovedenheter.
-func hentBestemteVirksomheter(ctx context.Context, c *tenor.Client, orgnumre []string, personrolle PersonRole) ([]virksomhetKandidat, error) {
-	dokumenter, err := hentPaaOrganisasjonsnummer(ctx, c, orgnumre)
+// fetchGivenOrganizations fetches the organizations with the organization
+// numbers, in the same order. Those that do not exist in Tenor or lack the
+// person are skipped. Underenheter must get the person with withHovedenheter.
+func fetchGivenOrganizations(ctx context.Context, c *tenor.Client, organizationNumbers []string, personRole PersonRole) ([]organizationCandidate, error) {
+	documents, err := fetchByOrganizationNumber(ctx, c, organizationNumbers)
 	if err != nil {
 		return nil, err
 	}
-	kandidater := make([]virksomhetKandidat, 0, len(orgnumre))
-	for _, orgnr := range orgnumre {
-		md, ok := dokumenter[orgnr]
+	candidates := make([]organizationCandidate, 0, len(organizationNumbers))
+	for _, organizationNumber := range organizationNumbers {
+		md, ok := documents[organizationNumber]
 		if !ok {
 			continue
 		}
-		if k, ok := tilVirksomhetKandidat(md, personrolle); ok && k.harPersonEllerHovedenhet() {
-			kandidater = append(kandidater, k)
+		if k, ok := toOrganizationCandidate(md, personRole); ok && k.hasPersonOrHovedenhet() {
+			candidates = append(candidates, k)
 		}
 	}
-	return kandidater, nil
+	return candidates, nil
 }
 
-// tilVirksomhetKandidat gjør om et brreg-dokument til en kandidat, med
-// personen med personrolle, eller lederen når den er tom. For underenheter er
-// det hovedenheten, fra rollen BEDR eller AAFY, eller fra underenhet.hovedenhet
-// hvis rollen mangler. Dokumenter uten gyldig organisasjonsnummer hoppes over.
-func tilVirksomhetKandidat(md tenor.Metadata, personrolle PersonRole) (virksomhetKandidat, bool) {
+// toOrganizationCandidate turns a brreg document into a candidate, with the
+// person with personRole, or the leader when it is empty. For underenheter it
+// is the hovedenhet, from the role BEDR or AAFY, or from
+// underenhet.hovedenhet if the role is missing. Documents without a valid
+// organization number are skipped.
+func toOrganizationCandidate(md tenor.Metadata, personRole PersonRole) (organizationCandidate, bool) {
 	var kildedata struct {
 		Organisasjonsnummer string `json:"organisasjonsnummer"`
 		Organisasjonsform   struct {
@@ -494,30 +500,30 @@ func tilVirksomhetKandidat(md tenor.Metadata, personrolle PersonRole) (virksomhe
 		} `json:"underenhet"`
 		Rollegrupper []rollegruppe `json:"rollegrupper"`
 	}
-	gyldigJSON := json.Unmarshal([]byte(md.Kildedata), &kildedata) == nil
+	validJSON := json.Unmarshal([]byte(md.Kildedata), &kildedata) == nil
 
-	orgnr := md.ID
-	if !organisasjonsnummerRe.MatchString(orgnr) {
-		orgnr = kildedata.Organisasjonsnummer
+	organizationNumber := md.ID
+	if !organizationNumberRe.MatchString(organizationNumber) {
+		organizationNumber = kildedata.Organisasjonsnummer
 	}
-	if !organisasjonsnummerRe.MatchString(orgnr) {
-		return virksomhetKandidat{}, false
+	if !organizationNumberRe.MatchString(organizationNumber) {
+		return organizationCandidate{}, false
 	}
 
-	form := kildedata.Organisasjonsform.Kode
-	k := virksomhetKandidat{organisasjonsnummer: orgnr}
-	if slices.Contains(underenhetUnitTypes, form) {
-		k.hovedenhet = virksomhetMedRolle(kildedata.Rollegrupper, form)
-		if k.hovedenhet == "" && organisasjonsnummerRe.MatchString(kildedata.Underenhet.Hovedenhet) {
+	unitType := kildedata.Organisasjonsform.Kode
+	k := organizationCandidate{organizationIdentifier: organizationNumber}
+	if slices.Contains(underenhetUnitTypes, unitType) {
+		k.hovedenhet = organizationWithRole(kildedata.Rollegrupper, unitType)
+		if k.hovedenhet == "" && organizationNumberRe.MatchString(kildedata.Underenhet.Hovedenhet) {
 			k.hovedenhet = kildedata.Underenhet.Hovedenhet
 		}
-	} else if personrolle.Code != "" {
-		k.person = personMedRolle(kildedata.Rollegrupper, personrolle.Code)
-		k.personRolle = personrolle.Name
-	} else if fnr, kode := leder(kildedata.Organisasjonsform.Kode, kildedata.Rollegrupper); fnr != "" {
-		k.person, k.personRolle = fnr, personRoleByCode(kode).Name
+	} else if personRole.Code != "" {
+		k.person = personWithRole(kildedata.Rollegrupper, personRole.Code)
+		k.personRole = personRole.Name
+	} else if personIdentifier, code := leader(kildedata.Organisasjonsform.Kode, kildedata.Rollegrupper); personIdentifier != "" {
+		k.person, k.personRole = personIdentifier, personRoleByCode(code).Name
 	}
-	if gyldigJSON {
+	if validJSON {
 		k.kildedata = json.RawMessage(md.Kildedata)
 	}
 	return k, true

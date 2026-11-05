@@ -1,4 +1,4 @@
-// Package registertest har en falsk Register for tester.
+// Package registertest has a fake Register for tests.
 package registertest
 
 import (
@@ -14,9 +14,10 @@ import (
 )
 
 const (
-	// SubscriptionKey og PlatformToken er det klienten fra NewClient sender.
-	SubscriptionKey = "nøkkel"
-	PlatformToken   = "plattform"
+	// SubscriptionKey and PlatformToken are what the client from NewClient
+	// sends.
+	SubscriptionKey = "key"
+	PlatformToken   = "platform"
 )
 
 type token string
@@ -25,7 +26,7 @@ func (t token) Token(context.Context) (string, error) {
 	return string(t), nil
 }
 
-// NewClient gir en klient mot en testserver med h.
+// NewClient gives a client for a test server with h.
 func NewClient(t *testing.T, h http.HandlerFunc) *register.Client {
 	t.Helper()
 	srv := httptest.NewServer(h)
@@ -33,8 +34,8 @@ func NewClient(t *testing.T, h http.HandlerFunc) *register.Client {
 	return register.NewClient(srv.URL+"/", SubscriptionKey, token(PlatformToken))
 }
 
-// ReadQuery sjekker headerne i et kall til POST /parties/query og returnerer
-// URN-ene i det.
+// ReadQuery checks the headers in a call to POST /parties/query and returns
+// the URNs in it.
 func ReadQuery(t *testing.T, r *http.Request) []string {
 	t.Helper()
 	if r.Method != http.MethodPost || r.URL.Path != "/register/api/v1/access-management/parties/query" {
@@ -42,7 +43,7 @@ func ReadQuery(t *testing.T, r *http.Request) []string {
 	}
 	if r.Header.Get("PlatformAccessToken") != PlatformToken || r.Header.Get("Ocp-Apim-Subscription-Key") != SubscriptionKey ||
 		r.Header.Get("Content-Type") != "application/json" || r.Header.Get("Authorization") != "" {
-		t.Errorf("headere = %v", r.Header)
+		t.Errorf("headers = %v", r.Header)
 	}
 	var body struct {
 		Data []string `json:"data"`
@@ -53,7 +54,7 @@ func ReadQuery(t *testing.T, r *http.Request) []string {
 	return body.Data
 }
 
-// Empty er et Register der ingen parter finnes.
+// Empty is a Register where no parties exist.
 func Empty(t *testing.T) *register.Client {
 	t.Helper()
 	return NewClient(t, func(w http.ResponseWriter, r *http.Request) {
@@ -61,9 +62,9 @@ func Empty(t *testing.T) *register.Client {
 	})
 }
 
-// Echo er et Register der alle parter finnes, for tester som ikke handler om
-// Register. Personer får partyUuid p-<fnr>, bruker og navnet PERSON <fnr>.
-// Virksomheter får partyUuid o-<orgnr>, navnet VIRKSOMHET <orgnr> og
+// Echo is a Register where all parties exist, for tests that are not about
+// Register. Persons get partyUuid p-<fnr>, a user and the name PERSON <fnr>.
+// Organizations get partyUuid o-<orgnr>, the name VIRKSOMHET <orgnr> and
 // unitType AS.
 func Echo(t *testing.T) *register.Client {
 	t.Helper()

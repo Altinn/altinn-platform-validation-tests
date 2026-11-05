@@ -1,9 +1,9 @@
 package parties
 
-// Tilretteleggere: revisor, regnskapsfører og forretningsfører. Tenor har
-// ikke noe felt på tilretteleggeren selv som sier hvilken rolle den har, så de
-// finnes via klientene: klientene har feltet (f.eks. revisorerOrgnr) og
-// tilretteleggeren som en rolle i rollegrupper.
+// Tilretteleggere: revisor, regnskapsfører and forretningsfører. Tenor has no
+// field on the tilrettelegger itself that says which role it has, so they are
+// found through the clients: the clients have the field (e.g. revisorerOrgnr)
+// and the tilrettelegger as a role in rollegrupper.
 
 import (
 	"context"
@@ -16,48 +16,49 @@ import (
 	"github.com/Altinn/altinn-platform-validation-tests/helpers/testudo/internal/tenor"
 )
 
-// Role er en rolle en virksomhet kan ha for klientene sine.
+// Role is a role an organization can have for its clients.
 type Role struct {
-	// Name er navnet på rollen, f.eks. revisor.
+	// Name is the name of the role, e.g. revisor.
 	Name string
-	// Field er feltet på klienten som peker på tilretteleggeren.
+	// Field is the field on the client that points to the tilrettelegger.
 	Field string
-	// Code er rollekoden i klientens rollegrupper.
+	// Code is the role code in the client's rollegrupper.
 	Code string
 }
 
-// Roles er rollene FindOrganizations kan hente tilretteleggere for.
+// Roles are the roles FindOrganizations can fetch tilretteleggere for.
 var Roles = []Role{
 	{Name: "revisor", Field: "revisorerOrgnr", Code: "REVI"},
 	{Name: "regnskapsfoerer", Field: "regnskapsfoerereOrgnr", Code: "REGN"},
 	{Name: "forretningsfoerer", Field: "forretningsfoerereOrgnr", Code: "FFØR"},
 }
 
-// RoleNames er navnene i Roles, til hjelpetekst og feilmeldinger.
+// RoleNames are the names in Roles, for help texts and error messages.
 func RoleNames() string {
-	navn := make([]string, len(Roles))
+	names := make([]string, len(Roles))
 	for i, r := range Roles {
-		navn[i] = r.Name
+		names[i] = r.Name
 	}
-	return strings.Join(navn, ", ")
+	return strings.Join(names, ", ")
 }
 
-// FindRole slår opp rollen med navnet.
+// FindRole looks up the role with the name.
 func FindRole(name string) (Role, error) {
 	i := slices.IndexFunc(Roles, func(r Role) bool { return r.Name == name })
 	if i < 0 {
-		return Role{}, fmt.Errorf("%w: ukjent rolle %q, bruk en av %s", errs.Invalid, name, RoleNames())
+		return Role{}, fmt.Errorf("%w: unknown role %q, use one of %s", errs.Invalid, name, RoleNames())
 	}
 	return Roles[i], nil
 }
 
-// tilretteleggerOppslagPerKall er hvor mange tilretteleggere som hentes i ett
-// søk med organisasjonsnummer:(a or b ...).
-const tilretteleggerOppslagPerKall = 50
+// tilretteleggerePerSearch is how many tilretteleggere are fetched in one
+// search with organisasjonsnummer:(a or b ...).
+const tilretteleggerePerSearch = 50
 
-// tilretteleggerFraKlient leser organisasjonsnummeret til tilretteleggeren med
-// rollekode fra en klients rollegrupper, eller tom tekst.
-func tilretteleggerFraKlient(md tenor.Metadata, kode string) string {
+// tilretteleggerFromClient reads the organization number of the
+// tilrettelegger with the role code from a client's rollegrupper, or an empty
+// string.
+func tilretteleggerFromClient(md tenor.Metadata, code string) string {
 	var kildedata struct {
 		Rollegrupper []rollegruppe `json:"rollegrupper"`
 	}
@@ -65,11 +66,11 @@ func tilretteleggerFraKlient(md tenor.Metadata, kode string) string {
 		return ""
 	}
 	for _, g := range kildedata.Rollegrupper {
-		if g.Type.Kode != kode {
+		if g.Type.Kode != code {
 			continue
 		}
 		for _, r := range g.Roller {
-			if r.Fratraadt != "J" && organisasjonsnummerRe.MatchString(r.Virksomhet.Organisasjonsnummer) {
+			if r.Fratraadt != "J" && organizationNumberRe.MatchString(r.Virksomhet.Organisasjonsnummer) {
 				return r.Virksomhet.Organisasjonsnummer
 			}
 		}
@@ -77,58 +78,59 @@ func tilretteleggerFraKlient(md tenor.Metadata, kode string) string {
 	return ""
 }
 
-// hentTilretteleggere henter antall tilretteleggere med rollen og en person
-// med personrolle, eller leder når den er tom.
+// fetchTilretteleggere fetches count tilretteleggere with the role and a
+// person with personRole, or a leader when it is empty.
 //
-// Det gjøres i tre steg: klienter skannes til vi har nok unike kandidater,
-// kandidatenes egne dokumenter hentes mange om gangen, og så filtreres de på
-// personen. Det hentes flere kandidater enn antall, siden noen forkastes.
-func hentTilretteleggere(ctx context.Context, c *tenor.Client, rolle Role, personrolle PersonRole, antall int) ([]virksomhetKandidat, error) {
-	kandidater := 2*antall + 10
+// It is done in three steps: clients are scanned until we have enough unique
+// candidates, the candidates' own documents are fetched many at a time, and
+// then they are filtered on the person. More candidates than count are
+// fetched, since some are dropped.
+func fetchTilretteleggere(ctx context.Context, c *tenor.Client, role Role, personRole PersonRole, count int) ([]organizationCandidate, error) {
+	candidateCount := 2*count + 10
 
-	// Mange klienter deler tilrettelegger, så bare klienter som gir en ny
-	// kandidat beholdes.
-	var orgnumre []string
-	sett := map[string]bool{}
-	nyKandidat := func(md tenor.Metadata) bool {
-		orgnr := tilretteleggerFraKlient(md, rolle.Code)
-		if orgnr == "" || sett[orgnr] {
+	// Many clients share a tilrettelegger, so only clients that give a new
+	// candidate are kept.
+	var organizationNumbers []string
+	seen := map[string]bool{}
+	newCandidate := func(md tenor.Metadata) bool {
+		organizationNumber := tilretteleggerFromClient(md, role.Code)
+		if organizationNumber == "" || seen[organizationNumber] {
 			return false
 		}
-		sett[orgnr] = true
-		orgnumre = append(orgnumre, orgnr)
+		seen[organizationNumber] = true
+		organizationNumbers = append(organizationNumbers, organizationNumber)
 		return true
 	}
-	if _, err := c.FetchManyFiltered(ctx, tenor.SourceBrreg, tenor.Exists(rolle.Field), kandidater, nyKandidat); err != nil {
+	if _, err := c.FetchManyFiltered(ctx, tenor.SourceBrreg, tenor.Exists(role.Field), candidateCount, newCandidate); err != nil {
 		return nil, err
 	}
 
-	dokumenter, err := hentPaaOrganisasjonsnummer(ctx, c, orgnumre)
+	documents, err := fetchByOrganizationNumber(ctx, c, organizationNumbers)
 	if err != nil {
 		return nil, err
 	}
-	tilretteleggere := make([]virksomhetKandidat, 0, len(orgnumre))
-	for _, orgnr := range orgnumre {
-		md, ok := dokumenter[orgnr]
+	tilretteleggere := make([]organizationCandidate, 0, len(organizationNumbers))
+	for _, organizationNumber := range organizationNumbers {
+		md, ok := documents[organizationNumber]
 		if !ok {
 			continue
 		}
-		k, ok := tilVirksomhetKandidat(md, personrolle)
+		k, ok := toOrganizationCandidate(md, personRole)
 		if !ok || k.person == "" {
 			continue
 		}
-		k.rolle = rolle.Name
+		k.role = role.Name
 		tilretteleggere = append(tilretteleggere, k)
 	}
-	return tilretteleggere[:min(antall, len(tilretteleggere))], nil
+	return tilretteleggere[:min(count, len(tilretteleggere))], nil
 }
 
-// hentPaaOrganisasjonsnummer henter brreg-dokumentene til virksomhetene, mange
-// om gangen.
-func hentPaaOrganisasjonsnummer(ctx context.Context, c *tenor.Client, orgnumre []string) (map[string]tenor.Metadata, error) {
-	dokumenter := make(map[string]tenor.Metadata, len(orgnumre))
-	for start := 0; start < len(orgnumre); start += tilretteleggerOppslagPerKall {
-		batch := orgnumre[start:min(start+tilretteleggerOppslagPerKall, len(orgnumre))]
+// fetchByOrganizationNumber fetches the brreg documents of the organizations,
+// many at a time.
+func fetchByOrganizationNumber(ctx context.Context, c *tenor.Client, organizationNumbers []string) (map[string]tenor.Metadata, error) {
+	documents := make(map[string]tenor.Metadata, len(organizationNumbers))
+	for start := 0; start < len(organizationNumbers); start += tilretteleggerePerSearch {
+		batch := organizationNumbers[start:min(start+tilretteleggerePerSearch, len(organizationNumbers))]
 		res, err := c.Search(ctx, tenor.SourceBrreg, tenor.SearchParams{
 			KQL:    "organisasjonsnummer:(" + strings.Join(batch, " or ") + ")",
 			Antall: tenor.Ptr(int32(len(batch))),
@@ -140,9 +142,9 @@ func hentPaaOrganisasjonsnummer(ctx context.Context, c *tenor.Client, orgnumre [
 		for _, d := range res.DokumentListe {
 			md, err := tenor.ReadMetadata(d)
 			if err == nil && md.ID != "" {
-				dokumenter[md.ID] = md
+				documents[md.ID] = md
 			}
 		}
 	}
-	return dokumenter, nil
+	return documents, nil
 }

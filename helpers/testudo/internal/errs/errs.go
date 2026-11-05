@@ -1,17 +1,17 @@
-// Package errs har feilene pakkene pakker inn, så kallere kan sjekke dem med
-// errors.Is.
+// Package errs has the errors the packages wrap, so callers can check them
+// with errors.Is.
 package errs
 
 import "errors"
 
 var (
-	// Connection er at en tjeneste ikke kunne nås, eller at svaret ikke kunne
-	// leses.
+	// Connection means a service could not be reached, or its response could
+	// not be read.
 	Connection = errors.New("Connection error")
-	// NotFound er at det vi spurte etter ikke finnes.
+	// NotFound means that what we asked for does not exist.
 	NotFound = errors.New("Not found")
-	// InvalidResponse er et feilsvar eller et svar vi ikke forstår.
+	// InvalidResponse is an error response or a response we do not understand.
 	InvalidResponse = errors.New("Invalid server response")
-	// Invalid er ugyldig input, f.eks. flagg eller konfigurasjon.
+	// Invalid is invalid input, e.g. flags or configuration.
 	Invalid = errors.New("Invalid data")
 )

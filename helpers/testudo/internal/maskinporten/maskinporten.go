@@ -1,6 +1,6 @@
-// Package maskinporten henter access token med en JWT bearer grant, på
-// samme måte som MaskinportenToken i altinn-access-management-frontend
-// (playwright/api-requests/MaskinportenToken.ts og util/jwtHelper.ts).
+// Package maskinporten fetches access tokens with a JWT bearer grant, the
+// same way as MaskinportenToken in altinn-access-management-frontend
+// (playwright/api-requests/MaskinportenToken.ts and util/jwtHelper.ts).
 package maskinporten
 
 import (
@@ -26,36 +26,36 @@ import (
 const DefaultTokenURL = "https://test.maskinporten.no/token"
 
 const (
-	// Levetiden til grant-en (exp - iat), som getCurrentTimestamps i frontend.
-	maskinportenGrantLevetid = 60 * time.Second
-	// Tokenet fornyes så lenge før det utløper.
-	maskinportenFornyFoer = 30 * time.Second
+	// Lifetime of the grant (exp - iat), like getCurrentTimestamps in the frontend.
+	maskinportenGrantLifetime = 60 * time.Second
+	// The token is renewed this long before it expires.
+	maskinportenRenewBefore = 30 * time.Second
 )
 
-// Config er det som trengs for å hente token fra Maskinporten.
+// Config is what is needed to fetch a token from Maskinporten.
 type Config struct {
-	// ClientID brukes som iss i grant-en.
+	// ClientID is used as iss in the grant.
 	ClientID string
-	// JWK er den private nøkkelen. Har den kid, settes den i JWT-headeren.
+	// JWK is the private key. If it has a kid, it is set in the JWT header.
 	JWK jwk.Key
-	// ConsumerOrg settes som consumer_org for "på vegne av"-scenarioer.
+	// ConsumerOrg is set as consumer_org for "on behalf of" scenarios.
 	ConsumerOrg string
-	// TokenURL er både token-endepunktet og aud. Standard er testmiljøet.
+	// TokenURL is both the token endpoint and aud. Default is the test environment.
 	TokenURL string
 }
 
-// ConfigFrom leser MASKINPORTEN_CLIENT_ID og MASKINPORTEN_JWK med
-// hent, f.eks. os.Getenv eller viper.GetString.
-func ConfigFrom(hent func(string) string) (Config, error) {
-	cfg := Config{ClientID: hent("MASKINPORTEN_CLIENT_ID")}
+// ConfigFrom reads MASKINPORTEN_CLIENT_ID and MASKINPORTEN_JWK with
+// lookup, e.g. os.Getenv or viper.GetString.
+func ConfigFrom(lookup func(string) string) (Config, error) {
+	cfg := Config{ClientID: lookup("MASKINPORTEN_CLIENT_ID")}
 	if cfg.ClientID == "" {
-		return cfg, fmt.Errorf("%w: MASKINPORTEN_CLIENT_ID mangler", errs.Invalid)
+		return cfg, fmt.Errorf("%w: MASKINPORTEN_CLIENT_ID is missing", errs.Invalid)
 	}
-	tekst := hent("MASKINPORTEN_JWK")
-	if tekst == "" {
-		return cfg, fmt.Errorf("%w: MASKINPORTEN_JWK mangler", errs.Invalid)
+	jwkText := lookup("MASKINPORTEN_JWK")
+	if jwkText == "" {
+		return cfg, fmt.Errorf("%w: MASKINPORTEN_JWK is missing", errs.Invalid)
 	}
-	key, err := ParsePrivateKeyJWK(tekst)
+	key, err := ParsePrivateKeyJWK(jwkText)
 	if err != nil {
 		return cfg, fmt.Errorf("MASKINPORTEN_JWK: %w", err)
 	}
@@ -63,21 +63,21 @@ func ConfigFrom(hent func(string) string) (Config, error) {
 	return cfg, nil
 }
 
-// ParsePrivateKeyJWK leser en privat RSA-nøkkel i JWK-format.
+// ParsePrivateKeyJWK reads a private RSA key in JWK format.
 func ParsePrivateKeyJWK(s string) (jwk.Key, error) {
 	key, err := jwk.ParseKey([]byte(s))
 	if err != nil {
 		return nil, fmt.Errorf("%w: JWK: %v", errs.Invalid, err)
 	}
 	if key.KeyType() != jwa.RSA() {
-		return nil, fmt.Errorf("%w: JWK må ha kty RSA, har %q", errs.Invalid, key.KeyType())
+		return nil, fmt.Errorf("%w: JWK must have kty RSA, has %q", errs.Invalid, key.KeyType())
 	}
-	if privat, err := jwk.IsPrivateKey(key); err != nil || !privat {
-		return nil, fmt.Errorf("%w: JWK er ikke en privat nøkkel", errs.Invalid)
+	if isPrivate, err := jwk.IsPrivateKey(key); err != nil || !isPrivate {
+		return nil, fmt.Errorf("%w: JWK is not a private key", errs.Invalid)
 	}
-	// key.Validate sjekker bare at feltene finnes. rsa.PrivateKey.Validate
-	// sjekker også at de henger sammen, så en ødelagt nøkkel oppdages her og
-	// ikke som en avvist signatur hos Maskinporten.
+	// key.Validate only checks that the fields exist. rsa.PrivateKey.Validate
+	// also checks that they are consistent, so a broken key is caught here and
+	// not as a rejected signature at Maskinporten.
 	raw, err := jwk.Export[*rsa.PrivateKey](key)
 	if err != nil {
 		return nil, fmt.Errorf("%w: JWK: %v", errs.Invalid, err)
@@ -88,26 +88,26 @@ func ParsePrivateKeyJWK(s string) (jwk.Key, error) {
 	return key, nil
 }
 
-// Client henter og cacher access token for et sett med scopes.
-// Den kan brukes som TokenSource for tenor.Client.
+// Client fetches and caches access tokens for a set of scopes.
+// It can be used as TokenSource for tenor.Client.
 type Client struct {
 	cfg    Config
 	scopes string
 	http   *http.Client
-	naa    func() time.Time
+	now    func() time.Time
 
-	mu       sync.Mutex
-	token    string
-	utloeper time.Time
+	mu      sync.Mutex
+	token   string
+	expires time.Time
 }
 
-// NewClient lager en klient som ber om de gitte scopene.
+// NewClient creates a client that asks for the given scopes.
 func NewClient(cfg Config, scopes ...string) (*Client, error) {
 	if cfg.ClientID == "" || cfg.JWK == nil {
-		return nil, fmt.Errorf("%w: Maskinporten trenger client ID og JWK", errs.Invalid)
+		return nil, fmt.Errorf("%w: Maskinporten needs a client ID and a JWK", errs.Invalid)
 	}
 	if len(scopes) == 0 {
-		return nil, fmt.Errorf("%w: minst ett scope må oppgis", errs.Invalid)
+		return nil, fmt.Errorf("%w: at least one scope must be given", errs.Invalid)
 	}
 	if cfg.TokenURL == "" {
 		cfg.TokenURL = DefaultTokenURL
@@ -116,31 +116,31 @@ func NewClient(cfg Config, scopes ...string) (*Client, error) {
 		cfg:    cfg,
 		scopes: strings.Join(scopes, " "),
 		http:   &http.Client{Timeout: 10 * time.Second},
-		naa:    time.Now,
+		now:    time.Now,
 	}, nil
 }
 
-// Token returnerer et gyldig access token, og henter nytt når det er nær
-// ved å utløpe.
+// Token returns a valid access token, and fetches a new one when it is close
+// to expiring.
 func (c *Client) Token(ctx context.Context) (string, error) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 
-	if c.token != "" && c.naa().Before(c.utloeper.Add(-maskinportenFornyFoer)) {
+	if c.token != "" && c.now().Before(c.expires.Add(-maskinportenRenewBefore)) {
 		return c.token, nil
 	}
 
-	token, levetid, err := c.hentToken(ctx)
+	token, lifetime, err := c.fetchToken(ctx)
 	if err != nil {
 		return "", err
 	}
 	c.token = token
-	c.utloeper = c.naa().Add(levetid)
+	c.expires = c.now().Add(lifetime)
 	return c.token, nil
 }
 
-func (c *Client) hentToken(ctx context.Context) (string, time.Duration, error) {
-	grant, err := c.lagGrant()
+func (c *Client) fetchToken(ctx context.Context) (string, time.Duration, error) {
+	grant, err := c.makeGrant()
 	if err != nil {
 		return "", 0, err
 	}
@@ -164,47 +164,47 @@ func (c *Client) hentToken(ctx context.Context) (string, time.Duration, error) {
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return "", 0, fmt.Errorf("%w: Maskinporten: les svar: %v", errs.Connection, err)
+		return "", 0, fmt.Errorf("%w: Maskinporten: read response: %v", errs.Connection, err)
 	}
 
-	var svar struct {
+	var tokenResp struct {
 		AccessToken      string `json:"access_token"`
 		ExpiresIn        int64  `json:"expires_in"`
 		Error            string `json:"error"`
 		ErrorDescription string `json:"error_description"`
 	}
-	jsonErr := json.Unmarshal(body, &svar)
+	jsonErr := json.Unmarshal(body, &tokenResp)
 
 	if resp.StatusCode != http.StatusOK {
-		detaljer := strings.TrimSpace(string(body))
-		if jsonErr == nil && svar.Error != "" {
-			detaljer = strings.TrimSpace(svar.Error + ": " + svar.ErrorDescription)
+		details := strings.TrimSpace(string(body))
+		if jsonErr == nil && tokenResp.Error != "" {
+			details = strings.TrimSpace(tokenResp.Error + ": " + tokenResp.ErrorDescription)
 		}
-		return "", 0, fmt.Errorf("%w: Maskinporten svarte HTTP %d: %s", errs.InvalidResponse, resp.StatusCode, detaljer)
+		return "", 0, fmt.Errorf("%w: Maskinporten responded with HTTP %d: %s", errs.InvalidResponse, resp.StatusCode, details)
 	}
 	if jsonErr != nil {
 		return "", 0, fmt.Errorf("%w: Maskinporten: %v", errs.InvalidResponse, jsonErr)
 	}
-	if svar.AccessToken == "" || svar.ExpiresIn <= 0 {
-		return "", 0, fmt.Errorf("%w: Maskinporten: svaret mangler access_token eller expires_in", errs.InvalidResponse)
+	if tokenResp.AccessToken == "" || tokenResp.ExpiresIn <= 0 {
+		return "", 0, fmt.Errorf("%w: Maskinporten: the response is missing access_token or expires_in", errs.InvalidResponse)
 	}
-	return svar.AccessToken, time.Duration(svar.ExpiresIn) * time.Second, nil
+	return tokenResp.AccessToken, time.Duration(tokenResp.ExpiresIn) * time.Second, nil
 }
 
-// lagGrant signerer JWT-en som sendes som assertion. jwx setter alg, typ og
-// kid (fra JWK-en) i headeren.
-func (c *Client) lagGrant() (string, error) {
+// makeGrant signs the JWT that is sent as assertion. jwx sets alg, typ and
+// kid (from the JWK) in the header.
+func (c *Client) makeGrant() (string, error) {
 	jti, err := uuid.NewRandom()
 	if err != nil {
-		return "", fmt.Errorf("lag jti: %w", err)
+		return "", fmt.Errorf("generate jti: %w", err)
 	}
-	naa := c.naa()
+	now := c.now()
 
 	b := jwt.NewBuilder().
 		Audience([]string{c.cfg.TokenURL}).
 		Issuer(c.cfg.ClientID).
-		IssuedAt(naa).
-		Expiration(naa.Add(maskinportenGrantLevetid)).
+		IssuedAt(now).
+		Expiration(now.Add(maskinportenGrantLifetime)).
 		JwtID(jti.String()).
 		Claim("scope", c.scopes)
 	if c.cfg.ConsumerOrg != "" {
@@ -212,14 +212,14 @@ func (c *Client) lagGrant() (string, error) {
 	}
 	tok, err := b.Build()
 	if err != nil {
-		return "", fmt.Errorf("bygg Maskinporten-grant: %w", err)
+		return "", fmt.Errorf("build Maskinporten grant: %w", err)
 	}
-	// Maskinporten vil ha aud som tekst, ikke liste.
+	// Maskinporten wants aud as a string, not a list.
 	tok.Options().Enable(jwt.FlattenAudience)
 
-	signert, err := jwt.Sign(tok, jwt.WithKey(jwa.RS256(), c.cfg.JWK))
+	signed, err := jwt.Sign(tok, jwt.WithKey(jwa.RS256(), c.cfg.JWK))
 	if err != nil {
-		return "", fmt.Errorf("signer Maskinporten-grant: %w", err)
+		return "", fmt.Errorf("sign Maskinporten grant: %w", err)
 	}
-	return string(signert), nil
+	return string(signed), nil
 }

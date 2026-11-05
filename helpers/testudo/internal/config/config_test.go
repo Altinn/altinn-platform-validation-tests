@@ -14,53 +14,53 @@ func TestFor(t *testing.T) {
 	t.Cleanup(viper.Reset)
 	viper.SetConfigType("yaml")
 	if err := viper.ReadConfig(strings.NewReader(`
-FELLES: fra-toppnivaa
-OVERSTYRT: fra-toppnivaa
+SHARED: from-top-level
+OVERRIDDEN: from-top-level
 at23:
-  OVERSTYRT: fra-at23
+  OVERRIDDEN: from-at23
   API_BASE_URL: https://platform.at23.altinn.cloud
 `)); err != nil {
 		t.Fatal(err)
 	}
-	t.Setenv("FRA_SHELL", "shell")
-	t.Setenv("FELLES", "shell-vinner")
+	t.Setenv("FROM_SHELL", "shell")
+	t.Setenv("SHARED", "shell-wins")
 
-	hent := For("at23")
-	for k, vil := range map[string]string{
-		"FELLES": "shell-vinner", "OVERSTYRT": "fra-at23",
-		"API_BASE_URL": "https://platform.at23.altinn.cloud", "FRA_SHELL": "shell",
-		"FINNES_IKKE": "",
+	lookup := For("at23")
+	for k, want := range map[string]string{
+		"SHARED": "shell-wins", "OVERRIDDEN": "from-at23",
+		"API_BASE_URL": "https://platform.at23.altinn.cloud", "FROM_SHELL": "shell",
+		"DOES_NOT_EXIST": "",
 	} {
-		if got := hent(k); got != vil {
-			t.Errorf("%s = %q, vil ha %q", k, got, vil)
+		if got := lookup(k); got != want {
+			t.Errorf("%s = %q, want %q", k, got, want)
 		}
 	}
-	// Uten miljø brukes bare toppnivået.
-	if got := For("")("OVERSTYRT"); got != "fra-toppnivaa" {
-		t.Errorf("uten miljø: OVERSTYRT = %q", got)
+	// Without an environment only the top level is used.
+	if got := For("")("OVERRIDDEN"); got != "from-top-level" {
+		t.Errorf("without environment: OVERRIDDEN = %q", got)
 	}
 }
 
 func TestLoad(t *testing.T) {
 	viper.Reset()
 	t.Cleanup(viper.Reset)
-	sti := filepath.Join(t.TempDir(), "testudo.yaml")
-	if err := os.WriteFile(sti, []byte("MASKINPORTEN_CLIENT_ID: fra-fil\n"), 0o600); err != nil {
+	path := filepath.Join(t.TempDir(), "testudo.yaml")
+	if err := os.WriteFile(path, []byte("MASKINPORTEN_CLIENT_ID: from-file\n"), 0o600); err != nil {
 		t.Fatal(err)
 	}
-	if err := Load(sti); err != nil {
+	if err := Load(path); err != nil {
 		t.Fatal(err)
 	}
-	if got := For("")("MASKINPORTEN_CLIENT_ID"); got != "fra-fil" {
+	if got := For("")("MASKINPORTEN_CLIENT_ID"); got != "from-file" {
 		t.Errorf("MASKINPORTEN_CLIENT_ID = %q", got)
 	}
-	if !strings.Contains(WithHint(os.ErrNotExist).Error(), sti) {
+	if !strings.Contains(WithHint(os.ErrNotExist).Error(), path) {
 		t.Errorf("hint = %v", WithHint(os.ErrNotExist))
 	}
 
-	// En fil som er oppgitt, må finnes.
+	// A file that is given must exist.
 	viper.Reset()
-	if err := Load(filepath.Join(t.TempDir(), "finnes-ikke.yaml")); err == nil {
-		t.Error("ventet feil når fila mangler")
+	if err := Load(filepath.Join(t.TempDir(), "does-not-exist.yaml")); err == nil {
+		t.Error("expected an error when the file is missing")
 	}
 }

@@ -1,8 +1,8 @@
-// Package config leser konfigurasjonen til testudo: nøkler og adresser leses
-// fra miljøet eller fra config-fila (standard ~/.testudo.yaml).
+// Package config reads the testudo configuration: keys and addresses are read
+// from the environment or from the config file (default ~/.testudo.yaml).
 //
-// Config-fila har felles verdier på toppnivået og verdier for hvert miljø i
-// en egen seksjon:
+// The config file has shared values at the top level and values for each
+// environment in a section of its own:
 //
 //	MASKINPORTEN_CLIENT_ID: '...'
 //	MASKINPORTEN_JWK: '{"kty":"RSA",...}'
@@ -22,12 +22,13 @@ import (
 	"github.com/spf13/viper"
 )
 
-// Environments er miljøene testudo kan brukes mot.
+// Environments are the environments testudo can be used against.
 var Environments = []string{"tt02", "at22", "at23", "yt01"}
 
-// Load leser config-fila i path, eller ~/.testudo.yaml når path er tom. Uten
-// path er det greit at fila mangler, siden alt også kan settes som
-// miljøvariabler. En fil som finnes, men ikke kan leses, er en feil.
+// Load reads the config file at path, or ~/.testudo.yaml when path is empty.
+// Without a path it is fine for the file to be missing, since everything can
+// also be set as environment variables. A file that exists but cannot be read
+// is an error.
 func Load(path string) error {
 	if path != "" {
 		viper.SetConfigFile(path)
@@ -45,17 +46,17 @@ func Load(path string) error {
 	viper.AutomaticEnv()
 
 	if err := viper.ReadInConfig(); err != nil {
-		var ikkeFunnet viper.ConfigFileNotFoundError
-		if path != "" || !errors.As(err, &ikkeFunnet) {
-			return fmt.Errorf("les config-fil: %w", err)
+		var notFound viper.ConfigFileNotFoundError
+		if path != "" || !errors.As(err, &notFound) {
+			return fmt.Errorf("read config file: %w", err)
 		}
 	}
 	return nil
 }
 
-// For gir et oppslag for env. En verdi hentes fra miljøvariabelen med samme
-// navn, så fra seksjonen for env i config-fila, så fra toppnivået i
-// config-fila. Tom env hopper over seksjonen.
+// For returns a lookup for env. A value is taken from the environment variable
+// with the same name, then from the section for env in the config file, then
+// from the top level of the config file. An empty env skips the section.
 func For(env string) func(string) string {
 	return func(k string) string {
 		if v, ok := os.LookupEnv(k); ok {
@@ -70,12 +71,12 @@ func For(env string) func(string) string {
 	}
 }
 
-// WithHint legger til hvor verdien kan settes, når konfigurasjonen mangler
-// noe.
+// WithHint adds where the value can be set, when the configuration is missing
+// something.
 func WithHint(err error) error {
-	fil := viper.ConfigFileUsed()
-	if fil == "" {
-		fil = "~/.testudo.yaml"
+	file := viper.ConfigFileUsed()
+	if file == "" {
+		file = "~/.testudo.yaml"
 	}
-	return fmt.Errorf("%w (sett den i %s eller som miljøvariabel)", err, fil)
+	return fmt.Errorf("%w (set it in %s or as an environment variable)", err, file)
 }

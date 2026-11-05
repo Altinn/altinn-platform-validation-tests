@@ -15,319 +15,320 @@ import (
 	"github.com/Altinn/altinn-platform-validation-tests/helpers/testudo/internal/tenor"
 )
 
-type virksomheterOptions struct {
-	antall     int
+type organizationsOptions struct {
+	count      int
 	jsonOutput bool
 	env        string
-	// organisasjonsformer er organisasjonsformene, f.eks. AS eller ENK. Tom
-	// betyr aksjeselskaper.
-	organisasjonsformer []string
-	// underenheter henter underenheter av virksomheter med
-	// organisasjonsformene.
-	underenheter bool
-	// minUnderenheter er hvor mange underenheter virksomhetene, eller
-	// hovedenhetene med --subunits, må ha minst. 0 betyr ingen krav.
-	minUnderenheter int
-	// orgnr er bestemte virksomheter som hentes.
-	orgnr []string
-	// rolle er revisor, regnskapsfoerer eller forretningsfoerer.
-	rolle string
-	// personrolle er rollen personen i virksomheten har, f.eks. styreleder.
-	// Tom betyr lederen.
-	personrolle string
-	utskrift    utskriftValg
+	// unitTypes are the unit types (organisasjonsform), e.g. AS or ENK. Empty
+	// means AS.
+	unitTypes []string
+	// subunits fetches underenheter of organizations with the unit types.
+	subunits bool
+	// minSubunits is the minimum number of underenheter the organizations, or
+	// the hovedenheter with --subunits, must have. 0 means no requirement.
+	minSubunits int
+	// organizationNumbers are specific organizations to fetch.
+	organizationNumbers []string
+	// role is revisor, regnskapsfoerer or forretningsfoerer.
+	role string
+	// personRole is the role the person has in the organization, e.g.
+	// styreleder. Empty means the leader.
+	personRole string
+	output     outputOptions
 }
 
-// standardVirksomhetKolonner er CSV-kolonnene uten --columns.
-var standardVirksomhetKolonner = []string{"organizationIdentifier", "displayName", "partyId", "partyUuid"}
+// defaultOrganizationColumns are the CSV columns without --columns.
+var defaultOrganizationColumns = []string{"organizationIdentifier", "displayName", "partyId", "partyUuid"}
 
-// virksomhetKolonner er kolonnene en virksomhet kan skrives ut med i CSV. Alle
-// verdiene er fra Register, utenom type, som er tilretteleggerrollen, og
-// personRole. Virksomhetens egne kolonner har feltnavnene i Register (Party).
-// ssn, userId, userPartyId, userPartyUuid og lastName er personen med
-// personRole: lederen, eller rollen i --person-role. mainUnit-kolonnene er
-// hovedenheten til en underenhet (rollen hovedenhet i Register, overordnetEnhet i
-// Enhetsregisteret), og tomme for andre virksomheter.
-var virksomhetKolonner = []kolonne[parties.Organization]{
-	{navn: "organizationIdentifier", verdi: func(v parties.Organization) string { return v.OrganizationIdentifier }},
-	{navn: "displayName", verdi: func(v parties.Organization) string { return v.DisplayName }},
-	{navn: "partyId", verdi: func(v parties.Organization) string { return partyID(&v.Party) }},
-	{navn: "partyUuid", verdi: func(v parties.Organization) string { return v.PartyUUID }},
-	{navn: "unitType", verdi: func(v parties.Organization) string { return v.UnitType }},
-	{navn: "type", verdi: func(v parties.Organization) string { return v.Rolle }},
-	{navn: "personRole", verdi: func(v parties.Organization) string { return v.PersonRolle }},
-	{navn: "ssn", verdi: func(v parties.Organization) string { return v.Person.PersonIdentifier }},
-	{navn: "userId", verdi: func(v parties.Organization) string { return brukerID(&v.Person) }},
-	{navn: "userPartyId", verdi: func(v parties.Organization) string { return partyID(&v.Person) }},
-	{navn: "userPartyUuid", verdi: func(v parties.Organization) string { return v.Person.PartyUUID }},
-	{navn: "lastName", verdi: func(v parties.Organization) string { return v.Person.LastName }},
-	{navn: "mainUnitOrganizationIdentifier", verdi: func(v parties.Organization) string { return hovedenhet(v).OrganizationIdentifier }},
-	{navn: "mainUnitDisplayName", verdi: func(v parties.Organization) string { return hovedenhet(v).DisplayName }},
-	{navn: "mainUnitPartyId", verdi: func(v parties.Organization) string { return partyID(v.Hovedenhet) }},
-	{navn: "mainUnitPartyUuid", verdi: func(v parties.Organization) string { return hovedenhet(v).PartyUUID }},
-	{navn: "mainUnitUnitType", verdi: func(v parties.Organization) string { return hovedenhet(v).UnitType }},
+// organizationColumns are the columns an organization can be printed with in
+// CSV. All values are from Register, except type, which is the tilrettelegger
+// role, and personRole. The organization's own columns have the field names in
+// Register (Party). ssn, userId, userPartyId, userPartyUuid and lastName are
+// the person with personRole: the leader, or the role in --person-role. The
+// hovedenhet columns are the hovedenhet of an underenhet (the role hovedenhet
+// in Register, overordnetEnhet in Enhetsregisteret), and empty for other
+// organizations.
+var organizationColumns = []column[parties.Organization]{
+	{name: "organizationIdentifier", value: func(o parties.Organization) string { return o.OrganizationIdentifier }},
+	{name: "displayName", value: func(o parties.Organization) string { return o.DisplayName }},
+	{name: "partyId", value: func(o parties.Organization) string { return partyID(&o.Party) }},
+	{name: "partyUuid", value: func(o parties.Organization) string { return o.PartyUUID }},
+	{name: "unitType", value: func(o parties.Organization) string { return o.UnitType }},
+	{name: "type", value: func(o parties.Organization) string { return o.Role }},
+	{name: "personRole", value: func(o parties.Organization) string { return o.PersonRole }},
+	{name: "ssn", value: func(o parties.Organization) string { return o.Person.PersonIdentifier }},
+	{name: "userId", value: func(o parties.Organization) string { return userID(&o.Person) }},
+	{name: "userPartyId", value: func(o parties.Organization) string { return partyID(&o.Person) }},
+	{name: "userPartyUuid", value: func(o parties.Organization) string { return o.Person.PartyUUID }},
+	{name: "lastName", value: func(o parties.Organization) string { return o.Person.LastName }},
+	{name: "hovedenhetOrganizationIdentifier", value: func(o parties.Organization) string { return hovedenhet(o).OrganizationIdentifier }},
+	{name: "hovedenhetDisplayName", value: func(o parties.Organization) string { return hovedenhet(o).DisplayName }},
+	{name: "hovedenhetPartyId", value: func(o parties.Organization) string { return partyID(o.Hovedenhet) }},
+	{name: "hovedenhetPartyUuid", value: func(o parties.Organization) string { return hovedenhet(o).PartyUUID }},
+	{name: "hovedenhetUnitType", value: func(o parties.Organization) string { return hovedenhet(o).UnitType }},
 }
 
-// hovedenhet er hovedenheten til v, eller en tom part når v ikke er en
+// hovedenhet is the hovedenhet of o, or an empty party when o is not an
 // underenhet.
-func hovedenhet(v parties.Organization) register.Party {
-	if v.Hovedenhet == nil {
+func hovedenhet(o parties.Organization) register.Party {
+	if o.Hovedenhet == nil {
 		return register.Party{}
 	}
-	return *v.Hovedenhet
+	return *o.Hovedenhet
 }
 
-// valider sjekker flaggene før noe hentes. antallSatt er om --count ble
-// oppgitt.
-func (o *virksomheterOptions) valider(antallSatt bool) error {
-	for _, f := range o.organisasjonsformer {
-		if _, err := parties.FindUnitType(f); err != nil {
-			return fmt.Errorf("%w: ukjent --unit-type %q, bruk en av %s", errs.Invalid, f, strings.Join(parties.UnitTypes, ", "))
+// validate checks the flags before anything is fetched. countSet is whether
+// --count was given.
+func (o *organizationsOptions) validate(countSet bool) error {
+	for _, t := range o.unitTypes {
+		if _, err := parties.FindUnitType(t); err != nil {
+			return fmt.Errorf("%w: unknown --unit-type %q, use one of %s", errs.Invalid, t, strings.Join(parties.UnitTypes, ", "))
 		}
 	}
-	for _, orgnr := range o.orgnr {
-		if !parties.ValidOrganizationNumber(orgnr) {
-			return fmt.Errorf("%w: --orgno %q er ikke et organisasjonsnummer (9 siffer)", errs.Invalid, orgnr)
+	for _, n := range o.organizationNumbers {
+		if !parties.ValidOrganizationNumber(n) {
+			return fmt.Errorf("%w: --orgno %q is not an organization number (9 digits)", errs.Invalid, n)
 		}
 	}
-	if o.rolle != "" {
-		if _, err := parties.FindRole(o.rolle); err != nil {
-			return fmt.Errorf("%w: ukjent --role %q, bruk en av %s", errs.Invalid, o.rolle, parties.RoleNames())
+	if o.role != "" {
+		if _, err := parties.FindRole(o.role); err != nil {
+			return fmt.Errorf("%w: unknown --role %q, use one of %s", errs.Invalid, o.role, parties.RoleNames())
 		}
 	}
-	if o.personrolle != "" {
-		if _, err := parties.FindPersonRole(o.personrolle); err != nil {
-			return fmt.Errorf("%w: ukjent --person-role %q, bruk en av %s", errs.Invalid, o.personrolle, parties.PersonRoleNames())
+	if o.personRole != "" {
+		if _, err := parties.FindPersonRole(o.personRole); err != nil {
+			return fmt.Errorf("%w: unknown --person-role %q, use one of %s", errs.Invalid, o.personRole, parties.PersonRoleNames())
 		}
 	}
 
-	// --unit-type, --orgno og --role velger virksomhetene på hver sin måte.
-	var valgt []string
-	for flagg, satt := range map[string]bool{"--unit-type": len(o.organisasjonsformer) > 0, "--orgno": len(o.orgnr) > 0, "--role": o.rolle != ""} {
-		if satt {
-			valgt = append(valgt, flagg)
+	// --unit-type, --orgno and --role each select the organizations in their
+	// own way.
+	var selected []string
+	for flag, set := range map[string]bool{"--unit-type": len(o.unitTypes) > 0, "--orgno": len(o.organizationNumbers) > 0, "--role": o.role != ""} {
+		if set {
+			selected = append(selected, flag)
 		}
 	}
-	if len(valgt) > 1 {
-		slices.Sort(valgt)
-		return fmt.Errorf("%w: %s kan ikke brukes sammen", errs.Invalid, strings.Join(valgt, " og "))
+	if len(selected) > 1 {
+		slices.Sort(selected)
+		return fmt.Errorf("%w: %s cannot be used together", errs.Invalid, strings.Join(selected, " and "))
 	}
-	// --subunits velger organisasjonsformen til hovedenhetene, så den virker
-	// bare med --unit-type.
-	if o.underenheter && (len(o.orgnr) > 0 || o.rolle != "") {
-		return fmt.Errorf("%w: --subunits kan ikke brukes med --orgno eller --role", errs.Invalid)
+	// --subunits selects the unit type of the hovedenheter, so it only works
+	// with --unit-type.
+	if o.subunits && (len(o.organizationNumbers) > 0 || o.role != "") {
+		return fmt.Errorf("%w: --subunits cannot be used with --orgno or --role", errs.Invalid)
 	}
-	if o.minUnderenheter < 0 {
-		return fmt.Errorf("%w: --min-subunits kan ikke være negativ", errs.Invalid)
+	if o.minSubunits < 0 {
+		return fmt.Errorf("%w: --min-subunits cannot be negative", errs.Invalid)
 	}
-	if o.minUnderenheter > 0 && (len(o.orgnr) > 0 || o.rolle != "") {
-		return fmt.Errorf("%w: --min-subunits kan ikke brukes med --orgno eller --role", errs.Invalid)
+	if o.minSubunits > 0 && (len(o.organizationNumbers) > 0 || o.role != "") {
+		return fmt.Errorf("%w: --min-subunits cannot be used with --orgno or --role", errs.Invalid)
 	}
 
-	if len(o.orgnr) > 0 {
-		if antallSatt {
-			return fmt.Errorf("%w: --count kan ikke brukes med --orgno, som henter én av hver", errs.Invalid)
+	if len(o.organizationNumbers) > 0 {
+		if countSet {
+			return fmt.Errorf("%w: --count cannot be used with --orgno, which fetches one of each", errs.Invalid)
 		}
 		return nil
 	}
-	if o.antall < 1 {
-		return fmt.Errorf("%w: --count må være minst 1", errs.Invalid)
+	if o.count < 1 {
+		return fmt.Errorf("%w: --count must be at least 1", errs.Invalid)
 	}
 	return nil
 }
 
-// onsketAntall er hvor mange virksomheter som skal hentes: én per --orgno,
-// ellers --count.
-func (o *virksomheterOptions) onsketAntall() int {
-	if len(o.orgnr) > 0 {
-		return len(o.orgnr)
+// wantedCount is how many organizations to fetch: one per --orgno, otherwise
+// --count.
+func (o *organizationsOptions) wantedCount() int {
+	if len(o.organizationNumbers) > 0 {
+		return len(o.organizationNumbers)
 	}
-	return o.antall
+	return o.count
 }
 
 func newOrganizationsCmd() *cobra.Command {
-	opts := &virksomheterOptions{}
+	opts := &organizationsOptions{}
 
 	cmd := &cobra.Command{
 		Use:   "organizations",
-		Short: "Hent virksomheter fra Tenor i bulk",
-		Long: `Hent virksomheter med en person fra Tenor. Personen er lederen: daglig leder,
-innehaver for enkeltpersonforetak, eller styreleder for borettslag og
-eierseksjonssameier uten daglig leder. Med --person-role er det en person med
-den rollen i Enhetsregisteret, f.eks. styreleder eller styremedlem.
+		Short: "Fetch organizations from Tenor in bulk",
+		Long: `Fetch organizations with a person from Tenor. The person is the leader: daglig
+leder, innehaver for ENK, or styreleder for BRL and ESEK without a daglig leder.
+With --person-role it is a person with that role in Enhetsregisteret, e.g.
+styreleder or styremedlem.
 
-Uten flagg hentes aksjeselskaper. Velg andre organisasjonsformer med
---unit-type, bestemte virksomheter med --orgno, eller revisorer,
-regnskapsførere og forretningsførere med --role.
+Without flags, AS organizations are fetched. Choose other unit types with
+--unit-type, specific organizations with --orgno, or tilretteleggere (revisor,
+regnskapsfoerer or forretningsfoerer) with --role.
 
-Med --subunits hentes underenheter (BEDR og AAFY) av virksomheter med
-organisasjonsformene i --unit-type, i stedet for virksomhetene selv, én per
-hovedenhet. Underenheter har ingen personer selv, så personen er fra
-hovedenheten, og mainUnit-kolonnene er hovedenheten.
+With --subunits, underenheter (BEDR and AAFY) of organizations with the unit
+types in --unit-type are fetched instead of the organizations themselves, one
+per hovedenhet. Underenheter have no persons of their own, so the person is
+from the hovedenhet, and the hovedenhet columns describe the hovedenhet.
 
---min-subunits krever at virksomhetene har minst så mange underenheter, eller
-med --subunits at hovedenhetene har det.`,
+--min-subunits requires the organizations to have at least that many
+underenheter, or with --subunits, the hovedenheter.`,
 		Example: `  testudo find organizations -n 10
   testudo find organizations --unit-type enk,nuf -n 5 --format csv
-  testudo find organizations --subunits -n 5 --format csv --columns organizationIdentifier,mainUnitOrganizationIdentifier,ssn
+  testudo find organizations --subunits -n 5 --format csv --columns organizationIdentifier,hovedenhetOrganizationIdentifier,ssn
   testudo find organizations --min-subunits 2 -n 5 --format csv
   testudo find organizations --person-role styremedlem -n 5 --format csv --columns organizationIdentifier,personRole,ssn
   testudo find organizations --orgno 313490114 --format csv
   testudo find organizations --role regnskapsfoerer -n 5 --format csv`,
 		RunE: func(cmd *cobra.Command, args []string) error {
-			if err := opts.valider(cmd.Flags().Changed("count")); err != nil {
+			if err := opts.validate(cmd.Flags().Changed("count")); err != nil {
 				return err
 			}
-			if err := validerUtskrift(opts.utskrift, opts.jsonOutput, virksomhetKolonner, standardVirksomhetKolonner); err != nil {
+			if err := validateOutput(opts.output, opts.jsonOutput, organizationColumns, defaultOrganizationColumns); err != nil {
 				return err
 			}
-			// Register settes opp før Tenor, så feil i konfigurasjonen kommer
-			// før vi henter noe.
-			reg, err := nyRegisterKlient(opts.env)
+			// Register is set up before Tenor, so configuration errors come
+			// before we fetch anything.
+			reg, err := newRegisterClient(opts.env)
 			if err != nil {
 				return err
 			}
-			c, err := nyTenorKlient()
+			c, err := newTenorClient()
 			if err != nil {
 				return err
 			}
-			logg := cmd.ErrOrStderr()
-			return medUtFil(opts.utskrift.ut, cmd.OutOrStdout(), logg, func(ut io.Writer) error {
-				return runVirksomheter(cmd.Context(), c, reg, ut, logg, opts)
+			log := cmd.ErrOrStderr()
+			return withOutFile(opts.output.out, cmd.OutOrStdout(), log, func(out io.Writer) error {
+				return runOrganizations(cmd.Context(), c, reg, out, log, opts)
 			})
 		},
 	}
 
 	cmd.Flags().IntVarP(
-		&opts.antall, "count", "n", 10,
-		"Antall virksomheter som hentes",
+		&opts.count, "count", "n", 10,
+		"Number of organizations to fetch",
 	)
 	cmd.Flags().StringSliceVar(
-		&opts.organisasjonsformer, "unit-type", nil,
-		"Kommaseparerte organisasjonsformer: "+strings.Join(parties.UnitTypes, ", ")+" (standard: "+parties.DefaultUnitType+")",
+		&opts.unitTypes, "unit-type", nil,
+		"Comma-separated unit types: "+strings.Join(parties.UnitTypes, ", ")+" (default: "+parties.DefaultUnitType+")",
 	)
 	cmd.Flags().IntVar(
-		&opts.minUnderenheter, "min-subunits", 0,
-		"Bare virksomheter, eller hovedenheter med --subunits, med minst så mange underenheter",
+		&opts.minSubunits, "min-subunits", 0,
+		"Only organizations, or hovedenheter with --subunits, with at least this many underenheter",
 	)
 	cmd.Flags().BoolVar(
-		&opts.underenheter, "subunits", false,
-		"Hent underenheter (BEDR og AAFY) av virksomheter med organisasjonsformene i --unit-type",
+		&opts.subunits, "subunits", false,
+		"Fetch underenheter (BEDR and AAFY) of organizations with the unit types in --unit-type",
 	)
 	cmd.Flags().StringSliceVar(
-		&opts.orgnr, "orgno", nil,
-		"Kommaseparerte organisasjonsnumre som hentes",
+		&opts.organizationNumbers, "orgno", nil,
+		"Comma-separated organization numbers to fetch",
 	)
 	cmd.Flags().StringVarP(
-		&opts.rolle, "role", "r", "",
-		"Hent tilretteleggere: "+parties.RoleNames(),
+		&opts.role, "role", "r", "",
+		"Fetch tilretteleggere: "+parties.RoleNames(),
 	)
 	cmd.Flags().StringVar(
-		&opts.personrolle, "person-role", "",
-		"Personen har denne rollen i virksomheten (standard: lederen): "+parties.PersonRoleNames(),
+		&opts.personRole, "person-role", "",
+		"The person has this role in the organization (default: the leader): "+parties.PersonRoleNames(),
 	)
 	cmd.Flags().BoolVar(
 		&opts.jsonOutput, "json", false,
-		"Skriv ut som JSON, med partene fra Register",
+		"Print as JSON, with the parties from Register",
 	)
 	cmd.Flags().StringVar(
 		&opts.env, "env", "tt02",
-		"Miljø: tt02, at22, at23, yt01 (seksjon i config-fila)",
+		"Environment: tt02, at22, at23, yt01 (section in the config file)",
 	)
-	leggTilUtskriftFlagg(cmd, &opts.utskrift, standardVirksomhetKolonner)
+	addOutputFlags(cmd, &opts.output, defaultOrganizationColumns)
 
 	return cmd
 }
 
-// runVirksomheter skriver virksomhetene til ut og meldinger til logg: orgnr,
-// navn og personen per linje, eller JSON med --json. Hver virksomhet og person
-// får parten fra Register (reg). Med --format csv skrives de valgte
-// kolonnene.
-func runVirksomheter(ctx context.Context, c *tenor.Client, reg *register.Client, ut, logg io.Writer, opts *virksomheterOptions) error {
+// runOrganizations writes the organizations to out and messages to log:
+// organization number, name and the person per line, or JSON with --json. Each
+// organization and person gets the party from Register (reg). With --format
+// csv the selected columns are written.
+func runOrganizations(ctx context.Context, c *tenor.Client, reg *register.Client, out, log io.Writer, opts *organizationsOptions) error {
 	if reg == nil {
-		return fmt.Errorf("%w: mangler Register-klient", errs.Invalid)
+		return fmt.Errorf("%w: missing Register client", errs.Invalid)
 	}
-	format := opts.utskrift.effektivtFormat(opts.jsonOutput)
-	var kolonner []kolonne[parties.Organization]
+	format := opts.output.effectiveFormat(opts.jsonOutput)
+	var columns []column[parties.Organization]
 	if format == formatCSV {
 		var err error
-		if kolonner, err = velgKolonner(virksomhetKolonner, opts.utskrift.kolonner, standardVirksomhetKolonner); err != nil {
+		if columns, err = selectColumns(organizationColumns, opts.output.columns, defaultOrganizationColumns); err != nil {
 			return err
 		}
 	}
 
-	antall := opts.onsketAntall()
+	count := opts.wantedCount()
 	q := parties.OrganizationQuery{
-		Count:               antall,
-		UnitTypes:           opts.organisasjonsformer,
-		Subunits:            opts.underenheter,
-		MinSubunits:         opts.minUnderenheter,
-		OrganizationNumbers: opts.orgnr,
-		Role:                opts.rolle,
-		PersonRole:          opts.personrolle,
+		Count:               count,
+		UnitTypes:           opts.unitTypes,
+		Subunits:            opts.subunits,
+		MinSubunits:         opts.minSubunits,
+		OrganizationNumbers: opts.organizationNumbers,
+		Role:                opts.role,
+		PersonRole:          opts.personRole,
 		Env:                 opts.env,
 	}
-	person := "lederen"
-	if opts.personrolle != "" {
-		person = opts.personrolle
+	person := "the leader"
+	if opts.personRole != "" {
+		person = opts.personRole
 	}
 	switch {
-	case len(opts.orgnr) > 0:
-		fmt.Fprintf(logg, "Henter %d virksomheter med %s fra Tenor: %s\n", antall, person, strings.Join(opts.orgnr, ", "))
-	case opts.rolle != "":
-		rolle, err := parties.FindRole(opts.rolle)
+	case len(opts.organizationNumbers) > 0:
+		fmt.Fprintf(log, "Fetching %d organizations with %s from Tenor: %s\n", count, person, strings.Join(opts.organizationNumbers, ", "))
+	case opts.role != "":
+		role, err := parties.FindRole(opts.role)
 		if err != nil {
 			return err
 		}
-		fmt.Fprintf(logg, "Henter %d %s-virksomheter med %s fra Tenor via klientene (%s)\n", antall, rolle.Name, person, tenor.Exists(rolle.Field))
-	case opts.underenheter:
-		fmt.Fprintf(logg, "Henter %d underenheter fra Tenor, én per hovedenhet med %s og KQL: %s\n", antall, person, q.KQL())
+		fmt.Fprintf(log, "Fetching %d %s organizations with %s from Tenor via the clients (%s)\n", count, role.Name, person, tenor.Exists(role.Field))
+	case opts.subunits:
+		fmt.Fprintf(log, "Fetching %d underenheter from Tenor, one per hovedenhet, with %s and KQL: %s\n", count, person, q.KQL())
 	default:
-		fmt.Fprintf(logg, "Henter %d virksomheter med %s fra Tenor med KQL: %s\n", antall, person, q.KQL())
+		fmt.Fprintf(log, "Fetching %d organizations with %s from Tenor with KQL: %s\n", count, person, q.KQL())
 	}
 
-	virksomheter, err := parties.FindOrganizations(ctx, c, reg, q, logg)
+	organizations, err := parties.FindOrganizations(ctx, c, reg, q, log)
 	if err != nil {
 		return err
 	}
-	if len(virksomheter) == 0 {
-		return fmt.Errorf("%w: ingen treff som finnes i Register for %s", errs.NotFound, opts.env)
+	if len(organizations) == 0 {
+		return fmt.Errorf("%w: no matches that exist in Register for %s", errs.NotFound, opts.env)
 	}
-	if len(virksomheter) < antall {
-		fmt.Fprintf(logg, "Advarsel: fant bare %d av %d ønskede virksomheter.\n", len(virksomheter), antall)
+	if len(organizations) < count {
+		fmt.Fprintf(log, "Warning: found only %d of %d requested organizations.\n", len(organizations), count)
 	}
 
 	switch format {
 	case formatCSV:
-		hoppetOver, err := skrivCSV(ut, virksomheter, kolonner)
-		if hoppetOver > 0 {
-			fmt.Fprintf(logg, "Hoppet over %d rader som mangler verdier (f.eks. personen uten bruker, eller mainUnit-kolonner for en virksomhet som ikke er underenhet).\n", hoppetOver)
+		skipped, err := writeCSV(out, organizations, columns)
+		if skipped > 0 {
+			fmt.Fprintf(log, "Skipped %d rows with missing values (e.g. a person without a user, or hovedenhet columns for an organization that is not an underenhet).\n", skipped)
 		}
 		if err != nil {
 			return err
 		}
 	case formatJSON:
-		if err := skrivJSON(ut, virksomheter); err != nil {
+		if err := writeJSON(out, organizations); err != nil {
 			return err
 		}
 	default:
-		skrivVirksomheterTekst(ut, virksomheter)
+		writeOrganizationsText(out, organizations)
 	}
-	fmt.Fprintf(logg, "-> %d virksomheter\n", len(virksomheter))
+	fmt.Fprintf(log, "-> %d organizations\n", len(organizations))
 	return nil
 }
 
-// skrivVirksomheterTekst skriver orgnr, navn og personen per linje, med
-// tilretteleggerrolle og hovedenhet når de er satt.
-func skrivVirksomheterTekst(ut io.Writer, virksomheter []parties.Organization) {
-	for _, v := range virksomheter {
-		felt := []string{v.OrganizationIdentifier, v.DisplayName, v.Person.PersonIdentifier}
-		if v.Rolle != "" {
-			felt = append(felt, v.Rolle)
+// writeOrganizationsText writes the organization number, name and the person
+// per line, with the tilrettelegger role and the hovedenhet when they are set.
+func writeOrganizationsText(out io.Writer, organizations []parties.Organization) {
+	for _, o := range organizations {
+		fields := []string{o.OrganizationIdentifier, o.DisplayName, o.Person.PersonIdentifier}
+		if o.Role != "" {
+			fields = append(fields, o.Role)
 		}
-		if v.Hovedenhet != nil {
-			felt = append(felt, v.Hovedenhet.OrganizationIdentifier)
+		if o.Hovedenhet != nil {
+			fields = append(fields, o.Hovedenhet.OrganizationIdentifier)
 		}
-		fmt.Fprintln(ut, strings.Join(felt, "\t"))
+		fmt.Fprintln(out, strings.Join(fields, "\t"))
 	}
 }

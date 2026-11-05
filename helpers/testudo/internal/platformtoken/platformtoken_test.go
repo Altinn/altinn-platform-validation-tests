@@ -13,53 +13,53 @@ import (
 	"github.com/Altinn/altinn-platform-validation-tests/helpers/testudo/internal/errs"
 )
 
-func TestPlatformTokenOgCache(t *testing.T) {
-	kall := 0
+func TestPlatformTokenAndCache(t *testing.T) {
+	calls := 0
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		kall++
+		calls++
 		if r.Method != http.MethodGet || r.URL.Path != "/api/GetPlatformAccessToken" {
 			t.Errorf("%s %s", r.Method, r.URL.Path)
 		}
-		if u, p, ok := r.BasicAuth(); !ok || u != "bruker" || p != "hemmelig" {
+		if u, p, ok := r.BasicAuth(); !ok || u != "user" || p != "secret" {
 			t.Errorf("basic auth = %q %q %v", u, p, ok)
 		}
 		q := r.URL.Query()
 		if q.Get("env") != "at23" || q.Get("app") != "testudo" || q.Get("ttl") != "300" || q.Has("org") {
 			t.Errorf("query = %v", q)
 		}
-		fmt.Fprintf(w, "token-%d\n", kall)
+		fmt.Fprintf(w, "token-%d\n", calls)
 	}))
 	defer srv.Close()
 
 	g, err := NewGenerator(Config{
-		Username: "bruker", Password: "hemmelig", Environment: "at23", BaseURL: srv.URL + "/",
+		Username: "user", Password: "secret", Environment: "at23", BaseURL: srv.URL + "/",
 	})
 	if err != nil {
 		t.Fatal(err)
 	}
-	naa := time.Date(2026, 10, 28, 12, 0, 0, 0, time.UTC)
-	g.naa = func() time.Time { return naa }
+	now := time.Date(2026, 10, 28, 12, 0, 0, 0, time.UTC)
+	g.now = func() time.Time { return now }
 
 	for range 2 {
 		if tok, err := g.Token(context.Background()); err != nil || tok != "token-1" {
 			t.Fatalf("token = %q, err = %v", tok, err)
 		}
 	}
-	// 5 minutters levetid, fornyes 30 sekunder før.
-	naa = naa.Add(5*time.Minute - 30*time.Second - time.Second)
+	// 5 minute lifetime, renewed 30 seconds before.
+	now = now.Add(5*time.Minute - 30*time.Second - time.Second)
 	if tok, _ := g.Token(context.Background()); tok != "token-1" {
-		t.Errorf("rett før fornyelse: token = %q", tok)
+		t.Errorf("just before renewal: token = %q", tok)
 	}
-	naa = naa.Add(time.Second)
+	now = now.Add(time.Second)
 	if tok, _ := g.Token(context.Background()); tok != "token-2" {
-		t.Errorf("ved fornyelse: token = %q", tok)
+		t.Errorf("at renewal: token = %q", tok)
 	}
 }
 
-func TestPlatformTokenAppOrgOgTTL(t *testing.T) {
+func TestPlatformTokenAppOrgAndTTL(t *testing.T) {
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		q := r.URL.Query()
-		if q.Get("app") != "min-app" || q.Get("org") != "ttd" || q.Get("ttl") != "120" {
+		if q.Get("app") != "my-app" || q.Get("org") != "ttd" || q.Get("ttl") != "120" {
 			t.Errorf("query = %v", q)
 		}
 		w.Write([]byte("t"))
@@ -67,7 +67,7 @@ func TestPlatformTokenAppOrgOgTTL(t *testing.T) {
 	defer srv.Close()
 
 	g, _ := NewGenerator(Config{
-		Username: "b", Password: "p", Environment: "tt02", App: "min-app", Org: "ttd",
+		Username: "b", Password: "p", Environment: "tt02", App: "my-app", Org: "ttd",
 		TTL: 2 * time.Minute, BaseURL: srv.URL,
 	})
 	if _, err := g.Token(context.Background()); err != nil {
@@ -75,50 +75,50 @@ func TestPlatformTokenAppOrgOgTTL(t *testing.T) {
 	}
 }
 
-func TestPlatformTokenFeil(t *testing.T) {
-	for navn, h := range map[string]http.HandlerFunc{
+func TestPlatformTokenErrors(t *testing.T) {
+	for name, h := range map[string]http.HandlerFunc{
 		"401": func(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusUnauthorized)
 			w.Write([]byte("Unauthorized"))
 		},
-		"tomt svar": func(w http.ResponseWriter, r *http.Request) {},
+		"empty response": func(w http.ResponseWriter, r *http.Request) {},
 	} {
 		srv := httptest.NewServer(h)
 		g, _ := NewGenerator(Config{Username: "b", Password: "p", Environment: "at22", BaseURL: srv.URL})
 		_, err := g.Token(context.Background())
 		srv.Close()
 		if !errors.Is(err, errs.InvalidResponse) {
-			t.Errorf("%s: err = %v", navn, err)
+			t.Errorf("%s: err = %v", name, err)
 		}
 		if strings.Contains(fmt.Sprint(err), "p@") {
-			t.Errorf("%s: passordet lekket i feilen: %v", navn, err)
+			t.Errorf("%s: the password leaked into the error: %v", name, err)
 		}
 	}
 }
 
-func TestPlatformTokenConfigFra(t *testing.T) {
+func TestPlatformTokenConfigFrom(t *testing.T) {
 	tests := []struct {
-		navn       string
-		env        map[string]string
-		miljoe     string
-		brukernavn string
-		ugyldig    bool
+		name        string
+		env         map[string]string
+		environment string
+		username    string
+		invalid     bool
 	}{
 		{"ok", map[string]string{"TOKEN_GENERATOR_USERNAME": "k6", "TOKEN_GENERATOR_PASSWORD": "p"}, "at22", "k6", false},
-		{"frontend-navn", map[string]string{"USERNAME_TEST_API": "fe", "PASSWORD_TEST_API": "p"}, "at22", "", true},
-		{"mangler passord", map[string]string{"TOKEN_GENERATOR_USERNAME": "k6"}, "at22", "", true},
-		{"mangler miljø", map[string]string{"TOKEN_GENERATOR_USERNAME": "k6", "TOKEN_GENERATOR_PASSWORD": "p"}, "", "", true},
+		{"frontend names", map[string]string{"USERNAME_TEST_API": "fe", "PASSWORD_TEST_API": "p"}, "at22", "", true},
+		{"missing password", map[string]string{"TOKEN_GENERATOR_USERNAME": "k6"}, "at22", "", true},
+		{"missing environment", map[string]string{"TOKEN_GENERATOR_USERNAME": "k6", "TOKEN_GENERATOR_PASSWORD": "p"}, "", "", true},
 	}
 	for _, tt := range tests {
-		cfg, err := ConfigFrom(func(k string) string { return tt.env[k] }, tt.miljoe)
-		if tt.ugyldig {
+		cfg, err := ConfigFrom(func(k string) string { return tt.env[k] }, tt.environment)
+		if tt.invalid {
 			if !errors.Is(err, errs.Invalid) {
-				t.Errorf("%s: err = %v", tt.navn, err)
+				t.Errorf("%s: err = %v", tt.name, err)
 			}
 			continue
 		}
-		if err != nil || cfg.Username != tt.brukernavn || cfg.Environment != tt.miljoe {
-			t.Errorf("%s: cfg = %+v, err = %v", tt.navn, cfg, err)
+		if err != nil || cfg.Username != tt.username || cfg.Environment != tt.environment {
+			t.Errorf("%s: cfg = %+v, err = %v", tt.name, cfg, err)
 		}
 	}
 }

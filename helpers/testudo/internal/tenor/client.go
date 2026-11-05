@@ -1,6 +1,6 @@
-// Package tenor er en klient for Tenor sitt Søke-API (OpenAPI "Søke API" v0,
-// https://testdata.api.skatteetaten.no/api/testnorge/v2), med hjelpere for å
-// bygge KQL.
+// Package tenor is a client for Tenor's search API (OpenAPI "Søke API" v0,
+// https://testdata.api.skatteetaten.no/api/testnorge/v2), with helpers for
+// building KQL.
 package tenor
 
 import (
@@ -18,33 +18,33 @@ import (
 )
 
 const (
-	// DefaultBaseURL er Tenor sitt API.
+	// DefaultBaseURL is Tenor's API.
 	DefaultBaseURL = "https://testdata.api.skatteetaten.no"
-	// Scope er Maskinporten-scopet tokenet må ha.
-	Scope    = "skatteetaten:testnorge/testdata.read"
-	soekPath = "/api/testnorge/v2/soek"
+	// Scope is the Maskinporten scope the token must have.
+	Scope      = "skatteetaten:testnorge/testdata.read"
+	searchPath = "/api/testnorge/v2/soek"
 )
 
-// Source er en Tenor-kilde, brukt som {kilde} i søkestien.
+// Source is a Tenor source, used as {kilde} in the search path.
 type Source string
 
 const (
-	// SourceFreg er Folkeregisteret (personer).
+	// SourceFreg is Folkeregisteret (persons).
 	SourceFreg Source = "freg"
-	// SourceBrreg er Enhets- og Foretaksregisteret (virksomheter).
+	// SourceBrreg is Enhets- og Foretaksregisteret (organizations).
 	SourceBrreg Source = "brreg-er-fr"
 )
 
-// Result er svaret fra både /soek/{kilde} og /soek/{kilde}/uthenting.
+// Result is the response from both /soek/{kilde} and /soek/{kilde}/uthenting.
 type Result struct {
 	Treff  int64 `json:"treff"`
 	Rader  int32 `json:"rader"`
 	Offset int32 `json:"offset"`
-	// NesteSide er nil når det ikke finnes flere sider.
+	// NesteSide is nil when there are no more pages.
 	NesteSide *int32 `json:"nesteSide"`
-	// Seed må sendes med på påfølgende sider for stabil rekkefølge.
+	// Seed must be sent on the following pages for a stable order.
 	Seed int32 `json:"seed"`
-	// DokumentListe er utypet i spec'en; innholdet avhenger av kilden.
+	// DokumentListe is untyped in the spec; the content depends on the source.
 	DokumentListe []json.RawMessage    `json:"dokumentListe"`
 	Highlight     map[string]Highlight `json:"highlight"`
 }
@@ -54,25 +54,25 @@ type Highlight struct {
 	SekundaerKildeTreff map[string][]string `json:"sekundaerKildeTreff"`
 }
 
-// SearchParams er query-parametrene til /soek/{kilde}. Nil/tomme felt sendes
-// ikke, slik at Tenor bruker sine egne standardverdier.
+// SearchParams are the query parameters of /soek/{kilde}. Nil or empty fields
+// are not sent, so Tenor uses its own defaults.
 type SearchParams struct {
-	// KQL er spørringen i Kibana Query Language.
+	// KQL is the query in Kibana Query Language.
 	KQL    string
 	Antall *int32
-	// Side brukes sammen med Seed for konsistent bla i resultatet.
+	// Side is used together with Seed for consistent paging through the result.
 	Side *int32
 	Seed *int32
-	// Vis angir felt som skal returneres, f.eks. "tenorMetadata" eller "*".
+	// Vis lists the fields to return, e.g. "tenorMetadata" or "*".
 	Vis []string
-	// Skjul angir felt som skal skjules.
+	// Skjul lists the fields to hide.
 	Skjul []string
-	// Nokkelinformasjon viser samme felt som nøkkelinformasjon i GUI og
-	// overstyrer Vis/Skjul.
+	// Nokkelinformasjon shows the same fields as the key information in the GUI
+	// and overrides Vis/Skjul.
 	Nokkelinformasjon bool
 }
 
-// ExtractParams er query-parametrene til /soek/{kilde}/uthenting.
+// ExtractParams are the query parameters of /soek/{kilde}/uthenting.
 type ExtractParams struct {
 	KQL    string
 	Antall *int32
@@ -80,12 +80,12 @@ type ExtractParams struct {
 	Seed   *int32
 }
 
-// TokenSource gir et gyldig bearer-token med scope Scope.
+// TokenSource gives a valid bearer token with scope Scope.
 type TokenSource interface {
 	Token(ctx context.Context) (string, error)
 }
 
-// StaticToken er et ferdig utstedt token, f.eks. til tester eller manuell bruk.
+// StaticToken is an already issued token, e.g. for tests or manual use.
 type StaticToken string
 
 func (t StaticToken) Token(context.Context) (string, error) {
@@ -98,8 +98,8 @@ type Client struct {
 	tokens  TokenSource
 }
 
-// NewClient lager en klient mot baseURL, som er DefaultBaseURL utenom i
-// tester.
+// NewClient creates a client for baseURL, which is DefaultBaseURL except in
+// tests.
 func NewClient(baseURL string, tokens TokenSource) *Client {
 	return &Client{
 		baseURL: strings.TrimRight(baseURL, "/"),
@@ -108,8 +108,8 @@ func NewClient(baseURL string, tokens TokenSource) *Client {
 	}
 }
 
-// Search kjører GET /soek/{kilde}.
-func (c *Client) Search(ctx context.Context, kilde Source, p SearchParams) (*Result, error) {
+// Search runs GET /soek/{kilde}.
+func (c *Client) Search(ctx context.Context, source Source, p SearchParams) (*Result, error) {
 	q := url.Values{}
 	setString(q, "kql", p.KQL)
 	setInt(q, "antall", p.Antall)
@@ -124,65 +124,65 @@ func (c *Client) Search(ctx context.Context, kilde Source, p SearchParams) (*Res
 	if p.Nokkelinformasjon {
 		q.Set("nokkelinformasjon", "true")
 	}
-	return c.get(ctx, kilde, "", q)
+	return c.get(ctx, source, "", q)
 }
 
-// Extract kjører GET /soek/{kilde}/uthenting.
-func (c *Client) Extract(ctx context.Context, kilde Source, p ExtractParams) (*Result, error) {
+// Extract runs GET /soek/{kilde}/uthenting.
+func (c *Client) Extract(ctx context.Context, source Source, p ExtractParams) (*Result, error) {
 	q := url.Values{}
 	setString(q, "kql", p.KQL)
 	setInt(q, "antall", p.Antall)
 	setInt(q, "side", p.Side)
 	setInt(q, "seed", p.Seed)
-	return c.get(ctx, kilde, "/uthenting", q)
+	return c.get(ctx, source, "/uthenting", q)
 }
 
-// Count returnerer antall treff for en spørring uten å hente dokumenter.
-func (c *Client) Count(ctx context.Context, kilde Source, kql string) (int64, error) {
-	res, err := c.Search(ctx, kilde, SearchParams{KQL: kql, Antall: Ptr[int32](0)})
+// Count returns the number of hits for a query without fetching documents.
+func (c *Client) Count(ctx context.Context, source Source, kql string) (int64, error) {
+	res, err := c.Search(ctx, source, SearchParams{KQL: kql, Antall: Ptr[int32](0)})
 	if err != nil {
 		return 0, err
 	}
 	return res.Treff, nil
 }
 
-// MaxPerPage er det høyeste antallet dokumenter Tenor returnerer per
-// søk. Tenor stopper også bla etter de første 200 treffene (nesteSide blir
-// nil), så side kan ikke brukes for å komme forbi grensen.
+// MaxPerPage is the highest number of documents Tenor returns per search.
+// Tenor also stops paging after the first 200 hits (nesteSide becomes nil), so
+// side cannot be used to get past the limit.
 const MaxPerPage = 200
 
-// FetchMany henter opptil antall unike dokumenter, også forbi grensen på 200.
-// Hver seed gir en egen tilfeldig rekkefølge, så vi henter de første 200
-// treffene for flere seeds og fjerner duplikater på tenorMetadata.id
-// (fødselsnummer for freg, organisasjonsnummer for brreg-er-fr).
-// Første kall er uten seed, så utvalget blir tilfeldig fra gang til gang.
-func (c *Client) FetchMany(ctx context.Context, kilde Source, kql string, antall int) ([]Metadata, error) {
-	return c.FetchManyFiltered(ctx, kilde, kql, antall, nil)
+// FetchMany fetches up to count unique documents, also past the limit of 200.
+// Each seed gives its own random order, so we fetch the first 200 hits for
+// several seeds and remove duplicates on tenorMetadata.id (fødselsnummer for
+// freg, organization number for brreg-er-fr).
+// The first call has no seed, so the selection is random from run to run.
+func (c *Client) FetchMany(ctx context.Context, source Source, kql string, count int) ([]Metadata, error) {
+	return c.FetchManyFiltered(ctx, source, kql, count, nil)
 }
 
-// FetchManyFiltered er FetchMany, men tar bare med dokumenter der behold gir
-// true. Det er for krav KQL ikke kan uttrykke, f.eks. at en virksomhet har
-// daglig leder. Siden noen dokumenter forkastes, hentes flere per kall og i
-// flere runder enn uten filter.
-func (c *Client) FetchManyFiltered(ctx context.Context, kilde Source, kql string, antall int, behold func(Metadata) bool) ([]Metadata, error) {
-	if antall <= 0 {
+// FetchManyFiltered is FetchMany, but only includes documents for which keep
+// returns true. It is for requirements KQL cannot express, e.g. that an
+// organization has a daglig leder. Since some documents are discarded, it
+// fetches more per call and in more rounds than without a filter.
+func (c *Client) FetchManyFiltered(ctx context.Context, source Source, kql string, count int, keep func(Metadata) bool) ([]Metadata, error) {
+	if count <= 0 {
 		return nil, nil
 	}
-	perSide := int32(min(antall, MaxPerPage))
-	// Noen ekstra runder i tilfelle overlapp mellom seeds.
-	maksRunder := (antall+MaxPerPage-1)/MaxPerPage + 5
-	if behold != nil {
-		perSide = int32(min(max(2*antall, 20), MaxPerPage))
-		maksRunder += 15
+	perPage := int32(min(count, MaxPerPage))
+	// A few extra rounds in case seeds overlap.
+	maxRounds := (count+MaxPerPage-1)/MaxPerPage + 5
+	if keep != nil {
+		perPage = int32(min(max(2*count, 20), MaxPerPage))
+		maxRounds += 15
 	}
 
-	sett := make(map[string]bool, antall)
-	dokumenter := make([]Metadata, 0, antall)
+	seen := make(map[string]bool, count)
+	docs := make([]Metadata, 0, count)
 	var seed *int32
-	for runde := 0; runde < maksRunder && len(dokumenter) < antall; runde++ {
-		res, err := c.Search(ctx, kilde, SearchParams{
+	for round := 0; round < maxRounds && len(docs) < count; round++ {
+		res, err := c.Search(ctx, source, SearchParams{
 			KQL:    kql,
-			Antall: Ptr(perSide),
+			Antall: Ptr(perPage),
 			Side:   Ptr[int32](0),
 			Seed:   seed,
 			Vis:    []string{"tenorMetadata"},
@@ -195,37 +195,37 @@ func (c *Client) FetchManyFiltered(ctx context.Context, kilde Source, kql string
 		}
 		for _, d := range res.DokumentListe {
 			md, err := ReadMetadata(d)
-			if err != nil || md.ID == "" || sett[md.ID] {
+			if err != nil || md.ID == "" || seen[md.ID] {
 				continue
 			}
-			sett[md.ID] = true
-			if behold != nil && !behold(md) {
+			seen[md.ID] = true
+			if keep != nil && !keep(md) {
 				continue
 			}
-			dokumenter = append(dokumenter, md)
-			if len(dokumenter) == antall {
+			docs = append(docs, md)
+			if len(docs) == count {
 				break
 			}
 		}
-		// Alle treffene er sett, også de som ble forkastet.
-		if int64(len(sett)) >= res.Treff {
+		// All hits have been seen, including the discarded ones.
+		if int64(len(seen)) >= res.Treff {
 			break
 		}
 		seed = Ptr(res.Seed + 1)
 	}
-	return dokumenter, nil
+	return docs, nil
 }
 
-func (c *Client) get(ctx context.Context, kilde Source, suffix string, q url.Values) (*Result, error) {
-	if kilde == "" {
-		return nil, fmt.Errorf("%w: kilde mangler", errs.Invalid)
+func (c *Client) get(ctx context.Context, source Source, suffix string, q url.Values) (*Result, error) {
+	if source == "" {
+		return nil, fmt.Errorf("%w: source is missing", errs.Invalid)
 	}
 	token, err := c.tokens.Token(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("hent token: %w", err)
+		return nil, fmt.Errorf("get token: %w", err)
 	}
 
-	u := c.baseURL + soekPath + "/" + url.PathEscape(string(kilde)) + suffix
+	u := c.baseURL + searchPath + "/" + url.PathEscape(string(source)) + suffix
 	if len(q) > 0 {
 		u += "?" + q.Encode()
 	}
@@ -244,7 +244,7 @@ func (c *Client) get(ctx context.Context, kilde Source, suffix string, q url.Val
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, fmt.Errorf("%w: les svar: %v", errs.Connection, err)
+		return nil, fmt.Errorf("%w: read response: %v", errs.Connection, err)
 	}
 	if resp.StatusCode == http.StatusNotFound {
 		return nil, fmt.Errorf("%w: %s (KQL: %s)", errs.NotFound, u, q.Get("kql"))
@@ -261,35 +261,36 @@ func (c *Client) get(ctx context.Context, kilde Source, suffix string, q url.Val
 	return &res, nil
 }
 
-// Metadata er feltet tenorMetadata i hvert dokument. Det står ikke i
-// spec'en; strukturen er hentet fra hvordan API-et faktisk svarer.
+// Metadata is the field tenorMetadata in each document. It is not in the
+// spec; the structure is taken from how the API actually responds.
 type Metadata struct {
-	// ID er fødselsnummer for freg og organisasjonsnummer for brreg-er-fr.
+	// ID is the fødselsnummer for freg and the organization number for
+	// brreg-er-fr.
 	ID string `json:"id"`
-	// Kildedata er selve kildedokumentet som en JSON-streng.
+	// Kildedata is the source document itself as a JSON string.
 	Kildedata string `json:"kildedata"`
-	// Opprettet og Oppdatert holdes som tekst siden datoformatet ikke er
-	// dokumentert.
+	// Opprettet and Oppdatert are kept as text since the date format is not
+	// documented.
 	Opprettet string `json:"opprettet"`
 	Oppdatert string `json:"oppdatert"`
 }
 
-// ReadMetadata henter tenorMetadata fra et dokument i DokumentListe.
-// Krever at søket ble gjort med Vis som inkluderer "tenorMetadata".
-func ReadMetadata(dokument json.RawMessage) (Metadata, error) {
+// ReadMetadata reads tenorMetadata from a document in DokumentListe.
+// Requires that the search was made with Vis including "tenorMetadata".
+func ReadMetadata(doc json.RawMessage) (Metadata, error) {
 	var d struct {
 		Metadata *Metadata `json:"tenorMetadata"`
 	}
-	if err := json.Unmarshal(dokument, &d); err != nil {
+	if err := json.Unmarshal(doc, &d); err != nil {
 		return Metadata{}, fmt.Errorf("%w: %v", errs.InvalidResponse, err)
 	}
 	if d.Metadata == nil {
-		return Metadata{}, fmt.Errorf("%w: dokumentet mangler tenorMetadata", errs.InvalidResponse)
+		return Metadata{}, fmt.Errorf("%w: the document has no tenorMetadata", errs.InvalidResponse)
 	}
 	return *d.Metadata, nil
 }
 
-// Ptr gjør det enkelt å sette valgfrie felt, f.eks. Antall: Ptr[int32](200).
+// Ptr makes it easy to set optional fields, e.g. Antall: Ptr[int32](200).
 func Ptr[T any](v T) *T {
 	return &v
 }

@@ -1,7 +1,7 @@
 package cmd
 
-// Felles utskrift for kommandoer som skriver rader: tekst, JSON eller CSV med
-// valgfrie kolonner. Kolonnenavnene følger det kanoniske skjemaet i
+// Shared output for commands that print rows: text, JSON or CSV with optional
+// columns. The column names follow the canonical schema in
 // https://github.com/Altinn/altinn-platform-validation-tests/issues/323.
 
 import (
@@ -21,169 +21,172 @@ import (
 )
 
 const (
-	formatTekst = "text"
-	formatJSON  = "json"
-	formatCSV   = "csv"
+	formatText = "text"
+	formatJSON = "json"
+	formatCSV  = "csv"
 )
 
-// utskriftValg er flaggene for utskrift.
-type utskriftValg struct {
-	// format er text, json eller csv. Tom betyr standard: text, eller json
-	// med --json.
+// outputOptions are the output flags.
+type outputOptions struct {
+	// format is text, json or csv. Empty means the default: text, or json
+	// with --json.
 	format string
-	// kolonner er kommaseparerte CSV-kolonner. Tom betyr kommandoens standard.
-	kolonner string
-	// ut er filen resultatet skrives til. Tom betyr stdout.
-	ut string
+	// columns are comma-separated CSV columns. Empty means the command's
+	// default.
+	columns string
+	// out is the file the result is written to. Empty means stdout.
+	out string
 }
 
-func leggTilUtskriftFlagg(cmd *cobra.Command, v *utskriftValg, standardKolonner []string) {
+func addOutputFlags(cmd *cobra.Command, o *outputOptions, defaultColumns []string) {
 	cmd.Flags().StringVar(
-		&v.format, "format", "",
-		"Utskrift: text, json eller csv (standard: text, eller json med --json)",
+		&o.format, "format", "",
+		"Output: text, json or csv (default: text, or json with --json)",
 	)
 	cmd.Flags().StringVar(
-		&v.kolonner, "columns", "",
-		"Kommaseparerte kolonner med --format csv (standard: "+strings.Join(standardKolonner, ",")+")",
+		&o.columns, "columns", "",
+		"Comma-separated columns with --format csv (default: "+strings.Join(defaultColumns, ",")+")",
 	)
 	cmd.Flags().StringVar(
-		&v.ut, "out", "",
-		"Fil resultatet skrives til (standard: stdout)",
+		&o.out, "out", "",
+		"File the result is written to (default: stdout)",
 	)
 }
 
-// effektivtFormat avgjør formatet når --format ikke er satt.
-func (v utskriftValg) effektivtFormat(jsonOutput bool) string {
+// effectiveFormat decides the format when --format is not set.
+func (o outputOptions) effectiveFormat(jsonOutput bool) string {
 	switch {
-	case v.format != "":
-		return v.format
+	case o.format != "":
+		return o.format
 	case jsonOutput:
 		return formatJSON
 	default:
-		return formatTekst
+		return formatText
 	}
 }
 
-// valider sjekker format og kolonner før noe hentes.
-func validerUtskrift[T any](v utskriftValg, jsonOutput bool, alle []kolonne[T], standard []string) error {
-	format := v.effektivtFormat(jsonOutput)
-	if !slices.Contains([]string{formatTekst, formatJSON, formatCSV}, format) {
-		return fmt.Errorf("%w: ukjent --format %q, bruk text, json eller csv", errs.Invalid, format)
+// validateOutput checks the format and columns before anything is fetched.
+func validateOutput[T any](o outputOptions, jsonOutput bool, all []column[T], defaults []string) error {
+	format := o.effectiveFormat(jsonOutput)
+	if !slices.Contains([]string{formatText, formatJSON, formatCSV}, format) {
+		return fmt.Errorf("%w: unknown --format %q, use text, json or csv", errs.Invalid, format)
 	}
-	if v.kolonner != "" && format != formatCSV {
-		return fmt.Errorf("%w: --columns virker bare med --format csv", errs.Invalid)
+	if o.columns != "" && format != formatCSV {
+		return fmt.Errorf("%w: --columns only works with --format csv", errs.Invalid)
 	}
 	if format == formatCSV {
-		_, err := velgKolonner(alle, v.kolonner, standard)
+		_, err := selectColumns(all, o.columns, defaults)
 		return err
 	}
 	return nil
 }
 
-// kolonne er en CSV-kolonne for rader av typen T.
-type kolonne[T any] struct {
-	navn  string
-	verdi func(T) string
+// column is a CSV column for rows of type T.
+type column[T any] struct {
+	name  string
+	value func(T) string
 }
 
-// velgKolonner slår opp kolonnene i spesifikasjon (kommaseparert), eller
-// standard hvis den er tom.
-func velgKolonner[T any](alle []kolonne[T], spesifikasjon string, standard []string) ([]kolonne[T], error) {
-	navn := standard
-	if spesifikasjon != "" {
-		navn = strings.Split(spesifikasjon, ",")
+// selectColumns looks up the columns in spec (comma-separated), or defaults if
+// spec is empty.
+func selectColumns[T any](all []column[T], spec string, defaults []string) ([]column[T], error) {
+	names := defaults
+	if spec != "" {
+		names = strings.Split(spec, ",")
 	}
-	valgt := make([]kolonne[T], 0, len(navn))
-	for _, n := range navn {
+	selected := make([]column[T], 0, len(names))
+	for _, n := range names {
 		n = strings.TrimSpace(n)
-		i := slices.IndexFunc(alle, func(k kolonne[T]) bool { return k.navn == n })
+		i := slices.IndexFunc(all, func(c column[T]) bool { return c.name == n })
 		if i < 0 {
-			tilgjengelige := make([]string, len(alle))
-			for j, k := range alle {
-				tilgjengelige[j] = k.navn
+			available := make([]string, len(all))
+			for j, c := range all {
+				available[j] = c.name
 			}
-			return nil, fmt.Errorf("%w: ukjent kolonne %q, bruk en av %s", errs.Invalid, n, strings.Join(tilgjengelige, ","))
+			return nil, fmt.Errorf("%w: unknown column %q, use one of %s", errs.Invalid, n, strings.Join(available, ","))
 		}
-		valgt = append(valgt, alle[i])
+		selected = append(selected, all[i])
 	}
-	return valgt, nil
+	return selected, nil
 }
 
-// skrivCSV skriver rader med de valgte kolonnene. Rader som mangler en verdi
-// hoppes over, siden testene trenger komplette rader, og antallet returneres.
-func skrivCSV[T any](ut io.Writer, rader []T, kolonner []kolonne[T]) (int, error) {
-	w := csv.NewWriter(ut)
-	header := make([]string, len(kolonner))
-	for i, k := range kolonner {
-		header[i] = k.navn
+// writeCSV writes rows with the selected columns. Rows with a missing value
+// are skipped, since the tests need complete rows, and the number skipped is
+// returned.
+func writeCSV[T any](out io.Writer, rows []T, columns []column[T]) (int, error) {
+	w := csv.NewWriter(out)
+	header := make([]string, len(columns))
+	for i, c := range columns {
+		header[i] = c.name
 	}
 	if err := w.Write(header); err != nil {
 		return 0, err
 	}
 
-	hoppetOver := 0
-	for _, r := range rader {
-		rad := make([]string, len(kolonner))
-		komplett := true
-		for i, k := range kolonner {
-			rad[i] = k.verdi(r)
-			komplett = komplett && rad[i] != ""
+	skipped := 0
+	for _, r := range rows {
+		row := make([]string, len(columns))
+		complete := true
+		for i, c := range columns {
+			row[i] = c.value(r)
+			complete = complete && row[i] != ""
 		}
-		if !komplett {
-			hoppetOver++
+		if !complete {
+			skipped++
 			continue
 		}
-		if err := w.Write(rad); err != nil {
-			return hoppetOver, err
+		if err := w.Write(row); err != nil {
+			return skipped, err
 		}
 	}
 	w.Flush()
-	return hoppetOver, w.Error()
+	return skipped, w.Error()
 }
 
-// medUtFil kjører skriv mot stdout, eller mot en buffer som skrives til sti når
-// skriv er ferdig uten feil, så en feilet kjøring ikke etterlater en halv fil.
-func medUtFil(sti string, stdout, logg io.Writer, skriv func(io.Writer) error) error {
-	if sti == "" {
-		return skriv(stdout)
+// withOutFile runs write against stdout, or against a buffer that is written
+// to path when write finishes without error, so a failed run does not leave a
+// half-written file.
+func withOutFile(path string, stdout, log io.Writer, write func(io.Writer) error) error {
+	if path == "" {
+		return write(stdout)
 	}
 	var buf bytes.Buffer
-	if err := skriv(&buf); err != nil {
+	if err := write(&buf); err != nil {
 		return err
 	}
-	if err := os.WriteFile(sti, buf.Bytes(), 0o644); err != nil {
-		return fmt.Errorf("skriv %s: %w", sti, err)
+	if err := os.WriteFile(path, buf.Bytes(), 0o644); err != nil {
+		return fmt.Errorf("write %s: %w", path, err)
 	}
-	fmt.Fprintf(logg, "Skrev resultatet til %s\n", sti)
+	fmt.Fprintf(log, "Wrote the result to %s\n", path)
 	return nil
 }
 
-// tallTekst gjør om et tall til tekst, med 0 som tom verdi.
-func tallTekst[N ~uint32 | ~uint64](n N) string {
+// numberText turns a number into text, with 0 as an empty value.
+func numberText[N ~uint32 | ~uint64](n N) string {
 	if n == 0 {
 		return ""
 	}
 	return fmt.Sprint(n)
 }
 
-// brukerID og partyID henter ID-er fra en part, eller tom tekst
-// når parten eller verdien mangler.
-func brukerID(p *register.Party) string {
+// userID and partyID get IDs from a party, or empty text when the party or
+// the value is missing.
+func userID(p *register.Party) string {
 	if p == nil || p.User == nil {
 		return ""
 	}
-	return tallTekst(p.User.UserID)
+	return numberText(p.User.UserID)
 }
 
 func partyID(p *register.Party) string {
 	if p == nil {
 		return ""
 	}
-	return tallTekst(p.PartyID)
+	return numberText(p.PartyID)
 }
 
-func skrivJSON(ut io.Writer, v any) error {
-	enc := json.NewEncoder(ut)
+func writeJSON(out io.Writer, v any) error {
+	enc := json.NewEncoder(out)
 	enc.SetIndent("", "  ")
 	return enc.Encode(v)
 }

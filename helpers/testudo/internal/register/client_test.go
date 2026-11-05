@@ -14,7 +14,7 @@ import (
 	"github.com/Altinn/altinn-platform-validation-tests/helpers/testudo/internal/register/registertest"
 )
 
-func TestQueryPartiesDekoderAlleTyper(t *testing.T) {
+func TestQueryPartiesDecodesAllTypes(t *testing.T) {
 	c := registertest.NewClient(t, func(w http.ResponseWriter, r *http.Request) {
 		urns := registertest.ReadQuery(t, r)
 		if r.URL.Query().Get("fields") != "party,person,org,user,si,sysuser" {
@@ -39,39 +39,39 @@ func TestQueryPartiesDekoderAlleTyper(t *testing.T) {
 		]}`))
 	})
 
-	parter, err := c.QueryParties(context.Background(),
+	parties, err := c.QueryParties(context.Background(),
 		[]register.PartyURN{register.PersonURN("01010112345"), register.OrganizationURN("123456789")},
 		register.FieldParty, register.FieldPerson, register.FieldOrg, register.FieldUser, register.FieldSI, register.FieldSysuser)
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(parter) != 3 {
-		t.Fatalf("parter = %d", len(parter))
+	if len(parties) != 3 {
+		t.Fatalf("parties = %d", len(parties))
 	}
-	p := parter[0]
+	p := parties[0]
 	if p.PartyID != 501 || p.PartyType != register.PartyTypePerson || p.User == nil || p.User.UserID != 20001 ||
 		len(p.User.UserIDs) != 2 || p.Address == nil || p.Address.City != "OSLO" || p.MailingAddress.Address != "Gata 1" ||
 		p.DeletedAt != "" || p.VersionID != 7 {
 		t.Errorf("person = %+v", p)
 	}
-	if o := parter[1]; o.OrganizationIdentifier != "123456789" || o.UnitType != "AS" || o.BusinessAddress.City != "BERGEN" {
+	if o := parties[1]; o.OrganizationIdentifier != "123456789" || o.UnitType != "AS" || o.BusinessAddress.City != "BERGEN" {
 		t.Errorf("org = %+v", o)
 	}
-	if s := parter[2]; s.SystemUserType != "client-party-system-user" || s.Owner == nil || s.Owner.PartyUUID != "p-2" {
-		t.Errorf("systembruker = %+v", s)
+	if s := parties[2]; s.SystemUserType != "client-party-system-user" || s.Owner == nil || s.Owner.PartyUUID != "p-2" {
+		t.Errorf("system user = %+v", s)
 	}
 }
 
-func TestQueryPartiesDelerOppIBatcher(t *testing.T) {
-	var batcher []int
+func TestQueryPartiesSplitsIntoBatches(t *testing.T) {
+	var batches []int
 	c := registertest.NewClient(t, func(w http.ResponseWriter, r *http.Request) {
 		urns := registertest.ReadQuery(t, r)
-		batcher = append(batcher, len(urns))
+		batches = append(batches, len(urns))
 		if r.URL.RawQuery != "" {
-			t.Errorf("uten felt skal fields utelates: %q", r.URL.RawQuery)
+			t.Errorf("without fields, the fields parameter should be left out: %q", r.URL.RawQuery)
 		}
-		if len(batcher) == 2 {
-			// Siste batch: ingen treff.
+		if len(batches) == 2 {
+			// Last batch: no hits.
 			w.WriteHeader(http.StatusNoContent)
 			return
 		}
@@ -86,30 +86,30 @@ func TestQueryPartiesDelerOppIBatcher(t *testing.T) {
 	for i := range urns {
 		urns[i] = register.PartyIDURN(uint32(i + 1))
 	}
-	parter, err := c.QueryParties(context.Background(), urns)
+	parties, err := c.QueryParties(context.Background(), urns)
 	if err != nil {
 		t.Fatal(err)
 	}
-	if fmt.Sprint(batcher) != "[100 50]" || len(parter) != 100 {
-		t.Errorf("batcher = %v, parter = %d", batcher, len(parter))
+	if fmt.Sprint(batches) != "[100 50]" || len(parties) != 100 {
+		t.Errorf("batches = %v, parties = %d", batches, len(parties))
 	}
 }
 
-func TestQueryPartiesTomListeGjoerIngenKall(t *testing.T) {
+func TestQueryPartiesEmptyListMakesNoCalls(t *testing.T) {
 	c := registertest.NewClient(t, func(w http.ResponseWriter, r *http.Request) {
-		t.Error("uventet kall")
+		t.Error("unexpected call")
 	})
-	parter, err := c.QueryParties(context.Background(), nil)
-	if err != nil || len(parter) != 0 {
-		t.Errorf("parter = %v, err = %v", parter, err)
+	parties, err := c.QueryParties(context.Background(), nil)
+	if err != nil || len(parties) != 0 {
+		t.Errorf("parties = %v, err = %v", parties, err)
 	}
 }
 
-func TestSlaaOppIdentifikatorer(t *testing.T) {
+func TestLookupIdentifiers(t *testing.T) {
 	c := registertest.NewClient(t, func(w http.ResponseWriter, r *http.Request) {
 		urns := registertest.ReadQuery(t, r)
 		if len(urns) != 3 {
-			t.Errorf("duplikater ble ikke fjernet: %v", urns)
+			t.Errorf("duplicates were not removed: %v", urns)
 		}
 		w.Write([]byte(`{"data":[
 			{"partyUuid":"a","partyId":1,"personIdentifier":"01010112345"},
@@ -124,15 +124,15 @@ func TestSlaaOppIdentifikatorer(t *testing.T) {
 		t.Errorf("m = %+v", m)
 	}
 	if _, ok := m["99999999999"]; ok {
-		t.Error("ukjent identifikator skal ikke være med")
+		t.Error("unknown identifier should not be included")
 	}
 
 	if _, err := c.LookupIdentifiers(context.Background(), []string{"123"}); !errors.Is(err, errs.Invalid) {
-		t.Errorf("ugyldig identifikator: err = %v", err)
+		t.Errorf("invalid identifier: err = %v", err)
 	}
 }
 
-func TestSlaaOppIdentifikatorerUkjentPart(t *testing.T) {
+func TestLookupIdentifiersUnknownParty(t *testing.T) {
 	c := registertest.NewClient(t, func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte(`{"data":[{"partyUuid":"x","personIdentifier":"22222222222"}]}`))
 	})
@@ -141,7 +141,7 @@ func TestSlaaOppIdentifikatorerUkjentPart(t *testing.T) {
 	}
 }
 
-func TestHentParty(t *testing.T) {
+func TestGetParty(t *testing.T) {
 	c := registertest.NewClient(t, func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodGet || r.URL.Path != "/register/api/v1/access-management/parties/p-1" ||
 			r.URL.Query().Get("fields") != "person.name" {
@@ -158,17 +158,17 @@ func TestHentParty(t *testing.T) {
 	}
 }
 
-func TestRegisterFeil(t *testing.T) {
+func TestRegisterErrors(t *testing.T) {
 	tests := []struct {
-		navn   string
+		name   string
 		status int
 		body   string
-		vil    error
+		want   error
 	}{
 		{"404", http.StatusNotFound, "", errs.NotFound},
 		{"400 problem details", http.StatusBadRequest, `{"title":"Bad request","code":"REG-00001"}`, errs.InvalidResponse},
-		{"ugyldig json", http.StatusOK, "ikke json", errs.InvalidResponse},
-		{"mangler data", http.StatusOK, `{}`, errs.InvalidResponse},
+		{"invalid json", http.StatusOK, "not json", errs.InvalidResponse},
+		{"missing data", http.StatusOK, `{}`, errs.InvalidResponse},
 	}
 	for _, tt := range tests {
 		c := registertest.NewClient(t, func(w http.ResponseWriter, r *http.Request) {
@@ -176,24 +176,24 @@ func TestRegisterFeil(t *testing.T) {
 			w.Write([]byte(tt.body))
 		})
 		_, err := c.QueryParties(context.Background(), []register.PartyURN{register.PartyIDURN(1)})
-		if !errors.Is(err, tt.vil) {
-			t.Errorf("%s: err = %v", tt.navn, err)
+		if !errors.Is(err, tt.want) {
+			t.Errorf("%s: err = %v", tt.name, err)
 		}
 		if tt.status == http.StatusBadRequest && !strings.Contains(err.Error(), "REG-00001") {
-			t.Errorf("%s: problem details mangler i feilen: %v", tt.navn, err)
+			t.Errorf("%s: problem details missing from the error: %v", tt.name, err)
 		}
 	}
 }
 
 func TestPartyUrn(t *testing.T) {
-	for fikk, vil := range map[register.PartyURN]string{
+	for got, want := range map[register.PartyURN]string{
 		register.PartyUUIDURN("abc"):              "urn:altinn:party:uuid:abc",
 		register.UserIDURN(42):                    "urn:altinn:user:id:42",
 		register.UsernameURN("ola"):               "urn:altinn:party:username:ola",
 		register.IDPortenEmailURN("a@example.no"): "urn:altinn:person:idporten-email:a@example.no",
 	} {
-		if string(fikk) != vil {
-			t.Errorf("fikk %q, vil ha %q", fikk, vil)
+		if string(got) != want {
+			t.Errorf("got %q, want %q", got, want)
 		}
 	}
 }

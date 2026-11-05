@@ -2,13 +2,14 @@ package cmd
 
 import "github.com/spf13/cobra"
 
-// newFindCmd samler kommandoene som finner testdata.
+// newFindCmd groups the commands that find test data.
 func newFindCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "find",
-		Short: "Finn testpersoner og virksomheter",
-		Long: `Finn testpersoner og virksomheter. De hentes fra Tenor og beriket med data
-fra Altinn Register, og alle finnes i Register for miljøet i --env.`,
+		Short: "Find test persons and organizations",
+		Long: `Find test persons and organizations. They are fetched from Tenor and enriched
+with data from Altinn Register, and all of them exist in Register for the
+environment in --env.`,
 	}
 	cmd.AddCommand(newPersonsCmd(), newOrganizationsCmd())
 	return cmd

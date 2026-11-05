@@ -1,13 +1,14 @@
-// Package parties finner testpersoner og virksomheter. Kandidatene hentes fra
-// Tenor, og bare de som finnes i Register for miljøet blir med, med parten
-// derfra (som lib/registerEnrichment.ts i frontend).
+// Package parties finds test persons and organizations. The candidates are
+// fetched from Tenor, and only those that exist in Register for the
+// environment are kept, with the party from there (like
+// lib/registerEnrichment.ts in the frontend).
 package parties
 
 import "github.com/Altinn/altinn-platform-validation-tests/helpers/testudo/internal/register"
 
-// registerFelt er feltene som hentes fra Register.
-var registerFelt = []register.Field{register.FieldParty, register.FieldPerson, register.FieldOrg, register.FieldUser}
+// registerFields are the fields fetched from Register.
+var registerFields = []register.Field{register.FieldParty, register.FieldPerson, register.FieldOrg, register.FieldUser}
 
-// maksRegisterRunder er hvor mange ganger det hentes nye kandidater fra Tenor
-// når noen ikke finnes i Register.
-const maksRegisterRunder = 5
+// maxRegisterRounds is how many times new candidates are fetched from Tenor
+// when some do not exist in Register.
+const maxRegisterRounds = 5

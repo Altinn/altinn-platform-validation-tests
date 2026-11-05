@@ -11,25 +11,26 @@ import (
 	"github.com/Altinn/altinn-platform-validation-tests/helpers/testudo/internal/tenor/tenortest"
 )
 
-func TestHentTilretteleggere(t *testing.T) {
+func TestFetchTilretteleggere(t *testing.T) {
 	c := tenortest.AuditorClient(t)
 	revisor, _ := FindRole("revisor")
 
-	v, err := hentTilretteleggere(context.Background(), c, revisor, PersonRole{}, 5)
+	v, err := fetchTilretteleggere(context.Background(), c, revisor, PersonRole{}, 5)
 	if err != nil {
 		t.Fatal(err)
 	}
-	// Revisoren uten daglig leder er filtrert bort, og rekkefølgen er beholdt.
-	if len(v) != 2 || v[0].organisasjonsnummer != tenortest.AuditorWithLeader || v[1].organisasjonsnummer != tenortest.AuditorWithLeader2 {
+	// The revisor without a daglig leder is filtered out, and the order is
+	// kept.
+	if len(v) != 2 || v[0].organizationIdentifier != tenortest.AuditorWithLeader || v[1].organizationIdentifier != tenortest.AuditorWithLeader2 {
 		t.Fatalf("v = %+v", v)
 	}
-	if v[0].rolle != "revisor" || v[0].person != "10000000001" {
-		t.Errorf("første = %+v", v[0])
+	if v[0].role != "revisor" || v[0].person != "10000000001" {
+		t.Errorf("first = %+v", v[0])
 	}
 
-	v, _ = hentTilretteleggere(context.Background(), c, revisor, PersonRole{}, 1)
-	if len(v) != 1 || v[0].organisasjonsnummer != tenortest.AuditorWithLeader {
-		t.Errorf("med antall 1: %+v", v)
+	v, _ = fetchTilretteleggere(context.Background(), c, revisor, PersonRole{}, 1)
+	if len(v) != 1 || v[0].organizationIdentifier != tenortest.AuditorWithLeader {
+		t.Errorf("with count 1: %+v", v)
 	}
 }
 
@@ -42,23 +43,23 @@ func TestFindRole(t *testing.T) {
 	}
 }
 
-func TestTilretteleggerFraKlient(t *testing.T) {
-	md := func(grupper string) tenor.Metadata {
-		return tenor.Metadata{Kildedata: `{"rollegrupper":` + grupper + `}`}
+func TestTilretteleggerFromClient(t *testing.T) {
+	md := func(groups string) tenor.Metadata {
+		return tenor.Metadata{Kildedata: `{"rollegrupper":` + groups + `}`}
 	}
 	tests := []struct {
-		navn, grupper, kode, vil string
+		name, groups, code, want string
 	}{
 		{"REVI", `[{"type":{"kode":"REVI"},"roller":[{"virksomhet":{"organisasjonsnummer":"123456789"}}]}]`, "REVI", "123456789"},
-		{"feil kode", `[{"type":{"kode":"REGN"},"roller":[{"virksomhet":{"organisasjonsnummer":"123456789"}}]}]`, "REVI", ""},
+		{"wrong code", `[{"type":{"kode":"REGN"},"roller":[{"virksomhet":{"organisasjonsnummer":"123456789"}}]}]`, "REVI", ""},
 		{"FFØR", `[{"type":{"kode":"FFØR"},"roller":[{"virksomhet":{"organisasjonsnummer":"123456789"}}]}]`, "FFØR", "123456789"},
-		{"fratrådt", `[{"type":{"kode":"REVI"},"roller":[{"virksomhet":{"organisasjonsnummer":"111111111"},"fratraadt":"J"},
+		{"resigned", `[{"type":{"kode":"REVI"},"roller":[{"virksomhet":{"organisasjonsnummer":"111111111"},"fratraadt":"J"},
 			{"virksomhet":{"organisasjonsnummer":"123456789"},"fratraadt":"N"}]}]`, "REVI", "123456789"},
-		{"tom virksomhet", `[{"type":{"kode":"REVI"},"roller":[{"virksomhet":{}}]}]`, "REVI", ""},
+		{"empty organization", `[{"type":{"kode":"REVI"},"roller":[{"virksomhet":{}}]}]`, "REVI", ""},
 	}
 	for _, tt := range tests {
-		if got := tilretteleggerFraKlient(md(tt.grupper), tt.kode); got != tt.vil {
-			t.Errorf("%s: fikk %q, vil ha %q", tt.navn, got, tt.vil)
+		if got := tilretteleggerFromClient(md(tt.groups), tt.code); got != tt.want {
+			t.Errorf("%s: got %q, want %q", tt.name, got, tt.want)
 		}
 	}
 }

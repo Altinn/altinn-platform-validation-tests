@@ -26,7 +26,7 @@ import (
 	"github.com/Altinn/altinn-platform-validation-tests/helpers/testudo/internal/errs"
 )
 
-var testNoekkel = sync.OnceValue(func() *rsa.PrivateKey {
+var testKey = sync.OnceValue(func() *rsa.PrivateKey {
 	key, err := rsa.GenerateKey(rand.Reader, 2048)
 	if err != nil {
 		panic(err)
@@ -39,30 +39,30 @@ func b64(i *big.Int) string {
 }
 
 func testJWK(key *rsa.PrivateKey, kid string) string {
-	felt := map[string]string{
+	fields := map[string]string{
 		"kty": "RSA",
 		"n":   b64(key.N), "e": b64(big.NewInt(int64(key.E))), "d": b64(key.D),
 		"p": b64(key.Primes[0]), "q": b64(key.Primes[1]),
 	}
 	if kid != "" {
-		felt["kid"] = kid
+		fields["kid"] = kid
 	}
-	b, _ := json.Marshal(felt)
+	b, _ := json.Marshal(fields)
 	return string(b)
 }
 
-// testJWKNoekkel er testnøkkelen som jwk.Key, med kid hvis den ikke er tom.
-func testJWKNoekkel(t *testing.T, kid string) jwk.Key {
+// testJWKKey is the test key as a jwk.Key, with kid if it is not empty.
+func testJWKKey(t *testing.T, kid string) jwk.Key {
 	t.Helper()
-	key, err := ParsePrivateKeyJWK(testJWK(testNoekkel(), kid))
+	key, err := ParsePrivateKeyJWK(testJWK(testKey(), kid))
 	if err != nil {
 		t.Fatal(err)
 	}
 	return key
 }
 
-// eksporter gir RSA-nøkkelen i en jwk.Key.
-func eksporter(t *testing.T, key jwk.Key) *rsa.PrivateKey {
+// exportRSA returns the RSA key inside a jwk.Key.
+func exportRSA(t *testing.T, key jwk.Key) *rsa.PrivateKey {
 	t.Helper()
 	raw, err := jwk.Export[*rsa.PrivateKey](key)
 	if err != nil {
@@ -71,68 +71,68 @@ func eksporter(t *testing.T, key jwk.Key) *rsa.PrivateKey {
 	return raw
 }
 
-// lesGrant verifiserer signaturen og returnerer header og payload.
-func lesGrant(t *testing.T, grant string, pub *rsa.PublicKey) (map[string]any, map[string]any) {
+// readGrant verifies the signature and returns header and payload.
+func readGrant(t *testing.T, grant string, pub *rsa.PublicKey) (map[string]any, map[string]any) {
 	t.Helper()
-	deler := strings.Split(grant, ".")
-	if len(deler) != 3 {
-		t.Fatalf("grant har %d deler", len(deler))
+	parts := strings.Split(grant, ".")
+	if len(parts) != 3 {
+		t.Fatalf("grant has %d parts", len(parts))
 	}
-	sig, _ := base64.RawURLEncoding.DecodeString(deler[2])
-	hash := sha256.Sum256([]byte(deler[0] + "." + deler[1]))
+	sig, _ := base64.RawURLEncoding.DecodeString(parts[2])
+	hash := sha256.Sum256([]byte(parts[0] + "." + parts[1]))
 	if err := rsa.VerifyPKCS1v15(pub, crypto.SHA256, hash[:], sig); err != nil {
-		t.Fatalf("ugyldig signatur: %v", err)
+		t.Fatalf("invalid signature: %v", err)
 	}
 	var header, payload map[string]any
-	h, _ := base64.RawURLEncoding.DecodeString(deler[0])
-	p, _ := base64.RawURLEncoding.DecodeString(deler[1])
+	h, _ := base64.RawURLEncoding.DecodeString(parts[0])
+	p, _ := base64.RawURLEncoding.DecodeString(parts[1])
 	json.Unmarshal(h, &header)
 	json.Unmarshal(p, &payload)
 	return header, payload
 }
 
-func TestMaskinportenTokenOgCache(t *testing.T) {
-	key := testNoekkel()
-	kall := 0
+func TestMaskinportenTokenAndCache(t *testing.T) {
+	key := testKey()
+	calls := 0
 	var srvURL string
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		kall++
+		calls++
 		if r.Method != http.MethodPost || r.Header.Get("Content-Type") != "application/x-www-form-urlencoded" {
-			t.Errorf("metode %s, content-type %q", r.Method, r.Header.Get("Content-Type"))
+			t.Errorf("method %s, content-type %q", r.Method, r.Header.Get("Content-Type"))
 		}
 		r.ParseForm()
 		if r.Form.Get("grant_type") != "urn:ietf:params:oauth:grant-type:jwt-bearer" {
 			t.Errorf("grant_type = %q", r.Form.Get("grant_type"))
 		}
-		header, payload := lesGrant(t, r.Form.Get("assertion"), &key.PublicKey)
-		if header["alg"] != "RS256" || header["typ"] != "JWT" || header["kid"] != "min-kid" {
+		header, payload := readGrant(t, r.Form.Get("assertion"), &key.PublicKey)
+		if header["alg"] != "RS256" || header["typ"] != "JWT" || header["kid"] != "my-kid" {
 			t.Errorf("header = %v", header)
 		}
-		if payload["aud"] != srvURL || payload["iss"] != "klient" || payload["scope"] != "a:les b:skriv" {
+		if payload["aud"] != srvURL || payload["iss"] != "client" || payload["scope"] != "a:read b:write" {
 			t.Errorf("payload = %v", payload)
 		}
 		if jti, err := uuid.Parse(fmt.Sprint(payload["jti"])); err != nil || jti.Version() != 4 {
-			t.Errorf("jti = %v, vil ha UUID v4 (err = %v)", payload["jti"], err)
+			t.Errorf("jti = %v, want UUID v4 (err = %v)", payload["jti"], err)
 		}
 		if _, ok := payload["consumer_org"]; ok {
-			t.Errorf("consumer_org skal ikke være satt: %v", payload)
+			t.Errorf("consumer_org should not be set: %v", payload)
 		}
 		if payload["exp"].(float64)-payload["iat"].(float64) != 60 {
-			t.Errorf("levetid = %v", payload["exp"].(float64)-payload["iat"].(float64))
+			t.Errorf("lifetime = %v", payload["exp"].(float64)-payload["iat"].(float64))
 		}
-		fmt.Fprintf(w, `{"access_token":"token-%d","expires_in":120,"scope":"a:les b:skriv"}`, kall)
+		fmt.Fprintf(w, `{"access_token":"token-%d","expires_in":120,"scope":"a:read b:write"}`, calls)
 	}))
 	defer srv.Close()
 	srvURL = srv.URL
 
 	c, err := NewClient(Config{
-		ClientID: "klient", JWK: testJWKNoekkel(t, "min-kid"), TokenURL: srv.URL,
-	}, "a:les", "b:skriv")
+		ClientID: "client", JWK: testJWKKey(t, "my-kid"), TokenURL: srv.URL,
+	}, "a:read", "b:write")
 	if err != nil {
 		t.Fatal(err)
 	}
-	naa := time.Date(2026, 10, 27, 12, 0, 0, 0, time.UTC)
-	c.naa = func() time.Time { return naa }
+	now := time.Date(2026, 10, 27, 12, 0, 0, 0, time.UTC)
+	c.now = func() time.Time { return now }
 
 	for range 2 {
 		tok, err := c.Token(context.Background())
@@ -144,27 +144,27 @@ func TestMaskinportenTokenOgCache(t *testing.T) {
 		}
 	}
 
-	// 120s levetid, fornyes 30s før: fortsatt cachet etter 89s, nytt etter 90s.
-	naa = naa.Add(89 * time.Second)
+	// 120s lifetime, renewed 30s before: still cached after 89s, new after 90s.
+	now = now.Add(89 * time.Second)
 	if tok, _ := c.Token(context.Background()); tok != "token-1" {
-		t.Errorf("etter 89s: token = %q", tok)
+		t.Errorf("after 89s: token = %q", tok)
 	}
-	naa = naa.Add(time.Second)
+	now = now.Add(time.Second)
 	if tok, _ := c.Token(context.Background()); tok != "token-2" {
-		t.Errorf("etter 90s: token = %q", tok)
+		t.Errorf("after 90s: token = %q", tok)
 	}
-	if kall != 2 {
-		t.Errorf("kall = %d", kall)
+	if calls != 2 {
+		t.Errorf("calls = %d", calls)
 	}
 }
 
-func TestMaskinportenConsumerOrgOgUtenKid(t *testing.T) {
-	key := testNoekkel()
+func TestMaskinportenConsumerOrgAndNoKid(t *testing.T) {
+	key := testKey()
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		r.ParseForm()
-		header, payload := lesGrant(t, r.Form.Get("assertion"), &key.PublicKey)
+		header, payload := readGrant(t, r.Form.Get("assertion"), &key.PublicKey)
 		if _, ok := header["kid"]; ok {
-			t.Errorf("kid skal ikke være satt: %v", header)
+			t.Errorf("kid should not be set: %v", header)
 		}
 		if payload["consumer_org"] != "991825827" {
 			t.Errorf("consumer_org = %v", payload["consumer_org"])
@@ -174,68 +174,68 @@ func TestMaskinportenConsumerOrgOgUtenKid(t *testing.T) {
 	defer srv.Close()
 
 	c, _ := NewClient(Config{
-		ClientID: "klient", JWK: testJWKNoekkel(t, ""), ConsumerOrg: "991825827", TokenURL: srv.URL,
+		ClientID: "client", JWK: testJWKKey(t, ""), ConsumerOrg: "991825827", TokenURL: srv.URL,
 	}, "x")
 	if _, err := c.Token(context.Background()); err != nil {
 		t.Fatal(err)
 	}
 }
 
-func TestMaskinportenFeilsvar(t *testing.T) {
+func TestMaskinportenErrorResponse(t *testing.T) {
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte(`{"error":"invalid_scope","error_description":"Scope finnes ikke"}`))
+		w.Write([]byte(`{"error":"invalid_scope","error_description":"Scope does not exist"}`))
 	}))
 	defer srv.Close()
 
 	c, _ := NewClient(Config{
-		ClientID: "klient", JWK: testJWKNoekkel(t, ""), TokenURL: srv.URL,
+		ClientID: "client", JWK: testJWKKey(t, ""), TokenURL: srv.URL,
 	}, "x")
 	_, err := c.Token(context.Background())
-	if !errors.Is(err, errs.InvalidResponse) || !strings.Contains(err.Error(), "invalid_scope: Scope finnes ikke") {
+	if !errors.Is(err, errs.InvalidResponse) || !strings.Contains(err.Error(), "invalid_scope: Scope does not exist") {
 		t.Errorf("err = %v", err)
 	}
 }
 
-func TestNewMaskinportenClientValiderer(t *testing.T) {
+func TestNewMaskinportenClientValidates(t *testing.T) {
 	if _, err := NewClient(Config{ClientID: "k"}, "x"); !errors.Is(err, errs.Invalid) {
-		t.Errorf("uten JWK: %v", err)
+		t.Errorf("without JWK: %v", err)
 	}
-	if _, err := NewClient(Config{ClientID: "k", JWK: testJWKNoekkel(t, "")}); !errors.Is(err, errs.Invalid) {
-		t.Errorf("uten scope: %v", err)
+	if _, err := NewClient(Config{ClientID: "k", JWK: testJWKKey(t, "")}); !errors.Is(err, errs.Invalid) {
+		t.Errorf("without scope: %v", err)
 	}
 }
 
-func TestParsePrivatNoekkelJWK(t *testing.T) {
-	key := testNoekkel()
+func TestParsePrivateKeyJWK(t *testing.T) {
+	key := testKey()
 	got, err := ParsePrivateKeyJWK(testJWK(key, "kid-1"))
 	if err != nil {
 		t.Fatal(err)
 	}
-	if kid, _ := got.KeyID(); kid != "kid-1" || !eksporter(t, got).Equal(key) {
-		t.Errorf("kid = %q, lik = %v", kid, eksporter(t, got).Equal(key))
+	if kid, _ := got.KeyID(); kid != "kid-1" || !exportRSA(t, got).Equal(key) {
+		t.Errorf("kid = %q, equal = %v", kid, exportRSA(t, got).Equal(key))
 	}
 
 	ec, _ := ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
 	ecJWK, _ := jwk.Import[jwk.Key](ec)
 	ecJSON, _ := json.Marshal(ecJWK)
-	offentlig, _ := jwk.Import[jwk.Key](&key.PublicKey)
-	offentligJSON, _ := json.Marshal(offentlig)
+	public, _ := jwk.Import[jwk.Key](&key.PublicKey)
+	publicJSON, _ := json.Marshal(public)
 
-	for navn, s := range map[string]string{
-		"ikke json":        "{",
-		"EC-nøkkel":        string(ecJSON),
-		"offentlig nøkkel": string(offentligJSON),
-		"feil d":           strings.Replace(testJWK(key, "k"), `"d":"`+b64(key.D)+`"`, `"d":"`+b64(big.NewInt(12345))+`"`, 1),
+	for name, s := range map[string]string{
+		"not json":   "{",
+		"EC key":     string(ecJSON),
+		"public key": string(publicJSON),
+		"wrong d":    strings.Replace(testJWK(key, "k"), `"d":"`+b64(key.D)+`"`, `"d":"`+b64(big.NewInt(12345))+`"`, 1),
 	} {
 		if _, err := ParsePrivateKeyJWK(s); !errors.Is(err, errs.Invalid) {
-			t.Errorf("%s: err = %v", navn, err)
+			t.Errorf("%s: err = %v", name, err)
 		}
 	}
 }
 
-func TestMaskinportenConfigFra(t *testing.T) {
-	key := testNoekkel()
+func TestMaskinportenConfigFrom(t *testing.T) {
+	key := testKey()
 
 	cfg, err := ConfigFrom(func(k string) string {
 		return map[string]string{"MASKINPORTEN_CLIENT_ID": "c", "MASKINPORTEN_JWK": testJWK(key, "jwk-kid")}[k]
@@ -243,17 +243,17 @@ func TestMaskinportenConfigFra(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if kid, _ := cfg.JWK.KeyID(); cfg.ClientID != "c" || kid != "jwk-kid" || !eksporter(t, cfg.JWK).Equal(key) {
+	if kid, _ := cfg.JWK.KeyID(); cfg.ClientID != "c" || kid != "jwk-kid" || !exportRSA(t, cfg.JWK).Equal(key) {
 		t.Errorf("cfg = %+v", cfg)
 	}
 
-	for navn, env := range map[string]map[string]string{
-		"uten client id": {"MASKINPORTEN_JWK": testJWK(key, "k")},
-		"uten jwk":       {"MASKINPORTEN_CLIENT_ID": "c"},
-		"ugyldig jwk":    {"MASKINPORTEN_CLIENT_ID": "c", "MASKINPORTEN_JWK": "{"},
+	for name, env := range map[string]map[string]string{
+		"without client id": {"MASKINPORTEN_JWK": testJWK(key, "k")},
+		"without jwk":       {"MASKINPORTEN_CLIENT_ID": "c"},
+		"invalid jwk":       {"MASKINPORTEN_CLIENT_ID": "c", "MASKINPORTEN_JWK": "{"},
 	} {
 		if _, err := ConfigFrom(func(k string) string { return env[k] }); !errors.Is(err, errs.Invalid) {
-			t.Errorf("%s: err = %v", navn, err)
+			t.Errorf("%s: err = %v", name, err)
 		}
 	}
 }

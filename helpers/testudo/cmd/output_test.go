@@ -12,107 +12,107 @@ import (
 	"github.com/Altinn/altinn-platform-validation-tests/helpers/testudo/internal/errs"
 )
 
-type testRad struct{ a, b string }
+type testRow struct{ a, b string }
 
-var testKolonner = []kolonne[testRad]{
-	{navn: "a", verdi: func(r testRad) string { return r.a }},
-	{navn: "b", verdi: func(r testRad) string { return r.b }},
+var testColumns = []column[testRow]{
+	{name: "a", value: func(r testRow) string { return r.a }},
+	{name: "b", value: func(r testRow) string { return r.b }},
 }
 
-func TestEffektivtFormat(t *testing.T) {
+func TestEffectiveFormat(t *testing.T) {
 	tests := []struct {
 		format string
 		json   bool
-		vil    string
+		want   string
 	}{
-		{"", false, formatTekst},
+		{"", false, formatText},
 		{"", true, formatJSON},
 		{"csv", true, formatCSV},
-		{"text", true, formatTekst},
+		{"text", true, formatText},
 	}
 	for _, tt := range tests {
-		if got := (utskriftValg{format: tt.format}).effektivtFormat(tt.json); got != tt.vil {
-			t.Errorf("%+v: fikk %q, vil ha %q", tt, got, tt.vil)
+		if got := (outputOptions{format: tt.format}).effectiveFormat(tt.json); got != tt.want {
+			t.Errorf("%+v: got %q, want %q", tt, got, tt.want)
 		}
 	}
 }
 
-func TestValiderUtskrift(t *testing.T) {
-	standard := []string{"a"}
+func TestValidateOutput(t *testing.T) {
+	defaults := []string{"a"}
 	tests := []struct {
-		navn    string
-		v       utskriftValg
-		ugyldig string
+		name    string
+		o       outputOptions
+		invalid string
 	}{
-		{"tekst", utskriftValg{}, ""},
-		{"csv med standard", utskriftValg{format: "csv"}, ""},
-		{"csv med valgte kolonner", utskriftValg{format: "csv", kolonner: "a,b"}, ""},
-		{"ukjent format", utskriftValg{format: "xml"}, "ukjent --format"},
-		{"kolonner uten csv", utskriftValg{kolonner: "a"}, "bare med --format csv"},
-		{"ukjent kolonne", utskriftValg{format: "csv", kolonner: "a,c"}, `ukjent kolonne "c", bruk en av a,b`},
+		{"text", outputOptions{}, ""},
+		{"csv with defaults", outputOptions{format: "csv"}, ""},
+		{"csv with selected columns", outputOptions{format: "csv", columns: "a,b"}, ""},
+		{"unknown format", outputOptions{format: "xml"}, "unknown --format"},
+		{"columns without csv", outputOptions{columns: "a"}, "only works with --format csv"},
+		{"unknown column", outputOptions{format: "csv", columns: "a,c"}, `unknown column "c", use one of a,b`},
 	}
 	for _, tt := range tests {
-		err := validerUtskrift(tt.v, false, testKolonner, standard)
-		if tt.ugyldig == "" {
+		err := validateOutput(tt.o, false, testColumns, defaults)
+		if tt.invalid == "" {
 			if err != nil {
-				t.Errorf("%s: %v", tt.navn, err)
+				t.Errorf("%s: %v", tt.name, err)
 			}
 			continue
 		}
-		if !errors.Is(err, errs.Invalid) || !strings.Contains(err.Error(), tt.ugyldig) {
-			t.Errorf("%s: err = %v", tt.navn, err)
+		if !errors.Is(err, errs.Invalid) || !strings.Contains(err.Error(), tt.invalid) {
+			t.Errorf("%s: err = %v", tt.name, err)
 		}
 	}
 }
 
-func TestSkrivCSV(t *testing.T) {
-	kolonner, err := velgKolonner(testKolonner, " b , a", nil)
+func TestWriteCSV(t *testing.T) {
+	columns, err := selectColumns(testColumns, " b , a", nil)
 	if err != nil {
 		t.Fatal(err)
 	}
 	var buf bytes.Buffer
-	hoppetOver, err := skrivCSV(&buf, []testRad{{"1", "x"}, {"2", ""}, {"med,komma", "y"}}, kolonner)
+	skipped, err := writeCSV(&buf, []testRow{{"1", "x"}, {"2", ""}, {"with,comma", "y"}}, columns)
 	if err != nil {
 		t.Fatal(err)
 	}
-	if hoppetOver != 1 {
-		t.Errorf("hoppetOver = %d", hoppetOver)
+	if skipped != 1 {
+		t.Errorf("skipped = %d", skipped)
 	}
-	if buf.String() != "b,a\nx,1\ny,\"med,komma\"\n" {
+	if buf.String() != "b,a\nx,1\ny,\"with,comma\"\n" {
 		t.Errorf("csv = %q", buf.String())
 	}
 }
 
-func TestMedUtFil(t *testing.T) {
-	var stdout, logg bytes.Buffer
-	skriv := func(ut io.Writer) error { _, err := ut.Write([]byte("innhold")); return err }
+func TestWithOutFile(t *testing.T) {
+	var stdout, log bytes.Buffer
+	write := func(out io.Writer) error { _, err := out.Write([]byte("content")); return err }
 
-	if err := medUtFil("", &stdout, &logg, skriv); err != nil || stdout.String() != "innhold" {
+	if err := withOutFile("", &stdout, &log, write); err != nil || stdout.String() != "content" {
 		t.Errorf("stdout = %q, err = %v", stdout.String(), err)
 	}
 
-	sti := filepath.Join(t.TempDir(), "ut.csv")
+	path := filepath.Join(t.TempDir(), "out.csv")
 	stdout.Reset()
-	if err := medUtFil(sti, &stdout, &logg, skriv); err != nil {
+	if err := withOutFile(path, &stdout, &log, write); err != nil {
 		t.Fatal(err)
 	}
-	if b, _ := os.ReadFile(sti); string(b) != "innhold" || stdout.Len() != 0 {
-		t.Errorf("fil = %q, stdout = %q", b, stdout.String())
+	if b, _ := os.ReadFile(path); string(b) != "content" || stdout.Len() != 0 {
+		t.Errorf("file = %q, stdout = %q", b, stdout.String())
 	}
-	if !strings.Contains(logg.String(), "Skrev resultatet til "+sti) {
-		t.Errorf("logg = %q", logg.String())
+	if !strings.Contains(log.String(), "Wrote the result to "+path) {
+		t.Errorf("log = %q", log.String())
 	}
 
-	// Feil underveis gir ingen fil.
-	feilSti := filepath.Join(t.TempDir(), "feil.csv")
-	err := medUtFil(feilSti, &stdout, &logg, func(ut io.Writer) error {
-		ut.Write([]byte("halv"))
+	// An error along the way leaves no file.
+	failPath := filepath.Join(t.TempDir(), "fail.csv")
+	err := withOutFile(failPath, &stdout, &log, func(out io.Writer) error {
+		out.Write([]byte("half"))
 		return errors.New("boom")
 	})
 	if err == nil {
-		t.Fatal("ventet feil")
+		t.Fatal("expected an error")
 	}
-	if _, err := os.Stat(feilSti); !os.IsNotExist(err) {
-		t.Errorf("fil ble skrevet selv om kjøringen feilet: %v", err)
+	if _, err := os.Stat(failPath); !os.IsNotExist(err) {
+		t.Errorf("file was written although the run failed: %v", err)
 	}
 }
