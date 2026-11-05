@@ -1,6 +1,6 @@
 module github.com/Altinn/altinn-platform-validation-tests/helpers/testudo
 
-go 1.26.10
+go 1.27.0
 
 require (
 	github.com/google/uuid v1.6.0
