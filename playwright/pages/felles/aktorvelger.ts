@@ -3,6 +3,13 @@ import { expect, Locator, Page } from "@playwright/test";
 import { Sprak } from "../../config/sprak";
 import { REDIRECT_TIMEOUT } from "./navigasjon";
 
+// Fra AccountSelector i @altinn/altinn-components.
+const AKTORLISTE_OVERSKRIFT: Record<Sprak, string> = {
+    [Sprak.Bokmaal]: "Hvem vil du bruke Altinn på vegne av?",
+    [Sprak.Nynorsk]: "Kven vil du bruke Altinn på vegner av?",
+    [Sprak.Engelsk]: "Who do you want to use Altinn on behalf of?",
+};
+
 /**
  * Aktørvelgeren som åpner seg etter innlogging når brukeren kan representere flere
  * aktører. Etter mønster fra `selectActor` i access-management-frontend sine
@@ -15,11 +22,8 @@ export class AktorvelgerPom {
     readonly aktorKnapp: Locator;
 
     constructor(private page: Page, readonly sprak: Sprak) {
-        // Rett etter innlogging er aktørlisten en egen side med overskriften som h1, ellers en
-        // dialog. Overskriften følger profilspråket, som ikke er satt ennå ved innlogging.
-        const overskrift = page.getByRole("heading", {
-            name: /^(Hvem vil du bruke Altinn på vegne av\?|Kven vil du bruke Altinn på vegner av\?|Who do you want to use Altinn on behalf of\?)$/,
-        });
+        // Rett etter innlogging er aktørlisten en egen side med overskriften som h1, ellers en dialog.
+        const overskrift = page.getByRole("heading", { name: AKTORLISTE_OVERSKRIFT[sprak], exact: true });
         this.aktorliste = page.getByRole("dialog").or(page.getByRole("main").filter({ has: overskrift })).first();
         this.aktorKnapp = page
             .getByRole("banner")
