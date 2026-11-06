@@ -1,17 +1,20 @@
-# K6: arbeidsregler
+# K6: working rules
 
-Les [repoets README](../README.md#important-patterns) for struktur, hjelpere og testmønstre. Bruk [tjenestedelegeringens README](api/tests/access-management/service-owner/connections/README.md) for konkrete eksempler på setup, CSV-data, `lazy()` og opprydding.
+Read [ADR 0001: How we write K6 tests](../docs/adr/0001-how-we-write-k6-tests.md) before writing or changing a test.
 
-- Bruk `setup()` til miljøvalidering og CSV-data via `helpers.js`. Velg rader med `getItemFromList()`; ikke tell iterasjoner selv eller sett antallet ut fra CSV-lengden. Fordel uavhengige rader med `segmentData(data, getNumberOfVUs())` når flere VU-er endrer tilstand.
-- `fetchTestData()` leser som standard fra GitHub `main`, ikke lokale filer.
-- Samle delt setup, klienter, tokenvalg, request-bygging og opprydding i testområdets `common.js` (eller eksisterende `commons.js`). Hold scenarioet synlig i testfilen.
-- Opprett klienter og token-generator med `lazy()` på modulnivå; gjenbruk per VU og sett token-options for aktuell rad før API-kall. Options erstattes, så ta med nødvendige scopes.
-- Klienter skal være enkle og følge Swagger/OpenAPI. Bruk eksisterende builders for forespørsler og token-options; ingen checks eller testflyt i klientene.
-- Bare building blocks sjekker HTTP-status og generell responsgyldighet i API-testflyten. Legg mesteparten av gjenbrukbare domenesjekker i `api/domain-checks/`.
-- Functional: 1 VU / 1 iterasjon; lag separate tester for tilfeller som alltid skal dekkes. Dette presiserer README-ens råd om flere iterasjoner for å dekke en fixture. Smoke: flest mulig iterasjoner innen varigheten; antall VU-er må avklares, ikke anta 3.
-- Ved kodeendringer: kjør relevante lint-/typesjekker (`npm run lint`, `npm run typecheck`). Hold Playwright utenfor K6-oppgaver.
+Read the [repo README](../README.md#important-patterns) for structure, helpers and test patterns. Use the [service delegation README](api/tests/access-management/service-owner/connections/README.md) for concrete examples of setup, CSV data, `lazy()` and cleanup.
 
-## Maler
+- Use `setup()` for environment validation and CSV data via `helpers.js`. Pick rows with `getItemFromList()`; don't count iterations yourself or derive the count from the CSV length. Split independent rows with `segmentData(data, getNumberOfVUs())` when several VUs change state.
+- `fetchTestData()` reads from GitHub `main` by default, not from local files.
+- Put shared setup, clients, token selection, request building and cleanup in the test area's `common.js` (or an existing `commons.js`). Keep the scenario visible in the test file.
+- Create clients and the token generator with `lazy()` at module level; reuse them per VU and set the token options for the current row before calling the API. Options are replaced, so include the scopes you need.
+- Clients should be simple and follow Swagger/OpenAPI. Use the existing builders for requests and token options; no checks or test flow in the clients.
+- Only building blocks check HTTP status and general response validity in the API test flow. Put most reusable domain checks in `api/domain-checks/`.
+- Functional: 1 VU / 1 iteration; write separate tests for cases that must always be covered. This refines the README's advice about several iterations to cover a fixture. Smoke: as many iterations as possible within the duration; the number of VUs must be agreed, don't assume 3.
+- When changing code: run the relevant lint and type checks (`npm run lint`, `npm run typecheck`). Keep Playwright out of K6 tasks.
+- Write identifiers and comments in English. Use Norwegian only where it makes sense for the domain, for example `newTenorClient`, not `nyTenorKlient`.
 
-- Tjenestedelegering til [person](api/tests/access-management/service-owner/connections/resource-delegation-to-person.js) og [organisasjon](api/tests/access-management/service-owner/connections/resource-delegation-to-organization.js), med delt [common.js](api/tests/access-management/service-owner/connections/common.js): mal for scenarioer, builders, building blocks, domain checks og `teardown()`. Disse bruker én VU; segmenter data før flere VU-er brukes.
-- [Access packages: user-to-user](api/tests/access-management-bff/access-packages/user-to-user.js): eksempel på CSV-segmentering per VU.
+## Templates
+
+- Service delegation to a [person](api/tests/access-management/service-owner/connections/resource-delegation-to-person.js) and an [organization](api/tests/access-management/service-owner/connections/resource-delegation-to-organization.js), with a shared [common.js](api/tests/access-management/service-owner/connections/common.js): template for scenarios, builders, building blocks, domain checks and `teardown()`. These use one VU; segment the data before using more VUs.
+- [Access packages: user-to-user](api/tests/access-management-bff/access-packages/user-to-user.js): example of CSV segmentation per VU.
