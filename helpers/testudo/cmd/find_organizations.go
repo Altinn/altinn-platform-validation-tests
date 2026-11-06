@@ -232,8 +232,8 @@ underenheter, or with --subunits, the hovedenheter.`,
 		"Print as JSON, with the parties from Register",
 	)
 	cmd.Flags().StringVar(
-		&opts.env, "env", "tt02",
-		"Environment: tt02, at22, at23, yt01 (section in the config file)",
+		&opts.env, "env", defaultEnv,
+		"Environment: at22, at23, tt02 or yt01 (section in the config file)",
 	)
 	addOutputFlags(cmd, &opts.output, defaultOrganizationColumns)
 

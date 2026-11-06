@@ -17,6 +17,7 @@ recipe for each file that is made with testudo today.
 - [find persons](#find-persons)
 - [find organizations](#find-organizations)
 - [Output](#output)
+- [API](#api)
 - [Recipes for K6 setup](#recipes-for-k6-setup)
 - [What testudo does not do](#what-testudo-does-not-do)
 - [Development](#development)
@@ -90,7 +91,7 @@ variables.
 If it cannot find as many as you asked for, it says so with a warning and
 prints the ones it found.
 
-`--env` defaults to `tt02`. Always set it when you make test data, since
+`--env` defaults to `at23`. Always set it when you make test data, since
 the identifiers differ between environments.
 
 ## find persons
@@ -110,7 +111,7 @@ Fetching 3 person(s) from Tenor with KQL: (personstatus:"bosatt") AND (foedselsd
 | Flag | Default | Description |
 | --- | --- | --- |
 | `--count` | `1` | Number of persons. |
-| `--env` | `tt02` | Environment: `at22`, `at23`, `tt02` or `yt01`. |
+| `--env` | `at23` | Environment: `at22`, `at23`, `tt02` or `yt01`. |
 | `--kql` | bosatt, 18 or older | Your own Tenor KQL for Folkeregisteret, for example `personstatus:"bosatt" AND sivilstand:"gift"`. |
 | `--name` | | Prints the name next to the fødselsnummer in text output. |
 | `--format`, `--columns`, `--out`, `--json` | | See [Output](#output). |
@@ -147,7 +148,7 @@ Fetching 3 organizations with the leader from Tenor with KQL: organisasjonsform.
 | Flag | Default | Description |
 | --- | --- | --- |
 | `--count` | `10` | Number of organizations. |
-| `--env` | `tt02` | Environment: `at22`, `at23`, `tt02` or `yt01`. |
+| `--env` | `at23` | Environment: `at22`, `at23`, `tt02` or `yt01`. |
 | `--unit-type` | `AS` | Comma-separated organisasjonsformer: `AS`, `ENK`, `ESEK`, `BRL`, `NUF`. |
 | `--person-role` | the leader | The person has this role in Enhetsregisteret instead, for example `styreleder`, `styremedlem`, `kontaktperson` or `prokurist`. `--help` lists all 21. |
 | `--role` | | Finds tilretteleggere instead: organizations that are `revisor`, `regnskapsfoerer` or `forretningsfoerer` for at least one client. |
@@ -191,6 +192,59 @@ A CSV row is left out when one of its columns has no value, for example a
 person without a user, or a `hovedenhet…` column for an organization that is
 not an underenhet. testudo says how many rows it skipped. Ask for a few more
 rows than you need if the count matters.
+
+## API
+
+`testudo serve` makes the find commands available over HTTP. Each command is
+an endpoint, and its flags are query parameters with the same names:
+
+| Endpoint | Same as | Query parameters |
+| --- | --- | --- |
+| `GET /find/persons` | `testudo find persons` | `count`, `kql`, `name`, `json`, `env`, `format`, `columns` |
+| `GET /find/organizations` | `testudo find organizations` | `count`, `unit-type`, `min-subunits`, `subunits`, `orgno`, `role`, `person-role`, `json`, `env`, `format`, `columns` |
+
+```bash
+testudo serve                  # listens on localhost:8080
+testudo serve --addr :8080     # listens on all network interfaces
+```
+
+```bash
+curl "localhost:8080/find/persons?env=at23&count=3"
+curl "localhost:8080/find/persons?env=at23&count=20&columns=personIdentifier,userId,partyUuid"
+curl "localhost:8080/find/organizations?env=at23&count=10&unit-type=ENK&columns=organizationIdentifier,ssn,userId"
+curl "localhost:8080/find/organizations?env=at23&count=5&subunits&columns=organizationIdentifier,hovedenhetOrganizationIdentifier"
+```
+
+The parameters work as the flags do, with these differences:
+
+- The response is **CSV by default**, with the command's default columns,
+  while the command prints text by default. Use `format=json` (or `json`) or
+  `format=text` for the others.
+- Lists can be comma-separated or repeated: `unit-type=AS,ENK` and
+  `unit-type=AS&unit-type=ENK` are the same.
+- A boolean without a value is true, as a flag is: `?subunits` is
+  `?subunits=true`.
+- `out` is not available. An unknown parameter is an error, so a misspelled
+  one is not silently ignored.
+
+| Status | When |
+| --- | --- |
+| `200` | The result, as `text/csv`, `application/json` or `text/plain`. |
+| `400` | Invalid parameters, or an environment that is not configured. |
+| `404` | Nothing that exists in Register was found. |
+| `502` | Tenor or Register failed. |
+
+Errors are JSON, for example
+`{"error": "Invalid data: unknown query parameter \"n\", use one of ..."}`.
+Messages about the flags name them as flags, for example `--unit-type`; the
+parameter has the same name without the dashes.
+
+The server uses the configuration in [Configuration](#configuration), and logs
+each request and what it fetched to stderr. Stop it with Ctrl+C.
+
+> [!NOTE]
+> The server answers anyone who can reach it, with your keys. Keep the default
+> `localhost` unless the network around it is closed.
 
 ## Recipes for K6 setup
 
@@ -342,7 +396,7 @@ make fmt      # formats the code
 
 | Folder | Contents |
 | --- | --- |
-| `cmd/` | The commands, their flags and the output (text, JSON, CSV). |
+| `cmd/` | The commands, their flags and the output (text, JSON, CSV). `serve.go` has the API. |
 | `internal/parties/` | Finding persons and organizations: the Tenor queries and the Register lookup. |
 | `internal/tenor/` | Tenor client and KQL helpers. `tenortest/` has fakes for tests. |
 | `internal/register/` | Register client. `registertest/` has fakes for tests. |

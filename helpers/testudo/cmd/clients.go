@@ -16,6 +16,9 @@ import (
 	"github.com/Altinn/altinn-platform-validation-tests/helpers/testudo/internal/tenor"
 )
 
+// defaultEnv is the environment when --env, or env in the API, is not given.
+const defaultEnv = "at23"
+
 // newTenorClient creates a Tenor client with a Maskinporten token, using
 // MASKINPORTEN_CLIENT_ID and MASKINPORTEN_JWK from the configuration.
 func newTenorClient() (*tenor.Client, error) {

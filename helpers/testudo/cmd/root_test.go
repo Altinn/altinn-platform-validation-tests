@@ -4,6 +4,8 @@ import (
 	"bytes"
 	"strings"
 	"testing"
+
+	"github.com/spf13/cobra"
 )
 
 // execute runs testudo with args and returns the error and what it printed.
@@ -24,6 +26,14 @@ func TestSingleDashFlagsAreRejected(t *testing.T) {
 	} {
 		if _, err := execute(args...); err == nil {
 			t.Errorf("%s: expected an error", strings.Join(args, " "))
+		}
+	}
+}
+
+func TestDefaultEnvIsAt23(t *testing.T) {
+	for _, cmd := range []*cobra.Command{newPersonsCmd(), newOrganizationsCmd()} {
+		if got := cmd.Flags().Lookup("env").DefValue; got != "at23" {
+			t.Errorf("%s: --env defaults to %q", cmd.Name(), got)
 		}
 	}
 }
