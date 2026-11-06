@@ -51,10 +51,10 @@ npx -y @azure/static-web-apps-cli deploy \
 if [ -n "${SLACK_WEBHOOK_URL:-}" ]; then
     echo "Sending Slack notification..."
 
-    curl \
-        -s -X POST "$SLACK_WEBHOOK_URL" \
-        -H 'Content-type: application/json' \
-        --data "{\"text\":\"Playwright tests failed, report in: $REPORT_URL\"}"
+    sendSlackNotification \
+        -environment "$ENVIRONMENT" \
+        -report-url "$REPORT_URL" \
+        -playwright-exit "$playwright_exit"
 fi
 
 
