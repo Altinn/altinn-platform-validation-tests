@@ -9,8 +9,8 @@ Tests for the v2 enduser request endpoints that take right keys:
 | `be-om-enkeltrettighet.js` | a person asks an organization for read and write on the resource, the daglig leder approves read only, and the stored request says `PartialApprove` with read approved |
 
 The resource is `ttd-enkeltrettigheter-rightkeys`, provisioned in AT22, AT23
-and TT02 with the same policy, so the right keys are the same everywhere. The
-keys are read from the resource registry in setup, since they are opaque.
+and TT02 with the same policy. A right key is the action name (`read`, `write`,
+and so on); the API resolves it against the resource named in the request.
 
 Validation cases (400 and 403, approving twice, unknown keys) are covered by
 unit tests in Authorization and are not run from here. See
@@ -44,8 +44,8 @@ k6 run K6/api/tests/access-management/enduser/request-v2/be-om-enkeltrettighet.j
 
 ## Setup and teardown
 
-`setup()` loads both fixtures, splits the pairs per VU, reads the right keys and
-has each reachable organization add its person as a rightholder. A request can
+`setup()` loads both fixtures, splits the pairs per VU and has each reachable
+organization add its person as a rightholder. A request can
 only be approved when the person is a rightholder of the organization, and
 arranging that in setup keeps the iteration to the flow being measured. Only the
 pairs the run can draw are set up: the first rows of each VU's slice, as many as
