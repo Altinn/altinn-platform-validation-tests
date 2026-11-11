@@ -33,15 +33,14 @@ the organization. Both files come from Tenor through the `tenor` CLI in
 Register per environment. Rows without a user id are left out, since the token
 needs it for the person to act.
 
-`fetchTestData` reads from `main`, so a fixture that is only on a branch has to
-be pushed and the run pointed at it:
+`fetchTestData` reads from `main`, so until this branch is merged `common.js`
+points at the fixtures on the branch by full URL. Switch it back to the relative
+path when merging. `TEST_DATA_BASE_URL` overrides the base path either way, for
+a local file server or another branch.
 
 ```sh
-TEST_DATA_BRANCH=feat/request-v2-rightkeys k6 run K6/api/tests/access-management/enduser/request-v2/be-om-enkeltrettighet.js
+k6 run K6/api/tests/access-management/enduser/request-v2/be-om-enkeltrettighet.js --iterations 1 --vus 1
 ```
-
-`TEST_DATA_BASE_URL` instead overrides the whole base path, for a local file
-server (`npm run serve` with `USE_LOCAL_TEST_DATA=true`) or another location.
 
 ## Setup and teardown
 

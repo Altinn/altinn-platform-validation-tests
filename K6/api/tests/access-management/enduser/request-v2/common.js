@@ -89,8 +89,11 @@ const ENDUSER_SCOPES = CreateScopeString([
 export function setup() {
     requireEnv(["ENVIRONMENT", "BASE_URL"]);
 
+    // fetchTestData reads from main, where these fixtures are not yet. Read from
+    // the branch until it is merged, then switch to the relative path below.
+    // TODO: replace with "access-management/enduser/request-v2" when merged.
     const base = __ENV.TEST_DATA_BASE_URL
-        ?? "access-management/enduser/request-v2";
+        ?? "https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/feat/request-v2-rightkeys/K6/testdata/access-management/enduser/request-v2";
 
     /** @type {Array<PersonRow>} */
     const persons = fetchTestData(`${base}/persons/${__ENV.ENVIRONMENT}.csv`);
