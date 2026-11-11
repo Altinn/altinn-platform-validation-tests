@@ -2,6 +2,7 @@ import { check } from "k6";
 
 import { RequestV2Client } from "../../../../../clients/access-management/enduser/request-v2/index.js";
 import { RequestDto } from "../../../../../clients/access-management/enduser/request-v2/request-v2.types.js";
+import { logFailedRequest } from "../../../common/log-failed-request.js";
 import { withRetries } from "../../../common/retry.js";
 
 /**
@@ -34,8 +35,7 @@ export function GetDraftRequest(
     });
 
     if (!succeed) {
-        console.log(res.status);
-        console.log(res.body);
+        logFailedRequest(res, "GetDraftRequest");
         return request;
     }
 

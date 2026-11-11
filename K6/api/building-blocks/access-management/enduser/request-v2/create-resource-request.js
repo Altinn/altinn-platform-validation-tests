@@ -2,6 +2,7 @@ import { check } from "k6";
 
 import { RequestV2Client } from "../../../../../clients/access-management/enduser/request-v2/index.js";
 import { RequestDto, RequestedRightKeysDto } from "../../../../../clients/access-management/enduser/request-v2/request-v2.types.js";
+import { logFailedRequest } from "../../../common/log-failed-request.js";
 import { withRetries } from "../../../common/retry.js";
 
 /**
@@ -45,8 +46,7 @@ export function CreateResourceRequest(
     });
 
     if (!succeed) {
-        console.log(res.status);
-        console.log(res.body);
+        logFailedRequest(res, "CreateResourceRequest");
         return request;
     }
 
