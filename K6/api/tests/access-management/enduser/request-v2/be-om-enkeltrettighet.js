@@ -12,10 +12,12 @@
  * 3. User B lists received requests and finds the one from step 2.
  * 4. User B approves read only, on behalf of Organization B, and the request
  * reads back as PartialApprove with read approved.
- * 5. (Cleanup) Organization B removes the connection again, with cascade, so the
+ * 5. The decision point permits User A to read for Organization B.
+ * 6. The decision point does not permit User A to write, although it was asked for.
+ * 7. (Cleanup) Organization B removes the connection again, with cascade, so the
  * right the approval delegated goes with it.
  *
- * Without step 5 the rights would pile up: each iteration delegates read on the
+ * Without step 7 the rights would pile up: each iteration delegates read on the
  * connection and removes nothing, so after enough runs step 4 would only give
  * again what is already there.
  *
@@ -31,8 +33,10 @@ import { ReceivedRequestsV2QueryBuilder, RequestStatusV2 } from "../../../../../
 import { getOptions, pickUnique } from "../../../../../helpers.js";
 import { CreateConnection, DeleteConnection } from "../../../../building-blocks/access-management/enduser/connections/index.js";
 import { ApproveReceivedRequest, CreateResourceRequest, GetReceivedRequests, GetRequest } from "../../../../building-blocks/access-management/enduser/request-v2/index.js";
+import { AuthorizePost } from "../../../../building-blocks/authorization/authorize/post.js";
 import { RequestV2DomainChecks } from "../../../../domain-checks/access-management/enduser/request-v2.js";
-import { getClients, getEnduserOpts, RESOURCE, setup } from "./common.js";
+import { getAuthorizeClient } from "../../../authorization/authorize-client.js";
+import { authorizeRequest, getClients, getEnduserOpts, RESOURCE, setup } from "./common.js";
 
 export { setup };
 
@@ -42,7 +46,9 @@ const requestLabel = { step: "2. User A requests read and write" };
 const getReceivedLabel = { step: "3. User B gets received request" };
 const approveLabel = { step: "4. User B approves read only" };
 const getRequestLabel = { step: "4b. User B reads the request back" };
-const cleanupLabel = { step: "5. Organization B removes the connection" };
+const pdpReadLabel = { step: "5. PDP: User A may read for Organization B" };
+const pdpWriteLabel = { step: "6. PDP: User A may not write for Organization B" };
+const cleanupLabel = { step: "7. Organization B removes the connection" };
 
 export const options = getOptions([
     addConnectionLabel,
@@ -50,6 +56,8 @@ export const options = getOptions([
     getReceivedLabel,
     approveLabel,
     getRequestLabel,
+    pdpReadLabel,
+    pdpWriteLabel,
     cleanupLabel,
 ]);
 
@@ -106,7 +114,7 @@ export default function (data) {
         );
 
         if (!RequestV2DomainChecks.CheckRequestReceived(received, request?.id, "GetReceivedRequests") || request === null) {
-            // Step 5 runs anyway, so the connection does not stay behind.
+            // Step 7 runs anyway, so the connection does not stay behind.
             cleanup(a, b);
             fail("cannot approve: the request from step 2 is not among the ones Organization B received");
         }
@@ -132,7 +140,15 @@ export default function (data) {
         RequestV2DomainChecks.CheckRequestedRightKeys(stored, requestedKeys, "GetRequest");
         RequestV2DomainChecks.CheckApprovedRightKeys(stored, approvedKeys, "GetRequest");
 
-        // Step 5: remove the connection again (B's token).
+        // Steps 5 and 6: ask the decision point, the way a service would when
+        // User A tries to use the right. The stored request only says what was
+        // approved; this says what User A can actually do. Write was asked for
+        // but not approved, so it must not be permitted.
+        const [authorizeClient] = getAuthorizeClient();
+        AuthorizePost(authorizeClient, authorizeRequest(a, b, "read"), "Permit", pdpReadLabel);
+        AuthorizePost(authorizeClient, authorizeRequest(a, b, "write"), "NotApplicable", pdpWriteLabel);
+
+        // Step 7: remove the connection again (B's token).
         cleanup(a, b);
     });
 }

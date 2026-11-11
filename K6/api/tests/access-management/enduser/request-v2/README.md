@@ -48,3 +48,10 @@ Each iteration arranges and cleans up after itself, like `be-om-tilgang.js`:
 the organization adds the person as a connection first, and removes it again
 with cascade at the end, so the right the approval delegated goes with it. The
 right keys are read once in setup from the delegation check.
+
+After the approval the test asks the decision point (`/authorization/api/v1/authorize`)
+whether the person may read and write for the organization, as a service would.
+Read must be `Permit` and write, which was asked for but not approved,
+`NotApplicable`. The decision point sits behind API management, so a run in k8s
+needs the `authorization-subscription-key-<env>` secret. There is none for AT23,
+so the test cannot run there.

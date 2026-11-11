@@ -7,3 +7,6 @@ test_definitions:
         test_type:
           type: smoke
           enabled: true
+        test_run:
+          secrets:
+            - authorization-subscription-key-tt02

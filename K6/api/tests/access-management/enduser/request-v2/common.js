@@ -2,6 +2,7 @@ import { fail } from "k6";
 
 import { ConnectionsClient, GetResourceDelegationCheckQueryBuilder } from "../../../../../clients/access-management/enduser/connections/index.js";
 import { RequestV2Client } from "../../../../../clients/access-management/enduser/request-v2/index.js";
+import { buildAuthorizeRequest, buildXacmlJsonAttributeExternal } from "../../../../../clients/authorization/builders.js";
 import { PersonalTokenBuilder, PersonalTokenGenerator } from "../../../../../common-imports.js";
 import { fetchTestData, lazy, requireEnv } from "../../../../../helpers.js";
 import { AltinnScopes, CreateScopeString } from "../../../../../scopes.js";
@@ -171,4 +172,24 @@ function fetchRightKeys(user) {
     }
 
     return rightKeys;
+}
+
+/**
+ * Builds the XACML request asking whether a person may perform an action on the
+ * resource on behalf of an organization. This is the question a service asks
+ * Altinn when the person tries to use the right, so it is what shows whether the
+ * approval gave exactly what was approved.
+ *
+ * @param {EnduserRow} person The person acting.
+ * @param {EnduserRow} org The row whose organization the person acts for.
+ * @param {string} action The action, e.g. read or write.
+ * @returns {*} The authorization request.
+ */
+export function authorizeRequest(person, org, action) {
+    return buildAuthorizeRequest(action, [
+        buildXacmlJsonAttributeExternal({ attributeId: "urn:altinn:person:identifier-no", value: person.pid }),
+    ], [
+        buildXacmlJsonAttributeExternal({ attributeId: "urn:altinn:resource", value: RESOURCE }),
+        buildXacmlJsonAttributeExternal({ attributeId: "urn:altinn:organization:identifier-no", value: org.orgNo }),
+    ]);
 }
