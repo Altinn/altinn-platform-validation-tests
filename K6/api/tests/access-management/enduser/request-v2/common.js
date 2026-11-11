@@ -1,12 +1,13 @@
 import { fail } from "k6";
 
-import { ConnectionsClient, GetResourceDelegationCheckQueryBuilder } from "../../../../../clients/access-management/enduser/connections/index.js";
+import { ConnectionsClient } from "../../../../../clients/access-management/enduser/connections/index.js";
 import { RequestV2Client } from "../../../../../clients/access-management/enduser/request-v2/index.js";
 import { buildAuthorizeRequest, buildXacmlJsonAttributeExternal } from "../../../../../clients/authorization/builders.js";
+import { ResourceV2Client } from "../../../../../clients/resource-registry/index.js";
 import { PersonalTokenBuilder, PersonalTokenGenerator } from "../../../../../common-imports.js";
 import { fetchTestData, lazy, requireEnv } from "../../../../../helpers.js";
 import { AltinnScopes, CreateScopeString } from "../../../../../scopes.js";
-import { GetResourceDelegationCheck } from "../../../../building-blocks/access-management/enduser/connections/index.js";
+import { ResourceV2GetPolicyRights } from "../../../../building-blocks/resource-registry/resource-v2/index.js";
 
 /**
  * The resource every request in this folder asks for. Provisioned in at22, at23
@@ -72,7 +73,7 @@ export function setup() {
 
     return {
         users,
-        rightKeys: fetchRightKeys(users[0]),
+        rightKeys: fetchRightKeys(),
     };
 }
 
@@ -126,39 +127,35 @@ export function getEnduserOpts(user = null) {
 }
 
 /**
- * Reads the resource's right keys from the delegation check, one per action.
+ * Reads the resource's right keys from the resource registry, one per action.
  *
- * The request endpoints take the key the delegation check reports as
- * `right.key`, a hash issued per right. It is not the action name, and not the
- * `rightKey` the resource registry's policy/rights returns either: both are
- * answered 400 AM.VLD-00054. The Bruno suite reads the keys the same way. The
- * check needs a party to ask for, but the keys do not depend on it, so the
- * first user serves. Read once here rather than per iteration: they are the
+ * The request endpoints take the key `GET /resourceregistry/api/v2/resource/{id}/policy/rights`
+ * reports as `key`, a hash issued per right. That is the same key the delegation
+ * check reports, but v2 of policy/rights is open, so this is how a client that
+ * asks for access finds the keys without being an access manager. It is not the
+ * action name, and not the `rightKey` v1 of the same endpoint returns: both are
+ * answered 400 AM.VLD-00054. The request goes without a token, as an outside
+ * client's would. Read once here rather than per iteration: the keys are the
  * same for every pair, and the iteration should only be the flow being measured.
  *
- * @param {EnduserRow} user The person to ask the delegation check as.
+ * The client's type says the body is `{ rights: [...] }`, but the endpoint
+ * answers with the list itself, so both shapes are read.
+ *
  * @returns {{[action: string]: string}} The right key per action.
  */
-function fetchRightKeys(user) {
-    const { connections, tokenGenerator } = getClients();
+function fetchRightKeys() {
+    const anonymous = { getToken: () => null };
+    const resourceClient = new ResourceV2Client(__ENV.BASE_URL, anonymous);
 
-    tokenGenerator.setTokenGeneratorOptions(getEnduserOpts(user));
-
-    const resourceCheck = GetResourceDelegationCheck(
-        connections,
-        new GetResourceDelegationCheckQueryBuilder()
-            .withParty(user.partyUuid)
-            .withResource(RESOURCE)
-            .build(),
-        { step: "setup-fetch-right-keys" },
-    );
+    const response = ResourceV2GetPolicyRights(resourceClient, RESOURCE, null, { step: "setup-fetch-right-keys" });
+    const rights = /** @type {Array<*>} */ (Array.isArray(response) ? response : response?.rights ?? []);
 
     /** @type {{[action: string]: string}} */
     const rightKeys = {};
 
-    for (const entry of /** @type {Array<*>} */ (resourceCheck?.rights ?? [])) {
-        const action = entry?.right?.action?.value;
-        const key = entry?.right?.key;
+    for (const right of rights) {
+        const action = right?.action?.value;
+        const key = right?.key;
 
         if (action && key) {
             rightKeys[action] = key;

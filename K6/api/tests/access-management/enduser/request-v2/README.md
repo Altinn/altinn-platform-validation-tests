@@ -9,10 +9,11 @@ Tests for the v2 enduser request endpoints that take right keys:
 | `be-om-enkeltrettighet.js` | a person asks an organization for read and write on the resource, the daglig leder approves read only, and the stored request says `PartialApprove` with read approved |
 
 The resource is `ttd-enkeltrettigheter-rightkeys`, provisioned in AT22, AT23
-and TT02 with the same policy. The right keys the request endpoints take are the
-`right.key` hashes the delegation check reports, not the action names and not the
-`rightKey` from the resource registry's policy/rights; setup reads them once from
-the delegation check.
+and TT02 with the same policy. The right keys the request endpoints take are the `key` values from
+`GET /resourceregistry/api/v2/resource/{id}/policy/rights`, which is open. They
+are the same keys the delegation check reports. v1 of policy/rights returns a
+different `rightKey` that the request endpoints reject, and so do action names.
+Setup reads the keys once, without a token, as an outside client would.
 
 Validation cases (400 and 403, approving twice, unknown keys) are covered by
 unit tests in Authorization and are not run from here. See
@@ -47,7 +48,7 @@ k6 run K6/api/tests/access-management/enduser/request-v2/be-om-enkeltrettighet.j
 Each iteration arranges and cleans up after itself, like `be-om-tilgang.js`:
 the organization adds the person as a connection first, and removes it again
 with cascade at the end, so the right the approval delegated goes with it. The
-right keys are read once in setup from the delegation check.
+right keys are read once in setup from the resource registry.
 
 After the approval the test asks the decision point (`/authorization/api/v1/authorize`)
 whether the person may read and write for the organization, as a service would.
