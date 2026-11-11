@@ -1,0 +1,8 @@
+namespace: access-management
+base_dir: K6/api/tests/access-management/enduser/request-v2
+test_definitions:
+  - test_file: be-om-enkeltrettighet.js
+    contexts:
+      - environment: at22
+      - environment: at23
+      - environment: tt02

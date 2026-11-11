@@ -1,0 +1,9 @@
+namespace: access-management
+base_dir: K6/api/tests/access-management/enduser/request-v2
+test_definitions:
+  - test_file: be-om-enkeltrettighet.js
+    contexts:
+      - environment: tt02
+        test_type:
+          type: smoke
+          enabled: true
