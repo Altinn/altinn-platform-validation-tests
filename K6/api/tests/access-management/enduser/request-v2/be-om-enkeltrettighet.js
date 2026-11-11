@@ -1,53 +1,88 @@
-import { fail, group } from "k6";
-import exec from "k6/execution";
+/**
+ * Request single rights on a resource and approve some of them.
+ *
+ * Per iteration two unique users are drawn:
+ * - User A: a person acting for themselves; asks for read and write.
+ * - User B: daglig leder of Organization B; receives the request and approves read only.
+ *
+ * Steps:
+ * 1. (Arrange) Organization B adds User A as a connection, so there is a relation
+ * the request can be made against. Requires pid + last name.
+ * 2. User A asks Organization B for read and write on the resource.
+ * 3. User B lists received requests and finds the one from step 2.
+ * 4. User B approves read only, on behalf of Organization B, and the request
+ * reads back as PartialApprove with read approved.
+ * 5. (Cleanup) Organization B removes the connection again, with cascade, so the
+ * right the approval delegated goes with it.
+ *
+ * Without step 5 the rights would pile up: each iteration delegates read on the
+ * connection and removes nothing, so after enough runs step 4 would only give
+ * again what is already there.
+ *
+ * All calls use personal enduser tokens; the active user's token is swapped
+ * between steps through the shared token generator. The right keys are read in
+ * setup, see common.js.
+ */
 
+import { fail, group } from "k6";
+
+import { CreateConnectionQueryBuilder, DeleteConnectionQueryBuilder } from "../../../../../clients/access-management/enduser/connections/index.js";
 import { ReceivedRequestsV2QueryBuilder, RequestStatusV2 } from "../../../../../clients/access-management/enduser/request-v2/index.js";
-import { getItemFromList, getOptions } from "../../../../../helpers.js";
+import { getOptions, pickUnique } from "../../../../../helpers.js";
+import { CreateConnection, DeleteConnection } from "../../../../building-blocks/access-management/enduser/connections/index.js";
 import { ApproveReceivedRequest, CreateResourceRequest, GetReceivedRequests, GetRequest } from "../../../../building-blocks/access-management/enduser/request-v2/index.js";
 import { RequestV2DomainChecks } from "../../../../domain-checks/access-management/enduser/request-v2.js";
-import { getClients, getEnduserOpts, removeConnections, RESOURCE, setup } from "./common.js";
+import { getClients, getEnduserOpts, RESOURCE, setup } from "./common.js";
 
 export { setup };
 
-const requestLabel = { step: "1. Person requests read and write on the resource" };
-const getReceivedLabel = { step: "2. Daglig leder lists received requests" };
-const approveLabel = { step: "3. Daglig leder approves read only" };
-const getRequestLabel = { step: "4. Daglig leder reads the request back" };
-const removeConnectionLabel = { step: "5. Organization removes the connection" };
+const groupLabel = "0. Request single rights and approve a subset";
+const addConnectionLabel = { step: "1. Organization B adds User A (connection)" };
+const requestLabel = { step: "2. User A requests read and write" };
+const getReceivedLabel = { step: "3. User B gets received request" };
+const approveLabel = { step: "4. User B approves read only" };
+const getRequestLabel = { step: "4b. User B reads the request back" };
+const cleanupLabel = { step: "5. Organization B removes the connection" };
 
 export const options = getOptions([
+    addConnectionLabel,
     requestLabel,
     getReceivedLabel,
     approveLabel,
     getRequestLabel,
-    removeConnectionLabel,
+    cleanupLabel,
 ]);
 
 /**
- * Test: a person asks an organization for some of the rights on a resource, and
- * the daglig leder approves fewer of them than were asked for.
- *
- * One pair per iteration, drawn by __ITER from this VU's slice, so the test
- * scales the way a smoke or breakpoint run expects. The connection the request
- * needs is in place from setup, so the iteration is only the request flow. How
- * many iterations a run gets is set by functional.yaml and smoke.yaml, not here.
- *
- * @param {ReturnType<typeof setup>} data Test data, one slice of pairs per VU.
+ * @param {ReturnType<typeof setup>} data Test data from setup.
  * @returns {void}
  */
 export default function (data) {
-    const { person, org } = getItemFromList(data.pairs[exec.vu.idInTest - 1]);
-    const { requests, tokenGenerator } = getClients();
+    const { connections, requests, tokenGenerator } = getClients();
 
+    // User A (asks, as themselves) and User B (daglig leder of Organization B, approves).
+    const [a, b] = pickUnique(data.users, 2);
     const requestedKeys = [data.rightKeys.read, data.rightKeys.write];
     const approvedKeys = [data.rightKeys.read];
 
-    group("Request single rights and approve a subset", function () {
-        tokenGenerator.setTokenGeneratorOptions(getEnduserOpts(person));
+    group(groupLabel, function () {
+        // Step 1: Organization B adds User A as a connection (B's token).
+        tokenGenerator.setTokenGeneratorOptions(getEnduserOpts(b));
+        CreateConnection(
+            connections,
+            new CreateConnectionQueryBuilder()
+                .withParty(b.orgUuid)
+                .build(),
+            { personIdentifier: a.pid, lastName: a.lastName },
+            addConnectionLabel,
+        );
+
+        // Step 2: User A asks Organization B for read and write (A's token).
+        tokenGenerator.setTokenGeneratorOptions(getEnduserOpts(a));
         const request = CreateResourceRequest(
             requests,
-            person.partyUuid,
-            org.orgUuid,
+            a.partyUuid,
+            b.orgUuid,
             RESOURCE,
             { requestedRightKeys: requestedKeys },
             requestLabel,
@@ -56,12 +91,13 @@ export default function (data) {
         RequestV2DomainChecks.CheckRequestStatus(request, RequestStatusV2.Pending, "CreateResourceRequest");
         RequestV2DomainChecks.CheckRequestedRightKeys(request, requestedKeys, "CreateResourceRequest");
 
-        tokenGenerator.setTokenGeneratorOptions(getEnduserOpts(org));
+        // Step 3: User B lists received requests and finds the new one (B's token).
+        tokenGenerator.setTokenGeneratorOptions(getEnduserOpts(b));
         const received = GetReceivedRequests(
             requests,
             new ReceivedRequestsV2QueryBuilder()
-                .withParty(org.orgUuid)
-                .withFrom(person.partyUuid)
+                .withParty(b.orgUuid)
+                .withFrom(a.partyUuid)
                 .withStatus([RequestStatusV2.Pending])
                 .build(),
             null,
@@ -69,16 +105,16 @@ export default function (data) {
             getReceivedLabel,
         );
 
-        // Nothing below says anything without the request to approve. Ending the
-        // iteration here leaves the request pending, which blocks nothing: the
-        // next iteration on the pair makes a new one.
         if (!RequestV2DomainChecks.CheckRequestReceived(received, request?.id, "GetReceivedRequests") || request === null) {
-            fail("cannot approve: the request is not among the ones the organization received");
+            // Step 5 runs anyway, so the connection does not stay behind.
+            cleanup(a, b);
+            fail("cannot approve: the request from step 2 is not among the ones Organization B received");
         }
 
+        // Step 4: User B approves read only, on behalf of Organization B.
         const approved = ApproveReceivedRequest(
             requests,
-            org.orgUuid,
+            b.orgUuid,
             request.id,
             { rightKeys: approvedKeys },
             approveLabel,
@@ -90,21 +126,37 @@ export default function (data) {
         // Read back rather than trusting the echo: the approve response and the
         // stored request are built by different code, and the stored one is what
         // the portal shows.
-        const stored = GetRequest(requests, org.orgUuid, request.id, getRequestLabel);
+        const stored = GetRequest(requests, b.orgUuid, request.id, getRequestLabel);
 
         RequestV2DomainChecks.CheckRequestStatus(stored, RequestStatusV2.PartialApprove, "GetRequest");
         RequestV2DomainChecks.CheckRequestedRightKeys(stored, requestedKeys, "GetRequest");
         RequestV2DomainChecks.CheckApprovedRightKeys(stored, approvedKeys, "GetRequest");
+
+        // Step 5: remove the connection again (B's token).
+        cleanup(a, b);
     });
 }
 
 /**
- * Removes the connections setup made, and with them the rights the approvals
- * delegated.
+ * Organization B removes the connection to User A, with cascade, so the right
+ * the approval delegated goes with it and the iteration leaves nothing behind.
  *
- * @param {ReturnType<typeof setup>} data Test data, one slice of pairs per VU.
+ * @param {import("./common.js").EnduserRow} a User A, the person who asked.
+ * @param {import("./common.js").EnduserRow} b User B, daglig leder of Organization B.
  * @returns {void}
  */
-export function teardown(data) {
-    removeConnections(data, removeConnectionLabel);
+function cleanup(a, b) {
+    const { connections, tokenGenerator } = getClients();
+
+    tokenGenerator.setTokenGeneratorOptions(getEnduserOpts(b));
+    DeleteConnection(
+        connections,
+        new DeleteConnectionQueryBuilder()
+            .withParty(b.orgUuid)
+            .withFrom(b.orgUuid)
+            .withTo(a.partyUuid)
+            .withCascade(true)
+            .build(),
+        cleanupLabel,
+    );
 }

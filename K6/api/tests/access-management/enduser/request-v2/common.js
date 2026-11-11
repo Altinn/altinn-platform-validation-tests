@@ -1,17 +1,16 @@
 import { fail } from "k6";
-import exec from "k6/execution";
 
-import { ConnectionsClient, CreateConnectionQueryBuilder, DeleteConnectionQueryBuilder, GetResourceDelegationCheckQueryBuilder } from "../../../../../clients/access-management/enduser/connections/index.js";
+import { ConnectionsClient, GetResourceDelegationCheckQueryBuilder } from "../../../../../clients/access-management/enduser/connections/index.js";
 import { RequestV2Client } from "../../../../../clients/access-management/enduser/request-v2/index.js";
 import { PersonalTokenBuilder, PersonalTokenGenerator } from "../../../../../common-imports.js";
-import { fetchTestData, getNumberOfVUs, lazy, requireEnv, segmentData } from "../../../../../helpers.js";
+import { fetchTestData, lazy, requireEnv } from "../../../../../helpers.js";
 import { AltinnScopes, CreateScopeString } from "../../../../../scopes.js";
-import { CreateConnection, DeleteConnection, GetResourceDelegationCheck } from "../../../../building-blocks/access-management/enduser/connections/index.js";
+import { GetResourceDelegationCheck } from "../../../../building-blocks/access-management/enduser/connections/index.js";
 
 /**
  * The resource every request in this folder asks for. Provisioned in at22, at23
- * and tt02 with the same policy, so its right keys are the same in every
- * environment. Every action in it is delegable for priv, dagl and seln.
+ * and tt02 with the same policy. Every action in it is delegable for priv, dagl
+ * and seln.
  */
 export const RESOURCE = "ttd-enkeltrettigheter-rightkeys";
 
@@ -28,156 +27,52 @@ const ENDUSER_SCOPES = CreateScopeString([
 ]);
 
 /**
- * A person acting for themselves, one row of persons/<env>.csv.
+ * One row of the test data: a daglig leder and the organization they lead. The
+ * same row serves as a person acting for themselves (partyUuid) and as the
+ * organization acted for by its daglig leder (orgUuid), which is what lets one
+ * fixture cover both sides of a request.
  *
- * @typedef {object} PersonRow
- * @property {string} pid National identity number.
- * @property {string} partyUuid Party uuid of the person.
- * @property {string} userId Altinn user id, which the decision point needs to see the person acting for themselves.
- * @property {string} partyId Altinn party id.
- * @property {string} lastName Last name, which adding the person as a connection asks for next to the pid.
- */
-
-/**
- * An organization and its daglig leder, one row of orgs/<env>.csv. The person
- * columns describe the daglig leder; the token is always the person's, and the
- * organization is named per request through the `party` parameter.
- *
- * @typedef {object} OrgRow
- * @property {string} pid National identity number of the daglig leder.
- * @property {string} partyUuid Party uuid of the daglig leder.
- * @property {string} userId Altinn user id of the daglig leder.
- * @property {string} partyId Altinn party id of the daglig leder.
- * @property {string} lastName Last name of the daglig leder.
- * @property {string} orgUuid Party uuid of the organization.
- * @property {string} orgNo Organization number.
- */
-
-/**
- * One person and one organization that a request goes between.
- *
- * @typedef {object} Pair
- * @property {PersonRow} person The person who asks for access.
- * @property {OrgRow} org The organization that receives the request, acted for by its daglig leder.
+ * @typedef {object} EnduserRow
+ * @property {string} pid The daglig leder's national identity number.
+ * @property {string} partyUuid The daglig leder's party uuid.
+ * @property {string} orgUuid The organization's party uuid.
+ * @property {string} orgNo The organization number.
+ * @property {string} lastName The daglig leder's last name, which adding them as a connection asks for next to the pid.
+ * @property {string} userId The daglig leder's Altinn user id, which the decision point needs to see the person acting for themselves.
+ * @property {string} partyId The daglig leder's Altinn party id.
  */
 
 /**
  * @typedef {object} RequestV2TestData
- * @property {Array<Array<Pair>>} pairs One slice of pairs per VU.
+ * @property {Array<EnduserRow>} users The rows a request can go between.
  * @property {{[action: string]: string}} rightKeys The resource's right key per action.
  */
 
 /**
- * Loads the fixtures, reads the resource's right keys and makes sure every pair
- * this run can reach has the connection a request needs.
+ * Loads the fixture and reads the resource's right keys.
  *
- * Persons and organizations are two files so each list can grow on its own. Row
- * i of one is paired with row i of the other, and the pairs are split per VU, so
- * two VUs never make requests between the same parties.
- *
- * The connection is arranged here rather than per iteration so the iteration is
- * only the flow being measured. It is the organization that adds the person:
- * approving the request delegates from the organization to the person, and that
- * needs the person to be a rightholder of the organization. Only the pairs this
- * run can draw are set up, so a functional run with one iteration costs one
- * connection, not one per row.
- *
- * @returns {RequestV2TestData} Test data, one slice of pairs per VU.
+ * @returns {RequestV2TestData} Test data.
  */
 export function setup() {
     requireEnv(["ENVIRONMENT", "BASE_URL"]);
 
-    // fetchTestData reads from main, where these fixtures are not yet. Read from
+    // fetchTestData reads from main, where this fixture is not yet. Read from
     // the branch until it is merged, then switch to the relative path below.
     // TODO: replace with "access-management/enduser/request-v2" when merged.
     const base = __ENV.TEST_DATA_BASE_URL
         ?? "https://raw.githubusercontent.com/Altinn/altinn-platform-validation-tests/refs/heads/feat/request-v2-rightkeys/K6/testdata/access-management/enduser/request-v2";
 
-    /** @type {Array<PersonRow>} */
-    const persons = fetchTestData(`${base}/persons/${__ENV.ENVIRONMENT}.csv`);
-    /** @type {Array<OrgRow>} */
-    const orgs = fetchTestData(`${base}/orgs/${__ENV.ENVIRONMENT}.csv`);
+    /** @type {Array<EnduserRow>} */
+    const users = fetchTestData(`${base}/${__ENV.ENVIRONMENT}.csv`);
 
-    const pairs = persons
-        .slice(0, Math.min(persons.length, orgs.length))
-        .map((person, index) => ({ person, org: orgs[index] }));
-
-    if (pairs.length === 0) {
-        fail(`No pairs to request between: persons/${__ENV.ENVIRONMENT}.csv has ${persons.length} rows and orgs/${__ENV.ENVIRONMENT}.csv has ${orgs.length}`);
+    if (users.length < 2) {
+        fail(`request-v2/${__ENV.ENVIRONMENT}.csv has ${users.length} rows; a request needs two`);
     }
 
-    const data = {
-        pairs: segmentData(pairs, getNumberOfVUs()),
-        rightKeys: fetchRightKeys(pairs[0].person),
+    return {
+        users,
+        rightKeys: fetchRightKeys(users[0]),
     };
-
-    reachablePairs(data).forEach((pair) => {
-        // A connection left behind by a run that was cut short would otherwise be
-        // in the way, so it is removed first. Removing what is not there changes
-        // nothing, and goes through the client rather than the building block so
-        // the ordinary case does not report a check for it.
-        sweepConnection(pair);
-
-        if (addPersonAsRightholder(pair) === null) {
-            fail(`Cannot set up the connection from ${pair.org.orgNo} to ${pair.person.pid}; nothing can be requested without it`);
-        }
-    });
-
-    return data;
-}
-
-/**
- * Removes the connections setup made, with cascade, so the rights the approvals
- * delegated go with them and the next run starts from nothing.
- *
- * Walks the same pairs setup did rather than being told what the iterations
- * reached, so the two always agree. Goes through the building block, unlike the
- * sweep in setup: a cleanup that cannot reach the API leaves the environment
- * dirty for the next run, which is worth turning the run red for.
- *
- * @param {RequestV2TestData} data Test data, as setup returned it.
- * @param {{[key: string]: string}} label k6 request label for the delete step.
- * @returns {void}
- */
-export function removeConnections(data, label) {
-    const { connections, tokenGenerator } = getClients();
-
-    reachablePairs(data).forEach((pair) => {
-        tokenGenerator.setTokenGeneratorOptions(getEnduserOpts(pair.org));
-
-        DeleteConnection(
-            connections,
-            deleteConnectionQuery(pair),
-            label,
-        );
-    });
-}
-
-/**
- * The pairs this run can draw: the first rows of each VU's slice, as many as
- * the VU gets iterations. A run without a fixed iteration count, such as a
- * smoke run over a duration, can reach every row, and gets every row.
- *
- * Cast for the same reason getNumberOfVUs does it: Scenario is a union and only
- * some of its members carry vus and iterations.
- *
- * @param {RequestV2TestData} data Test data, as setup returned it.
- * @returns {Array<Pair>} The pairs setup arranges and teardown removes.
- */
-export function reachablePairs(data) {
-    const scenario = /** @type {*} */ (exec.test.options.scenarios?.default);
-    const iterations = scenario?.iterations;
-
-    if (iterations === undefined) {
-        return data.pairs.flat();
-    }
-
-    const vus = scenario?.vus ?? 1;
-    const perVu = scenario?.executor === "shared-iterations"
-        ? Math.ceil(iterations / vus)
-        : iterations;
-
-    return data.pairs.flatMap((slice) => slice.slice(0, perVu));
 }
 
 /**
@@ -210,22 +105,22 @@ export const getClients = lazy(function () {
  * The scopes have to be repeated here, since the options replace the ones the
  * generator was built with rather than adding to them.
  *
- * @param {PersonRow|OrgRow|null} [row] The row of the person to act as, or null for a token without a person.
+ * @param {EnduserRow|null} [user] The row of the person to act as, or null for a token without a person.
  * @returns {*} Options to hand to setTokenGeneratorOptions.
  */
-export function getEnduserOpts(row = null) {
+export function getEnduserOpts(user = null) {
     const builder = new PersonalTokenBuilder()
         .withScopes(ENDUSER_SCOPES);
 
-    if (row === null) {
+    if (user === null) {
         return builder.build();
     }
 
     return builder
-        .withPid(row.pid)
-        .withPartyUuid(row.partyUuid)
-        .withUserId(row.userId)
-        .withPartyId(row.partyId)
+        .withPid(user.pid)
+        .withPartyUuid(user.partyUuid)
+        .withUserId(user.userId)
+        .withPartyId(user.partyId)
         .build();
 }
 
@@ -237,21 +132,21 @@ export function getEnduserOpts(row = null) {
  * `rightKey` the resource registry's policy/rights returns either: both are
  * answered 400 AM.VLD-00054. The Bruno suite reads the keys the same way. The
  * check needs a party to ask for, but the keys do not depend on it, so the
- * first person serves. Read once here rather than per iteration: they are the
+ * first user serves. Read once here rather than per iteration: they are the
  * same for every pair, and the iteration should only be the flow being measured.
  *
- * @param {PersonRow} person The person to ask the delegation check as.
+ * @param {EnduserRow} user The person to ask the delegation check as.
  * @returns {{[action: string]: string}} The right key per action.
  */
-function fetchRightKeys(person) {
+function fetchRightKeys(user) {
     const { connections, tokenGenerator } = getClients();
 
-    tokenGenerator.setTokenGeneratorOptions(getEnduserOpts(person));
+    tokenGenerator.setTokenGeneratorOptions(getEnduserOpts(user));
 
     const resourceCheck = GetResourceDelegationCheck(
         connections,
         new GetResourceDelegationCheckQueryBuilder()
-            .withParty(person.partyUuid)
+            .withParty(user.partyUuid)
             .withResource(RESOURCE)
             .build(),
         { step: "setup-fetch-right-keys" },
@@ -276,64 +171,4 @@ function fetchRightKeys(person) {
     }
 
     return rightKeys;
-}
-
-/**
- * Has the organization add the person as a rightholder, as its daglig leder.
- *
- * Adding a person goes by pid and last name in the body rather than by party in
- * the query, which is why the person row carries the last name.
- *
- * @param {Pair} pair The person and organization.
- * @returns {*} The created assignment, or null when the connection could not be made.
- */
-function addPersonAsRightholder(pair) {
-    const { connections, tokenGenerator } = getClients();
-
-    tokenGenerator.setTokenGeneratorOptions(getEnduserOpts(pair.org));
-
-    return CreateConnection(
-        connections,
-        new CreateConnectionQueryBuilder()
-            .withParty(pair.org.orgUuid)
-            .build(),
-        { personIdentifier: pair.person.pid, lastName: pair.person.lastName },
-        { step: "setup-create-connection" },
-    );
-}
-
-/**
- * Removes the connection from the organization to the person if there is one,
- * reporting nothing either way.
- *
- * @param {Pair} pair The person and organization.
- * @returns {void}
- */
-function sweepConnection(pair) {
-    const { connections, tokenGenerator } = getClients();
-
-    tokenGenerator.setTokenGeneratorOptions(getEnduserOpts(pair.org));
-
-    const res = connections.DeleteConnection(deleteConnectionQuery(pair), { step: "setup-sweep-connection" });
-
-    if (res.status !== 200 && res.status !== 204) {
-        console.warn(`setup - could not sweep the connection from ${pair.org.orgNo} to ${pair.person.pid}: ${res.status}`);
-    }
-}
-
-/**
- * The query that names the connection from the organization to the person.
- * Shared by the sweep in setup and the removal in teardown, which has to name a
- * connection it never saw created.
- *
- * @param {Pair} pair The person and organization.
- * @returns {*} The delete query.
- */
-function deleteConnectionQuery(pair) {
-    return new DeleteConnectionQueryBuilder()
-        .withParty(pair.org.orgUuid)
-        .withFrom(pair.org.orgUuid)
-        .withTo(pair.person.partyUuid)
-        .withCascade(true)
-        .build();
 }
