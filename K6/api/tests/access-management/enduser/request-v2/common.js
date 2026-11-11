@@ -1,14 +1,12 @@
 import { fail } from "k6";
 import exec from "k6/execution";
 
-import { ConnectionsClient, CreateConnectionQueryBuilder, DeleteConnectionQueryBuilder } from "../../../../../clients/access-management/enduser/connections/index.js";
+import { ConnectionsClient, CreateConnectionQueryBuilder, DeleteConnectionQueryBuilder, GetResourceDelegationCheckQueryBuilder } from "../../../../../clients/access-management/enduser/connections/index.js";
 import { RequestV2Client } from "../../../../../clients/access-management/enduser/request-v2/index.js";
-import { ResourceClient } from "../../../../../clients/resource-registry/index.js";
 import { PersonalTokenBuilder, PersonalTokenGenerator } from "../../../../../common-imports.js";
 import { fetchTestData, getNumberOfVUs, lazy, requireEnv, segmentData } from "../../../../../helpers.js";
 import { AltinnScopes, CreateScopeString } from "../../../../../scopes.js";
-import { CreateConnection, DeleteConnection } from "../../../../building-blocks/access-management/enduser/connections/index.js";
-import { ResourceGetPolicyRights } from "../../../../building-blocks/resource-registry/resource/index.js";
+import { CreateConnection, DeleteConnection, GetResourceDelegationCheck } from "../../../../building-blocks/access-management/enduser/connections/index.js";
 
 /**
  * The resource every request in this folder asks for. Provisioned in at22, at23
@@ -110,7 +108,7 @@ export function setup() {
 
     const data = {
         pairs: segmentData(pairs, getNumberOfVUs()),
-        rightKeys: fetchRightKeys(),
+        rightKeys: fetchRightKeys(pairs[0].person),
     };
 
     reachablePairs(data).forEach((pair) => {
@@ -232,31 +230,42 @@ export function getEnduserOpts(row = null) {
 }
 
 /**
- * Reads the resource's right keys from the resource registry, one per action.
+ * Reads the resource's right keys from the delegation check, one per action.
  *
- * A right key is `<action>;<resource>;<hash>`, not the action name: asking for
- * `read` is answered 400 AM.VLD-00054. The hash is issued per right, so the keys
- * have to be read rather than constructed. The Bruno suite reads them from the
- * delegation check as the approver; policy/rights gives the same `rightKey`
- * without a party, and the keys are the same in at22, at23 and tt02. Read once
- * here rather than per iteration: they are the same for every pair, and the
- * iteration should only be the flow being measured.
+ * The request endpoints take the key the delegation check reports as
+ * `right.key`, a hash issued per right. It is not the action name, and not the
+ * `rightKey` the resource registry's policy/rights returns either: both are
+ * answered 400 AM.VLD-00054. The Bruno suite reads the keys the same way. The
+ * check needs a party to ask for, but the keys do not depend on it, so the
+ * first person serves. Read once here rather than per iteration: they are the
+ * same for every pair, and the iteration should only be the flow being measured.
  *
+ * @param {PersonRow} person The person to ask the delegation check as.
  * @returns {{[action: string]: string}} The right key per action.
  */
-function fetchRightKeys() {
-    const resourceClient = new ResourceClient(__ENV.BASE_URL, getClients().tokenGenerator);
+function fetchRightKeys(person) {
+    const { connections, tokenGenerator } = getClients();
 
-    const rights = ResourceGetPolicyRights(resourceClient, RESOURCE, { step: "fetch-right-keys" });
+    tokenGenerator.setTokenGeneratorOptions(getEnduserOpts(person));
+
+    const resourceCheck = GetResourceDelegationCheck(
+        connections,
+        new GetResourceDelegationCheckQueryBuilder()
+            .withParty(person.partyUuid)
+            .withResource(RESOURCE)
+            .build(),
+        { step: "setup-fetch-right-keys" },
+    );
 
     /** @type {{[action: string]: string}} */
     const rightKeys = {};
 
-    for (const right of rights ?? []) {
-        const action = right.action?.value;
+    for (const entry of /** @type {Array<*>} */ (resourceCheck?.rights ?? [])) {
+        const action = entry?.right?.action?.value;
+        const key = entry?.right?.key;
 
-        if (action && right.rightKey) {
-            rightKeys[action] = right.rightKey;
+        if (action && key) {
+            rightKeys[action] = key;
         }
     }
 

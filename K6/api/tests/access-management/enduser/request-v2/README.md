@@ -9,8 +9,10 @@ Tests for the v2 enduser request endpoints that take right keys:
 | `be-om-enkeltrettighet.js` | a person asks an organization for read and write on the resource, the daglig leder approves read only, and the stored request says `PartialApprove` with read approved |
 
 The resource is `ttd-enkeltrettigheter-rightkeys`, provisioned in AT22, AT23
-and TT02 with the same policy, so the right keys are the same everywhere. The
-keys are read from the resource registry in setup, since they are opaque.
+and TT02 with the same policy. The right keys the request endpoints take are the
+`right.key` hashes the delegation check reports, not the action names and not the
+`rightKey` from the resource registry's policy/rights; setup reads them once from
+the delegation check.
 
 Validation cases (400 and 403, approving twice, unknown keys) are covered by
 unit tests in Authorization and are not run from here. See
