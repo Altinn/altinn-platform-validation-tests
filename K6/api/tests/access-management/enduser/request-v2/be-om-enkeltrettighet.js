@@ -39,8 +39,8 @@ export default function (data) {
     const { person, org } = getItemFromList(data.pairs[exec.vu.idInTest - 1]);
     const { requests, tokenGenerator } = getClients();
 
-    const requestedKeys = ["read", "write"];
-    const approvedKeys = ["read"];
+    const requestedKeys = [data.rightKeys.read, data.rightKeys.write];
+    const approvedKeys = [data.rightKeys.read];
 
     group("Request single rights and approve a subset", function () {
         tokenGenerator.setTokenGeneratorOptions(getEnduserOpts(person));

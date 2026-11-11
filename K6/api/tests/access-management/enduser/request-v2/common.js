@@ -3,24 +3,24 @@ import exec from "k6/execution";
 
 import { ConnectionsClient, CreateConnectionQueryBuilder, DeleteConnectionQueryBuilder } from "../../../../../clients/access-management/enduser/connections/index.js";
 import { RequestV2Client } from "../../../../../clients/access-management/enduser/request-v2/index.js";
+import { ResourceClient } from "../../../../../clients/resource-registry/index.js";
 import { PersonalTokenBuilder, PersonalTokenGenerator } from "../../../../../common-imports.js";
 import { fetchTestData, getNumberOfVUs, lazy, requireEnv, segmentData } from "../../../../../helpers.js";
 import { AltinnScopes, CreateScopeString } from "../../../../../scopes.js";
 import { CreateConnection, DeleteConnection } from "../../../../building-blocks/access-management/enduser/connections/index.js";
+import { ResourceGetPolicyRights } from "../../../../building-blocks/resource-registry/resource/index.js";
 
 /**
  * The resource every request in this folder asks for. Provisioned in at22, at23
- * and tt02 with the same policy. Every action in it is delegable for priv, dagl
- * and seln.
+ * and tt02 with the same policy, so its right keys are the same in every
+ * environment. Every action in it is delegable for priv, dagl and seln.
  */
 export const RESOURCE = "ttd-enkeltrettigheter-rightkeys";
 
 /**
- * The right keys of the resource. A right key is the action name; the API
- * resolves it against the resource named in the request, so there is nothing
- * to look up first.
+ * The actions the resource's policy grants, one right key each.
  */
-export const RIGHT_KEYS = [
+export const ACTIONS = [
     "read", "write", "delete", "confirm", "sign", "instantiate", "complete",
     "pay", "reject", "subscribe", "publish", "scopeaccess", "access",
 ];
@@ -66,11 +66,12 @@ const ENDUSER_SCOPES = CreateScopeString([
 /**
  * @typedef {object} RequestV2TestData
  * @property {Array<Array<Pair>>} pairs One slice of pairs per VU.
+ * @property {{[action: string]: string}} rightKeys The resource's right key per action.
  */
 
 /**
- * Loads the fixtures and makes sure every pair this run can reach has the
- * connection a request needs.
+ * Loads the fixtures, reads the resource's right keys and makes sure every pair
+ * this run can reach has the connection a request needs.
  *
  * Persons and organizations are two files so each list can grow on its own. Row
  * i of one is paired with row i of the other, and the pairs are split per VU, so
@@ -109,6 +110,7 @@ export function setup() {
 
     const data = {
         pairs: segmentData(pairs, getNumberOfVUs()),
+        rightKeys: fetchRightKeys(),
     };
 
     reachablePairs(data).forEach((pair) => {
@@ -227,6 +229,44 @@ export function getEnduserOpts(row = null) {
         .withUserId(row.userId)
         .withPartyId(row.partyId)
         .build();
+}
+
+/**
+ * Reads the resource's right keys from the resource registry, one per action.
+ *
+ * A right key is `<action>;<resource>;<hash>`, not the action name: asking for
+ * `read` is answered 400 AM.VLD-00054. The hash is issued per right, so the keys
+ * have to be read rather than constructed. The Bruno suite reads them from the
+ * delegation check as the approver; policy/rights gives the same `rightKey`
+ * without a party, and the keys are the same in at22, at23 and tt02. Read once
+ * here rather than per iteration: they are the same for every pair, and the
+ * iteration should only be the flow being measured.
+ *
+ * @returns {{[action: string]: string}} The right key per action.
+ */
+function fetchRightKeys() {
+    const resourceClient = new ResourceClient(__ENV.BASE_URL, getClients().tokenGenerator);
+
+    const rights = ResourceGetPolicyRights(resourceClient, RESOURCE, { step: "fetch-right-keys" });
+
+    /** @type {{[action: string]: string}} */
+    const rightKeys = {};
+
+    for (const right of rights ?? []) {
+        const action = right.action?.value;
+
+        if (action && right.rightKey) {
+            rightKeys[action] = right.rightKey;
+        }
+    }
+
+    const missing = ACTIONS.filter((action) => rightKeys[action] === undefined);
+
+    if (missing.length > 0) {
+        fail(`${RESOURCE} has no right key for ${JSON.stringify(missing)}; the policy is not the one the tests expect`);
+    }
+
+    return rightKeys;
 }
 
 /**
