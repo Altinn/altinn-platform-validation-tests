@@ -212,17 +212,19 @@ export function getFacilitatorTokenOpts(facilitator) {
  *
  * @param {string} systemNamePrefix - What the run names the system it registers, which is also what the teardown sweeps up. Unique per test file, see the note on it in the caller.
  * @param {string|null} [orgType] - Draw only facilitators of this type, e.g. "revisor". Leave it out to draw from all of them, which is what a test that does not care which access packages it gets wants.
+ * @param {string|null} [orgNo] - Draw only this facilitator, for a test that needs one with many clients.
  * @returns {ArrangedAgentSystemUser[]} A single arranged facilitator, as a list so a test picks from it with getItemFromList like any other test data.
  */
-export function arrangeAgentSystemUser(systemNamePrefix, orgType = null) {
+export function arrangeAgentSystemUser(systemNamePrefix, orgType = null, orgNo = null) {
     requireEnv(["ENVIRONMENT", "BASE_URL", "AM_UI_BASE_URL"]);
 
     /** @type {Facilitator[]} */
     const candidates = fetchTestData(`authentication/system-user-client-delegation/${__ENV.ENVIRONMENT}.csv`)
-        .filter((/** @type {Facilitator} */ row) => orgType === null || row.orgType === orgType);
+        .filter((/** @type {Facilitator} */ row) => orgType === null || row.orgType === orgType)
+        .filter((/** @type {Facilitator} */ row) => orgNo === null || row.orgNo === orgNo);
 
     if (candidates.length === 0) {
-        fail(`cannot arrange an agent system user: no facilitator of type '${orgType}' in ${__ENV.ENVIRONMENT}`);
+        fail(`cannot arrange an agent system user: no facilitator of type '${orgType}' and org '${orgNo}' in ${__ENV.ENVIRONMENT}`);
     }
 
     const facilitator = getItemFromList(candidates, randomize);
@@ -357,11 +359,16 @@ export function cleanupArranged(arranged) {
             );
 
             SystemRegisterBuildingBlocks.VendorDelete(apiClients.vendor.systemRegisterClient, arrangement.systemId);
+        }
 
-            // The delete above takes the system this run arranged. The sweep takes
-            // whatever an earlier run left in this vendor's register, which is what
-            // happens when the arrange itself broke: k6 skips the teardown when the
-            // setup gives up.
+        // The deletes above take the systems this run arranged. The sweep takes
+        // whatever an earlier run left in the vendor's register, which is what
+        // happens when the arrange itself broke: k6 skips the teardown when the
+        // setup gives up. It runs after the loop, so it never takes a system the
+        // loop has yet to delete when several arrangements share a vendor.
+        for (const arrangement of arranged ?? []) {
+            vendorTokenGenerator.setTokenGeneratorOptions(getVendorTokenOpts(arrangement.vendorOrgNo));
+
             sweepRegisteredSystems(apiClients.vendor.systemRegisterClient, arrangement.vendorOrgNo, arrangement.systemNamePrefix, apiClients.vendor.requestSystemUserClient);
         }
     });
