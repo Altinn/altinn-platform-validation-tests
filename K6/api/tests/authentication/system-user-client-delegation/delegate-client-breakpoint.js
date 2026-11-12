@@ -8,15 +8,15 @@ import { arrangeAgentSystemUser, cleanupArranged, getClients, getFacilitatorToke
 const SYSTEM_NAME_PREFIX = "clientdelegation-breakpoint";
 
 /**
- * An auditor in yt01 with about 6600 clients, from the facilitator csv.
+ * The auditors in yt01 with more than 5000 clients, from the facilitator csv.
  */
-const FACILITATOR_ORG_NO = "310495670";
+const FACILITATOR_ORG_NOS = ["310495670", "313588270", "312939053"];
 
 /**
- * Every agent system user can be given all of the auditor's clients, so 15 of them
- * give about 100 000 delegations, enough for a 10 minute ramp to 50 VUs.
+ * Every agent system user can be given all of its auditor's clients, so 5 per
+ * auditor give about 90 000 delegations, enough for a 10 minute ramp to 100 VUs.
  */
-const AGENT_SYSTEM_USERS = 15;
+const AGENT_SYSTEM_USERS_PER_FACILITATOR = 5;
 
 const MIN_CLIENTS = 2000;
 
@@ -27,68 +27,96 @@ export const options = {
 };
 
 /**
- * k6 setup stage. Gives the auditor its agent system users and lists the clients
+ * k6 setup stage. Gives each auditor its agent system users and lists the clients
  * they can be given.
  *
- * @returns The arranged agent system users and the client ids available to them.
+ * @returns The arranged agent system users and the client ids available per auditor.
  */
 export function setup() {
     if (__ENV.ENVIRONMENT !== "yt01") {
         fail(`the client delegation breakpoint test runs in yt01 only, not in ${__ENV.ENVIRONMENT}`);
     }
 
-    const arranged = Array.from(
-        { length: AGENT_SYSTEM_USERS },
-        () => arrangeAgentSystemUser(SYSTEM_NAME_PREFIX, "revisor", FACILITATOR_ORG_NO)[0],
-    );
     const { clients, facilitatorTokenGenerator } = getClients();
 
-    facilitatorTokenGenerator.setTokenGeneratorOptions(getFacilitatorTokenOpts(arranged[0].facilitator));
+    const arranged = [];
+    const facilitators = [];
 
-    // They are all asked for the same access packages, so they have the same clients available.
-    const available = SystemUserClientDelegationBuildingBlocks.GetAvailableClients(clients.facilitator.clientDelegationClient, arranged[0].systemUserId);
-    const clientIds = (available?.data ?? []).map((client) => client.clientId);
+    for (const orgNo of FACILITATOR_ORG_NOS) {
+        const own = Array.from(
+            { length: AGENT_SYSTEM_USERS_PER_FACILITATOR },
+            () => arrangeAgentSystemUser(SYSTEM_NAME_PREFIX, "revisor", orgNo)[0],
+        );
 
-    if (!check(clientIds, { [`the facilitator has at least ${MIN_CLIENTS} clients available`]: (ids) => ids.length >= MIN_CLIENTS })) {
-        cleanupArranged(arranged);
+        arranged.push(...own);
 
-        fail(`cannot run the breakpoint: ${FACILITATOR_ORG_NO} has ${clientIds.length} clients available, needs ${MIN_CLIENTS}`);
+        facilitatorTokenGenerator.setTokenGeneratorOptions(getFacilitatorTokenOpts(own[0].facilitator));
+
+        // Asked for the same access packages, so the auditor's agent system users have the same clients available.
+        const available = SystemUserClientDelegationBuildingBlocks.GetAvailableClients(clients.facilitator.clientDelegationClient, own[0].systemUserId);
+        const clientIds = (available?.data ?? []).map((client) => client.clientId);
+
+        if (!check(clientIds, { [`the facilitator has at least ${MIN_CLIENTS} clients available`]: (ids) => ids.length >= MIN_CLIENTS })) {
+            cleanupArranged(arranged);
+
+            fail(`cannot run the breakpoint: ${orgNo} has ${clientIds.length} clients available, needs ${MIN_CLIENTS}`);
+        }
+
+        facilitators.push({ facilitator: own[0].facilitator, clientIds });
+    }
+
+    // Round robin over the auditors first, so consecutive iterations go to different auditors.
+    const agents = [];
+
+    for (let slot = 0; slot < AGENT_SYSTEM_USERS_PER_FACILITATOR; slot++) {
+        for (let f = 0; f < FACILITATOR_ORG_NOS.length; f++) {
+            const clientCount = facilitators[f].clientIds.length;
+
+            agents.push({
+                facilitatorIndex: f,
+                systemUserId: arranged[f * AGENT_SYSTEM_USERS_PER_FACILITATOR + slot].systemUserId,
+                // Each agent starts in its own part of the client list, so agents of the same
+                // auditor are not given the same client at the same time.
+                clientOffset: Math.floor(slot * clientCount / AGENT_SYSTEM_USERS_PER_FACILITATOR),
+            });
+        }
     }
 
     return {
         arranged,
-        facilitator: arranged[0].facilitator,
-        systemUserIds: arranged.map((arrangement) => arrangement.systemUserId),
-        clientIds,
+        facilitators,
+        agents,
+        clientsPerAgent: Math.min(...facilitators.map((f) => f.clientIds.length)),
     };
 }
 
 /**
- * Test: a facilitator delegates clients to its agent system users under increasing
- * load.
+ * Test: auditors delegate clients to their agent system users under increasing load.
  *
- * The iteration number across all VUs picks the pair, so no client is delegated
- * twice to the same agent system user. The run stops once every pair is delegated.
+ * The iteration number across all VUs picks the agent system user and how far it
+ * has come through its clients, so no client is delegated twice to the same agent
+ * system user. The run stops once every agent system user has been through its clients.
  *
- * @param {ReturnType<typeof setup>} data The arranged agent system users and their available clients.
+ * @param {ReturnType<typeof setup>} data The arranged agent system users and the clients available per auditor.
  */
 export default function (data) {
     const iteration = exec.scenario.iterationInTest;
-    const total = data.systemUserIds.length * data.clientIds.length;
+    const total = data.agents.length * data.clientsPerAgent;
 
     if (iteration >= total) {
         exec.test.abort(`all ${total} delegations are done`);
     }
 
+    const agent = data.agents[iteration % data.agents.length];
+    const { facilitator, clientIds } = data.facilitators[agent.facilitatorIndex];
+    const clientId = clientIds[(agent.clientOffset + Math.floor(iteration / data.agents.length)) % clientIds.length];
+
     const { clients, facilitatorTokenGenerator } = getClients();
 
-    facilitatorTokenGenerator.setTokenGeneratorOptions(getFacilitatorTokenOpts(data.facilitator));
-
-    const systemUserId = data.systemUserIds[iteration % data.systemUserIds.length];
-    const clientId = data.clientIds[Math.floor(iteration / data.systemUserIds.length)];
+    facilitatorTokenGenerator.setTokenGeneratorOptions(getFacilitatorTokenOpts(facilitator));
 
     group("As a facilitator, I can delegate a client to an agent system user", function () {
-        SystemUserClientDelegationBuildingBlocks.DelegateClient(clients.facilitator.clientDelegationClient, systemUserId, clientId);
+        SystemUserClientDelegationBuildingBlocks.DelegateClient(clients.facilitator.clientDelegationClient, agent.systemUserId, clientId);
     });
 }
 
@@ -96,7 +124,7 @@ export default function (data) {
  * k6 teardown stage. Deletes the agent system users, which takes their client
  * delegations with them, and the systems they belong to.
  *
- * @param {ReturnType<typeof setup>} data The arranged agent system users and their available clients.
+ * @param {ReturnType<typeof setup>} data The arranged agent system users and the clients available per auditor.
  */
 export function teardown(data) {
     cleanupArranged(data.arranged);
