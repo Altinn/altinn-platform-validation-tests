@@ -12725,7 +12725,8 @@
             "description": "Whether the service owner has not yet reported all dialog Transmissions they sent as seen by the end user.\nA Transmission is considered \"sent from the service owner\" if the DialogTransmissionType is not one of Submission or Correction.\n            \nThe value of this field is:\n- true when there are any new unopened Transmissions sent from the service owner.\n- false when the service owner has created an Activity of type TransmissionOpened for all Transmissions sent from the service owner. The Activities must each contain the relevant Id for all relevant Transmissions.\n            \nNote that the value is\n- determined by the service owner and not to be confused with IsContentSeen\n- not affected by SystemLabels\n            \nFor correspondence: HasUnopenedContent is still true until the service owner also adds a Dialog level Activity (no transmission id) of type CorrespondenceOpened"
           },
           "content": {
-            "description": "The dialog unstructured text content.",
+            "description": "The dialog unstructured text content. May be null for API-only dialogs, which are not required to have content.",
+            "nullable": true,
             "oneOf": [
               {
                 "$ref": "#/components/schemas/V1EndUserDialogsQueriesGet_Content"
@@ -13051,7 +13052,8 @@
             "description": "Indicates whether the dialog transmission has been opened."
           },
           "content": {
-            "description": "The transmission unstructured text content.",
+            "description": "The transmission unstructured text content. May be null for API-only transmissions, which are not required to have content.",
+            "nullable": true,
             "oneOf": [
               {
                 "$ref": "#/components/schemas/V1EndUserDialogsQueriesGet_DialogTransmissionContent"
