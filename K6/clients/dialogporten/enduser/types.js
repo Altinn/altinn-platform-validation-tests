@@ -325,7 +325,7 @@
  * @property {DialogEndUserContextsEntities_SystemLabel} systemLabel Deprecated. Use EndUserContext.SystemLabels instead. System defined label used to categorize dialogs. This is obsolete and will only show; Default, Bin or Archive. Use SystemLabels on EndUserContext instead.
  * @property {boolean} isApiOnly Indicates if this dialog is intended for API consumption only and should not be shown in frontends aimed at humans.
  * @property {boolean} hasUnopenedContent Whether the service owner has not yet reported all dialog Transmissions they sent as seen by the end user. A Transmission is considered "sent from the service owner" if the DialogTransmissionType is not one of Submission or Correction. The value of this field is: - true when there are any new unopened Transmissions sent from the service owner. - false when the service owner has created an Activity of type TransmissionOpened for all Transmissions sent from the service owner. The Activities must each contain the relevant Id for all relevant Transmissions. Note that the value is - determined by the service owner and not to be confused with IsContentSeen - not affected by SystemLabels For correspondence: HasUnopenedContent is still true until the service owner also adds a Dialog level Activity (no transmission id) of type CorrespondenceOpened
- * @property {V1EndUserDialogsQueriesGet_Content} content The dialog unstructured text content.
+ * @property {V1EndUserDialogsQueriesGet_Content|null} [content] The dialog unstructured text content. May be null for API-only dialogs, which are not required to have content.
  * @property {string|null} [dialogToken] The dialog token. May be used (if supported) against external URLs referred to in this dialog's apiActions, transmissions or attachments. It should also be used for front-channel embeds.
  * @property {number} fromServiceOwnerTransmissionsCount The number of transmissions sent by a service owner.
  * @property {number} fromPartyTransmissionsCount The number of transmissions sent by a party representative.
@@ -437,7 +437,7 @@
  * @property {DialogsEntitiesTransmissions_DialogTransmissionType} type The type of transmission.
  * @property {V1EndUserCommonActors_Actor} sender The actor that sent the transmission.
  * @property {boolean} isOpened Indicates whether the dialog transmission has been opened.
- * @property {V1EndUserDialogsQueriesGet_DialogTransmissionContent} content The transmission unstructured text content.
+ * @property {V1EndUserDialogsQueriesGet_DialogTransmissionContent|null} [content] The transmission unstructured text content. May be null for API-only transmissions, which are not required to have content.
  * @property {Array<V1EndUserDialogsQueriesGet_DialogTransmissionAttachment>|null} [attachments] The transmission-level attachments.
  * @property {Array<V1EndUserDialogsQueriesGet_DialogTransmissionNavigationalAction>|null} [navigationalActions] The transmission-level navigational actions.
  * @property {Array<V1EndUserCommon_ExcludedElement>|null} [excludedAttachments] Experimental. Elements withheld from this collection, represented by id and creation time.
