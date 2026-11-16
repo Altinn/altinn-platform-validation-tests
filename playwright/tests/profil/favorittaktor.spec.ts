@@ -1,5 +1,6 @@
 import { expect, test } from "../../fixtures/test";
 import { fjernNyeFavoritter, hentFavoritter } from "../../helpers/favoritter";
+import { hentPostadresse } from "../../helpers/profil";
 import { altinnToken } from "../../helpers/sesjonsdata";
 
 // Favorittene brukeren hadde før testen, og tokenet de ble lest med. Bare favoritten testen
@@ -42,12 +43,15 @@ test("Bruker logger inn, ser profilen sin og legger til og fjerner en virksomhet
         await arbeidsflate.meny.setLanguage(sprak);
     });
 
-    const { token, favoritter: opprinnelige } = await test.step("Bruker åpner profilen og ser navnet sitt", async () => {
+    const { token, favoritter: opprinnelige } = await test.step("Bruker åpner profilen og ser navnet og postadressen sin", async () => {
         await arbeidsflate.meny.gaTilProfil();
         await arbeidsflateProfil.assertLoggedIn();
         await arbeidsflateProfil.assertViserBruker(user);
 
+        // Adressen er ulik for hver testbruker, så den viser at det er profilen til brukeren som vises.
         const altinntoken = await altinnToken(page);
+        await arbeidsflateProfil.assertViserPostadresse(await hentPostadresse(api, altinntoken));
+
         utgangspunkt = { token: altinntoken, favoritter: await hentFavoritter(api, altinntoken) };
         return utgangspunkt;
     });
