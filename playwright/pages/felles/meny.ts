@@ -93,8 +93,9 @@ export class MenyPom {
     }
 }
 
-const languageLabels: Record<Sprak, string> = {
-    [Sprak.Bokmaal]: "Norsk (bokmål)",
-    [Sprak.Nynorsk]: "Norsk (nynorsk)",
-    [Sprak.Engelsk]: "English",
+// Tilgangsstyring skriver "Norsk (bokmål)", arbeidsflaten bare "Bokmål".
+const languageLabels: Record<Sprak, RegExp> = {
+    [Sprak.Bokmaal]: /^(Norsk \(bokmål\)|Bokmål)$/,
+    [Sprak.Nynorsk]: /^(Norsk \(nynorsk\)|Nynorsk)$/,
+    [Sprak.Engelsk]: /^English$/,
 };

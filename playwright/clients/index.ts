@@ -4,6 +4,7 @@ import { Urler } from "../config/environment";
 import { AccessManagementBffApiClient } from "./access-management-bff";
 import { AppsApiClient } from "./apps";
 import { CorrespondenceApiClient } from "./correspondence";
+import { ProfilApiClient } from "./profil";
 import { withRetries } from "./retry";
 import { TokenGeneratorClient } from "./token-generator";
 
@@ -13,6 +14,7 @@ export class ApiClient {
     private _accessManagementBff?: AccessManagementBffApiClient;
     private _apps?: AppsApiClient;
     private _correspondence?: CorrespondenceApiClient;
+    private _profil?: ProfilApiClient;
     private _tokenGenerator?: TokenGeneratorClient;
 
     constructor(
@@ -32,6 +34,10 @@ export class ApiClient {
 
     get correspondence(): CorrespondenceApiClient {
         return (this._correspondence ??= new CorrespondenceApiClient(this.request, this.urler.platform));
+    }
+
+    get profil(): ProfilApiClient {
+        return (this._profil ??= new ProfilApiClient(this.request, this.urler.platform));
     }
 
     get tokenGenerator(): TokenGeneratorClient {
