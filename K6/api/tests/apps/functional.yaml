@@ -1,0 +1,11 @@
+namespace: authentication
+base_dir: K6/api/tests/apps
+test_definitions:
+  # tt02 only, like the system user token tests it borrows its setup from:
+  # test.maskinporten.no looks system users up in tt02.
+  - test_file: submit-instance-with-system-user-token.js
+    contexts:
+      - environment: tt02
+        test_run:
+          secrets:
+            - 313175650-maskinporten-client
