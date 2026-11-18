@@ -1,6 +1,7 @@
 import { expect, Locator, Page } from "@playwright/test";
 
 import { Sprak } from "../../config/sprak";
+import { escapeRegex } from "../../helpers/regex";
 import { MenyPom } from "../felles/meny";
 
 // Fra dialogporten-frontend (packages/frontend/src/i18n/resources): sidebar.profile.parties,
@@ -21,13 +22,28 @@ const FJERN_FAVORITT: Record<Sprak, string> = {
     [Sprak.Engelsk]: "Remove {name} as favourite actor",
 };
 
-// Org.nr. slik lista viser det, for eksempel "310 672 726".
-const ORGNR = /\d{3}\s\d{3}\s\d{3}/;
-
-const escape = (tekst: string) => tekst.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+// Org.nr. slik lista viser det, i grupper på tre: "310 672 726". Uten `orgnr` matches alle
+// org.nr. `\b` hindrer treff inne i et lengre tall.
+const orgnrRegex = (orgnr?: string) =>
+    new RegExp(`\\b${(orgnr?.match(/\d{3}/g) ?? ["\\d{3}", "\\d{3}", "\\d{3}"]).join("\\s")}\\b`);
+const ORGNR = orgnrRegex();
 
 // Teksten med hvilket som helst navn, og navnet som første gruppe.
-const malRegex = (mal: string) => new RegExp(`^${mal.split("{name}").map(escape).join("(.+)")}$`);
+const malRegex = (mal: string) => new RegExp(`^${mal.split("{name}").map(escapeRegex).join("(.+)")}$`);
+
+/**
+ * Det tilgjengelige navnet til `knapp`, slik Playwright regner det ut når knappen finnes på
+ * rollen, enten det kommer fra aria-label, aria-labelledby eller synlig tekst. Første linje i
+ * ariaSnapshot er YAML: `- button "navn"`, i enkle anførselstegn når navnet har kolon i seg.
+ */
+async function tilgjengeligNavn(knapp: Locator): Promise<string | undefined> {
+    let linje = (await knapp.ariaSnapshot()).split("\n")[0].replace(/^- /, "").replace(/:$/, "");
+    if (linje.startsWith("'")) {
+        linje = linje.slice(1, -1).replace(/''/g, "'");
+    }
+    const sitert = linje.match(/^button (".*")$/)?.[1];
+    return sitert ? JSON.parse(sitert) : undefined;
+}
 
 /** En virksomhet i lista. Org.nr. er bare sifrene, og skiller den fra underenhetene, som har samme navn. */
 export type Virksomhet = { orgnr: string; navn: string };
@@ -41,6 +57,14 @@ export class ArbeidsflateAktorerPom {
     readonly url: string;
     readonly overskrift: Locator;
 
+    // Radene i hovedinnholdet. Underenhetene har i dag sine egne rader ved siden av hovedenheten,
+    // men lå de inne i raden til hovedenheten, ville den ytre raden ha knappene deres også. Derfor
+    // brukes bare rader som ikke har andre rader inni seg.
+    private readonly rader: Locator;
+
+    private readonly leggTilFavorittRegex: RegExp;
+    private readonly fjernFavorittRegex: RegExp;
+
     // Hjerteknappene, uten å være avgrenset til hovedinnholdet, så de kan brukes inne i en rad.
     private readonly leggTilFavorittKnapp: Locator;
     private readonly fjernFavorittKnapp: Locator;
@@ -53,9 +77,12 @@ export class ArbeidsflateAktorerPom {
     ) {
         this.url = `${arbeidsflate}/profile/parties`;
         this.overskrift = page.getByRole("heading", { name: OVERSKRIFT[sprak], level: 1 });
+        this.rader = page.getByRole("main").getByRole("listitem").filter({ hasNot: page.getByRole("listitem") });
 
-        this.leggTilFavorittKnapp = page.getByRole("button", { name: malRegex(LEGG_TIL_FAVORITT[sprak]) });
-        this.fjernFavorittKnapp = page.getByRole("button", { name: malRegex(FJERN_FAVORITT[sprak]) });
+        this.leggTilFavorittRegex = malRegex(LEGG_TIL_FAVORITT[sprak]);
+        this.fjernFavorittRegex = malRegex(FJERN_FAVORITT[sprak]);
+        this.leggTilFavorittKnapp = page.getByRole("button", { name: this.leggTilFavorittRegex });
+        this.fjernFavorittKnapp = page.getByRole("button", { name: this.fjernFavorittRegex });
     }
 
     /**
@@ -64,11 +91,7 @@ export class ArbeidsflateAktorerPom {
      * Virksomheter, og da er første treff nok.
      */
     rad({ orgnr }: Virksomhet): Locator {
-        return this.page
-            .getByRole("main")
-            .getByRole("listitem")
-            .filter({ hasText: new RegExp(orgnr.match(/\d{3}/g)!.join("\\s")) })
-            .first();
+        return this.rader.filter({ hasText: orgnrRegex(orgnr) }).first();
     }
 
     async navigateTo() {
@@ -87,17 +110,15 @@ export class ArbeidsflateAktorerPom {
 
     /** Den første virksomheten i lista som ikke er favoritt. */
     async forsteVirksomhetSomIkkeErFavoritt(): Promise<Virksomhet> {
-        const rad = this.page
-            .getByRole("main")
-            .getByRole("listitem")
+        const rad = this.rader
             .filter({ has: this.leggTilFavorittKnapp })
             .filter({ hasText: ORGNR })
             .first();
         await expect(rad, "Brukeren har en virksomhet som ikke er favoritt").toBeVisible();
 
         const orgnr = (await rad.innerText()).match(ORGNR)?.[0].replace(/\D/g, "");
-        const knappenavn = await rad.getByRole("button", { name: malRegex(LEGG_TIL_FAVORITT[this.sprak]) }).getAttribute("aria-label");
-        const navn = knappenavn?.match(malRegex(LEGG_TIL_FAVORITT[this.sprak]))?.[1];
+        const knappenavn = await tilgjengeligNavn(rad.locator(this.leggTilFavorittKnapp));
+        const navn = knappenavn?.match(this.leggTilFavorittRegex)?.[1];
         if (!orgnr || !navn) {
             throw new Error(`Fant ikke org.nr. og navn i raden: "${await rad.innerText()}"`);
         }
@@ -105,11 +126,11 @@ export class ArbeidsflateAktorerPom {
     }
 
     async leggTilFavoritt(virksomhet: Virksomhet) {
-        await this.rad(virksomhet).getByRole("button", { name: malRegex(LEGG_TIL_FAVORITT[this.sprak]) }).click();
+        await this.rad(virksomhet).locator(this.leggTilFavorittKnapp).click();
     }
 
     async fjernFavoritt(virksomhet: Virksomhet) {
-        await this.rad(virksomhet).getByRole("button", { name: malRegex(FJERN_FAVORITT[this.sprak]) }).click();
+        await this.rad(virksomhet).locator(this.fjernFavorittKnapp).click();
     }
 
     async assertErFavoritt(virksomhet: Virksomhet) {

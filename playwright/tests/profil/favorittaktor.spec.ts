@@ -1,5 +1,5 @@
 import { expect, test } from "../../fixtures/test";
-import { fjernNyeFavoritter, hentFavoritter } from "../../helpers/favoritter";
+import { fjernNyeFavoritter, hentFavoritter, hentPartyUuid } from "../../helpers/favoritter";
 import { hentPostadresse } from "../../helpers/profil";
 import { altinnToken } from "../../helpers/sesjonsdata";
 
@@ -8,7 +8,9 @@ import { altinnToken } from "../../helpers/sesjonsdata";
 let utgangspunkt: { token: string; favoritter: string[] } | undefined;
 
 // Fjerner favoritten testen la til, også når testen feilet før den rakk å fjerne den selv.
-// Er utgangspunktet ikke lest, feilet testen før den endret noe, og da er det ingenting å rydde.
+// Er utgangspunktet ikke lest, feilet testen før den endret favorittene, og da er det ingen
+// favoritter å rydde. Språket testen har satt, blir stående: det er lagret i profilen, og
+// testene setter det selv etter innlogging, som i instansiereapp.spec.ts.
 test.afterEach(async ({ api }) => {
     if (!utgangspunkt) {
         return;
@@ -56,13 +58,15 @@ test("Bruker logger inn, ser profilen sin og legger til og fjerner en virksomhet
         return utgangspunkt;
     });
 
-    const virksomhet = await test.step("Bruker åpner Aktører og favoritter og finner en virksomhet som ikke er favoritt", async () => {
+    const { virksomhet, virksomhetUuid } = await test.step("Bruker åpner Aktører og favoritter og finner en virksomhet som ikke er favoritt", async () => {
         await arbeidsflateProfil.gaTilAktorer();
         await arbeidsflateAktorer.assertLoggedIn();
 
         const forste = await arbeidsflateAktorer.forsteVirksomhetSomIkkeErFavoritt();
         console.log(`Virksomhet: ${forste.navn} (${forste.orgnr})`);
-        return forste;
+        // Party UUID-en, så det kan sjekkes at det er denne virksomheten Profil lagrer, og ikke
+        // en annen aktør med samme navn, som hovedenheten til en underenhet.
+        return { virksomhet: forste, virksomhetUuid: await hentPartyUuid(api, token, forste.orgnr) };
     });
 
     // Favorittene Profil har lagret, utenom dem brukeren hadde før testen.
@@ -74,7 +78,7 @@ test("Bruker logger inn, ser profilen sin og legger til og fjerner en virksomhet
     });
 
     await test.step("Favoritten er lagret i Profil, og står der etter at siden er lastet på nytt", async () => {
-        await expect.poll(nyeFavoritter, { message: "Profil har lagret én ny favoritt" }).toHaveLength(1);
+        await expect.poll(nyeFavoritter, { message: `Profil har lagret ${virksomhet.navn} som favoritt` }).toEqual([virksomhetUuid]);
         await page.reload();
         await arbeidsflateAktorer.assertErFavoritt(virksomhet);
     });

@@ -93,9 +93,10 @@ export class MenyPom {
     }
 }
 
-// Tilgangsstyring skriver "Norsk (bokmål)", arbeidsflaten bare "Bokmål".
+// Tilgangsstyring skriver "Norsk (bokmål)", arbeidsflaten bare "Bokmål". Som med en streng
+// matches deler av navnet, uten hensyn til store og små bokstaver.
 const languageLabels: Record<Sprak, RegExp> = {
-    [Sprak.Bokmaal]: /^(Norsk \(bokmål\)|Bokmål)$/,
-    [Sprak.Nynorsk]: /^(Norsk \(nynorsk\)|Nynorsk)$/,
-    [Sprak.Engelsk]: /^English$/,
+    [Sprak.Bokmaal]: /Norsk \(bokmål\)|Bokmål/i,
+    [Sprak.Nynorsk]: /Norsk \(nynorsk\)|Nynorsk/i,
+    [Sprak.Engelsk]: /English/i,
 };

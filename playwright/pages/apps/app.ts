@@ -2,6 +2,7 @@ import { expect, Locator, Page } from "@playwright/test";
 
 import { TestAppConfig, TestUser } from "../../config/environment";
 import { Sprak } from "../../config/sprak";
+import { escapeRegex } from "../../helpers/regex";
 
 // Appen legger instansen i urlen: #/instance/{partyId}/{instanceGuid}/...
 const INSTANS = "/instance/";
@@ -51,7 +52,7 @@ const KVITTERING = "/ProcessEnd";
 // forkortet eller kuttet («U. SILHUETT FLØYTE», «KØ KJÆRLIG», «TESTFORNAVN 17583 TESTETT»).
 // Fornavnet eller etternavnet står helt, så det holder at ett av dem matcher.
 function navnIAppen(bruker: TestUser): string {
-    const navn = [bruker.firstName, bruker.lastName].map((n) => n.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"));
+    const navn = [bruker.firstName, bruker.lastName].map(escapeRegex);
     return `(?:${navn.join("|")})`;
 }
 

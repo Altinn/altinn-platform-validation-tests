@@ -1,6 +1,7 @@
 import { APIRequestContext } from "@playwright/test";
 
 import { Urler } from "../config/environment";
+import { AccessManagementApiClient } from "./access-management";
 import { AccessManagementBffApiClient } from "./access-management-bff";
 import { AppsApiClient } from "./apps";
 import { CorrespondenceApiClient } from "./correspondence";
@@ -11,6 +12,7 @@ import { TokenGeneratorClient } from "./token-generator";
 // Klientene opprettes først når en test bruker dem.
 export class ApiClient {
     private readonly request: APIRequestContext;
+    private _accessManagement?: AccessManagementApiClient;
     private _accessManagementBff?: AccessManagementBffApiClient;
     private _apps?: AppsApiClient;
     private _correspondence?: CorrespondenceApiClient;
@@ -22,6 +24,10 @@ export class ApiClient {
         private readonly urler: Urler,
     ) {
         this.request = withRetries(request);
+    }
+
+    get accessManagement(): AccessManagementApiClient {
+        return (this._accessManagement ??= new AccessManagementApiClient(this.request, this.urler.platform));
     }
 
     get accessManagementBff(): AccessManagementBffApiClient {
