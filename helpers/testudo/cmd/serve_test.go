@@ -92,6 +92,7 @@ func TestServeFindPersonsErrors(t *testing.T) {
 		{"/find/persons?env=at23&out=persons.csv", http.StatusBadRequest, `unknown query parameter "out"`},
 		{"/find/persons?env=at23&count=0", http.StatusBadRequest, "count must be at least 1"},
 		{"/find/persons?env=at23&count=two", http.StatusBadRequest, "count must be a number"},
+		{"/find/persons?env=at23&count=100000", http.StatusBadRequest, "count must be between 1 and 1000"},
 		{"/find/persons?env=at23&name=maybe", http.StatusBadRequest, "name must be true or false"},
 		{"/find/persons?env=at23&format=json&columns=displayName", http.StatusBadRequest, "--columns only works with --format csv"},
 		{"/find/persons?env=at23&columns=age", http.StatusBadRequest, `unknown column "age"`},
@@ -184,6 +185,7 @@ func TestServeFindOrganizationsErrors(t *testing.T) {
 		want   string
 	}{
 		{"/find/organizations?env=at23&n=5", `unknown query parameter "n"`},
+		{"/find/organizations?env=at23&count=100000", "count must be between 1 and 1000"},
 		{"/find/organizations?env=at23&unit-type=XYZ", `unknown --unit-type "XYZ"`},
 		{"/find/organizations?env=at23&unit-type=AS&orgno=123456789", "--orgno and --unit-type cannot be used together"},
 		{"/find/organizations?env=at23&orgno=123456789&count=2", "--count cannot be used with --orgno"},

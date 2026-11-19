@@ -201,7 +201,7 @@ underenheter, or with --subunits, the hovedenheter.`,
 
 	cmd.Flags().IntVar(
 		&opts.count, "count", 10,
-		"Number of organizations to fetch",
+		fmt.Sprintf("Number of organizations to fetch, at most %d", parties.MaxCount),
 	)
 	cmd.Flags().StringSliceVar(
 		&opts.unitTypes, "unit-type", nil,

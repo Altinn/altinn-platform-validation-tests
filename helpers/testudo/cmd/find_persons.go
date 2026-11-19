@@ -70,7 +70,7 @@ func newPersonsCmd() *cobra.Command {
 
 	cmd.Flags().IntVar(
 		&opts.count, "count", 1,
-		"Number of persons to fetch",
+		fmt.Sprintf("Number of persons to fetch, at most %d", parties.MaxCount),
 	)
 	cmd.Flags().StringVar(
 		&opts.kql, "kql", "",

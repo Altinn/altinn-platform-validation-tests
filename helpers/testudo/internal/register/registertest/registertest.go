@@ -80,6 +80,9 @@ func Echo(t *testing.T) *register.Client {
 					`"displayName":"VIRKSOMHET %s","unitType":"AS"}`, id, 1000+i, id, id))
 			}
 		}
+		// JSON, as Register answers. Without the content type the response
+		// could be read as HTML, with the identifiers from the request in it.
+		w.Header().Set("Content-Type", "application/json")
 		w.Write([]byte(`{"data":[` + strings.Join(data, ",") + `]}`))
 	})
 }

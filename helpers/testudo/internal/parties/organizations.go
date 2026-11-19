@@ -130,6 +130,9 @@ func FindOrganizations(ctx context.Context, c *tenor.Client, reg *register.Clien
 	if len(q.OrganizationNumbers) > 0 {
 		q.Count = len(q.OrganizationNumbers)
 	}
+	if q.Count < 1 || q.Count > MaxCount {
+		return nil, fmt.Errorf("%w: count must be between 1 and %d, got %d", errs.Invalid, MaxCount, q.Count)
+	}
 	var personRole PersonRole
 	if q.PersonRole != "" {
 		var err error

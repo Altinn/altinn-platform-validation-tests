@@ -12,3 +12,9 @@ var registerFields = []register.Field{register.FieldParty, register.FieldPerson,
 // maxRegisterRounds is how many times new candidates are fetched from Tenor
 // when some do not exist in Register.
 const maxRegisterRounds = 5
+
+// MaxCount is the most persons or organizations one search can ask for. The
+// count comes from a flag or a query parameter, so without a limit one request
+// to testudo serve could make it ask Tenor and Register for millions, and
+// allocate room for them.
+const MaxCount = 1000

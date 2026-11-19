@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"math"
 	"net/http"
 	"strconv"
 	"strings"
@@ -357,5 +358,37 @@ func TestToOrganizationCandidate(t *testing.T) {
 		if !ok || k.hovedenhet != tt.want || k.person != "" || k.hasPersonOrHovedenhet() != (tt.want != "") {
 			t.Errorf("%s: k = %+v", name, k)
 		}
+	}
+}
+
+// The count comes from a flag or a query parameter, so it is limited before
+// anything is fetched or allocated.
+func TestFindPersonsAndOrganizationsLimitCount(t *testing.T) {
+	c := tenortest.NewClient(t, func(w http.ResponseWriter, r *http.Request) {
+		t.Errorf("Tenor was called: %s", r.URL)
+	})
+	reg := registertest.NewClient(t, func(w http.ResponseWriter, r *http.Request) {
+		t.Errorf("Register was called: %s", r.URL)
+	})
+	tooMany := make([]string, MaxCount+1)
+	for i := range tooMany {
+		tooMany[i] = fmt.Sprintf("%09d", i+1)
+	}
+
+	for _, count := range []int{0, -1, MaxCount + 1, math.MaxInt} {
+		_, err := FindPersons(context.Background(), c, reg, "", count, "at23", &bytes.Buffer{})
+		if !errors.Is(err, errs.Invalid) || !strings.Contains(err.Error(), "count must be between 1 and 1000") {
+			t.Errorf("persons, count %d: err = %v", count, err)
+		}
+		_, err = FindOrganizations(context.Background(), c, reg, OrganizationQuery{Count: count, Env: "at23"}, &bytes.Buffer{})
+		if !errors.Is(err, errs.Invalid) || !strings.Contains(err.Error(), "count must be between 1 and 1000") {
+			t.Errorf("organizations, count %d: err = %v", count, err)
+		}
+	}
+
+	// One organization per organization number, so the list is limited too.
+	_, err := FindOrganizations(context.Background(), c, reg, OrganizationQuery{OrganizationNumbers: tooMany, Env: "at23"}, &bytes.Buffer{})
+	if !errors.Is(err, errs.Invalid) {
+		t.Errorf("1001 organization numbers: err = %v", err)
 	}
 }

@@ -8,6 +8,7 @@ import (
 	"regexp"
 	"time"
 
+	"github.com/Altinn/altinn-platform-validation-tests/helpers/testudo/internal/errs"
 	"github.com/Altinn/altinn-platform-validation-tests/helpers/testudo/internal/register"
 	"github.com/Altinn/altinn-platform-validation-tests/helpers/testudo/internal/tenor"
 )
@@ -49,6 +50,9 @@ func DefaultPersonKQL(now time.Time) string {
 // exist in Register are replaced with new ones from Tenor, in up to
 // maxRegisterRounds rounds, and how many were replaced is written to log.
 func FindPersons(ctx context.Context, c *tenor.Client, reg *register.Client, kql string, count int, env string, log io.Writer) ([]Person, error) {
+	if count < 1 || count > MaxCount {
+		return nil, fmt.Errorf("%w: count must be between 1 and %d, got %d", errs.Invalid, MaxCount, count)
+	}
 	seen := map[string]bool{}
 	persons := make([]Person, 0, count)
 	notInRegister := 0

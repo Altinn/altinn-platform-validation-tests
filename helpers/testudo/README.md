@@ -110,7 +110,7 @@ Fetching 3 person(s) from Tenor with KQL: (personstatus:"bosatt") AND (foedselsd
 
 | Flag | Default | Description |
 | --- | --- | --- |
-| `--count` | `1` | Number of persons. |
+| `--count` | `1` | Number of persons, at most 1000. |
 | `--env` | `at23` | Environment: `at22`, `at23`, `tt02` or `yt01`. |
 | `--kql` | bosatt, 18 or older | Your own Tenor KQL for Folkeregisteret, for example `personstatus:"bosatt" AND sivilstand:"gift"`. |
 | `--name` | | Prints the name next to the fødselsnummer in text output. |
@@ -147,7 +147,7 @@ Fetching 3 organizations with the leader from Tenor with KQL: organisasjonsform.
 
 | Flag | Default | Description |
 | --- | --- | --- |
-| `--count` | `10` | Number of organizations. |
+| `--count` | `10` | Number of organizations, at most 1000. |
 | `--env` | `at23` | Environment: `at22`, `at23`, `tt02` or `yt01`. |
 | `--unit-type` | `AS` | Comma-separated organisasjonsformer: `AS`, `ENK`, `ESEK`, `BRL`, `NUF`. |
 | `--person-role` | the leader | The person has this role in Enhetsregisteret instead, for example `styreleder`, `styremedlem`, `kontaktperson` or `prokurist`. `--help` lists all 21. |
