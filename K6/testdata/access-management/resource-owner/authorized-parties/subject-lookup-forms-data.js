@@ -1,12 +1,12 @@
 import { fail } from "k6";
 
-import { AuthorizedPartiesQueryBuilder, AuthorizedPartiesRequestBuilder } from "../../../../../../clients/access-management/resource-owner/authorized-parties/index.js";
-import { CcrHolderRoles } from "../../../../../../clients/register/types.js";
-import { fetchTestData, requireEnv } from "../../../../../../helpers.js";
-import { GetAuthorizedParties } from "../../../../../building-blocks/access-management/resource-owner/authorized-parties/index.js";
-import { RegisterBuildingBlocks } from "../../../../../building-blocks/register/index.js";
-import { getLookupClient, getPartyLookupAdminClient } from "../../../../register/commons.js";
-import { getClients } from "../common.js";
+import { GetAuthorizedParties } from "../../../../api/building-blocks/access-management/resource-owner/authorized-parties/index.js";
+import { RegisterBuildingBlocks } from "../../../../api/building-blocks/register/index.js";
+import { getClients } from "../../../../api/tests/access-management/resource-owner/authorized-parties/common.js";
+import { getLookupClient, getPartyLookupAdminClient } from "../../../../api/tests/register/commons.js";
+import { AuthorizedPartiesQueryBuilder, AuthorizedPartiesRequestBuilder } from "../../../../clients/access-management/resource-owner/authorized-parties/index.js";
+import { CcrHolderRoles } from "../../../../clients/register/types.js";
+import { fetchTestData, requireEnv } from "../../../../helpers.js";
 
 // Generates the rows subject-lookup-forms.js reads, one file per environment.
 //
@@ -204,7 +204,7 @@ export default function (candidates) {
  * @param {Array<Candidate>} rows The rows that survived.
  */
 function printCsv(rows) {
-    let csv = "orgno,orgPartyUuid,pid,userId,partyId,partyUuid\n";
+    let csv = "organizationIdentifier,partyUuid,ssn,userId,userPartyId,userPartyUuid\n";
 
     rows.forEach((r) => {
         csv += `${r.orgno},${r.orgPartyUuid},${r.pid},${r.userId},${r.partyId},${r.partyUuid}\n`;
