@@ -2,10 +2,13 @@ package cmd
 
 import (
 	"bytes"
+	"errors"
 	"strings"
 	"testing"
 
 	"github.com/spf13/cobra"
+
+	"github.com/Altinn/altinn-platform-validation-tests/helpers/testudo/internal/errs"
 )
 
 // execute runs testudo with args and returns the error and what it printed.
@@ -23,9 +26,25 @@ func TestSingleDashFlagsAreRejected(t *testing.T) {
 	for _, args := range [][]string{
 		{"find", "persons", "-n", "2"},
 		{"find", "organizations", "-r", "revisor"},
+		// k6's own -e goes after --.
+		{"k6", "generate", "smoke.yaml", "-e", "FOO=bar"},
 	} {
 		if _, err := execute(args...); err == nil {
 			t.Errorf("%s: expected an error", strings.Join(args, " "))
+		}
+	}
+}
+
+// The arguments are checked before anything is generated, so these do not
+// touch the file system.
+func TestK6GenerateTakesOneConfigFile(t *testing.T) {
+	for _, args := range [][]string{
+		{"k6", "generate"},
+		{"k6", "generate", "functional.yaml", "smoke.yaml"},
+		{"k6", "generate", "--", "--vus", "3"},
+	} {
+		if _, err := execute(args...); !errors.Is(err, errs.Invalid) {
+			t.Errorf("%s: expected errs.Invalid, got %v", strings.Join(args, " "), err)
 		}
 	}
 }

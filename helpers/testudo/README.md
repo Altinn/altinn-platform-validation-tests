@@ -11,6 +11,9 @@ Use it to make the CSV files that K6 tests read in `setup()` with
 `fetchTestData()`. [K6/testdata/README.md](../../K6/testdata/README.md) has the
 recipe for each file that is made with testudo today.
 
+testudo also makes the Kubernetes manifests that run the K6 tests in the k6
+cluster, see [k6 generate](#k6-generate).
+
 - [Install](#install)
 - [Configuration](#configuration)
 - [How it picks parties](#how-it-picks-parties)
@@ -19,6 +22,7 @@ recipe for each file that is made with testudo today.
 - [Output](#output)
 - [API](#api)
 - [Recipes for K6 setup](#recipes-for-k6-setup)
+- [k6 generate](#k6-generate)
 - [What testudo does not do](#what-testudo-does-not-do)
 - [Development](#development)
 - [Sources](#sources)
@@ -379,6 +383,47 @@ runs testudo and replaces the header row with the names the file uses.
 > the file, and read
 > [Before you replace a file](../../K6/testdata/README.md#before-you-replace-a-file).
 
+## k6 generate
+
+Makes the Kubernetes manifests that run the tests in a K6 config file
+(`functional.yaml`, `smoke.yaml`, `healthcheck.yaml`, `breakpoint.yaml` or
+`browser.yaml` under `K6/`) in the k6 cluster, for every environment in the file
+where the test is enabled. The code was moved here from
+[actions/generate-k6-manifests](https://github.com/Altinn/altinn-platform/tree/main/actions/generate-k6-manifests)
+in altinn-platform, and the output is the same. The workflows and CronJobs still
+use the action and image from altinn-platform.
+
+Run it from the root of the repository, since the paths in the config files are
+relative to it. `k6`, `kubectl` and `jsonnet` must be on PATH. kubectl only runs
+with `--dry-run=client`, so nothing is sent to a cluster.
+
+```bash
+testudo k6 generate K6/api/tests/portaler/smoke.yaml
+kubectl apply --server-side -f .dist/ -R
+```
+
+| Folder | Contents |
+| --- | --- |
+| `.dist/<test id>/` | `configmap.json` with the k6 archive, and `testrun.json` for the k6 operator. This is what you apply. |
+| `.conf/` | `expanded-configfile.yaml`, the config file with all defaults filled in, and `<test id>/tweaked-testconfig.json`, the k6 options for each test. |
+| `.build/<test id>/` | `archive.tar`, the k6 archive. |
+
+The three folders are emptied first, so manifests from an earlier run are not
+applied by mistake.
+
+Arguments after `--` are given to k6 in the TestRun. Each `-e` or
+`--env KEY=VALUE` among them is also set as an environment variable for the
+test, which is how an ad-hoc breakpoint run sets the load:
+
+```bash
+testudo k6 generate K6/api/tests/access-management/consent/breakpoint.yaml -- --env BREAKPOINT_STAGE_TARGET=50 --env BREAKPOINT_STAGE_DURATION=5m
+```
+
+In GitHub Actions, the `GITHUB_*` variables that are set (`GITHUB_REPOSITORY`,
+`GITHUB_RUN_ID`, `GITHUB_SHA` and so on) are added to the environment of the
+test. `GITHUB_REF=refs/heads/main` also picks the Slack secret for the
+environment (`slack-dev` or `slack-prod`); otherwise it is `slack-test`.
+
 ## What testudo does not do
 
 testudo only finds parties that already exist. It does not create
@@ -402,6 +447,10 @@ make fmt      # formats the code
 | `internal/register/` | Register client. `registertest/` has fakes for tests. |
 | `internal/maskinporten/`, `internal/platformtoken/` | Tokens for Tenor and Register. |
 | `internal/config/` | Reads `~/.testudo.yaml` and environment variables. |
+| `internal/k6manifest/` | Reads the K6 config files and makes the manifests for `k6 generate`. `assets/` has the default load profile for each test type, the k6 cluster config and the jsonnet for the TestRun. `testdata/` has example config files and the expected output. |
+
+`TestGenerate` in `internal/k6manifest/` runs k6, kubectl and jsonnet, and
+fails when one of them is not on PATH. Install them before you run the tests.
 
 The code is in English. Words from the domain that have no good English
 equivalent stay in Norwegian, for example hovedenhet, underenhet, daglig leder
@@ -460,8 +509,18 @@ What testudo is built on, and where to look when something changes.
   in altinn-access-management-frontend: how the Playwright tests used Tenor
   before testudo.
 
+**K6**
+
+- [k6 archive](https://grafana.com/docs/k6/latest/reference/archive/): what
+  `k6 generate` puts in the ConfigMap, and why `--env` values are baked into
+  it.
+- [k6-operator](https://github.com/grafana/k6-operator): the `TestRun`
+  resource that runs the archive in the cluster.
+
 **Go libraries**
 
 - [cobra](https://github.com/spf13/cobra) for the commands and flags,
   [viper](https://github.com/spf13/viper) for the config file, and
   [jwx](https://github.com/lestrrat-go/jwx) for the Maskinporten JWT.
+- [yaml.v3](https://github.com/go-yaml/yaml) for the K6 config files, and
+  [k8s.io/api](https://github.com/kubernetes/api) for the ConfigMap.
