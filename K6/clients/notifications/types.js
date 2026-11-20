@@ -209,6 +209,7 @@
  * "SMS_Failed_RecipientNotIdentified"|
  * "SMS_Failed_Rejected"|
  * "SMS_Failed_TTL"|
+ * "SMS_Failed_ContentTooLarge"|
  * "Email_New"|
  * "Email_Sending"|
  * "Email_Succeeded"|
@@ -224,7 +225,8 @@
  * "Email_Failed_Quarantined"|
  * "Email_Failed_TTL"|
  * "Email_Failed_InvalidSasUrl"|
- * "Email_Failed_PayloadTooLarge"} NotificationStatus
+ * "Email_Failed_PayloadTooLarge"|
+ * "Email_Failed_ContentTooLarge"} NotificationStatus
  */
 
 /**

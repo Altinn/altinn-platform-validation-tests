@@ -1,6 +1,6 @@
 import { expect, Locator, Page } from "@playwright/test";
 
-import { etternavn, TestAppConfig, TestUser } from "../../config/environment";
+import { TestAppConfig, TestUser } from "../../config/environment";
 import { Sprak } from "../../config/sprak";
 
 // Appen legger instansen i urlen: #/instance/{partyId}/{instanceGuid}/...
@@ -47,9 +47,12 @@ const PERSONOPPSLAG: Record<Sprak, { fodselsnummer: string; etternavn: string; h
 // Appen står på kvitteringen når prosessen er ferdig: #/instance/{partyId}/{instanceGuid}/ProcessEnd
 const KVITTERING = "/ProcessEnd";
 
-// Appen forkorter og snur navnet («U. SILHUETT FLØYTE», «KØ KJÆRLIG»), så bare etternavnet matches.
-function etternavnIAppen(bruker: TestUser): string {
-    return etternavn(bruker).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+// Appen viser det forkortede navnet fra Folkeregisteret, maks 25 tegn: det kan være snudd,
+// forkortet eller kuttet («U. SILHUETT FLØYTE», «KØ KJÆRLIG», «TESTFORNAVN 17583 TESTETT»).
+// Fornavnet eller etternavnet står helt, så det holder at ett av dem matcher.
+function navnIAppen(bruker: TestUser): string {
+    const navn = [bruker.firstName, bruker.lastName].map((n) => n.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"));
+    return `(?:${navn.join("|")})`;
 }
 
 /**
@@ -108,7 +111,7 @@ export class AppPom {
     async fyllUtPersonoppslag(bruker: TestUser) {
         const tekster = PERSONOPPSLAG[this.sprak];
         await this.hovedinnhold.getByRole("textbox", { name: tekster.fodselsnummer, exact: true }).fill(bruker.pid);
-        await this.hovedinnhold.getByRole("textbox", { name: tekster.etternavn, exact: true }).fill(etternavn(bruker));
+        await this.hovedinnhold.getByRole("textbox", { name: tekster.etternavn, exact: true }).fill(bruker.lastName);
         await this.hovedinnhold.getByRole("button", { name: tekster.hent, exact: true }).click();
         await expect(
             this.hovedinnhold.getByRole("button", { name: tekster.fjern, exact: true }),
@@ -161,13 +164,13 @@ export class AppPom {
     async assertLoggedIn(bruker: TestUser) {
         await expect(this.page, "Står i appen").toHaveURL((url) => url.href.includes(this.id));
         await expect(this.presentationHeading, "Appen er lastet").toContainText(this.visningsnavn);
-        await expect(this.header, `Headeren viser ${bruker.name}`).toContainText(new RegExp(etternavnIAppen(bruker), "i"));
+        await expect(this.header, `Headeren viser ${bruker.name}`).toContainText(new RegExp(navnIAppen(bruker), "i"));
     }
 
     /** Headeren viser at `bruker` fyller ut på vegne av `aktor`: "<bruker> for <aktør>". */
     async assertPaVegneAv(bruker: TestUser, aktor: TestUser) {
         await expect(this.header, `${bruker.name} fyller ut på vegne av ${aktor.name}`).toContainText(
-            new RegExp(`${etternavnIAppen(bruker)}.* ${FOR[this.sprak]} .*${etternavnIAppen(aktor)}`, "i"),
+            new RegExp(`${navnIAppen(bruker)}.* ${FOR[this.sprak]} .*${navnIAppen(aktor)}`, "i"),
         );
     }
 }

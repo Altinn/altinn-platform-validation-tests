@@ -25,12 +25,12 @@ export type TestAppConfig = {
 
 export type TestUser = {
     pid: string;
-    name: string;
+    firstName: string;
+    middleName?: string;
+    lastName: string;
+    // Fornavn, mellomnavn og etternavn med store bokstaver, slik Register har dem.
+    readonly name: string;
 };
-
-export function etternavn(user: TestUser): string {
-    return user.name.split(" ").at(-1)!;
-}
 
 export function requireEnv(name: string): string {
     const value = process.env[name];

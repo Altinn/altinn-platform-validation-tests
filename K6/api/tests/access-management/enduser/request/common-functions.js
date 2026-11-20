@@ -8,15 +8,29 @@ import { AltinnScopes, CreateScopeString } from "../../../../../scopes.js";
 import { PackagesExport } from "../../../../building-blocks/access-management/metadata/packages/index.js";
 
 /**
+ * One row of the test data: a daglig leder and the organization they lead.
+ *
+ * @typedef {object} EnduserRow
+ * @property {string} pid The daglig leder's national identity number.
+ * @property {string} partyUuid The daglig leder's party uuid.
+ * @property {string} orgUuid The organization's party uuid.
+ * @property {string} orgNo The organization number.
+ * @property {string} lastName The daglig leder's last name.
+ * @property {string} [userId] The daglig leder's Altinn user id; empty or missing where the file lacks it.
+ * @property {string} [partyId] The daglig leder's party id; empty or missing where the file lacks it.
+ */
+
+/**
  * k6 setup function.
  *
  * Fetches the "be om tilgang" test data from the branch on GitHub, and the list
  * of assignable organization access packages from the meta API.
  *
  * Each CSV row holds an organization (Virksomhet) and its daglig leder:
- * pid, partyUuid (daglig leder), orgUuid (Virksomhet), orgNo, lastName.
+ * pid, partyUuid (daglig leder), orgUuid (Virksomhet), orgNo, lastName, and
+ * the daglig leder's userId and partyId where the file has them.
  *
- * @returns {{ users: any[], packages: string[] }} Test input: parsed CSV rows
+ * @returns {{ users: EnduserRow[], packages: string[] }} Test input: parsed CSV rows
  * and the URNs of packages that can be requested (Organisasjon, delegable and
  * assignable).
  */
@@ -92,22 +106,31 @@ export const getClients = lazy(function () {
 /**
  * Builds enduser personal-token options for a given user.
  *
- * @param {string|null} [pid] - the user's national identity number
- * @param {string|null} [partyUuid] - the user's party uuid
+ * userId and partyId become the urn:altinn:userid and urn:altinn:partyid
+ * claims. The decision point in at22 does not recognize a person acting for
+ * themselves without them, so the request in step 2 got 403. A row without the
+ * columns gets a token without the claims, as before.
+ *
+ * @param {EnduserRow|null} [user] - the CSV row of the user, or null for a token without a user
  * @returns Token generator options for the given user.
  */
-export function getEnduserOpts(pid = null, partyUuid = null) {
+export function getEnduserOpts(user = null) {
     const scopes = CreateScopeString([
         AltinnScopes.PORTAL.ENDUSER
     ]);
     const tokenOpts = new PersonalTokenBuilder()
         .withScopes(scopes);
 
-    if (pid !== null) {
-        tokenOpts.withPid(pid);
+    if (user === null) {
+        return tokenOpts.build();
     }
-    if (partyUuid !== null) {
-        tokenOpts.withPartyUuid(partyUuid);
+
+    tokenOpts.withPid(user.pid).withPartyUuid(user.partyUuid);
+    if (user.userId) {
+        tokenOpts.withUserId(user.userId);
+    }
+    if (user.partyId) {
+        tokenOpts.withPartyId(user.partyId);
     }
     return tokenOpts.build();
 }

@@ -51,7 +51,7 @@ const miljoer = {
         },
     },
     prod: {
-    // TestID finnes ikke i prod, så innloggingen går via Mockporten.
+        // TestID finnes ikke i prod, så innloggingen går via Mockporten.
         mockporten: true,
         testAppConfig: bruksmoensterTestApp,
         urler: {
@@ -72,7 +72,7 @@ const skjerm = { width: 1920, height: 1080 };
 const nettlesere = {
     chromium: devices["Desktop Chrome"],
     // firefox: devices["Desktop Firefox"],
-    // edge: devices["Desktop Edge"],
+    edge: devices["Desktop Edge"],
     // webkit: devices["Desktop Safari"],
 };
 
