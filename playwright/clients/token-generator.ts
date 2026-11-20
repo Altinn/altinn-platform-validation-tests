@@ -21,6 +21,8 @@ export type PersonalTokenOptions = {
     userId?: string;
     partyId?: string;
     partyuuid?: string;
+    /** Sikkerhetsnivået i tokenet. Generatoren bruker 3 hvis det mangler. */
+    authLvl?: string;
 };
 
 /**
