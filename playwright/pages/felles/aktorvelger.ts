@@ -1,6 +1,7 @@
 import { expect, Locator, Page } from "@playwright/test";
 
 import { Sprak } from "../../config/sprak";
+import { escapeRegex } from "../../helpers/regex";
 import { REDIRECT_TIMEOUT } from "./navigasjon";
 
 // Fra AccountSelector i @altinn/altinn-components.
@@ -114,8 +115,7 @@ export class AktorvelgerPom {
      * org.nr, så det matches uten store og små bokstaver og uten å kreve hele navnet.
      */
     private aktor(navn: string): Locator {
-        const escaped = navn.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-        return this.aktorliste.getByRole("menuitem", { name: new RegExp(escaped, "i") }).first();
+        return this.aktorliste.getByRole("menuitem", { name: new RegExp(escapeRegex(navn), "i") }).first();
     }
 
     // Lister med mange aktører har et søkefelt og tegner bare aktørene som er synlige, så en
