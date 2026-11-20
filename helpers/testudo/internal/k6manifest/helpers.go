@@ -2,13 +2,15 @@ package k6manifest
 
 import (
 	"bufio"
-	"log"
+	"fmt"
 	"math/rand"
 	"os"
 	"path/filepath"
 	"strings"
 
 	orderedmap "github.com/elliotchance/orderedmap/v3"
+
+	"github.com/Altinn/altinn-platform-validation-tests/helpers/testudo/internal/errs"
 )
 
 func getEnvVarsFromCliArgs(cliArgs string) []*Env {
@@ -70,12 +72,12 @@ func randomString(n int) string {
 	return string(s)
 }
 
-func parseEnvFile(filePath string) []*Env {
+func parseEnvFile(filePath string) ([]*Env, error) {
 	envFromFile := []*Env{}
 	tempFile, err := os.Open(filePath)
 
 	if err != nil {
-		log.Fatalf("error opening file: %s", err)
+		return nil, fmt.Errorf("open env file: %w", err)
 	}
 	defer tempFile.Close()
 
@@ -89,7 +91,7 @@ func parseEnvFile(filePath string) []*Env {
 		}
 		keyValue := strings.Split(line, "=")
 		if len(keyValue) != 2 {
-			log.Fatalf("expected %s to have the format KEY=VALUE", keyValue)
+			return nil, fmt.Errorf("%w: %s: expected %q to have the format KEY=VALUE", errs.Invalid, filePath, line)
 		}
 		envFromFile = append(envFromFile, &Env{
 			Name:  &keyValue[0],
@@ -98,9 +100,9 @@ func parseEnvFile(filePath string) []*Env {
 	}
 
 	if err := scanner.Err(); err != nil {
-		log.Fatalf("error reading from file: %s", err)
+		return nil, fmt.Errorf("read env file: %w", err)
 	}
-	return envFromFile
+	return envFromFile, nil
 }
 
 func handleExtraEnvVars(original []*Env, extra []*Env) []*Env {

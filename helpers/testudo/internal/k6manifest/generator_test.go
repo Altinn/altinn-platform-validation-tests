@@ -3,6 +3,7 @@ package k6manifest
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"log"
 	"os"
@@ -15,6 +16,8 @@ import (
 
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
+
+	"github.com/Altinn/altinn-platform-validation-tests/helpers/testudo/internal/errs"
 )
 
 // The paths in the example config files are relative to testdata.
@@ -136,7 +139,7 @@ func preTest(t *testing.T, version string, g *K8sManifestGenerator) {
 }
 
 // requireTools fails the test when one of the programs the generator runs is
-// not on PATH. Without the check the generator would exit the test binary.
+// not on PATH.
 func requireTools(t *testing.T, names ...string) {
 	t.Helper()
 	var missing []string
@@ -169,15 +172,20 @@ var generateExamplesVersion = []string{
 }
 
 func TestGenerate(t *testing.T) {
-	requireTools(t, "k6", "kubectl", "jsonnet")
+	requireTools(t, "k6")
 	for _, version := range generateExamplesVersion {
 		t.Run(version, func(t *testing.T) {
 			testVersion := version
 			distDir, confDir, buildDir := t.TempDir(), t.TempDir(), t.TempDir()
 			g := initGenerator(confDir, distDir, buildDir)
 			preTest(t, version, &g)
-			cf := g.Initialize(fmt.Sprintf("./testdata/example_configfiles/%s.yaml", testVersion))
-			g.Generate(*cf)
+			cf, err := g.Initialize(fmt.Sprintf("./testdata/example_configfiles/%s.yaml", testVersion))
+			if err != nil {
+				t.Fatal(err)
+			}
+			if err := g.Generate(*cf); err != nil {
+				t.Fatal(err)
+			}
 
 			validateConfigFolder(confDir, testVersion, t)
 
@@ -304,5 +312,91 @@ func TestEnvOverride(t *testing.T) {
 		if !eq {
 			t.Errorf("TestEnvOverride: expected %v, actual %v", tt.mergedEnv, resultMap)
 		}
+	}
+}
+
+func TestJsonnetJSON(t *testing.T) {
+	input := map[string]any{
+		"b":          []any{},
+		"a":          map[string]any{},
+		"s":          "q\"b\\s/n\nt\tc\x01d\x7fe\u0085f<g>&h iæø\x00j\x1fk l",
+		"r":          "a\bb\fc\rd~",
+		"n":          1,
+		"big":        12345678901,
+		"z":          nil,
+		"y":          true,
+		"l":          []any{1, map[string]any{"x": "y"}},
+		"e":          map[string]any{"k": []any{}},
+		"Zcap":       "upper sorts first",
+		"with space": "x",
+		"_u":         "underscore",
+	}
+	got, err := jsonnetJSON(input)
+	if err != nil {
+		t.Fatal(err)
+	}
+	want, err := os.ReadFile("testdata/jsonnet_format/expected.json")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if string(got) != string(want) {
+		t.Errorf("expected\n%s\nactual\n%s", want, got)
+	}
+}
+
+// The archive is in data when it is valid UTF-8 and in binaryData otherwise,
+// as when the ConfigMap was made with kubectl.
+func TestConfigMapData(t *testing.T) {
+	for _, tt := range []struct {
+		name    string
+		archive []byte
+		binary  bool
+	}{
+		{"text", []byte("export default function () {}\x00\x00"), false},
+		{"binary", []byte{0xff, 0xfe, 0x00}, true},
+	} {
+		t.Run(tt.name, func(t *testing.T) {
+			g := initGenerator(t.TempDir(), t.TempDir(), t.TempDir())
+			if err := os.MkdirAll(filepath.Join(g.BuildDirectory, "id"), 0o755); err != nil {
+				t.Fatal(err)
+			}
+			if err := os.WriteFile(filepath.Join(g.BuildDirectory, "id", "archive.tar"), tt.archive, 0o644); err != nil {
+				t.Fatal(err)
+			}
+			if err := g.writeConfigMap("id", "scope-id", "at22-1-abcde", 1, "id", "name", "scope", "ns", "test.js"); err != nil {
+				t.Fatal(err)
+			}
+			b, err := os.ReadFile(filepath.Join(g.DistDirectory, "id", "configmap.json"))
+			if err != nil {
+				t.Fatal(err)
+			}
+			var cm corev1.ConfigMap
+			if err := json.Unmarshal(b, &cm); err != nil {
+				t.Fatal(err)
+			}
+			got := []byte(cm.Data["archive.tar"])
+			if tt.binary {
+				got = cm.BinaryData["archive.tar"]
+				if _, ok := cm.Data["archive.tar"]; ok {
+					t.Error("binary archive is also in data")
+				}
+			}
+			if !bytes.Equal(got, tt.archive) {
+				t.Errorf("archive: expected %q, actual %q", tt.archive, got)
+			}
+			if cm.Kind != "ConfigMap" || cm.APIVersion != "v1" || cm.Name != "scope-id" || cm.Namespace != "ns" {
+				t.Errorf("unexpected type or metadata: %+v %+v", cm.TypeMeta, cm.ObjectMeta)
+			}
+		})
+	}
+}
+
+func TestUnknownNodeType(t *testing.T) {
+	cluster, err := loadK6Cluster()
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err := newTestRun(testRunParameters{nodeType: "nope"}, cluster); !errors.Is(err, errs.Invalid) {
+		t.Errorf("expected errs.Invalid, got %v", err)
 	}
 }

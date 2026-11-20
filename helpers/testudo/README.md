@@ -394,8 +394,9 @@ in altinn-platform, and the output is the same. The workflows and CronJobs still
 use the action and image from altinn-platform.
 
 Run it from the root of the repository, since the paths in the config files are
-relative to it. `k6`, `kubectl` and `jsonnet` must be on PATH. kubectl only runs
-with `--dry-run=client`, so nothing is sent to a cluster.
+relative to it. `k6` must be on PATH, since it makes the k6 archives. testudo
+makes the ConfigMaps and TestRuns itself, without kubectl or jsonnet, and sends
+nothing to a cluster.
 
 ```bash
 testudo k6 generate K6/api/tests/portaler/smoke.yaml
@@ -447,10 +448,10 @@ make fmt      # formats the code
 | `internal/register/` | Register client. `registertest/` has fakes for tests. |
 | `internal/maskinporten/`, `internal/platformtoken/` | Tokens for Tenor and Register. |
 | `internal/config/` | Reads `~/.testudo.yaml` and environment variables. |
-| `internal/k6manifest/` | Reads the K6 config files and makes the manifests for `k6 generate`. `assets/` has the default load profile for each test type, the k6 cluster config and the jsonnet for the TestRun. `testdata/` has example config files and the expected output. |
+| `internal/k6manifest/` | Reads the K6 config files and makes the manifests for `k6 generate`. `testrun.go` makes the TestRun, in the same format jsonnet wrote it in before. `assets/` has the default load profile for each test type and the k6 cluster config. `testdata/` has example config files and the expected output. |
 
-`TestGenerate` in `internal/k6manifest/` runs k6, kubectl and jsonnet, and
-fails when one of them is not on PATH. Install them before you run the tests.
+`TestGenerate` in `internal/k6manifest/` runs k6, and fails when it is not on
+PATH. Install k6 before you run the tests.
 
 The code is in English. Words from the domain that have no good English
 equivalent stay in Norwegian, for example hovedenhet, underenhet, daglig leder

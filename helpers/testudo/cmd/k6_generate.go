@@ -26,7 +26,7 @@ func newK6GenerateCmd() *cobra.Command {
 environment in it where the test is enabled.
 
 Run it from the root of the repository, since the paths in the config file are
-relative to it. k6, kubectl and jsonnet must be on PATH.
+relative to it. k6 must be on PATH.
 
 Each test gets .dist/<test id>/ with configmap.json and testrun.json, which can
 be applied with kubectl apply --server-side -f .dist/ -R. .conf/ gets the config
@@ -49,6 +49,9 @@ among them is also set as an environment variable for the test.`,
 			return nil
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
+			// The arguments are fine by now, so the help text is not
+			// printed for errors from here on.
+			cmd.SilenceUsage = true
 			var k6Args []string
 			if dash := cmd.ArgsLenAtDash(); dash >= 0 {
 				k6Args = args[dash:]
@@ -65,9 +68,11 @@ among them is also set as an environment variable for the test.`,
 				RepoRootDirectory: ".",
 				CommandLineArgs:   strings.Join(k6Args, " "),
 			}
-			cf := g.Initialize(args[0])
-			g.Generate(*cf)
-			return nil
+			cf, err := g.Initialize(args[0])
+			if err != nil {
+				return err
+			}
+			return g.Generate(*cf)
 		},
 	}
 }

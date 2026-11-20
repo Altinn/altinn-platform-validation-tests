@@ -4,14 +4,15 @@
 // archive and a TestRun for the k6 operator.
 //
 // The code was moved here from actions/generate-k6-manifests in
-// altinn-platform, and the output is the same.
+// altinn-platform. It used kubectl for the ConfigMap and jsonnet for the
+// TestRun; both are made in Go now, and the files are the same as before.
 package k6manifest
 
 import (
 	"embed"
 	"encoding/json"
+	"errors"
 	"fmt"
-	"log"
 	"maps"
 	"os"
 	"os/exec"
@@ -20,46 +21,20 @@ import (
 	"strings"
 	"sync"
 	"time"
+	"unicode/utf8"
 
 	yaml "gopkg.in/yaml.v3"
 	corev1 "k8s.io/api/core/v1"
-)
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
-type JsonnetParameters struct {
-	dirName                     string
-	configMapName               string
-	uniqName                    string
-	testName                    string
-	manifestGenerationTimestamp string
-	namespace                   string
-	environment                 string
-	parallelism                 int
-	nodeType                    string
-	secretReferences            []byte
-	extraEnvVars                []byte
-	resources                   []byte
-	imageName                   string
-	testid                      string
-	testScope                   string
-	testFilename                string
-}
+	"github.com/Altinn/altinn-platform-validation-tests/helpers/testudo/internal/errs"
+)
 
 // defaultScenarios has the load profile for each test type, used when the
 // test's own config file does not set one.
 //
 //go:embed assets/default_scenarios/*.json
 var defaultScenarios embed.FS
-
-// k6ClusterConfig has the Prometheus address and the node types in the k6
-// cluster.
-//
-//go:embed assets/k6_cluster_conf.yaml
-var k6ClusterConfig string
-
-// testRunJsonnet makes the TestRun. It is given to jsonnet on stdin.
-//
-//go:embed assets/main.jsonnet
-var testRunJsonnet string
 
 type K8sManifestGenerator struct {
 	ConfigDirectory   string
@@ -72,11 +47,10 @@ type K8sManifestGenerator struct {
 	CommandLineArgs string
 }
 
-func (r K8sManifestGenerator) Initialize(filePath string) *ConfigFile {
+func (r K8sManifestGenerator) Initialize(filePath string) (*ConfigFile, error) {
 	yfile, err := os.ReadFile(filePath)
-
 	if err != nil {
-		log.Fatal(err)
+		return nil, fmt.Errorf("read config file: %w", err)
 	}
 
 	cf := ConfigFile{
@@ -100,11 +74,11 @@ func (r K8sManifestGenerator) Initialize(filePath string) *ConfigFile {
 
 	err = yaml.Unmarshal(yfile, &cf)
 	if err != nil {
-		log.Fatalf("error: %v", err)
+		return nil, fmt.Errorf("%w: %s: %v", errs.Invalid, filePath, err)
 	}
 
 	if !cf.IsValid() {
-		log.Fatal("Config file is not valid.")
+		return nil, fmt.Errorf("%w: %s is not a valid config file", errs.Invalid, filePath)
 	}
 	cf.SetDefaults(filePath)
 
@@ -118,25 +92,24 @@ func (r K8sManifestGenerator) Initialize(filePath string) *ConfigFile {
 		if _, err := os.Stat(d); os.IsNotExist(err) {
 			err := os.Mkdir(d, 0775)
 			if err != nil {
-				log.Fatalf("unable to create the %s directory, ensure it exists and try again: %v", d, err)
+				return nil, fmt.Errorf("create the %s directory: %w", d, err)
 			}
 		}
 	}
 
 	d, err := yaml.Marshal(&cf)
 	if err != nil {
-		log.Fatalf("error: %v", err)
+		return nil, err
 	}
 	err = os.WriteFile(fmt.Sprintf("%s/expanded-configfile.yaml", r.ConfigDirectory), d, 0644)
 	if err != nil {
-		fmt.Printf("Failed to create expanded config file\n err: %s", err)
-		os.Exit(1)
+		return nil, fmt.Errorf("write the expanded config file: %w", err)
 	}
 
-	return &cf
+	return &cf, nil
 }
 
-func generate(td *TestDefinition, c *TestContext, r K8sManifestGenerator, cf ConfigFile, envFileSlice []*Env, envOptions []*Env) {
+func (r K8sManifestGenerator) generate(td *TestDefinition, c *TestContext, cf ConfigFile, envFileSlice []*Env, envOptions []*Env, cluster k6Cluster) error {
 	manifestGenerationTimestamp := time.Now().UnixMilli()
 
 	mergedEnvs := handleExtraEnvVars(c.TestRun.Env, envFileSlice)
@@ -147,8 +120,8 @@ func generate(td *TestDefinition, c *TestContext, r K8sManifestGenerator, cf Con
 
 	k6ArchiveArgs := []string{
 		"--env", fmt.Sprintf("%s=%s", "K6_NO_USAGE_REPORT", "true"),
-		"--env", fmt.Sprintf("%s=%s", "K6_PROMETHEUS_RW_SERVER_URL", "http://kube-prometheus-stack-prometheus.monitoring:9090/api/v1/write"),
-		"--env", fmt.Sprintf("%s=%s", "K6_PROMETHEUS_RW_TREND_STATS", "avg,min,med,max,count,p(95),p(99),p(99.5),p(99.9)"),
+		"--env", fmt.Sprintf("%s=%s", "K6_PROMETHEUS_RW_SERVER_URL", cluster.PrometheusRWServerURL),
+		"--env", fmt.Sprintf("%s=%s", "K6_PROMETHEUS_RW_TREND_STATS", k6TrendStats),
 
 		"--env", fmt.Sprintf("%s=%s", "ENVIRONMENT", c.Environment),
 		"--env", fmt.Sprintf("%s=%s", "NAMESPACE", cf.Namespace),
@@ -166,65 +139,65 @@ func generate(td *TestDefinition, c *TestContext, r K8sManifestGenerator, cf Con
 	}
 
 	var configFile map[string]any
+	var err error
 	if *c.TestTypeDefinition.Type != "custom" {
 		if *c.TestTypeDefinition.Type == "breakpoint" {
-			configFile = r.HandleBreakpointConfigFile(mergedEnvs)
+			configFile, err = r.HandleBreakpointConfigFile(mergedEnvs)
 		} else {
-			configFile = r.HandleConfigFile(td.ConfigFile, *c.TestTypeDefinition.Type)
-			if c.TestTypeDefinition.ConfigFile != "" {
-				configFile = r.HandleConfigFileOverride(configFile, c.TestTypeDefinition.ConfigFile)
+			configFile, err = r.HandleConfigFile(td.ConfigFile, *c.TestTypeDefinition.Type)
+			if err == nil && c.TestTypeDefinition.ConfigFile != "" {
+				configFile, err = r.HandleConfigFileOverride(configFile, c.TestTypeDefinition.ConfigFile)
 			}
+		}
+		if err != nil {
+			return err
 		}
 	}
 
 	uniqName := fmt.Sprintf("%s-%d-%s", c.Environment, manifestGenerationTimestamp, randomString(5))
 	testScope := td.TestScope
-	dirName := fmt.Sprintf("%s", *c.TestRun.Id)
+	dirName := *c.TestRun.Id
 	newpath := filepath.Join(r.ConfigDirectory, dirName)
 	testConfigFileToUse := fmt.Sprintf("%s/tweaked-testconfig.json", newpath)
 
 	marshalledConfigFile, err := json.MarshalIndent(configFile, "", "  ")
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 
 	if err = os.MkdirAll(newpath, os.ModePerm); err != nil {
-		log.Fatal(err)
+		return err
 	}
 
 	err = os.WriteFile(testConfigFileToUse, marshalledConfigFile, 0644)
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 
-	r.CallK6Archive(dirName, testConfigFileToUse, fmt.Sprintf("%s/%s", r.RepoRootDirectory, td.TestFile), k6ArchiveArgs)
+	err = r.CallK6Archive(dirName, testConfigFileToUse, fmt.Sprintf("%s/%s", r.RepoRootDirectory, td.TestFile), k6ArchiveArgs)
+	if err != nil {
+		return err
+	}
 
 	configMapName := fmt.Sprintf("%s-%s", td.TestScope, *c.TestRun.Id)
 
-	r.CallKubectl(dirName, configMapName, uniqName, *c.TestRun.Id, *c.TestRun.Name, testScope, cf.Namespace, testFilename)
-
-	// Jsonnet related things
-	slackChannel := chooseCorrectSlackChannel(c.Environment)
-	secretReferences, err := yaml.Marshal(append(c.TestRun.SecretReferences, &slackChannel))
+	err = r.writeConfigMap(dirName, configMapName, uniqName, manifestGenerationTimestamp, *c.TestRun.Id, *c.TestRun.Name, testScope, cf.Namespace, testFilename)
 	if err != nil {
-		log.Fatalf("error: %v", err)
+		return err
 	}
 
-	resources, err := yaml.Marshal(c.TestRun.Resources)
-	if err != nil {
-		log.Fatalf("error: %v", err)
+	secretReferences := make([]string, 0, len(c.TestRun.SecretReferences)+1)
+	for _, s := range c.TestRun.SecretReferences {
+		secretReferences = append(secretReferences, *s)
 	}
+	secretReferences = append(secretReferences, chooseCorrectSlackChannel(c.Environment))
+
 	imageName := "ghcr.io/altinn/altinn-platform/k6-image:v2.2.0"
 	if *c.TestTypeDefinition.Type == "browser" {
 		imageName = "grafana/k6:2.2.0-with-browser"
 	}
 
-	mergedEnvsMarshalled, err := yaml.Marshal(mergedEnvs)
-	if err != nil {
-		log.Fatalf("error: %v", err)
-	}
-
-	JsonnetParameters := JsonnetParameters{
+	return r.writeTestRun(testRunParameters{
 		dirName:                     dirName,
 		configMapName:               configMapName,
 		uniqName:                    uniqName,
@@ -235,48 +208,68 @@ func generate(td *TestDefinition, c *TestContext, r K8sManifestGenerator, cf Con
 		parallelism:                 *c.TestRun.Parallelism,
 		nodeType:                    *c.NodeType,
 		secretReferences:            secretReferences,
-		extraEnvVars:                mergedEnvsMarshalled,
-		resources:                   resources,
+		extraEnvVars:                mergedEnvs,
+		resources:                   c.TestRun.Resources,
 		imageName:                   imageName,
 		testid:                      *c.TestRun.Id,
 		testScope:                   testScope,
 		testFilename:                testFilename,
-	}
-	r.CallJsonnet(JsonnetParameters)
+	}, cluster)
 }
 
-func (r K8sManifestGenerator) Generate(cf ConfigFile) {
+// Generate makes the manifests for every enabled test in cf. The tests are
+// made in parallel. A test that fails does not stop the others; the errors
+// are returned together.
+func (r K8sManifestGenerator) Generate(cf ConfigFile) error {
+	cluster, err := loadK6Cluster()
+	if err != nil {
+		return err
+	}
+
 	// Command line args, used mainly with ad-hoc tests
 	envOptions := getEnvVarsFromCliArgs(r.CommandLineArgs)
 
-	wg := &sync.WaitGroup{}
-	for _, td := range cf.TestDefinitions {
-		var envFileSlice []*Env
+	envFiles := make([][]*Env, len(cf.TestDefinitions))
+	for i, td := range cf.TestDefinitions {
 		if td.EnvFile != "" {
-			envFileSlice = parseEnvFile(fmt.Sprintf("%s/%s", r.RepoRootDirectory, td.EnvFile))
-		}
-
-		for _, c := range td.Contexts {
-			if c.TestTypeDefinition.Enabled {
-				wg.Go(func() { generate(td, c, r, cf, envFileSlice, envOptions) })
+			envFiles[i], err = parseEnvFile(fmt.Sprintf("%s/%s", r.RepoRootDirectory, td.EnvFile))
+			if err != nil {
+				return err
 			}
 		}
+	}
 
+	var mu sync.Mutex
+	var failed []error
+	wg := &sync.WaitGroup{}
+	for i, td := range cf.TestDefinitions {
+		for _, c := range td.Contexts {
+			if c.TestTypeDefinition.Enabled {
+				wg.Go(func() {
+					if err := r.generate(td, c, cf, envFiles[i], envOptions, cluster); err != nil {
+						mu.Lock()
+						failed = append(failed, fmt.Errorf("%s: %w", *c.TestRun.Id, err))
+						mu.Unlock()
+					}
+				})
+			}
+		}
 	}
 	wg.Wait()
+	return errors.Join(failed...)
 }
 
-func (r K8sManifestGenerator) HandleConfigFileOverride(base map[string]any, overrideConfigFile string) map[string]any {
+func (r K8sManifestGenerator) HandleConfigFileOverride(base map[string]any, overrideConfigFile string) (map[string]any, error) {
 	override := map[string]any{}
 
 	overrideConfig, err := os.ReadFile(fmt.Sprintf("%s/%s", r.RepoRootDirectory, overrideConfigFile))
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 
 	err = json.Unmarshal([]byte(overrideConfig), &override)
 	if err != nil {
-		log.Fatal(err)
+		return nil, fmt.Errorf("%w: %s: %v", errs.Invalid, overrideConfigFile, err)
 	}
 
 	_, okst := base["stages"]
@@ -293,10 +286,10 @@ func (r K8sManifestGenerator) HandleConfigFileOverride(base map[string]any, over
 
 	maps.Copy(base, override)
 
-	return base
+	return base, nil
 }
 
-func (r K8sManifestGenerator) HandleBreakpointConfigFile(envSlice []*Env) map[string]any {
+func (r K8sManifestGenerator) HandleBreakpointConfigFile(envSlice []*Env) (map[string]any, error) {
 	env := map[string]string{}
 	for _, e := range envSlice {
 		if strings.HasPrefix(*e.Name, "BREAKPOINT_") {
@@ -307,12 +300,12 @@ func (r K8sManifestGenerator) HandleBreakpointConfigFile(envSlice []*Env) map[st
 
 	defaultScenario, err := defaultScenarios.ReadFile("assets/default_scenarios/breakpoint.json")
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 
 	err = json.Unmarshal([]byte(defaultScenario), &breakPointConf)
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 
 	duration, ok := env["BREAKPOINT_STAGE_DURATION"]
@@ -324,7 +317,7 @@ func (r K8sManifestGenerator) HandleBreakpointConfigFile(envSlice []*Env) map[st
 	if ok {
 		i, err := strconv.Atoi(target)
 		if err != nil {
-			log.Fatal(err)
+			return nil, fmt.Errorf("%w: BREAKPOINT_STAGE_TARGET must be a whole number, got %q", errs.Invalid, target)
 		}
 		breakPointConf.Stages[0].Target = i
 	}
@@ -333,7 +326,7 @@ func (r K8sManifestGenerator) HandleBreakpointConfigFile(envSlice []*Env) map[st
 	if ok {
 		b, err := strconv.ParseBool(abortOnFail)
 		if err != nil {
-			log.Fatal(err)
+			return nil, fmt.Errorf("%w: BREAKPOINT_STAGE_ABORTONFAIL must be true or false, got %q", errs.Invalid, abortOnFail)
 		}
 		for k := range breakPointConf.Thresholds {
 			for idx := range breakPointConf.Thresholds[k] {
@@ -346,27 +339,27 @@ func (r K8sManifestGenerator) HandleBreakpointConfigFile(envSlice []*Env) map[st
 	var gInterface map[string]any
 	breakPointConfMarshalled, err := json.Marshal(breakPointConf)
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 	err = json.Unmarshal(breakPointConfMarshalled, &gInterface)
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 
-	return gInterface
+	return gInterface, nil
 }
 
-func (r K8sManifestGenerator) HandleConfigFile(defaultConfigFile string, testType string) map[string]any {
+func (r K8sManifestGenerator) HandleConfigFile(defaultConfigFile string, testType string) (map[string]any, error) {
 	mergedOut := map[string]any{}
 
 	if defaultConfigFile != "" {
 		testConfig, err := os.ReadFile(fmt.Sprintf("%s/%s", r.RepoRootDirectory, defaultConfigFile))
 		if err != nil {
-			log.Fatal(err)
+			return nil, err
 		}
 		err = json.Unmarshal([]byte(testConfig), &mergedOut)
 		if err != nil {
-			log.Fatal(err)
+			return nil, fmt.Errorf("%w: %s: %v", errs.Invalid, defaultConfigFile, err)
 		}
 	}
 
@@ -379,28 +372,27 @@ func (r K8sManifestGenerator) HandleConfigFile(defaultConfigFile string, testTyp
 	if !(okst || oksc || okit || okvus || okduration) {
 		defaultScenario, err := defaultScenarios.ReadFile(fmt.Sprintf("assets/default_scenarios/%s.json", testType))
 		if err != nil {
-			log.Fatal(err)
+			return nil, err
 		}
 		temp := map[string]any{}
 		err = json.Unmarshal([]byte(defaultScenario), &temp)
 		if err != nil {
-			log.Fatal(err)
+			return nil, err
 		}
 		maps.Copy(mergedOut, temp)
 	}
-	return mergedOut
+	return mergedOut, nil
 }
 
-func (r K8sManifestGenerator) CallK6Archive(dirName string, testConfigFileToUse string, testFile string, k6ArchiveArgs []string) {
+func (r K8sManifestGenerator) CallK6Archive(dirName string, testConfigFileToUse string, testFile string, k6ArchiveArgs []string) error {
 	newpath := filepath.Join(r.BuildDirectory, dirName)
 	err := os.MkdirAll(newpath, os.ModePerm)
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 	// https://grafana.com/docs/k6/latest/using-k6/environment-variables/#-the--e-flag-does-not-configure-options
 	// https://grafana.com/docs/k6/latest/reference/archive/#how-to-create-and-run-an-archive
 	// https://grafana.com/docs/k6/latest/using-k6/test-lifecycle/#the-init-stage
-	var cmd *exec.Cmd
 	var out, errb strings.Builder
 	k6Args := []string{"archive"}
 	k6Args = append(k6Args, k6ArchiveArgs...)
@@ -410,106 +402,63 @@ func (r K8sManifestGenerator) CallK6Archive(dirName string, testConfigFileToUse 
 	}
 	k6Args = append(k6Args, testFile, "-O", fmt.Sprintf("%s/archive.tar", newpath))
 
-	cmd = exec.Command("k6", k6Args...)
+	cmd := exec.Command("k6", k6Args...)
 	cmd.Stdout = &out
 	cmd.Stderr = &errb
-	err = cmd.Run()
-	if err != nil {
-		fmt.Printf("Failed to call %s\nerr: %s", cmd.String(), errb.String())
-		os.Exit(1)
+	if err := cmd.Run(); err != nil {
+		return fmt.Errorf("k6 archive %s: %w\n%s", testFile, err, errb.String())
 	}
+	return nil
 }
 
-func (r K8sManifestGenerator) CallKubectl(dirName string, configMapName string, uniqName string, testId, testName, testScope, namespace string, testFilename string) {
-	cmd := exec.Command("kubectl",
-		"create",
-		"configmap",
-		configMapName,
-		fmt.Sprintf("--from-file=archive.tar=%s/%s/archive.tar", r.BuildDirectory, dirName),
-		"-o", "json",
-		"-n", namespace,
-		"--dry-run=client",
-	)
-	var out, errb strings.Builder
-	cmd.Stdout = &out
-	cmd.Stderr = &errb
-	err := cmd.Run()
+// writeConfigMap writes the ConfigMap with the k6 archive to
+// <DistDirectory>/<dirName>/configmap.json. It is the ConfigMap that
+// kubectl create configmap --from-file makes: the archive is in data when it
+// is valid UTF-8, and in binaryData otherwise.
+func (r K8sManifestGenerator) writeConfigMap(dirName, configMapName, uniqName string, generationTimestamp int64, testId, testName, testScope, namespace, testFilename string) error {
+	archive, err := os.ReadFile(fmt.Sprintf("%s/%s/archive.tar", r.BuildDirectory, dirName))
 	if err != nil {
-		fmt.Printf("Failed to call kubectl create configmap %s --from-file=archive.tar=%s/%s/archive.tar -o json -n %s --dry-run=client\n err: %s", dirName, r.BuildDirectory, dirName, namespace, errb.String())
-		os.Exit(1)
+		return err
 	}
 
-	var temp corev1.ConfigMap
-
-	err = json.Unmarshal([]byte(out.String()), &temp)
-	if err != nil {
-		log.Fatal(err)
+	configMap := corev1.ConfigMap{
+		TypeMeta: metav1.TypeMeta{Kind: "ConfigMap", APIVersion: "v1"},
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      configMapName,
+			Namespace: namespace,
+			Labels: map[string]string{
+				"generated-by":         "k6-action-image",
+				"uniq_name":            uniqName,
+				"generation_timestamp": strconv.FormatInt(generationTimestamp, 10),
+			},
+			Annotations: map[string]string{
+				"k6-action-image/test_name":    testName,
+				"k6-action-image/test_scope":   testScope,
+				"k6-action-image/testid":       testId,
+				"k6-action-image/testfilename": testFilename,
+			},
+		},
+	}
+	if utf8.Valid(archive) {
+		configMap.Data = map[string]string{"archive.tar": string(archive)}
+	} else {
+		configMap.BinaryData = map[string][]byte{"archive.tar": archive}
 	}
 
-	generationTimestamp := strings.Split(uniqName, "-")[1]
-
-	temp.SetLabels(map[string]string{
-		"generated-by":         "k6-action-image",
-		"uniq_name":            uniqName,
-		"generation_timestamp": generationTimestamp,
-	})
-	temp.SetAnnotations(map[string]string{
-		"k6-action-image/test_name":    testName,
-		"k6-action-image/test_scope":   testScope,
-		"k6-action-image/testid":       testId,
-		"k6-action-image/testfilename": testFilename,
-	})
-
-	tempMarshalled, err := json.MarshalIndent(temp, "", "  ")
+	configMapMarshalled, err := json.MarshalIndent(configMap, "", "  ")
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 
 	newpath := filepath.Join(r.DistDirectory, dirName)
 	err = os.MkdirAll(newpath, os.ModePerm)
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 
-	err = os.WriteFile(fmt.Sprintf("%s/configmap.json", newpath), tempMarshalled, 0644)
+	err = os.WriteFile(fmt.Sprintf("%s/configmap.json", newpath), configMapMarshalled, 0644)
 	if err != nil {
-		fmt.Printf("Failed to create configmap file: %s\n err: %s", uniqName, err)
-		os.Exit(1)
+		return fmt.Errorf("write the ConfigMap for %s: %w", uniqName, err)
 	}
-}
-
-func (r K8sManifestGenerator) CallJsonnet(jp JsonnetParameters) {
-	var errb strings.Builder
-	newpath := filepath.Join(r.DistDirectory, jp.dirName)
-	err := os.MkdirAll(newpath, os.ModePerm)
-	if err != nil {
-		log.Fatal(err)
-	}
-	cmd := exec.Command("jsonnet",
-		"--ext-str", fmt.Sprintf("unique_name=%s", jp.uniqName),
-		"--ext-str", fmt.Sprintf("testid=%s", jp.testid),
-		"--ext-str", fmt.Sprintf("test_scope=%s", jp.testScope),
-		"--ext-str", fmt.Sprintf("configmap_name=%s", jp.configMapName),
-		"--ext-str", fmt.Sprintf("test_name=%s", jp.testName),
-		"--ext-str", fmt.Sprintf("testfilename=%s", jp.testFilename),
-		"--ext-str", fmt.Sprintf("manifest_generation_timestamp=%s", jp.manifestGenerationTimestamp),
-		"--ext-str", fmt.Sprintf("namespace=%s", jp.namespace),
-		"--ext-str", fmt.Sprintf("deploy_env=%s", jp.environment),
-		"--ext-str", fmt.Sprintf("parallelism=%d", jp.parallelism),
-		"--ext-str", fmt.Sprintf("node_type=%s", jp.nodeType),
-		"--ext-str", fmt.Sprintf("extra_env_vars=%s", jp.extraEnvVars),
-		"--ext-str", fmt.Sprintf("secret_references=%s", jp.secretReferences),
-		"--ext-str", fmt.Sprintf("resources=%s", jp.resources),
-		"--ext-str", fmt.Sprintf("image_name=%s", jp.imageName),
-		"--ext-str", fmt.Sprintf("extra_cli_args=%s", r.CommandLineArgs),
-		"--ext-str", fmt.Sprintf("k6clusterconfig=%s", k6ClusterConfig),
-		"--multi", newpath, "-",
-	)
-	cmd.Stdin = strings.NewReader(testRunJsonnet)
-	cmd.Stderr = &errb
-	err = cmd.Run()
-	if err != nil {
-		fmt.Printf("Failed to generate resources via Jsonnet\nerr:%s", errb.String())
-		os.Exit(1)
-	}
+	return nil
 }

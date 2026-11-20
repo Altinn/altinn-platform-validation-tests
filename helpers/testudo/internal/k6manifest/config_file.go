@@ -46,13 +46,14 @@ type TestRun struct {
 	SecretReferences []*string  `yaml:"secrets"`
 }
 
+// Resources are also written to the TestRun, hence the json tags.
 type Resources struct {
-	Requests *Requests `yaml:"requests"`
+	Requests *Requests `yaml:"requests" json:"requests"`
 }
 
 type Requests struct {
-	Memory *string `yaml:"memory"`
-	Cpu    *string `yaml:"cpu"`
+	Memory *string `yaml:"memory" json:"memory"`
+	Cpu    *string `yaml:"cpu" json:"cpu"`
 }
 
 type Env struct {
