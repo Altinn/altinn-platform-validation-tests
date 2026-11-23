@@ -39,7 +39,7 @@ class ProcessClient {
      *
      * @param {string} org The service owner of the app.
      * @param {string} app The app name.
-     * @param {number} instanceOwnerPartyId Instance owner party id.
+     * @param {string} instanceOwnerPartyId Instance owner party id.
      * @param {string} instanceGuid Instance UUID.
      * @param {{[key:string]:string}|null} [labels] Optional k6 request labels.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.

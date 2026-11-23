@@ -55,16 +55,13 @@ export default async function (data) {
             },
         };
 
-        console.log(`orgNo=${arranged.customer.orgNo} orgPartyId=${arranged.customer.orgPartyId} ${arranged.customer.role} fnr=${arranged.customer.userPid} systemUserId=${arranged.systemUserId}`);
-
         const instance = PostSimplified(instancesClient, ORG, APP, request);
 
         if (!instance?.id) {
             fail("cannot submit: the app did not create an instance");
         }
 
-        const instanceOwnerPartyId = Number(instance.instanceOwner.partyId);
-        const instanceGuid = instance.id.split("/")[1];
+        const [instanceOwnerPartyId, instanceGuid] = instance.id.split("/");
 
         const processState = NextElement(processClient, ORG, APP, instanceOwnerPartyId, instanceGuid);
 
