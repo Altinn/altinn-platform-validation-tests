@@ -1,11 +1,14 @@
 import http from "k6/http";
 
 import { jsonBody, requestParams } from "../common/request.js";
-import { InstansiationInstance } from "./apps.types.js";
+import { InstanceWrite, ProcessNext } from "./apps.types.js";
 
 const TAGS = {
-    PostSimplified: {
-        action: "create-instance",
+    CreateNewInstance: {
+        action: "create-new-instance",
+    },
+    MoveInstanceToNextProcessStep: {
+        action: "move-instance-to-next-process-step",
     },
 };
 
@@ -33,26 +36,53 @@ class InstancesClient {
     }
 
     /**
-     * Creates an instance from a simplified instance template, with optional prefill.
+     * Create new instance.
      *
-     * POST /{org}/{app}/instances/create
+     * POST /{org}/{app}/instances
      *
      * @param {string} org The service owner of the app.
      * @param {string} app The app name.
-     * @param {InstansiationInstance} request The instance owner, and what to prefill.
+     * @param {InstanceWrite} instance The instance document, which names the instance owner.
      * @param {{[key:string]:string}|null} [labels] Optional k6 request labels.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
-    PostSimplified(org, app, request, labels = null) {
+    CreateNewInstance(org, app, instance, labels = null) {
         return http.post(
-            `${this.FULL_PATH}/${org}/${app}/instances/create`,
-            jsonBody(request),
+            `${this.FULL_PATH}/${org}/${app}/instances`,
+            jsonBody(instance),
             requestParams({
-                endpoint: `${this.FULL_PATH}/{org}/{app}/instances/create`,
-                action: TAGS.PostSimplified.action,
+                endpoint: `${this.FULL_PATH}/{org}/{app}/instances`,
+                action: TAGS.CreateNewInstance.action,
                 labels,
                 token: this.tokenGenerator.getToken(),
                 json: true,
+            }),
+        );
+    }
+
+    /**
+     * Move instance to next process step.
+     *
+     * PUT /{org}/{app}/instances/{instanceOwnerPartyId}/{instanceGuid}/process/next
+     *
+     * @param {string} org The service owner of the app.
+     * @param {string} app The app name.
+     * @param {string} instanceOwnerPartyId Instance owner party id.
+     * @param {string} instanceGuid Instance UUID.
+     * @param {ProcessNext|null} [processNext] Optional action to perform.
+     * @param {{[key:string]:string}|null} [labels] Optional k6 request labels.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
+     */
+    MoveInstanceToNextProcessStep(org, app, instanceOwnerPartyId, instanceGuid, processNext = null, labels = null) {
+        return http.put(
+            `${this.FULL_PATH}/${org}/${app}/instances/${instanceOwnerPartyId}/${instanceGuid}/process/next`,
+            processNext === null ? null : jsonBody(processNext),
+            requestParams({
+                endpoint: `${this.FULL_PATH}/{org}/{app}/instances/{instanceOwnerPartyId}/{instanceGuid}/process/next`,
+                action: TAGS.MoveInstanceToNextProcessStep.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+                json: processNext !== null,
             }),
         );
     }

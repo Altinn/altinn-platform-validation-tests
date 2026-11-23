@@ -2,6 +2,7 @@ import { setup, teardown } from "./commons.js";
 import runExchangeSystemUserToken from "./exchange-system-user-token.js";
 import runGetAuthorizedPartiesWithSystemUserToken from "./get-authorized-parties-with-system-user-token.js";
 import runGetSystemUserToken from "./get-system-user-token.js";
+import runSubmitAppInstanceWithSystemUserToken from "./submit-app-instance-with-system-user-token.js";
 
 export { setup, teardown };
 
@@ -16,4 +17,5 @@ export default async function (data) {
     await runGetSystemUserToken(data);
     await runExchangeSystemUserToken(data);
     await runGetAuthorizedPartiesWithSystemUserToken(data);
+    await runSubmitAppInstanceWithSystemUserToken(data);
 }

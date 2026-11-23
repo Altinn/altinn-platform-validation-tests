@@ -1,14 +1,14 @@
 import { check } from "k6";
 
-import { ProcessState } from "../../../clients/storage/instances.types.js";
+import { AppProcessState } from "../../../clients/apps/apps.types.js";
 
 /**
  * Checks that moving the process on submitted the instance.
  *
- * An instance is submitted when the process has reached its end event, which
- * process/next answers with by setting ended and endEvent and leaving no current task.
+ * An instance is submitted when the process has reached its end event, which the
+ * app answers with by setting ended and endEvent and leaving no current task.
  *
- * @param {ProcessState|null} processState - What process/next answered with.
+ * @param {AppProcessState|null} processState - What moving the instance to the next process step answered with.
  * @returns {boolean} True if the instance is submitted, false otherwise.
  */
 function CheckInstanceSubmitted(processState) {

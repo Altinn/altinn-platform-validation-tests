@@ -1,55 +1,24 @@
 import { check } from "k6";
 
-import { InstansiationInstance } from "../../../clients/apps/apps.types.js";
+import { AppProcessState, InstanceWrite, ProcessNext } from "../../../clients/apps/apps.types.js";
 import { InstancesClient } from "../../../clients/apps/index.js";
 import { Instance } from "../../../clients/storage/instances.types.js";
 import { withRetries } from "../common/retry.js";
 
 /**
- * Creates an instance from a simplified instance template, with optional prefill.
+ * Parses the body of a response, as a check.
  *
- * @param {InstancesClient} instancesClient Client for the API.
- * @param {string} org The service owner of the app.
- * @param {string} app The app name.
- * @param {InstansiationInstance} request The instance owner, and what to prefill.
- * @param {{[key:string]:string}|null} [labels] Optional k6 request labels.
- * @returns {Instance|null} Parsed response body, or null when the call failed.
+ * @param {string} name The name of the building block, for the check.
+ * @param {import("k6/http").RefinedResponse<"text">} res The response.
+ * @returns {*} The parsed body, or null when it could not be parsed.
  */
-export function PostSimplified(
-    instancesClient,
-    org,
-    app,
-    request,
-    labels = null,
-) {
-    const res = withRetries(
-        () => instancesClient.PostSimplified(
-            org,
-            app,
-            request,
-            labels,
-        ),
-        "PostSimplified",
-    );
-
-    /** @type {Instance|null} */
-    let instance = null;
-
-    const success = check(res, {
-        "PostSimplified - status code is 201": (r) => r.status === 201,
-    });
-
-    if (!success) {
-        console.log(res.status);
-        console.log(res.body);
-
-        return instance;
-    }
+function parseBody(name, res) {
+    let body = null;
 
     check(res, {
-        "PostSimplified - body is valid": (r) => {
+        [`${name} - body is valid`]: (r) => {
             try {
-                instance = JSON.parse(r.body);
+                body = JSON.parse(r.body);
 
                 return true;
             } catch (err) {
@@ -61,5 +30,93 @@ export function PostSimplified(
         },
     });
 
-    return instance;
+    return body;
+}
+
+/**
+ * Create new instance.
+ *
+ * @param {InstancesClient} instancesClient Client for the API.
+ * @param {string} org The service owner of the app.
+ * @param {string} app The app name.
+ * @param {InstanceWrite} instance The instance document, which names the instance owner.
+ * @param {{[key:string]:string}|null} [labels] Optional k6 request labels.
+ * @returns {Instance|null} Parsed response body, or null when the call failed.
+ */
+export function CreateNewInstance(
+    instancesClient,
+    org,
+    app,
+    instance,
+    labels = null,
+) {
+    const res = withRetries(
+        () => instancesClient.CreateNewInstance(
+            org,
+            app,
+            instance,
+            labels,
+        ),
+        "CreateNewInstance",
+    );
+
+    const success = check(res, {
+        "CreateNewInstance - status code is 201": (r) => r.status === 201,
+    });
+
+    if (!success) {
+        console.log(res.status);
+        console.log(res.body);
+
+        return null;
+    }
+
+    return parseBody("CreateNewInstance", res);
+}
+
+/**
+ * Move instance to next process step.
+ *
+ * @param {InstancesClient} instancesClient Client for the API.
+ * @param {string} org The service owner of the app.
+ * @param {string} app The app name.
+ * @param {string} instanceOwnerPartyId Instance owner party id.
+ * @param {string} instanceGuid Instance UUID.
+ * @param {ProcessNext|null} [processNext] Optional action to perform.
+ * @param {{[key:string]:string}|null} [labels] Optional k6 request labels.
+ * @returns {AppProcessState|null} Parsed response body, or null when the call failed.
+ */
+export function MoveInstanceToNextProcessStep(
+    instancesClient,
+    org,
+    app,
+    instanceOwnerPartyId,
+    instanceGuid,
+    processNext = null,
+    labels = null,
+) {
+    const res = withRetries(
+        () => instancesClient.MoveInstanceToNextProcessStep(
+            org,
+            app,
+            instanceOwnerPartyId,
+            instanceGuid,
+            processNext,
+            labels,
+        ),
+        "MoveInstanceToNextProcessStep",
+    );
+
+    const success = check(res, {
+        "MoveInstanceToNextProcessStep - status code is 200": (r) => r.status === 200,
+    });
+
+    if (!success) {
+        console.log(res.status);
+        console.log(res.body);
+
+        return null;
+    }
+
+    return parseBody("MoveInstanceToNextProcessStep", res);
 }

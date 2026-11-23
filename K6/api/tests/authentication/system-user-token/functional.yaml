@@ -24,3 +24,13 @@ test_definitions:
         test_run:
           secrets:
             - 313175650-maskinporten-client
+
+  - test_file: submit-app-instance-with-system-user-token.js
+    contexts:
+      - environment: tt02
+        test_run:
+          env:
+            - name: APPS_URL
+              value: https://ttd.apps.tt02.altinn.no
+          secrets:
+            - 313175650-maskinporten-client
