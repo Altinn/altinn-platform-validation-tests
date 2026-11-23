@@ -118,6 +118,11 @@ func (o *organizationsOptions) validate(countSet bool) error {
 	if o.subunits && (len(o.organizationNumbers) > 0 || o.role != "") {
 		return fmt.Errorf("%w: --subunits cannot be used with --orgno or --role", errs.Invalid)
 	}
+	// ADOS units are underenheter themselves, and come with their hovedenhet
+	// without --subunits.
+	if o.subunits && slices.ContainsFunc(o.unitTypes, parties.IsUnderenhetUnitType) {
+		return fmt.Errorf("%w: --subunits cannot be used with --unit-type ADOS, which already fetches underenheter", errs.Invalid)
+	}
 	if o.minSubunits < 0 {
 		return fmt.Errorf("%w: --min-subunits cannot be negative", errs.Invalid)
 	}
@@ -166,12 +171,18 @@ types in --unit-type are fetched instead of the organizations themselves, one
 per hovedenhet. Underenheter have no persons of their own, so the person is
 from the hovedenhet, and the hovedenhet columns describe the hovedenhet.
 
+--unit-type ADOS (administrativ enhet - offentlig sektor) fetches ADOS units.
+Access Management treats them as underenheter of the organization in their
+ADOS role, so they are fetched like underenheter: the person and the
+hovedenhet columns are from that organization.
+
 --min-subunits requires the organizations to have at least that many
 underenheter, or with --subunits, the hovedenheter.`,
 		Example: `  testudo find organizations --count 10
   testudo find organizations --unit-type enk,nuf --count 5 --format csv
   testudo find organizations --subunits --count 5 --format csv --columns organizationIdentifier,hovedenhetOrganizationIdentifier,ssn
   testudo find organizations --min-subunits 2 --count 5 --format csv
+  testudo find organizations --unit-type ados --count 5 --format csv --columns organizationIdentifier,hovedenhetOrganizationIdentifier,ssn
   testudo find organizations --person-role styremedlem --count 5 --format csv --columns organizationIdentifier,personRole,ssn
   testudo find organizations --orgno 313490114 --format csv
   testudo find organizations --role regnskapsfoerer --count 5 --format csv`,

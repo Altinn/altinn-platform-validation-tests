@@ -26,6 +26,38 @@ The file names are the group labels transliterated, so `å` becomes `aa` and `ø
 `oe`. `dagl-av-underenhet-får-hovedenhet-A` and `dagl-C-får-underenhet-D` are skipped by a
 `skipDueToKnownBug` flag, matching the Bruno suite. Flip the flag once the bug is fixed.
 
+## ADOS subunit inheritance
+
+`dagl-av-hovedenhet-får-ADOS-underenhet-i-aktørlista`
+([dagl-av-hovedenhet-faar-ados-underenhet-i-aktoerlista.js](dagl-av-hovedenhet-faar-ados-underenhet-i-aktoerlista.js))
+is ported from the Bruno test
+[01_WHEN_TheAdosMainUnitDailyLeaderListsAuthorizedParties](https://github.com/Altinn/altinn-auth/blob/main/src/apps/Altinn.AccessManagement/test/Bruno/AccessMgmt/test/AuthorizedParties/EnduserAuthorizedParties/10_AdosSubunitInheritance/01_WHEN_TheAdosMainUnitDailyLeaderListsAuthorizedParties.bru)
+in altinn-auth.
+
+An ADOS unit (administrativ enhet - offentlig sektor) belongs to another organization,
+often a kommune, through the role `ADOS` in Enhetsregisteret. With the feature flag
+`AccessManagement.Subunit.AdosInheritance` on, Access Management treats the ADOS unit as a
+subunit of that organization, the same way as BEDR and AAFY. The test authenticates as the
+daglig leder of the hovedenhet, lists authorized parties with `includeSubParties=true` and
+`includeRoles=true`, and checks that the hovedenhet is returned with the ADOS unit nested
+under it. No delegation is involved; the access comes from the key role alone.
+
+The test draws one row per iteration from
+`K6/testdata/access-management/enduser/authorized-parties/ados-subunits/<environment>.csv`.
+The files were made with testudo on 2026-11-23, from `helpers/testudo`, with this command:
+
+```bash
+for env in at22 tt02; do
+  go run . find organizations --unit-type ADOS --count 10 --env $env --format csv \
+    --columns organizationIdentifier,partyUuid,hovedenhetOrganizationIdentifier,hovedenhetPartyUuid,hovedenhetUnitType,ssn,userId,userPartyId,userPartyUuid \
+    --out ../../K6/testdata/access-management/enduser/authorized-parties/ados-subunits/$env.csv
+done
+```
+
+`--unit-type ADOS` gives each ADOS unit with the organization in its `ADOS` role as the
+hovedenhet, and the daglig leder of that organization as the person. Tenor returns random
+hits, so running the command again gives other rows.
+
 ## Running
 
 ```

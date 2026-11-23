@@ -149,7 +149,7 @@ Fetching 3 organizations with the leader from Tenor with KQL: organisasjonsform.
 | --- | --- | --- |
 | `--count` | `10` | Number of organizations, at most 1000. |
 | `--env` | `at23` | Environment: `at22`, `at23`, `tt02` or `yt01`. |
-| `--unit-type` | `AS` | Comma-separated organisasjonsformer: `AS`, `ENK`, `ESEK`, `BRL`, `NUF`. |
+| `--unit-type` | `AS` | Comma-separated organisasjonsformer: `AS`, `ENK`, `ESEK`, `BRL`, `NUF`, `ADOS`. `ADOS` units come with their hovedenhet, see [ADOS units](#ados-units). |
 | `--person-role` | the leader | The person has this role in Enhetsregisteret instead, for example `styreleder`, `styremedlem`, `kontaktperson` or `prokurist`. `--help` lists all 21. |
 | `--role` | | Finds tilretteleggere instead: organizations that are `revisor`, `regnskapsfoerer` or `forretningsfoerer` for at least one client. |
 | `--subunits` | | Finds underenheter (`BEDR` and `AAFY`) instead, one per hovedenhet. The person is the hovedenhet's, since underenheter have no persons of their own. |
@@ -159,7 +159,18 @@ Fetching 3 organizations with the leader from Tenor with KQL: organisasjonsform.
 
 `--unit-type`, `--orgno` and `--role` cannot be combined. `--subunits` and
 `--min-subunits` do not work with `--orgno` or `--role`, and `--count` does not
-work with `--orgno`.
+work with `--orgno`. `--subunits` does not work with `--unit-type ADOS`.
+
+### ADOS units
+
+An `ADOS` (administrativ enhet - offentlig sektor) unit has no persons of its
+own. In Enhetsregisteret it has the role `ADOS`, which points to the
+organization it belongs to, often a `KOMM`. Register calls that role
+`administrativ-enhet-offentlig-sektor`, and Access Management makes the
+organization its parent, as for `BEDR` and `AAFY`, when the feature flag
+`AccessManagement.Subunit.AdosInheritance` is on. testudo therefore treats an
+`ADOS` unit as an underenhet: the person and the `hovedenhet…` columns are from
+the organization in the `ADOS` role. This also applies to `--orgno`.
 
 **CSV columns:**
 
@@ -311,6 +322,13 @@ organizationIdentifier,partyUuid,hovedenhetOrganizationIdentifier,hovedenhetPart
 315643686,fd22c551-dd23-4981-92f3-932a2fa90512,313964647,23834704-1cda-466b-8225-8724512690dc,03834198176,20588323
 ```
 
+**ADOS units with their hovedenhet.** For tests of access that an `ADOS` unit
+inherits from the organization it belongs to:
+
+```bash
+testudo find organizations --count 10 --env at22 --unit-type ADOS --format csv \n  --columns organizationIdentifier,partyUuid,hovedenhetOrganizationIdentifier,hovedenhetPartyUuid,hovedenhetUnitType,ssn,userId,userPartyId,userPartyUuid
+```
+
 **Organizations with many underenheter.** For example to test lists or paging:
 
 ```bash
@@ -438,7 +456,7 @@ What testudo is built on, and where to look when something changes.
   the codes behind `--person-role` and the leader (`DAGL`, `INNH`, `LEDE` and
   so on).
 - [Organisasjonsformer](https://data.brreg.no/enhetsregisteret/api/organisasjonsformer):
-  the codes behind `--unit-type`, and `BEDR` and `AAFY` for underenheter.
+  the codes behind `--unit-type`, and `BEDR`, `AAFY` and `ADOS` for underenheter.
 
 **Altinn**
 

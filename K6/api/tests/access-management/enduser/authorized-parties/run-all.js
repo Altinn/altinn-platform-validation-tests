@@ -1,5 +1,6 @@
 import { setup as CommonSetup } from "./common.js";
 import DaglAFaarPersonAIAktoerlista from "./dagl-a-faar-person-a-i-aktoerlista.js";
+import DaglAvHovedenhetFaarAdosUnderenhetIAktoerlista from "./dagl-av-hovedenhet-faar-ados-underenhet-i-aktoerlista.js";
 import DaglAVUnderenhetFaarHovedenhetAIiAktoerlista from "./dagl-av-underenhet-faar-hovedenhet-a-i-aktoerlista.js";
 import DaglBFaarHovedenhetAIAktoerlista from "./dagl-b-faar-hovedenhet-a-i-aktoerlista.js";
 import DaglBFaarUnderenhetCIiAktoerlista from "./dagl-b-faar-underenhet-c-i-aktoerlista.js";
@@ -24,4 +25,5 @@ export default function (data) {
     DaglAVUnderenhetFaarHovedenhetAIiAktoerlista(data);
     DaglBFaarUnderenhetCIiAktoerlista(data);
     PersonBFaarPersonAIiAktoerlista(data);
+    DaglAvHovedenhetFaarAdosUnderenhetIAktoerlista(data);
 }

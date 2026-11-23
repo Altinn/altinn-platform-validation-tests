@@ -197,6 +197,67 @@ func TestFindOrganizationsUnderenheter(t *testing.T) {
 	}
 }
 
+func TestFindOrganizationsADOS(t *testing.T) {
+	const (
+		adosWithLeader    = "800000011" // Under kommuneWithLeader.
+		adosWithoutLeader = "800000012" // Under kommuneWithoutLeader.
+		kommuneWithLeader = "910000011"
+		kommuneNoLeader   = "910000012"
+		kommuneLeader     = "10000000044"
+	)
+	doc := func(orgNumber, form string, groups ...string) map[string]any {
+		source := fmt.Sprintf(`{"organisasjonsnummer":%q,"organisasjonsform":{"kode":%q},"rollegrupper":[%s]}`, orgNumber, form, strings.Join(groups, ","))
+		return map[string]any{"tenorMetadata": map[string]any{"id": orgNumber, "kildedata": source}}
+	}
+	ados := func(orgNumber, hovedenhet string) map[string]any {
+		return doc(orgNumber, "ADOS", fmt.Sprintf(`{"type":{"kode":"ADOS"},"roller":[{"type":{"kode":"ADOS"},"virksomhet":{"organisasjonsnummer":%q}}]}`, hovedenhet))
+	}
+	all := map[string]map[string]any{
+		kommuneWithLeader: doc(kommuneWithLeader, "KOMM", fmt.Sprintf(`{"type":{"kode":"DAGL"},"roller":[{"type":{"kode":"DAGL"},"person":{"foedselsnummer":%q}}]}`, kommuneLeader)),
+		kommuneNoLeader:   doc(kommuneNoLeader, "KOMM"),
+		adosWithLeader:    ados(adosWithLeader, kommuneWithLeader),
+		adosWithoutLeader: ados(adosWithoutLeader, kommuneNoLeader),
+	}
+	c := tenortest.NewClient(t, func(w http.ResponseWriter, r *http.Request) {
+		kql := r.URL.Query().Get("kql")
+		switch {
+		case kql == `organisasjonsform.kode:"ADOS"`:
+			tenortest.Respond(w, 2, all[adosWithLeader], all[adosWithoutLeader])
+		case strings.HasPrefix(kql, "organisasjonsnummer:("):
+			var docs []map[string]any
+			for _, id := range strings.Split(strings.Trim(strings.TrimPrefix(kql, "organisasjonsnummer:"), "()"), " or ") {
+				if d, ok := all[id]; ok {
+					docs = append(docs, d)
+				}
+			}
+			tenortest.Respond(w, len(docs), docs...)
+		default:
+			t.Errorf("unexpected kql %q", kql)
+		}
+	})
+
+	// The ADOS unit gets the hovedenhet from its ADOS role and the daglig
+	// leder from the hovedenhet. The one under a kommune without a daglig
+	// leder is left out.
+	v, err := FindOrganizations(context.Background(), c, registertest.Echo(t), OrganizationQuery{Count: 2, UnitTypes: []string{"ados"}}, &bytes.Buffer{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(v) != 1 || v[0].OrganizationIdentifier != adosWithLeader {
+		t.Fatalf("organizations = %+v", v)
+	}
+	if u := v[0]; u.Hovedenhet == nil || u.Hovedenhet.OrganizationIdentifier != kommuneWithLeader ||
+		u.Person.PersonIdentifier != kommuneLeader || u.PersonRole != "daglig-leder" {
+		t.Errorf("ADOS unit = %+v, hovedenhet = %+v", u, u.Hovedenhet)
+	}
+
+	// The same with --orgno.
+	v, err = FindOrganizations(context.Background(), c, registertest.Echo(t), OrganizationQuery{OrganizationNumbers: []string{adosWithLeader}}, &bytes.Buffer{})
+	if err != nil || len(v) != 1 || v[0].Hovedenhet == nil || v[0].Hovedenhet.OrganizationIdentifier != kommuneWithLeader {
+		t.Fatalf("with organization number: organizations = %+v, err = %v", v, err)
+	}
+}
+
 func TestFindOrganizationsWithPersonRole(t *testing.T) {
 	c := tenortest.NewClient(t, func(w http.ResponseWriter, r *http.Request) {
 		w.Write(tenortest.BrregResponse(t, 3, 1, 1, 4))
@@ -352,7 +413,12 @@ func TestToOrganizationCandidate(t *testing.T) {
 		"role": {`{"organisasjonsnummer":"800000001","organisasjonsform":{"kode":"AAFY"},"underenhet":{"hovedenhet":"900000009"},
 			"rollegrupper":[{"type":{"kode":"AAFY"},"roller":[{"type":{"kode":"AAFY"},"virksomhet":{"organisasjonsnummer":"900000001"}}]}]}`, "900000001"},
 		"field only": {`{"organisasjonsnummer":"800000001","organisasjonsform":{"kode":"BEDR"},"underenhet":{"hovedenhet":"900000002"}}`, "900000002"},
-		"none":       {`{"organisasjonsnummer":"800000001","organisasjonsform":{"kode":"BEDR"}}`, ""},
+		// An ADOS unit has the hovedenhet in the role ADOS only, and a
+		// kontaktperson who is not used.
+		"ADOS": {`{"organisasjonsnummer":"800000001","organisasjonsform":{"kode":"ADOS"},"underenhet":{},
+			"rollegrupper":[{"type":{"kode":"ADOS"},"roller":[{"type":{"kode":"ADOS"},"virksomhet":{"organisasjonsnummer":"900000003"}}]},
+			{"type":{"kode":"KONT"},"roller":[{"type":{"kode":"KONT"},"person":{"foedselsnummer":"77777777777"}}]}]}`, "900000003"},
+		"none": {`{"organisasjonsnummer":"800000001","organisasjonsform":{"kode":"BEDR"}}`, ""},
 	} {
 		k, ok := toOrganizationCandidate(tenor.Metadata{Kildedata: tt.source}, PersonRole{})
 		if !ok || k.hovedenhet != tt.want || k.person != "" || k.hasPersonOrHovedenhet() != (tt.want != "") {

@@ -167,6 +167,8 @@ func TestValidateOrganizationsOptions(t *testing.T) {
 		{"unknown person role", organizationsOptions{count: 1, personRole: "LEDE"}, false, "unknown --person-role"},
 		{"subunits", organizationsOptions{count: 1, subunits: true, unitTypes: []string{"ENK"}}, false, ""},
 		{"BEDR is not a unit type", organizationsOptions{count: 1, unitTypes: []string{"BEDR"}}, false, "unknown --unit-type"},
+		{"ADOS", organizationsOptions{count: 1, unitTypes: []string{"ados"}}, false, ""},
+		{"subunits and ADOS", organizationsOptions{count: 1, subunits: true, unitTypes: []string{"AS", "ados"}}, false, "--subunits cannot be used with --unit-type ADOS"},
 		{"subunits and orgno", organizationsOptions{subunits: true, organizationNumbers: []string{"313490114"}}, false, "--subunits cannot be used with --orgno or --role"},
 		{"subunits and role", organizationsOptions{count: 1, subunits: true, role: "revisor"}, false, "--subunits cannot be used"},
 		{"min subunits", organizationsOptions{count: 1, minSubunits: 2}, false, ""},
