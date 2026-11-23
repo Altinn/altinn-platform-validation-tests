@@ -2,7 +2,7 @@
   "openapi": "3.0.4",
   "info": {
     "title": "Altinn Correspondence",
-    "description": "Altinn Correspondence API for service owners and recipients. All operations require authentication unless otherwise noted. Read more about authentication at https://docs.altinn.studio/authorization/getting-started/authentication/",
+    "description": "Altinn Correspondence API for service owners and recipients. All operations require authentication unless otherwise noted. Who can read or send a correspondence is decided by the resource policy, including its minimum authentication level. A system user is always level 3. On a level 4 resource, add the obligation urn:altinn:minimum-authenticationlevel-systemuser with value 3 so system user integrations are allowed while end users still need level 4. Without that obligation, a level 4 resource rejects system users. Read more about authentication at https://docs.altinn.studio/authorization/getting-started/authentication/",
     "version": "v1"
   },
   "servers": [
@@ -848,6 +848,10 @@
                     "type": "boolean",
                     "description": "When set to true, only CustomRecipients will be used for notifications, overriding the default correspondence recipient.\nThis flag can only be used when CustomRecipients is provided.\nDefault value is false (use default contact info + custom recipients)."
                   },
+                  "Correspondence.Notification.UseStaleContactInformation": {
+                    "type": "boolean",
+                    "description": "When set to true, person recipients are notified using their contact information in the Common Contact Register (KRR)\neven if it has not been verified within the last 18 months. Only intended for service messages.\nDoes not apply to organization recipients. Default value is false.\nRead more at https://docs.altinn.studio/nb/correspondence/getting-started/developer-guides/notifications/"
+                  },
                   "Correspondence.IgnoreReservation": {
                     "type": "boolean",
                     "description": "Specifies whether the correspondence can override reservation against digital communication in KRR.\nThis field only applies to recipients who are persons with person numbers (both default and custom recipients).\nIt has no effect for organization recipients or email/sms recipients through custom recipients."
@@ -999,6 +1003,9 @@
                   "style": "form"
                 },
                 "Correspondence.Notification.OverrideRegisteredContactInformation": {
+                  "style": "form"
+                },
+                "Correspondence.Notification.UseStaleContactInformation": {
                   "style": "form"
                 },
                 "Correspondence.IgnoreReservation": {
@@ -3095,6 +3102,10 @@
           "overrideRegisteredContactInformation": {
             "type": "boolean",
             "description": "When set to true, only CustomRecipients will be used for notifications, overriding the default correspondence recipient.\nThis flag can only be used when CustomRecipients is provided.\nDefault value is false (use default contact info + custom recipients)."
+          },
+          "useStaleContactInformation": {
+            "type": "boolean",
+            "description": "When set to true, person recipients are notified using their contact information in the Common Contact Register (KRR)\neven if it has not been verified within the last 18 months. Only intended for service messages.\nDoes not apply to organization recipients. Default value is false.\nRead more at https://docs.altinn.studio/nb/correspondence/getting-started/developer-guides/notifications/"
           }
         },
         "additionalProperties": false,
