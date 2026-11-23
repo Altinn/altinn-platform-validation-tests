@@ -11,14 +11,14 @@ import (
 // Two projects (browsers) with the same tests, as in a real report.
 const twoBrowsers = `{"suites": [
   {"suites": [{"specs": [
-    {"title": "logger inn", "file": "a.spec.ts", "ok": true, "tests": [{"status": "expected"}]},
-    {"title": "bytter språk", "file": "a.spec.ts", "ok": false, "tests": [{"status": "unexpected"}]},
-    {"title": "bare i webkit", "file": "b.spec.ts", "ok": true, "tests": [{"status": "skipped"}]}
+    {"title": "logs in", "file": "a.spec.ts", "ok": true, "tests": [{"status": "expected"}]},
+    {"title": "switches language", "file": "a.spec.ts", "ok": false, "tests": [{"status": "unexpected"}]},
+    {"title": "webkit only", "file": "b.spec.ts", "ok": true, "tests": [{"status": "skipped"}]}
   ]}]},
   {"suites": [{"specs": [
-    {"title": "logger inn", "file": "a.spec.ts", "ok": false, "tests": [{"status": "unexpected"}]},
-    {"title": "bytter språk", "file": "a.spec.ts", "ok": false, "tests": [{"status": "unexpected"}]},
-    {"title": "bare i webkit", "file": "b.spec.ts", "ok": true, "tests": [{"status": "skipped"}]}
+    {"title": "logs in", "file": "a.spec.ts", "ok": false, "tests": [{"status": "unexpected"}]},
+    {"title": "switches language", "file": "a.spec.ts", "ok": false, "tests": [{"status": "unexpected"}]},
+    {"title": "webkit only", "file": "b.spec.ts", "ok": true, "tests": [{"status": "skipped"}]}
   ]}]}
 ]}`
 
@@ -30,7 +30,7 @@ func TestSummarizeCountsEachTestOnce(t *testing.T) {
 	if s.Ran != 2 {
 		t.Errorf("Ran = %d, want 2", s.Ran)
 	}
-	if want := []string{"bytter språk", "logger inn"}; !slices.Equal(s.Failed, want) {
+	if want := []string{"switches language", "logs in"}; !slices.Equal(s.Failed, want) {
 		t.Errorf("Failed = %q, want %q", s.Failed, want)
 	}
 }

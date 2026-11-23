@@ -22,11 +22,11 @@ func TestSendPostsText(t *testing.T) {
 	}))
 	defer srv.Close()
 
-	if err := Send(t.Context(), srv.URL, "hei"); err != nil {
+	if err := Send(t.Context(), srv.URL, "hello"); err != nil {
 		t.Fatal(err)
 	}
-	if got["text"] != "hei" {
-		t.Errorf("text = %q, want %q", got["text"], "hei")
+	if got["text"] != "hello" {
+		t.Errorf("text = %q, want %q", got["text"], "hello")
 	}
 }
 
@@ -36,7 +36,7 @@ func TestSendErrorStatus(t *testing.T) {
 	}))
 	defer srv.Close()
 
-	if err := Send(t.Context(), srv.URL, "hei"); !errors.Is(err, errs.InvalidResponse) {
+	if err := Send(t.Context(), srv.URL, "hello"); !errors.Is(err, errs.InvalidResponse) {
 		t.Errorf("got %v, want errs.InvalidResponse", err)
 	}
 }

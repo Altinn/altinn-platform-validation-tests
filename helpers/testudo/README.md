@@ -256,10 +256,10 @@ testudo notify playwright --env at23 --report test-results.json \
   --report-url https://... --playwright-exit 1 --dry-run
 ```
 ```
-:red_circle: *at23*: 2 av 14 Playwright-tester feilet
-• logger inn
-• bytter språk
-Rapport: https://...
+:red_circle: *at23*: 2 of 14 Playwright tests failed
+• logs in
+• switches language
+Report: https://...
 ```
 
 A test is counted once however many browsers it ran in, and is failed if it
@@ -269,7 +269,7 @@ report is missing or no tests ran, the message says that the run did not start.
 
 | Flag | Default | Description |
 | --- | --- | --- |
-| `--env` | | Environment the tests ran against. `prod` is shown as Produksjon. |
+| `--env` | | Environment the tests ran against. `prod` is shown as Production. |
 | `--report` | `test-results.json` | Path to the Playwright JSON report. |
 | `--report-url` | | URL to the published HTML report. |
 | `--playwright-exit` | `0` | Exit code from Playwright, shown when no tests ran. |

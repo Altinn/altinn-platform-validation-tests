@@ -102,28 +102,28 @@ func playwrightMessage(opts *notifyPlaywrightOptions, log io.Writer) string {
 // can contain test data from prod.
 func failedMessage(summary playwright.Summary, env, reportURL string) string {
 	var b strings.Builder
-	fmt.Fprintf(&b, ":red_circle: *%s*: %d av %d Playwright-tester feilet", environmentName(env), len(summary.Failed), summary.Ran)
+	fmt.Fprintf(&b, ":red_circle: *%s*: %d of %d Playwright tests failed", environmentName(env), len(summary.Failed), summary.Ran)
 	for i, title := range summary.Failed {
 		if i == maxListedTests {
-			fmt.Fprintf(&b, "\n…og %d til, se rapporten", len(summary.Failed)-maxListedTests)
+			fmt.Fprintf(&b, "\n…and %d more, see the report", len(summary.Failed)-maxListedTests)
 			break
 		}
 		fmt.Fprintf(&b, "\n• %s", escapeSlack(title))
 	}
-	fmt.Fprintf(&b, "\nRapport: %s", reportURL)
+	fmt.Fprintf(&b, "\nReport: %s", reportURL)
 	return b.String()
 }
 
 func notStartedMessage(env string, playwrightExit int) string {
 	return fmt.Sprintf(
-		":warning: *%s*: Playwright-kjøringen kom ikke i gang (exit %d). Rapporten er tom, sjekk poddloggen.",
+		":warning: *%s*: The Playwright run did not start (exit %d). The report is empty, check the pod log.",
 		environmentName(env), playwrightExit,
 	)
 }
 
 func environmentName(env string) string {
 	if env == "prod" {
-		return "Produksjon"
+		return "Production"
 	}
 	return env
 }

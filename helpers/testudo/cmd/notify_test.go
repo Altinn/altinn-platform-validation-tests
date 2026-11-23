@@ -15,11 +15,11 @@ func TestFailedMessageListsFiveTests(t *testing.T) {
 	for i := 1; i <= 7; i++ {
 		summary.Failed = append(summary.Failed, fmt.Sprintf("test %d", i))
 	}
-	got := failedMessage(summary, "prod", "https://rapport")
-	want := ":red_circle: *Produksjon*: 7 av 20 Playwright-tester feilet\n" +
+	got := failedMessage(summary, "prod", "https://report")
+	want := ":red_circle: *Production*: 7 of 20 Playwright tests failed\n" +
 		"• test 1\n• test 2\n• test 3\n• test 4\n• test 5\n" +
-		"…og 2 til, se rapporten\n" +
-		"Rapport: https://rapport"
+		"…and 2 more, see the report\n" +
+		"Report: https://report"
 	if got != want {
 		t.Errorf("got\n%s\nwant\n%s", got, want)
 	}
@@ -35,15 +35,15 @@ func TestFailedMessageEscapesTitles(t *testing.T) {
 func TestNotifyPlaywrightDryRun(t *testing.T) {
 	report := filepath.Join(t.TempDir(), "test-results.json")
 	if err := os.WriteFile(report, []byte(`{"suites": [{"specs": [
-		{"title": "logger inn", "file": "a.spec.ts", "ok": false, "tests": [{"status": "unexpected"}]}
+		{"title": "logs in", "file": "a.spec.ts", "ok": false, "tests": [{"status": "unexpected"}]}
 	]}]}`), 0o600); err != nil {
 		t.Fatal(err)
 	}
-	out, err := execute("notify", "playwright", "--env", "at23", "--report", report, "--report-url", "https://rapport", "--dry-run")
+	out, err := execute("notify", "playwright", "--env", "at23", "--report", report, "--report-url", "https://report", "--dry-run")
 	if err != nil {
 		t.Fatal(err)
 	}
-	if !strings.Contains(out, "*at23*: 1 av 1 Playwright-tester feilet\n• logger inn\nRapport: https://rapport") {
+	if !strings.Contains(out, "*at23*: 1 of 1 Playwright tests failed\n• logs in\nReport: https://report") {
 		t.Errorf("unexpected message:\n%s", out)
 	}
 }
@@ -53,7 +53,7 @@ func TestNotifyPlaywrightWithoutReportSaysNotStarted(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if !strings.Contains(out, ":warning: *tt02*: Playwright-kjøringen kom ikke i gang (exit 1).") {
+	if !strings.Contains(out, ":warning: *tt02*: The Playwright run did not start (exit 1).") {
 		t.Errorf("unexpected message:\n%s", out)
 	}
 }
