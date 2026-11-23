@@ -18,6 +18,7 @@ recipe for each file that is made with testudo today.
 - [find organizations](#find-organizations)
 - [Output](#output)
 - [API](#api)
+- [notify playwright](#notify-playwright)
 - [Recipes for K6 setup](#recipes-for-k6-setup)
 - [What testudo does not do](#what-testudo-does-not-do)
 - [Development](#development)
@@ -246,6 +247,36 @@ each request and what it fetched to stderr. Stop it with Ctrl+C.
 > The server answers anyone who can reach it, with your keys. Keep the default
 > `localhost` unless the network around it is closed.
 
+## notify playwright
+
+Sends the result of a Playwright run to Slack.
+
+```bash
+testudo notify playwright --env at23 --report test-results.json \
+  --report-url https://... --playwright-exit 1 --dry-run
+```
+```
+:red_circle: *at23*: 2 av 14 Playwright-tester feilet
+• logger inn
+• bytter språk
+Rapport: https://...
+```
+
+A test is counted once however many browsers it ran in, and is failed if it
+failed in at least one. The message names the first five failed tests, and only
+their titles, since error messages can contain test data from prod. If the
+report is missing or no tests ran, the message says that the run did not start.
+
+| Flag | Default | Description |
+| --- | --- | --- |
+| `--env` | | Environment the tests ran against. `prod` is shown as Produksjon. |
+| `--report` | `test-results.json` | Path to the Playwright JSON report. |
+| `--report-url` | | URL to the published HTML report. |
+| `--playwright-exit` | `0` | Exit code from Playwright, shown when no tests ran. |
+| `--dry-run` | | Prints the message instead of sending it. |
+
+The message is sent to the webhook in `SLACK_WEBHOOK_URL`.
+
 ## Recipes for K6 setup
 
 Run these from `helpers/testudo`, with testudo installed by `make install`, or
@@ -402,6 +433,7 @@ make fmt      # formats the code
 | `internal/register/` | Register client. `registertest/` has fakes for tests. |
 | `internal/maskinporten/`, `internal/platformtoken/` | Tokens for Tenor and Register. |
 | `internal/config/` | Reads `~/.testudo.yaml` and environment variables. |
+| `internal/playwright/`, `internal/slack/` | Reading the Playwright report and sending to Slack, for `notify playwright`. |
 
 The code is in English. Words from the domain that have no good English
 equivalent stay in Norwegian, for example hovedenhet, underenhet, daglig leder
