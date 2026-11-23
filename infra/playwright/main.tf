@@ -84,6 +84,12 @@ resource "azurerm_function_app_flex_consumption" "playwright_artifacts" {
     AZURE_STORAGE_KEY       = azurerm_storage_account.playwright_reports.primary_access_key
     AZURE_STORAGE_CONTAINER = azurerm_storage_container.playwright_artifacts.name
   }
+
+  lifecycle {
+    ignore_changes = [
+      auth_settings_v2
+    ]
+  }
   /*
   identity {
     type = "SystemAssigned"

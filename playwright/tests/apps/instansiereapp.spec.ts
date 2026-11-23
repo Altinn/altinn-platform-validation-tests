@@ -1,5 +1,5 @@
-import { etternavn } from "../../config/environment";
 import { expect, test } from "../../fixtures/test";
+import { slettInstans } from "../../helpers/instanser";
 import { rettighetshaverUuid } from "../../helpers/rettighetshavere";
 import { aktivAktorUuid, altinnToken } from "../../helpers/sesjonsdata";
 import { Instans } from "../../pages/apps/app";
@@ -14,11 +14,9 @@ let kobling: { fra: string; navn: string; token: string } | undefined;
 test.afterEach(async ({ api, testAppConfig, page }) => {
     try {
         expect(instans, "Testen opprettet en instans").toBeDefined();
-        const { partyId, guid } = instans!;
+        const opprettet = instans!;
         instans = undefined;
-        const token = await altinnToken(page);
-        const slettInstans = await api.apps.instances.DeleteInstance(token, testAppConfig.id, partyId, guid, true);
-        expect(slettInstans.ok(), `Sletting av instans ${partyId}/${guid}: ${slettInstans.status()}`).toBe(true);
+        await slettInstans(api, page, testAppConfig.id, opprettet);
     } finally {
         expect(kobling, "Testen la til en bruker").toBeDefined();
         const { fra, navn, token } = kobling!;
@@ -29,7 +27,7 @@ test.afterEach(async ({ api, testAppConfig, page }) => {
     }
 });
 
-test("Bruker instansierer app og gir tilgang, med direktenavigasjon til appen", { tag: ["@at23", "@tt02"] }, async ({
+test("Bruker instansierer app og gir tilgang, med direktenavigasjon til appen", { tag: ["@at23", "@tt02", "@prod"] }, async ({
     page,
     innlogging,
     nySesjon,
@@ -67,7 +65,7 @@ test("Bruker instansierer app og gir tilgang, med direktenavigasjon til appen", 
 
     await test.step("Person-A legger til person-B som ny bruker", async () => {
         await tilgangsstyring.brukereLink.click();
-        await tilgangsstyring.brukere.leggTilNyBruker(personB.pid, etternavn(personB));
+        await tilgangsstyring.brukere.leggTilNyBruker(personB.pid, personB.lastName);
     });
 
     await test.step("Person-A gir person-B tilgangspakken som gir tilgang til appen", async () => {
@@ -143,7 +141,7 @@ test.fixme("Bruker instansierer app", { tag: ["@at23", "@tt02"] }, async ({
 
     await test.step("Person-A legger til person-B som ny bruker", async () => {
         await tilgangsstyring.brukereLink.click();
-        await tilgangsstyring.brukere.leggTilNyBruker(personB.pid, etternavn(personB));
+        await tilgangsstyring.brukere.leggTilNyBruker(personB.pid, personB.lastName);
     });
 
     await test.step("Person-A gir person-B tilgangspakken som gir tilgang til appen", async () => {

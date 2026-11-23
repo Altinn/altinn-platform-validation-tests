@@ -13,8 +13,16 @@ function lesTestbrukere(gruppe: string, miljo: string): TestUser[] {
     const [, ...rader] = readFileSync(fil, "utf8").trim().split(/\r?\n/);
 
     return rader.map((rad) => {
-        const [pid, name] = rad.split(",");
-        return { pid, name };
+        const [pid, firstName, middleName, lastName] = rad.split(",");
+        return {
+            pid,
+            firstName,
+            middleName: middleName || undefined,
+            lastName,
+            get name() {
+                return [this.firstName, this.middleName, this.lastName].filter(Boolean).join(" ");
+            },
+        };
     });
 }
 
