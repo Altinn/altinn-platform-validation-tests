@@ -10,10 +10,12 @@
 package k6manifest
 
 import (
+	"bytes"
 	"embed"
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
 	"maps"
 	"os"
 	"os/exec"
@@ -47,6 +49,8 @@ type K8sManifestGenerator struct {
 	// They are added to the arguments of the TestRun, and each -e/--env
 	// KEY=VALUE is also set as an environment variable for the test.
 	CommandLineArgs string
+	// Slack picks the Slack secret the tests get. Empty means SlackTest.
+	Slack Slack
 }
 
 // ReadConfigFile reads the config file at filePath and checks it, without
@@ -76,8 +80,11 @@ func ReadConfigFile(filePath string) (*ConfigFile, error) {
 		},
 	}
 
-	err = yaml.Unmarshal(yfile, &cf)
-	if err != nil {
+	// Keys the config file format does not have are an error, so a typo such
+	// as enviroment: is not silently ignored. An empty file has no tests.
+	dec := yaml.NewDecoder(bytes.NewReader(yfile))
+	dec.KnownFields(true)
+	if err := dec.Decode(&cf); err != nil && !errors.Is(err, io.EOF) {
 		return nil, fmt.Errorf("%w: %s: %v", errs.Invalid, filePath, err)
 	}
 
@@ -204,7 +211,11 @@ func (r K8sManifestGenerator) generate(td *TestDefinition, c *TestContext, cf Co
 	for _, s := range c.TestRun.SecretReferences {
 		secretReferences = append(secretReferences, *s)
 	}
-	secretReferences = append(secretReferences, chooseCorrectSlackChannel(c.Environment))
+	slack, err := slackSecret(r.Slack, c.Environment)
+	if err != nil {
+		return err
+	}
+	secretReferences = append(secretReferences, slack)
 
 	imageName := "ghcr.io/altinn/altinn-platform/k6-image:v2.2.0"
 	if *c.TestTypeDefinition.Type == "browser" {
@@ -235,6 +246,9 @@ func (r K8sManifestGenerator) generate(td *TestDefinition, c *TestContext, cf Co
 // made in parallel. A test that fails does not stop the others; the errors
 // are returned together.
 func (r K8sManifestGenerator) Generate(cf ConfigFile) error {
+	if !r.Slack.Valid() {
+		return fmt.Errorf("%w: unknown Slack setting %q", errs.Invalid, r.Slack)
+	}
 	cluster, err := loadK6Cluster()
 	if err != nil {
 		return err

@@ -123,20 +123,44 @@ func handleExtraEnvVars(original []*Env, extra []*Env) []*Env {
 	return newEnv
 }
 
-func chooseCorrectSlackChannel(deploy_env string) string {
-	branch, ok := os.LookupEnv("GITHUB_REF")
+// Slack says which Slack secret the TestRun gets. The tests post failed
+// checks to the channel in it, see K6/slack.js.
+type Slack string
 
-	if ok && branch == "refs/heads/main" {
-		aux := map[string]string{
+const (
+	// SlackTest gives every test slack-test. It is the default, so a run
+	// from a branch or a laptop does not post to the team channels.
+	SlackTest Slack = "test"
+	// SlackEnvironment gives slack-dev for at22, at23 and yt01, and
+	// slack-prod for tt02 and prod.
+	SlackEnvironment Slack = "environment"
+)
+
+// Valid reports whether s is one of the Slack settings. Empty means
+// SlackTest.
+func (s Slack) Valid() bool {
+	return s == "" || s == SlackTest || s == SlackEnvironment
+}
+
+// slackSecret is the Slack secret for a test in env.
+func slackSecret(slack Slack, env string) (string, error) {
+	switch slack {
+	case "", SlackTest:
+		return "slack-test", nil
+	case SlackEnvironment:
+		secret, ok := map[string]string{
 			"at22": "slack-dev",
 			"at23": "slack-dev",
 			"yt01": "slack-dev",
 
 			"tt02": "slack-prod",
 			"prod": "slack-prod",
+		}[env]
+		if !ok {
+			return "", fmt.Errorf("%w: no Slack channel for the environment %q", errs.Invalid, env)
 		}
-		return aux[deploy_env]
+		return secret, nil
+	default:
+		return "", fmt.Errorf("%w: unknown Slack setting %q", errs.Invalid, slack)
 	}
-
-	return "slack-test"
 }

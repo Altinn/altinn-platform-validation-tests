@@ -1,10 +1,106 @@
 package k6manifest
 
 import (
+	"errors"
+	"os"
+	"path/filepath"
+	"strings"
 	"testing"
 
 	yaml "gopkg.in/yaml.v3"
+
+	"github.com/Altinn/altinn-platform-validation-tests/helpers/testudo/internal/errs"
 )
+
+// writeConfig writes content to functional.yaml in a new folder and returns
+// the path.
+func writeConfig(t *testing.T, content string) string {
+	t.Helper()
+	path := filepath.Join(t.TempDir(), "functional.yaml")
+	if err := os.WriteFile(path, []byte(content), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	return path
+}
+
+func TestUnknownKeysAreRejected(t *testing.T) {
+	for _, tt := range []struct {
+		name, key, content string
+	}{
+		{"top level", "namspace", `
+namspace: platform
+test_definitions: []
+`},
+		{"context", "enviroment", `
+namespace: platform
+test_definitions:
+  - test_file: k6/first_test.js
+    contexts:
+      - enviroment: yt01
+`},
+		{"resources", "limits", `
+namespace: platform
+test_definitions:
+  - test_file: k6/first_test.js
+    contexts:
+      - environment: yt01
+        test_run:
+          resources:
+            limits:
+              cpu: "1"
+`},
+	} {
+		t.Run(tt.name, func(t *testing.T) {
+			_, err := ReadConfigFile(writeConfig(t, tt.content))
+			if !errors.Is(err, errs.Invalid) {
+				t.Fatalf("expected errs.Invalid, got %v", err)
+			}
+			if !strings.Contains(err.Error(), tt.key) {
+				t.Errorf("the error does not name %q: %v", tt.key, err)
+			}
+		})
+	}
+}
+
+func TestKnownKeysAreAccepted(t *testing.T) {
+	for name, content := range map[string]string{
+		"empty file": "",
+		"every key": `
+namespace: platform
+base_dir: k6
+schedule: "0 8 * * 1"
+test_definitions:
+  - test_file: first_test.js
+    test_scope: first
+    config_file: config.json
+    env_file: env.env
+    contexts:
+      - environment: yt01
+        node_type: spot
+        test_type:
+          type: smoke
+          enabled: true
+          config_file: smoke.json
+        test_run:
+          name: first
+          id: yt01-first
+          parallelism: 2
+          resources:
+            requests:
+              memory: 1Gi
+              cpu: "1"
+          env:
+            - name: FOO
+              value: bar
+          secrets:
+            - token-generator-creds
+`,
+	} {
+		if _, err := ReadConfigFile(writeConfig(t, content)); err != nil {
+			t.Errorf("%s: %v", name, err)
+		}
+	}
+}
 
 var validEnvironmentsTests = []struct {
 	envName  string // input

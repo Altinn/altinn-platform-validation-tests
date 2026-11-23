@@ -22,6 +22,7 @@ const (
 
 func newK6GenerateCmd() *cobra.Command {
 	var cronJobsOnly bool
+	var slack string
 	cmd := &cobra.Command{
 		Use:   "generate <config file> [-- <k6 arguments>]",
 		Short: "Make the manifests for the tests in a config file",
@@ -49,9 +50,14 @@ applied by mistake.
 With --cronjobs-only, only the CronJobs are made, for one or more config files,
 and only .cronjobs/ is emptied. k6 is not needed then.
 
+--slack picks the Slack secret, and so the channel the tests post failed
+checks to: test (the default) gives slack-test, and environment gives
+slack-dev for at22, at23 and yt01 and slack-prod for tt02 and prod.
+
 Arguments after -- are given to k6 in the TestRun. Each -e or --env KEY=VALUE
 among them is also set as an environment variable for the test.`,
 		Example: `  testudo k6 generate K6/api/tests/portaler/smoke.yaml
+  testudo k6 generate --slack environment K6/api/tests/portaler/smoke.yaml
   testudo k6 generate K6/api/tests/access-management/consent/breakpoint.yaml -- --env BREAKPOINT_STAGE_TARGET=50
   testudo k6 generate --cronjobs-only K6/api/tests/portaler/smoke.yaml K6/api/tests/portaler/functional.yaml`,
 		Args: func(cmd *cobra.Command, args []string) error {
@@ -67,6 +73,9 @@ among them is also set as an environment variable for the test.`,
 			}
 			if !cronJobsOnly && n != 1 {
 				return fmt.Errorf("%w: expected one config file, got %d", errs.Invalid, n)
+			}
+			if !k6manifest.Slack(slack).Valid() || slack == "" {
+				return fmt.Errorf("%w: --slack must be %s or %s, got %q", errs.Invalid, k6manifest.SlackTest, k6manifest.SlackEnvironment, slack)
 			}
 			return nil
 		},
@@ -91,6 +100,7 @@ among them is also set as an environment variable for the test.`,
 				CronJobDirectory:  k6CronJobDir,
 				RepoRootDirectory: ".",
 				CommandLineArgs:   strings.Join(k6Args, " "),
+				Slack:             k6manifest.Slack(slack),
 			}
 			cf, err := g.Initialize(args[0])
 			if err != nil {
@@ -103,6 +113,7 @@ among them is also set as an environment variable for the test.`,
 		},
 	}
 	cmd.Flags().BoolVar(&cronJobsOnly, "cronjobs-only", false, "only make the CronJobs, for one or more config files")
+	cmd.Flags().StringVar(&slack, "slack", string(k6manifest.SlackTest), "Slack secret for the tests: test (slack-test) or environment (slack-dev or slack-prod)")
 	return cmd
 }
 

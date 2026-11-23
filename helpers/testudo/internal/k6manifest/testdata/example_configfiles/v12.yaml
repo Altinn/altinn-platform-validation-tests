@@ -3,9 +3,9 @@ test_definitions:
   - test_file: test_service/k8s_wrapper/get_deployments.js
     contexts:
       - environment: at22
+        test_type:
+          type: functional
+          enabled: true
+          config_file: ""
         test_run:
-          test_type:
-            type: functional
-            enabled: true
-            config_file: ""
           id: at22-pre-determined

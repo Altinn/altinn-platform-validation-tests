@@ -44,6 +44,8 @@ func TestK6GenerateTakesOneConfigFile(t *testing.T) {
 		{"k6", "generate", "--", "--vus", "3"},
 		{"k6", "generate", "--cronjobs-only"},
 		{"k6", "generate", "--cronjobs-only", "smoke.yaml", "--", "--vus", "3"},
+		{"k6", "generate", "--slack", "prod", "smoke.yaml"},
+		{"k6", "generate", "--slack", "", "smoke.yaml"},
 	} {
 		if _, err := execute(args...); !errors.Is(err, errs.Invalid) {
 			t.Errorf("%s: expected errs.Invalid, got %v", strings.Join(args, " "), err)

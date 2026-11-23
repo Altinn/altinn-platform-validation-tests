@@ -135,6 +135,44 @@ func preTest(t *testing.T, version string, g *K8sManifestGenerator) {
 		t.Setenv("GITHUB_SERVER_URL", "https://github.com")
 		t.Setenv("GITHUB_RUN_ID", "14965885066")
 		t.Setenv("GITHUB_REF", "refs/heads/main")
+		// The expected files have slack-dev and slack-prod. They used to
+		// come from GITHUB_REF; now they must be asked for.
+		g.Slack = SlackEnvironment
+	}
+}
+
+func TestSlackSecret(t *testing.T) {
+	// GITHUB_REF no longer picks the channel.
+	t.Setenv("GITHUB_REF", "refs/heads/main")
+	for _, tt := range []struct {
+		slack Slack
+		env   string
+		want  string
+	}{
+		{"", "prod", "slack-test"},
+		{SlackTest, "at22", "slack-test"},
+		{SlackTest, "prod", "slack-test"},
+		{SlackEnvironment, "at22", "slack-dev"},
+		{SlackEnvironment, "at23", "slack-dev"},
+		{SlackEnvironment, "yt01", "slack-dev"},
+		{SlackEnvironment, "tt02", "slack-prod"},
+		{SlackEnvironment, "prod", "slack-prod"},
+	} {
+		got, err := slackSecret(tt.slack, tt.env)
+		if err != nil || got != tt.want {
+			t.Errorf("slackSecret(%q, %q): expected %q, actual %q (%v)", tt.slack, tt.env, tt.want, got, err)
+		}
+	}
+	for _, tt := range []struct {
+		slack Slack
+		env   string
+	}{
+		{SlackEnvironment, "at21"},
+		{"prod", "prod"},
+	} {
+		if _, err := slackSecret(tt.slack, tt.env); !errors.Is(err, errs.Invalid) {
+			t.Errorf("slackSecret(%q, %q): expected errs.Invalid, got %v", tt.slack, tt.env, err)
+		}
 	}
 }
 

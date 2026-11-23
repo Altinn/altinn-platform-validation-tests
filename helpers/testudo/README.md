@@ -452,10 +452,21 @@ test, which is how an ad-hoc breakpoint run sets the load:
 testudo k6 generate K6/api/tests/access-management/consent/breakpoint.yaml -- --env BREAKPOINT_STAGE_TARGET=50 --env BREAKPOINT_STAGE_DURATION=5m
 ```
 
+`--slack` picks the Slack secret the tests get, and so the channel they post
+failed checks to. `test`, the default, gives `slack-test`, so a run from a
+branch or a laptop does not post to the team channels. `environment` gives
+`slack-dev` for at22, at23 and yt01, and `slack-prod` for tt02 and prod:
+
+```bash
+testudo k6 generate --slack environment K6/api/tests/portaler/smoke.yaml
+```
+
 In GitHub Actions, the `GITHUB_*` variables that are set (`GITHUB_REPOSITORY`,
 `GITHUB_RUN_ID`, `GITHUB_SHA` and so on) are added to the environment of the
-test. `GITHUB_REF=refs/heads/main` also picks the Slack secret for the
-environment (`slack-dev` or `slack-prod`); otherwise it is `slack-test`.
+test. They do not pick the Slack secret.
+
+A key the config file format does not have, for example a typo such as
+`enviroment:`, is an error, so it is not silently ignored.
 
 ## What testudo does not do
 
