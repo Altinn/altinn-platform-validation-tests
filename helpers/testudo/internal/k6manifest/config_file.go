@@ -9,8 +9,12 @@ import (
 )
 
 type ConfigFile struct {
-	Namespace              string            `yaml:"namespace"`
-	BaseDir                string            `yaml:"base_dir"`
+	Namespace string `yaml:"namespace"`
+	BaseDir   string `yaml:"base_dir"`
+	// Schedule is when the CronJob runs the tests in the file, as a cron
+	// expression. Without it the default for the test type is used, see
+	// cronJobSchedule.
+	Schedule               string            `yaml:"schedule,omitempty"`
 	TestDefinitions        []*TestDefinition `yaml:"test_definitions"`
 	ValidEnvironmentValues []string          `yaml:"-"`
 	ValidTestTypes         []string          `yaml:"-"`
@@ -99,6 +103,23 @@ func (cFile *ConfigFile) IsValid() bool {
 	return cFile.HasOnlyValidDeploymentEnvironments() && cFile.HasOnlyValidTestTypes()
 }
 
+// testTypeFromFileName is the test type of the tests in the config file at
+// filePath when they do not set one: smoke, breakpoint or browser when the
+// file name says so, and functional otherwise (healthcheck.yaml too).
+func testTypeFromFileName(filePath string) string {
+	fileName := filepath.Base(filePath)
+	switch {
+	case strings.Contains(fileName, "smoke"):
+		return "smoke"
+	case strings.Contains(fileName, "breakpoint"):
+		return "breakpoint"
+	case strings.Contains(fileName, "browser"):
+		return "browser"
+	default:
+		return "functional"
+	}
+}
+
 // Sets defaults for things that the user did not configure.
 func (cFile *ConfigFile) SetDefaults(filePath string) {
 	for _, td := range cFile.TestDefinitions {
@@ -125,34 +146,10 @@ func (cFile *ConfigFile) SetDefaults(filePath string) {
 
 		for _, c := range td.Contexts {
 			if c.TestTypeDefinition == nil {
-				fileName := filepath.Base(filePath)
-				functional := "functional"
-				smoke := "smoke"
-				breakpoint := "breakpoint"
-				brower := "browser"
-				if strings.Contains(fileName, smoke) {
-					c.TestTypeDefinition = &TestTypeDefinition{
-						Type:    &smoke,
-						Enabled: true,
-					}
-				} else if strings.Contains(fileName, breakpoint) {
-					c.TestTypeDefinition = &TestTypeDefinition{
-						Type:    &breakpoint,
-						Enabled: true,
-					}
-
-				} else if strings.Contains(fileName, "browser") {
-					c.TestTypeDefinition = &TestTypeDefinition{
-						Type:    &brower,
-						Enabled: true,
-					}
-
-				} else {
-					// If no test types are configured and we can't tell from filename, add a functional test definition by default.
-					c.TestTypeDefinition = &TestTypeDefinition{
-						Type:    &functional,
-						Enabled: true,
-					}
+				testType := testTypeFromFileName(filePath)
+				c.TestTypeDefinition = &TestTypeDefinition{
+					Type:    &testType,
+					Enabled: true,
 				}
 			}
 			if c.TestRun == nil {

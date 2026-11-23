@@ -388,10 +388,12 @@ runs testudo and replaces the header row with the names the file uses.
 Makes the Kubernetes manifests that run the tests in a K6 config file
 (`functional.yaml`, `smoke.yaml`, `healthcheck.yaml`, `breakpoint.yaml` or
 `browser.yaml` under `K6/`) in the k6 cluster, for every environment in the file
-where the test is enabled. The code was moved here from
+where the test is enabled, and the CronJob that runs them on a schedule. The
+code was moved here from
 [actions/generate-k6-manifests](https://github.com/Altinn/altinn-platform/tree/main/actions/generate-k6-manifests)
-in altinn-platform, and the output is the same. The workflows and CronJobs still
-use the action and image from altinn-platform.
+in altinn-platform, and the output is the same. The ad-hoc workflows still use
+the action from altinn-platform, and the CronJobs still run the generator in
+the altinn-platform image.
 
 Run it from the root of the repository, since the paths in the config files are
 relative to it. `k6` must be on PATH, since it makes the k6 archives. testudo
@@ -408,9 +410,39 @@ kubectl apply --server-side -f .dist/ -R
 | `.dist/<test id>/` | `configmap.json` with the k6 archive, and `testrun.json` for the k6 operator. This is what you apply. |
 | `.conf/` | `expanded-configfile.yaml`, the config file with all defaults filled in, and `<test id>/tweaked-testconfig.json`, the k6 options for each test. |
 | `.build/<test id>/` | `archive.tar`, the k6 archive. |
+| `.cronjobs/` | The CronJob for the config file, e.g. `K6_api_tests_portaler_smoke.json`. It is kept apart from `.dist/`, so applying the tests never changes a schedule. |
 
-The three folders are emptied first, so manifests from an earlier run are not
+The four folders are emptied first, so manifests from an earlier run are not
 applied by mistake.
+
+### Schedules
+
+The CronJob runs the tests in the config file on the schedule in `schedule:`, a
+cron expression at the top of the file:
+
+```yaml
+namespace: portaler
+schedule: "30 6 * * 1-5" # 06:30 on weekdays
+base_dir: K6/api/tests/portaler/
+test_definitions:
+  ...
+```
+
+Without `schedule:`, functional, healthcheck and browser tests run every 15
+minutes (`*/15 * * * *`), and smoke tests every hour (`0 * * * *`). Breakpoint
+tests only get a CronJob when their file has a `schedule:`.
+
+The [Generate and Apply K6 CronJobs](../../.github/workflows/apply-cronjobs.yaml)
+workflow applies the CronJobs for all config files when a config file changes on
+`main`. It only makes the CronJobs, which do not need k6:
+
+```bash
+testudo k6 generate --cronjobs-only K6/api/tests/portaler/smoke.yaml K6/api/tests/portaler/functional.yaml
+```
+
+The CronJob names and files are made from the path of the config file, as
+before, so applying replaces the CronJobs in the cluster. A name longer than 52
+characters loses its vowels.
 
 Arguments after `--` are given to k6 in the TestRun. Each `-e` or
 `--env KEY=VALUE` among them is also set as an environment variable for the

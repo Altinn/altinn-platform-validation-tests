@@ -1,7 +1,8 @@
 // Package k6manifest makes the Kubernetes manifests that run K6 tests in the
 // k6 cluster. It reads a config file such as functional.yaml or smoke.yaml,
 // and for each test in it makes a k6 archive, a ConfigMap that holds the
-// archive and a TestRun for the k6 operator.
+// archive and a TestRun for the k6 operator. WriteCronJob makes the CronJob
+// that runs the tests in the file on a schedule.
 //
 // The code was moved here from actions/generate-k6-manifests in
 // altinn-platform. It used kubectl for the ConfigMap and jsonnet for the
@@ -40,6 +41,7 @@ type K8sManifestGenerator struct {
 	ConfigDirectory   string
 	DistDirectory     string
 	BuildDirectory    string
+	CronJobDirectory  string
 	RepoRootDirectory string
 	// CommandLineArgs are extra arguments for k6, e.g. "--vus 23 -e FOO=bar".
 	// They are added to the arguments of the TestRun, and each -e/--env
@@ -47,7 +49,9 @@ type K8sManifestGenerator struct {
 	CommandLineArgs string
 }
 
-func (r K8sManifestGenerator) Initialize(filePath string) (*ConfigFile, error) {
+// ReadConfigFile reads the config file at filePath and checks it, without
+// filling in defaults.
+func ReadConfigFile(filePath string) (*ConfigFile, error) {
 	yfile, err := os.ReadFile(filePath)
 	if err != nil {
 		return nil, fmt.Errorf("read config file: %w", err)
@@ -80,6 +84,16 @@ func (r K8sManifestGenerator) Initialize(filePath string) (*ConfigFile, error) {
 	if !cf.IsValid() {
 		return nil, fmt.Errorf("%w: %s is not a valid config file", errs.Invalid, filePath)
 	}
+	return &cf, nil
+}
+
+// Initialize reads the config file at filePath, fills in the defaults and
+// writes the result to <ConfigDirectory>/expanded-configfile.yaml.
+func (r K8sManifestGenerator) Initialize(filePath string) (*ConfigFile, error) {
+	cf, err := ReadConfigFile(filePath)
+	if err != nil {
+		return nil, err
+	}
 	cf.SetDefaults(filePath)
 
 	requiredDirs := []string{
@@ -97,7 +111,7 @@ func (r K8sManifestGenerator) Initialize(filePath string) (*ConfigFile, error) {
 		}
 	}
 
-	d, err := yaml.Marshal(&cf)
+	d, err := yaml.Marshal(cf)
 	if err != nil {
 		return nil, err
 	}
@@ -106,7 +120,7 @@ func (r K8sManifestGenerator) Initialize(filePath string) (*ConfigFile, error) {
 		return nil, fmt.Errorf("write the expanded config file: %w", err)
 	}
 
-	return &cf, nil
+	return cf, nil
 }
 
 func (r K8sManifestGenerator) generate(td *TestDefinition, c *TestContext, cf ConfigFile, envFileSlice []*Env, envOptions []*Env, cluster k6Cluster) error {

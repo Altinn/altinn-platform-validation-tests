@@ -5,8 +5,13 @@ on:
     branches:
       - main
     paths:
-      - "hack/create_cronjobs.sh"
-      - "hack/cronjob.jsonnet"
+      # The schedules are in the config files, and the CronJobs are made by testudo.
+      - "K6/**/functional.yaml"
+      - "K6/**/healthcheck.yaml"
+      - "K6/**/smoke.yaml"
+      - "K6/**/browser.yaml"
+      - "K6/**/breakpoint.yaml"
+      - "helpers/testudo/**"
 run-name: "cronjobs"
 permissions:
   contents: "read"
@@ -19,21 +24,18 @@ jobs:
       - name: "Checkout code"
         uses: "actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10"
 
-      - name: Install jsonnet
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y jsonnet
-
-      - name: Install yq
-        run: |
-          mkdir -p "$HOME/bin"
-          wget -qO "$HOME/bin/yq" \
-            https://github.com/mikefarah/yq/releases/download/v4.53.6/yq_linux_amd64
-          chmod +x "$HOME/bin/yq"
-          echo "$HOME/bin" >> "$GITHUB_PATH"
+      - name: "Set up Go"
+        uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version-file: helpers/testudo/go.mod
+          cache-dependency-path: helpers/testudo/go.sum
 
       - name: "Generate Cronjobs"
-        run: "hack/create_cronjobs.sh"
+        # One call for all files, since testudo empties .cronjobs/ first.
+        run: |
+          go -C helpers/testudo build -o "$RUNNER_TEMP/testudo" .
+          mapfile -t config_files < <(find K6 -type f \( -name functional.yaml -o -name healthcheck.yaml -o -name smoke.yaml -o -name browser.yaml -o -name breakpoint.yaml \) | sort)
+          "$RUNNER_TEMP/testudo" k6 generate --cronjobs-only "${config_files[@]}"
         shell: "bash"
 
       - name: "Setup k8s client"
@@ -44,5 +46,5 @@ jobs:
           azure-tenant-id: "${{ secrets.AZURE_TENANT_ID }}"
 
       - name: "Apply CronJobs"
-        run: "kubectl apply -f .dist/ -R || true"
+        run: "kubectl apply -f .cronjobs/ -R || true"
         shell: "bash"

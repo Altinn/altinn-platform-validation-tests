@@ -1,0 +1,44 @@
+{
+   "apiVersion": "batch/v1",
+   "kind": "CronJob",
+   "metadata": {
+      "labels": {
+         "generated-by": "github-action"
+      },
+      "name": "access-packages-functional",
+      "namespace": "access-management-bff"
+   },
+   "spec": {
+      "concurrencyPolicy": "Forbid",
+      "jobTemplate": {
+         "spec": {
+            "template": {
+               "spec": {
+                  "containers": [
+                     {
+                        "args": [
+                           "-c",
+                           "git clone https://github.com/Altinn/altinn-platform-validation-tests.git; cd altinn-platform-validation-tests/; generate-k6-manifests; kubectl apply --server-side -f .dist/ -R || true"
+                        ],
+                        "command": [
+                           "/bin/sh"
+                        ],
+                        "env": [
+                           {
+                              "name": "INPUT_CONFIG_FILE",
+                              "value": "./K6/api/tests/access-management-bff/access-packages/functional.yaml"
+                           }
+                        ],
+                        "image": "ghcr.io/altinn/altinn-platform/k6-action-image:v0.0.42",
+                        "name": "generate-manifests"
+                     }
+                  ],
+                  "restartPolicy": "Never",
+                  "serviceAccount": "k6"
+               }
+            }
+         }
+      },
+      "schedule": "*/15 * * * *"
+   }
+}
