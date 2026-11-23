@@ -19,11 +19,16 @@ export function aktivAktorUuid(page: Page): Promise<string> {
 }
 
 /**
- * Bruker-id-en og party-id-en til den innloggede brukeren, lest fra Altinn-tokenet. Et token fra
- * token-generatoren trenger dem for å bli godtatt som brukerens eget.
+ * Bruker-id-en, party-id-en og sikkerhetsnivået til den innloggede brukeren, lest fra
+ * Altinn-tokenet. Et token fra token-generatoren trenger id-ene for å bli godtatt som brukerens
+ * eget, og sikkerhetsnivået for å oppfylle policyer som krever mer enn generatorens standard, 3.
  */
-export async function brukerIder(page: Page): Promise<{ userId: string; partyId: string }> {
+export async function innloggetBruker(page: Page): Promise<{ userId: string; partyId: string; authLvl: string }> {
     const [, payload] = (await altinnToken(page)).split(".");
     const claims = JSON.parse(Buffer.from(payload, "base64url").toString());
-    return { userId: String(claims["urn:altinn:userid"]), partyId: String(claims["urn:altinn:partyid"]) };
+    return {
+        userId: String(claims["urn:altinn:userid"]),
+        partyId: String(claims["urn:altinn:partyid"]),
+        authLvl: String(claims["urn:altinn:authlevel"]),
+    };
 }

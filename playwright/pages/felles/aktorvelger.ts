@@ -3,19 +3,28 @@ import { expect, Locator, Page } from "@playwright/test";
 import { Sprak } from "../../config/sprak";
 import { REDIRECT_TIMEOUT } from "./navigasjon";
 
+// Fra AccountSelector i @altinn/altinn-components.
+const AKTORLISTE_OVERSKRIFT: Record<Sprak, string> = {
+    [Sprak.Bokmaal]: "Hvem vil du bruke Altinn på vegne av?",
+    [Sprak.Nynorsk]: "Kven vil du bruke Altinn på vegner av?",
+    [Sprak.Engelsk]: "Who do you want to use Altinn on behalf of?",
+};
+
 /**
  * Aktørvelgeren som åpner seg etter innlogging når brukeren kan representere flere
  * aktører. Etter mønster fra `selectActor` i access-management-frontend sine
  * Playwright-tester (playwright/pages/LoginPage.ts).
  */
 export class AktorvelgerPom {
-    readonly dialog: Locator;
+    readonly aktorliste: Locator;
     // Knappen i headeren med aktøren brukeren står på nå, ved siden av "Meny". Headeren kan
     // vises før brukeren har valgt språk, så menyknappen utelates på alle språk.
     readonly aktorKnapp: Locator;
 
     constructor(private page: Page, readonly sprak: Sprak) {
-        this.dialog = page.getByRole("dialog");
+        // Rett etter innlogging er aktørlisten en egen side med overskriften som h1, ellers en dialog.
+        const overskrift = page.getByRole("heading", { name: AKTORLISTE_OVERSKRIFT[sprak], exact: true });
+        this.aktorliste = page.getByRole("dialog").or(page.getByRole("main").filter({ has: overskrift })).first();
         this.aktorKnapp = page
             .getByRole("banner")
             .getByRole("button")
@@ -35,7 +44,7 @@ export class AktorvelgerPom {
      */
     async velgAktorFraHeader(navn: string) {
         await expect(async () => {
-            if (await this.dialog.isVisible()) {
+            if (await this.aktorliste.isVisible()) {
                 await this.sok(navn);
                 await this.aktor(navn).click({ timeout: 2_000 });
             } else if (!(await this.starPa(navn))) {
@@ -43,7 +52,7 @@ export class AktorvelgerPom {
                 await this.sok(navn);
                 await this.aktor(navn).click({ timeout: 2_000 });
             }
-            await expect(this.dialog).toBeHidden({ timeout: 2_000 });
+            await expect(this.aktorliste).toBeHidden({ timeout: 2_000 });
             await expect(this.aktorKnapp).toContainText(navn, { ignoreCase: true, timeout: 2_000 });
         }, `Står på ${navn}`).toPass({ timeout: 30_000 });
     }
@@ -59,13 +68,13 @@ export class AktorvelgerPom {
             .getByRole("banner")
             .getByRole("button", { name: /^(meny|menu)$/i })
             .and(this.page.locator(":enabled"));
-        await expect(this.dialog.or(menyKlar).first(), "Aktørlisten eller menyen er klar")
+        await expect(this.aktorliste.or(menyKlar).first(), "Aktørlisten eller menyen er klar")
             .toBeVisible({ timeout: REDIRECT_TIMEOUT });
 
         // Lista kan lukke seg igjen like etter at den har åpnet seg, og da blir menyen klar.
-        if (await this.dialog.isVisible()) {
+        if (await this.aktorliste.isVisible()) {
             await this.sok(navn);
-            await expect(this.dialog.getByRole("menuitem").or(menyKlar).first(), "Aktørlisten eller menyen er klar")
+            await expect(this.aktorliste.getByRole("menuitem").or(menyKlar).first(), "Aktørlisten eller menyen er klar")
                 .toBeVisible();
         }
 
@@ -85,8 +94,8 @@ export class AktorvelgerPom {
     async ventPaOgVelgAktorFraHeader(navn: string) {
         await expect(async () => {
             await this.page.reload();
-            await expect(this.dialog.or(this.aktorKnapp).first()).toBeVisible();
-            if (!(await this.dialog.isVisible())) {
+            await expect(this.aktorliste.or(this.aktorKnapp).first()).toBeVisible();
+            if (!(await this.aktorliste.isVisible())) {
                 await this.aktorKnapp.click();
             }
             await this.sok(navn);
@@ -106,14 +115,14 @@ export class AktorvelgerPom {
      */
     private aktor(navn: string): Locator {
         const escaped = navn.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-        return this.dialog.getByRole("menuitem", { name: new RegExp(escaped, "i") }).first();
+        return this.aktorliste.getByRole("menuitem", { name: new RegExp(escaped, "i") }).first();
     }
 
     // Lister med mange aktører har et søkefelt og tegner bare aktørene som er synlige, så en
     // aktør lenger ned finnes ikke på siden før det er søkt.
     private async sok(navn: string) {
         // Søkefeltet er et searchbox, eller et combobox når menyen styres med tastaturet.
-        const sokefelt = this.dialog.getByRole("searchbox").or(this.dialog.getByRole("combobox")).first();
+        const sokefelt = this.aktorliste.getByRole("searchbox").or(this.aktorliste.getByRole("combobox")).first();
         if (await sokefelt.isVisible()) {
             await sokefelt.fill(navn);
         }
@@ -121,7 +130,7 @@ export class AktorvelgerPom {
 
     private async velg(navn: string) {
         await this.aktor(navn).click();
-        await expect(this.dialog, "Aktørlisten lukkes etter valget").toBeHidden();
+        await expect(this.aktorliste, "Aktørlisten lukkes etter valget").toBeHidden();
         await expect(this.aktorKnapp, `Står på ${navn}`).toContainText(navn, { ignoreCase: true });
     }
 }

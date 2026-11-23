@@ -20,8 +20,6 @@ test_definitions:
           type: smoke
           enabled: false
 
-      - environment: at23
-
   - test_file: create-dialog-org.js
     contexts:
       - environment: yt01
@@ -33,8 +31,6 @@ test_definitions:
         test_type:
           type: smoke
           enabled: false
-
-      - environment: at23
 
   - test_file: create-dialog-transmission-activity.js
     contexts:
@@ -48,8 +44,6 @@ test_definitions:
           type: smoke
           enabled: false
 
-      - environment: at23
-
   - test_file: get-dialogs-and-extract-details.js
     contexts:
       - environment: yt01
@@ -61,8 +55,6 @@ test_definitions:
         test_type:
           type: smoke
           enabled: false
-
-      - environment: at23
 
   - test_file: get-dialogs-party.js
     contexts:
@@ -76,8 +68,6 @@ test_definitions:
           type: smoke
           enabled: false
 
-      - environment: at23
-
   - test_file: get-dialogs-party-createdbefore.js
     contexts:
       - environment: yt01
@@ -89,8 +79,6 @@ test_definitions:
         test_type:
           type: smoke
           enabled: false
-
-      - environment: at23
 
   - test_file: get-dialogs-party-createdafter.js
     contexts:
@@ -104,8 +92,6 @@ test_definitions:
           type: smoke
           enabled: false
 
-      - environment: at23
-
   - test_file: get-dialogs-enduser-serviceresource.js
     contexts:
       - environment: yt01
@@ -117,8 +103,6 @@ test_definitions:
         test_type:
           type: smoke
           enabled: false
-
-      - environment: at23
 
   - test_file: get-dialogs-enduser-serviceresource-search.js
     contexts:
@@ -132,8 +116,6 @@ test_definitions:
           type: smoke
           enabled: false
 
-      - environment: at23
-
   - test_file: get-dialogs-enduser-serviceresource-search-nohit.js
     contexts:
       - environment: yt01
@@ -145,8 +127,6 @@ test_definitions:
         test_type:
           type: smoke
           enabled: false
-
-      - environment: at23
 
   - test_file: get-dialogs-enduser-serviceresource-search-createdafter.js
     contexts:
@@ -160,8 +140,6 @@ test_definitions:
           type: smoke
           enabled: false
 
-      - environment: at23
-
   - test_file: get-dialogs-enduser-serviceresource-createdbefore.js
     contexts:
       - environment: yt01
@@ -173,8 +151,6 @@ test_definitions:
         test_type:
           type: smoke
           enabled: false
-
-      - environment: at23
 
   - test_file: get-dialogs-enduser-serviceresource-createdafter.js
     contexts:
@@ -188,8 +164,6 @@ test_definitions:
           type: smoke
           enabled: false
 
-      - environment: at23
-
   - test_file: get-endusercontext.js
     contexts:
       - environment: yt01
@@ -201,5 +175,3 @@ test_definitions:
         test_type:
           type: smoke
           enabled: false
-
-      - environment: at23

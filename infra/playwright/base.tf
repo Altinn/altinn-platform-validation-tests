@@ -37,6 +37,25 @@ resource "azurerm_key_vault_secret" "azureclientid" {
   key_vault_id = azurerm_key_vault.playwright.id
 }
 
+resource "azurerm_storage_management_policy" "playwright_reports" {
+  storage_account_id = azurerm_storage_account.playwright_reports.id
+
+  rule {
+    name    = "delete-old-playwright-reports"
+    enabled = true
+
+    filters {
+      blob_types = ["blockBlob"]
+    }
+
+    actions {
+      base_blob {
+        delete_after_days_since_creation_greater_than = var.report_retention_days
+      }
+    }
+  }
+}
+
 resource "azurerm_storage_account" "playwright_reports" {
   name                = "playwrightartifacts6546"
   resource_group_name = azurerm_resource_group.playwright.name
