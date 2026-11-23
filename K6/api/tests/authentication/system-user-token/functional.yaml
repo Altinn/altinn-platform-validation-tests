@@ -29,8 +29,5 @@ test_definitions:
     contexts:
       - environment: tt02
         test_run:
-          env:
-            - name: APPS_URL
-              value: https://ttd.apps.tt02.altinn.no
           secrets:
             - 313175650-maskinporten-client

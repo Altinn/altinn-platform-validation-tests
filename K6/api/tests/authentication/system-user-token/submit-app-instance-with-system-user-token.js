@@ -1,7 +1,7 @@
 import { fail, group } from "k6";
 
 import { InstancesClient } from "../../../../clients/apps/index.js";
-import { getItemFromList, lazy, requireEnv } from "../../../../helpers.js";
+import { appsBaseUrl, getItemFromList, lazy } from "../../../../helpers.js";
 import { AltinnScopes } from "../../../../scopes.js";
 import { AuthenticationBuildingBlocks } from "../../../authentication-imports.js";
 import { CreateNewInstance, MoveInstanceToNextProcessStep } from "../../../building-blocks/apps/index.js";
@@ -30,7 +30,7 @@ const getAppClients = lazy(function () {
         },
     };
 
-    return { tokenGenerator, instancesClient: new InstancesClient(__ENV.APPS_URL, tokenGenerator) };
+    return { tokenGenerator, instancesClient: new InstancesClient(appsBaseUrl(ORG, __ENV.ENVIRONMENT), tokenGenerator) };
 });
 
 /**
@@ -41,8 +41,7 @@ const getAppClients = lazy(function () {
  * system user setup arranges has jordbruk on the customer, so it gets in on the
  * system user obligation alone.
  *
- * The apps host comes from APPS_URL in functional.yaml. It is required after the skip
- * below rather than in setup, so run-all one level up still skips outside tt02.
+ * The apps host follows ENVIRONMENT, which setup has already required.
  *
  * @param {ReturnType<typeof import("./commons.js").setup>} data The arranged system users from setup.
  */
@@ -52,7 +51,6 @@ export default async function (data) {
         return;
     }
 
-    requireEnv(["APPS_URL"]);
     const arranged = getItemFromList(data, randomize);
     const systemUserToken = await fetchSystemUserToken(arranged, [AltinnScopes.INSTANCES.READ, AltinnScopes.INSTANCES.WRITE]);
     const { clients } = getClients();

@@ -267,6 +267,25 @@ export function requireEnv(vars) {
 }
 
 /**
+ * The apps host of a service owner in an environment.
+ *
+ * @param {string} org The service owner, e.g. ttd.
+ * @param {string} environment The environment, e.g. tt02.
+ * @returns {string} The apps host, or an empty string where apps are not hosted.
+ */
+export function appsBaseUrl(org, environment) {
+    if (environment === "tt02") {
+        return `https://${org}.apps.tt02.altinn.no`;
+    }
+
+    if (environment === "prod") {
+        return `https://${org}.apps.altinn.no`;
+    }
+
+    return "";
+}
+
+/**
  * @param {Array<string>|null|undefined} left One list of strings.
  * @param {Array<string>|null|undefined} right Another.
  * @returns {boolean} True when both hold the same strings, in any order.
