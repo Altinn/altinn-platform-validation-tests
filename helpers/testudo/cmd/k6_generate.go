@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/spf13/cobra"
 
@@ -126,6 +127,7 @@ among them is also set as an environment variable for the test.`,
 				CommandLineArgs:   strings.Join(k6Args, " "),
 				Slack:             k6manifest.Slack(slack),
 				Parallel:          parallel,
+				GenerationTime:    time.Now(),
 			}
 			cf, err := g.Initialize(args[0])
 			if err != nil {

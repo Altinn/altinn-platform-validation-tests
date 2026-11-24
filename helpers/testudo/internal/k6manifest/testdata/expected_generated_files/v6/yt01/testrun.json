@@ -3,42 +3,34 @@
    "kind": "TestRun",
    "metadata": {
       "annotations": {
-         "k6-action-image/test_name": "get-deployments",
+         "k6-action-image/test_name": "get-daemonsets",
          "k6-action-image/test_scope": "k8s-wrapper",
-         "k6-action-image/testfilename": "test_service/k8s_wrapper/get_deployments.js",
-         "k6-action-image/testid": "at22-get-deployments"
+         "k6-action-image/testfilename": "test_service/k8s_wrapper/get_daemonsets.js",
+         "k6-action-image/testid": "yt01-get-daemonsets"
       },
       "labels": {
          "generated-by": "k6-action-image",
-         "uniq_name": "{{ .UniqName }}"
+         "uniq_name": "yt01-1700000000000-ro8we"
       },
-      "name": "{{ .UniqName }}",
+      "name": "yt01-1700000000000-ro8we",
       "namespace": "platform"
    },
    "spec": {
-      "arguments": "--tag testid=at22-get-deployments --tag namespace=platform --tag deploy_env=at22 --tag test_name=get-deployments --tag test_scope=k8s-wrapper --out experimental-prometheus-rw",
+      "arguments": "--tag testid=yt01-get-daemonsets --tag namespace=platform --tag deploy_env=yt01 --tag test_name=get-daemonsets --tag test_scope=k8s-wrapper --out experimental-prometheus-rw",
       "parallelism": 1,
       "runner": {
          "env": [
             {
+               "name": "API_VERSION",
+               "value": "3"
+            },
+            {
                "name": "ENVIRONMENT",
-               "value": "at22"
+               "value": "yt01"
             },
             {
-               "name": "GITHUB_REF",
-               "value": "refs/heads/main"
-            },
-            {
-               "name": "GITHUB_REPOSITORY",
-               "value": "octocat/Hello-World"
-            },
-            {
-               "name": "GITHUB_RUN_ID",
-               "value": "14965885066"
-            },
-            {
-               "name": "GITHUB_SERVER_URL",
-               "value": "https://github.com"
+               "name": "FEATURE_FLAG1",
+               "value": "enabled"
             },
             {
                "name": "K6_NO_USAGE_REPORT",
@@ -54,7 +46,7 @@
             },
             {
                "name": "MANIFEST_GENERATION_TIMESTAMP",
-               "value": "{{ .ManifestGenerationTimestamp }}"
+               "value": "1700000000000"
             },
             {
                "name": "NAMESPACE",
@@ -66,11 +58,11 @@
             },
             {
                "name": "TESTFILENAME",
-               "value": "test_service/k8s_wrapper/get_deployments.js"
+               "value": "test_service/k8s_wrapper/get_daemonsets.js"
             },
             {
                "name": "TESTID",
-               "value": "at22-get-deployments"
+               "value": "yt01-get-daemonsets"
             },
             {
                "name": "TEST_SCOPE",
@@ -80,7 +72,7 @@
          "envFrom": [
             {
                "configMapRef": {
-                  "name": "deploy-environments-at22"
+                  "name": "deploy-environments-yt01"
                }
             },
             {
@@ -90,21 +82,21 @@
             },
             {
                "secretRef": {
-                  "name": "slack-dev"
+                  "name": "slack-test"
                }
             }
          ],
          "image": "ghcr.io/altinn/altinn-platform/k6-image:v2.2.0",
          "metadata": {
             "annotations": {
-               "k6-action-image/test_name": "get-deployments",
+               "k6-action-image/test_name": "get-daemonsets",
                "k6-action-image/test_scope": "k8s-wrapper",
-               "k6-action-image/testfilename": "test_service/k8s_wrapper/get_deployments.js",
-               "k6-action-image/testid": "at22-get-deployments"
+               "k6-action-image/testfilename": "test_service/k8s_wrapper/get_daemonsets.js",
+               "k6-action-image/testid": "yt01-get-daemonsets"
             },
             "labels": {
                "generated-by": "k6-action-image",
-               "uniq_name": "{{ .UniqName }}"
+               "uniq_name": "yt01-1700000000000-ro8we"
             }
          },
          "nodeSelector": { },
@@ -119,7 +111,7 @@
       "script": {
          "configMap": {
             "file": "archive.tar",
-            "name": "k8s-wrapper-at22-get-deployments"
+            "name": "k8s-wrapper-yt01-get-daemonsets"
          }
       }
    }

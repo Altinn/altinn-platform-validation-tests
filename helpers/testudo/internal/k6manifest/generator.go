@@ -57,6 +57,11 @@ type K8sManifestGenerator struct {
 	// k6 archive processes run at once. Zero means GOMAXPROCS, which follows
 	// the CPU limit of the container the generator runs in.
 	Parallel int
+	// GenerationTime is when the manifests are made. Every test in a run gets
+	// it, in MANIFEST_GENERATION_TIMESTAMP, the generation_timestamp label
+	// and the TestRun name. It must be set: the command sets it to the time
+	// it runs, and the tests to a fixed time.
+	GenerationTime time.Time
 }
 
 // ReadConfigFile reads the config file at filePath and checks it, without
@@ -137,7 +142,7 @@ func (r K8sManifestGenerator) Initialize(filePath string) (*ConfigFile, error) {
 }
 
 func (r K8sManifestGenerator) generate(td *TestDefinition, c *TestContext, cf ConfigFile, envFileSlice []*Env, envOptions []*Env, cluster k6Cluster) error {
-	manifestGenerationTimestamp := time.Now().UnixMilli()
+	manifestGenerationTimestamp := r.GenerationTime.UnixMilli()
 
 	mergedEnvs := handleExtraEnvVars(c.TestRun.Env, envFileSlice)
 	mergedEnvs = handleExtraEnvVars(mergedEnvs, getGithubRelatedVars())
@@ -181,7 +186,7 @@ func (r K8sManifestGenerator) generate(td *TestDefinition, c *TestContext, cf Co
 		}
 	}
 
-	uniqName := fmt.Sprintf("%s-%d-%s", c.Environment, manifestGenerationTimestamp, randomString(5))
+	uniqName := testRunName(c.Environment, *c.TestRun.Id, manifestGenerationTimestamp)
 	testScope := td.TestScope
 	dirName := *c.TestRun.Id
 	newpath := filepath.Join(r.ConfigDirectory, dirName)
@@ -263,6 +268,9 @@ func (r K8sManifestGenerator) Generate(cf ConfigFile) error {
 	}
 	if r.Parallel < 0 {
 		return fmt.Errorf("%w: Parallel must be 0 or more, got %d", errs.Invalid, r.Parallel)
+	}
+	if r.GenerationTime.IsZero() {
+		return fmt.Errorf("%w: GenerationTime must be set", errs.Invalid)
 	}
 	cluster, err := loadK6Cluster()
 	if err != nil {

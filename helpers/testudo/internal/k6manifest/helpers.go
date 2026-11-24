@@ -2,8 +2,8 @@ package k6manifest
 
 import (
 	"bufio"
+	"crypto/sha256"
 	"fmt"
-	"math/rand"
 	"os"
 	"path/filepath"
 	"strings"
@@ -63,13 +63,18 @@ func getGithubRelatedVars() []*Env {
 	return githubRelatedEnvVars
 }
 
-func randomString(n int) string {
-	var letters = []rune("abcdefghijklmnopqrstuvwxyz0123456789")
-	s := make([]rune, n)
-	for i := range s {
-		s[i] = letters[rand.Intn(len(letters))]
+// testRunName is the name of a TestRun, which is also its uniq_name label:
+// <environment>-<timestamp>-<suffix>. The five-character suffix is made from
+// the test id and the timestamp, so the tests in a run get different names,
+// and the same test and time always give the same name.
+func testRunName(environment, testID string, timestamp int64) string {
+	const letters = "abcdefghijklmnopqrstuvwxyz0123456789"
+	sum := sha256.Sum256(fmt.Appendf(nil, "%s\x00%d", testID, timestamp))
+	suffix := make([]byte, 5)
+	for i := range suffix {
+		suffix[i] = letters[int(sum[i])%len(letters)]
 	}
-	return string(s)
+	return fmt.Sprintf("%s-%d-%s", environment, timestamp, suffix)
 }
 
 func parseEnvFile(filePath string) ([]*Env, error) {

@@ -10,9 +10,9 @@
       },
       "labels": {
          "generated-by": "k6-action-image",
-         "uniq_name": "{{ .UniqName }}"
+         "uniq_name": "at22-1700000000000-pyil5"
       },
-      "name": "{{ .UniqName }}",
+      "name": "at22-1700000000000-pyil5",
       "namespace": "platform"
    },
    "spec": {
@@ -21,8 +21,20 @@
       "runner": {
          "env": [
             {
+               "name": "ENVFROMFILE1",
+               "value": "ENV1"
+            },
+            {
+               "name": "ENVFROMFILE2",
+               "value": "ENV2"
+            },
+            {
                "name": "ENVIRONMENT",
                "value": "at22"
+            },
+            {
+               "name": "FOO",
+               "value": "BAR"
             },
             {
                "name": "K6_NO_USAGE_REPORT",
@@ -38,7 +50,7 @@
             },
             {
                "name": "MANIFEST_GENERATION_TIMESTAMP",
-               "value": "{{ .ManifestGenerationTimestamp }}"
+               "value": "1700000000000"
             },
             {
                "name": "NAMESPACE",
@@ -88,7 +100,7 @@
             },
             "labels": {
                "generated-by": "k6-action-image",
-               "uniq_name": "{{ .UniqName }}"
+               "uniq_name": "at22-1700000000000-pyil5"
             }
          },
          "nodeSelector": { },

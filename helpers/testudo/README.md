@@ -458,6 +458,13 @@ after a failed run only applies the tests that were made in full. testudo
 checks that k6 is on PATH before it reads the config file or empties the
 folders, so a missing k6 is one error and changes nothing.
 
+Every test in a run gets the time the command started, in
+`MANIFEST_GENERATION_TIMESTAMP` and the `generation_timestamp` label. The
+TestRun name and its `uniq_name` label are
+`<environment>-<timestamp>-<five characters>`, where the five characters are
+made from the test id and the timestamp, so each test in a run gets its own
+name.
+
 ### Schedules
 
 The CronJob runs the tests in the config file on the schedule in `schedule:`, a
@@ -535,7 +542,7 @@ make fmt      # formats the code
 | `internal/maskinporten/`, `internal/platformtoken/` | Tokens for Tenor and Register. |
 | `internal/config/` | Reads `~/.testudo.yaml` and environment variables. |
 | `internal/playwright/`, `internal/slack/` | Reading the Playwright report and sending to Slack, for `notify playwright`. |
-| `internal/k6manifest/` | Reads the K6 config files and makes the manifests for `k6 generate`. `testrun.go` makes the TestRun, in the same format jsonnet wrote it in before. `assets/` has the default load profile for each test type and the k6 cluster config. `testdata/` has example config files and the expected output. |
+| `internal/k6manifest/` | Reads the K6 config files and makes the manifests for `k6 generate`. `testrun.go` makes the TestRun, in the same format jsonnet wrote it in before. `assets/` has the default load profile for each test type and the k6 cluster config. `testdata/` has example config files and the expected output, made at a fixed time (1700000000000 in Unix milliseconds) so the timestamps and TestRun names in it are as they are. |
 | `internal/tools/` | Checks that the programs a command runs, such as k6, are on PATH. A command calls `tools.Require` before it starts. |
 
 `TestGenerate` in `internal/k6manifest/` runs k6, and fails when it is not on

@@ -10,9 +10,9 @@
       },
       "labels": {
          "generated-by": "k6-action-image",
-         "uniq_name": "{{ .UniqName }}"
+         "uniq_name": "at22-1700000000000-pyil5"
       },
-      "name": "{{ .UniqName }}",
+      "name": "at22-1700000000000-pyil5",
       "namespace": "platform"
    },
    "spec": {
@@ -23,6 +23,22 @@
             {
                "name": "ENVIRONMENT",
                "value": "at22"
+            },
+            {
+               "name": "GITHUB_REF",
+               "value": "refs/heads/main"
+            },
+            {
+               "name": "GITHUB_REPOSITORY",
+               "value": "octocat/Hello-World"
+            },
+            {
+               "name": "GITHUB_RUN_ID",
+               "value": "14965885066"
+            },
+            {
+               "name": "GITHUB_SERVER_URL",
+               "value": "https://github.com"
             },
             {
                "name": "K6_NO_USAGE_REPORT",
@@ -38,7 +54,7 @@
             },
             {
                "name": "MANIFEST_GENERATION_TIMESTAMP",
-               "value": "{{ .ManifestGenerationTimestamp }}"
+               "value": "1700000000000"
             },
             {
                "name": "NAMESPACE",
@@ -74,7 +90,7 @@
             },
             {
                "secretRef": {
-                  "name": "slack-test"
+                  "name": "slack-dev"
                }
             }
          ],
@@ -88,7 +104,7 @@
             },
             "labels": {
                "generated-by": "k6-action-image",
-               "uniq_name": "{{ .UniqName }}"
+               "uniq_name": "at22-1700000000000-pyil5"
             }
          },
          "nodeSelector": { },

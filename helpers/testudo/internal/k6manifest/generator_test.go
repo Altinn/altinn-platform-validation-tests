@@ -10,17 +10,21 @@ import (
 	"os/exec"
 	"path/filepath"
 	"reflect"
+	"regexp"
 	"strings"
 	"sync/atomic"
 	"testing"
-	"text/template"
 	"time"
 
 	corev1 "k8s.io/api/core/v1"
-	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 
 	"github.com/Altinn/altinn-platform-validation-tests/helpers/testudo/internal/errs"
 )
+
+// generationTime is the time the tests make the manifests at, so the expected
+// files can have the timestamp and TestRun names as they are. It is
+// 1700000000000 in Unix milliseconds.
+var generationTime = time.UnixMilli(1700000000000)
 
 // The paths in the example config files are relative to testdata.
 func initGenerator(confDir, distDir, buildDir string) K8sManifestGenerator {
@@ -29,6 +33,7 @@ func initGenerator(confDir, distDir, buildDir string) K8sManifestGenerator {
 		DistDirectory:     distDir,
 		BuildDirectory:    buildDir,
 		RepoRootDirectory: "testdata",
+		GenerationTime:    generationTime,
 	}
 }
 
@@ -53,48 +58,11 @@ func validateConfigFolder(confDir string, testVersion string, t *testing.T) {
 	})
 }
 
-func validateTestRun(path, dirName, testVersion, deployEnv string, t *testing.T) {
-	uniqName, err := extractUniqueIdFromGeneratedTestRun(path)
-	if err != nil {
-		t.Fatalf("error: %v", err)
-	}
-	manifestGenerationTimestamp := strings.Split(uniqName, "-")[1]
-	// Ugly hack, but let's go with it until I refactor further.
-	var testName string
-	testName = strings.TrimPrefix(dirName, fmt.Sprintf("%s-", deployEnv))
-	testName = strings.TrimSuffix(testName, "-breakpoint")
-	testName = strings.TrimSuffix(testName, "-smoke")
-	testName = strings.TrimSuffix(testName, "-spike")
-
-	generatedFile, knownExpectedFile, equalContents := readFileAndCompareWithTemplatedFile(
-		path,
-		fmt.Sprintf("./testdata/expected_generated_files/%s/%s/testrun.json.tmpl", testVersion, deployEnv),
-		map[string]string{
-			"DirName":                     dirName,
-			"DeployEnv":                   deployEnv,
-			"ManifestGenerationTimestamp": manifestGenerationTimestamp,
-			"TestName":                    testName,
-			"TestId":                      dirName,
-			"UniqName":                    uniqName,
-		},
-	)
+func validateTestRun(path, testVersion, deployEnv string, t *testing.T) {
+	generatedFile, knownExpectedFile, equalContents := readFilesAndCompareContents(path, fmt.Sprintf("./testdata/expected_generated_files/%s/%s/testrun.json", testVersion, deployEnv))
 	if !equalContents {
 		t.Errorf("generate %s: expected \n%s, actual \n%s", testVersion, knownExpectedFile, generatedFile)
 	}
-}
-
-func extractUniqueIdFromGeneratedTestRun(filepath string) (string, error) {
-	generatedFile, err := os.ReadFile(filepath)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	var generatedTestRun unstructured.Unstructured
-	err = json.Unmarshal([]byte(generatedFile), &generatedTestRun)
-	if err != nil {
-		return "", err
-	}
-	return generatedTestRun.GetName(), nil
 }
 
 func validateConfigMap(path, testVersion, dirName string, t *testing.T) {
@@ -236,6 +204,30 @@ func TestRunLimited(t *testing.T) {
 	}
 }
 
+func TestGenerateRequiresGenerationTime(t *testing.T) {
+	g := K8sManifestGenerator{}
+	if err := g.Generate(ConfigFile{}); !errors.Is(err, errs.Invalid) || !strings.Contains(err.Error(), "GenerationTime") {
+		t.Errorf("expected errs.Invalid about GenerationTime, got %v", err)
+	}
+}
+
+func TestTestRunName(t *testing.T) {
+	const ts = 1700000000000
+	name := testRunName("at22", "at22-get-deployments", ts)
+	if !regexp.MustCompile(`^at22-1700000000000-[a-z0-9]{5}$`).MatchString(name) {
+		t.Errorf("unexpected name %q", name)
+	}
+	if again := testRunName("at22", "at22-get-deployments", ts); again != name {
+		t.Errorf("the same test and time gave %q and %q", name, again)
+	}
+	if other := testRunName("at22", "at22-get-daemonsets", ts); other == name {
+		t.Errorf("two tests in a run got the same name %q", name)
+	}
+	if later := testRunName("at22", "at22-get-deployments", ts+1); later[len(later)-5:] == name[len(name)-5:] {
+		t.Errorf("another time gave the same suffix: %q and %q", name, later)
+	}
+}
+
 func TestGenerateRejectsNegativeParallel(t *testing.T) {
 	g := K8sManifestGenerator{Parallel: -1}
 	if err := g.Generate(ConfigFile{}); !errors.Is(err, errs.Invalid) {
@@ -353,7 +345,7 @@ func TestGenerate(t *testing.T) {
 					t.Logf("Validating %s", path)
 					dirName, deployEnv := getInfoFromFilePath(distDir, path)
 					if info.Name() == "testrun.json" {
-						validateTestRun(path, dirName, testVersion, deployEnv, t)
+						validateTestRun(path, testVersion, deployEnv, t)
 					} else if info.Name() == "configmap.json" {
 						validateConfigMap(path, testVersion, dirName, t)
 					} else if info.Name() == "slo.json" {
@@ -379,27 +371,6 @@ func readFilesAndCompareContents(filePath1 string, filePath2 string) (string, st
 		log.Fatal(err)
 	}
 	return string(file1), string(file2), string(file1) == string(file2)
-}
-
-func readFileAndCompareWithTemplatedFile(filePath1 string, filePath2 string, templateSubstitutions map[string]string) (string, string, bool) {
-	file1, err := os.ReadFile(filePath1)
-
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	tpl, err := template.ParseFiles(filePath2)
-	if err != nil {
-		log.Fatal(err)
-	}
-	buffer := bytes.Buffer{}
-	err = tpl.Execute(&buffer, templateSubstitutions)
-	if err != nil {
-		log.Fatal(err)
-	}
-	file2 := buffer.String()
-
-	return string(file1), file2, string(file1) == file2
 }
 
 // getInfoFromFilePath returns the first folder of path below root (the test
