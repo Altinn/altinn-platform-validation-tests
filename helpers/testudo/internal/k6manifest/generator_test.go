@@ -11,8 +11,10 @@ import (
 	"path/filepath"
 	"reflect"
 	"strings"
+	"sync/atomic"
 	"testing"
 	"text/template"
+	"time"
 
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
@@ -172,6 +174,125 @@ func TestSlackSecret(t *testing.T) {
 	} {
 		if _, err := slackSecret(tt.slack, tt.env); !errors.Is(err, errs.Invalid) {
 			t.Errorf("slackSecret(%q, %q): expected errs.Invalid, got %v", tt.slack, tt.env, err)
+		}
+	}
+}
+
+func TestRunLimited(t *testing.T) {
+	const n = 12
+	for _, limit := range []int{1, 3, n} {
+		var running, most atomic.Int32
+		jobs := make([]func() error, n)
+		for i := range jobs {
+			jobs[i] = func() error {
+				now := running.Add(1)
+				defer running.Add(-1)
+				for {
+					m := most.Load()
+					if now <= m || most.CompareAndSwap(m, now) {
+						break
+					}
+				}
+				// The later jobs finish first, so the errors are only in
+				// order if runLimited puts them there.
+				time.Sleep(time.Duration(n-i) * 2 * time.Millisecond)
+				if i == 4 {
+					panic("boom")
+				}
+				if i%3 == 0 {
+					return fmt.Errorf("job %d", i)
+				}
+				return nil
+			}
+		}
+
+		results := runLimited(limit, jobs)
+
+		if got := most.Load(); got != int32(limit) {
+			t.Errorf("limit %d: %d jobs ran at once", limit, got)
+		}
+		if len(results) != n {
+			t.Fatalf("limit %d: expected %d results, got %d", limit, n, len(results))
+		}
+		for i, err := range results {
+			if i == 4 {
+				if err == nil || !strings.HasPrefix(err.Error(), "panic: boom\n") || !strings.Contains(err.Error(), "goroutine") {
+					t.Errorf("limit %d: result 4: expected the panic and its stack, actual %v", limit, err)
+				}
+				continue
+			}
+			want := ""
+			if i%3 == 0 {
+				want = fmt.Sprintf("job %d", i)
+			}
+			got := ""
+			if err != nil {
+				got = err.Error()
+			}
+			if got != want {
+				t.Errorf("limit %d: result %d: expected %q, actual %q", limit, i, want, got)
+			}
+		}
+	}
+}
+
+func TestGenerateRejectsNegativeParallel(t *testing.T) {
+	g := K8sManifestGenerator{Parallel: -1}
+	if err := g.Generate(ConfigFile{}); !errors.Is(err, errs.Invalid) {
+		t.Errorf("expected errs.Invalid, got %v", err)
+	}
+}
+
+// failingTests has a test that is made, a test whose TestRun cannot be made
+// after its ConfigMap is written, and a test whose file does not exist. The
+// paths are relative to testdata.
+const failingTests = `namespace: platform
+test_definitions:
+  - test_file: test_service/k8s_wrapper/get_deployments.js
+    contexts:
+      - environment: at22
+        test_run:
+          id: made
+      - environment: at23
+        node_type: nope
+        test_run:
+          id: unknown-node-type
+  - test_file: test_service/k8s_wrapper/missing.js
+    contexts:
+      - environment: at22
+        test_run:
+          id: missing-file
+`
+
+func TestFailedTestsAreReportedAndLeaveNothingInDist(t *testing.T) {
+	requireTools(t, "k6")
+	g := initGenerator(t.TempDir(), t.TempDir(), t.TempDir())
+	cf, err := g.Initialize(writeConfig(t, failingTests))
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	err = g.Generate(*cf)
+
+	if !errors.Is(err, errs.Invalid) {
+		t.Fatalf("expected the unknown node type as errs.Invalid, got %v", err)
+	}
+	msg := err.Error()
+	nodeType, missing := strings.Index(msg, "unknown-node-type: "), strings.Index(msg, "missing-file: ")
+	if nodeType < 0 || missing < 0 || nodeType > missing {
+		t.Errorf("expected the errors of unknown-node-type and missing-file, in that order, got\n%s", msg)
+	}
+	if strings.Contains(msg, "made: ") {
+		t.Errorf("the test that was made is among the errors:\n%s", msg)
+	}
+	for _, f := range []string{"configmap.json", "testrun.json"} {
+		if _, err := os.Stat(filepath.Join(g.DistDirectory, "made", f)); err != nil {
+			t.Errorf("the test that was made: %v", err)
+		}
+	}
+	for _, id := range []string{"unknown-node-type", "missing-file"} {
+		if _, err := os.Stat(filepath.Join(g.DistDirectory, id)); !errors.Is(err, os.ErrNotExist) {
+			t.Errorf("%s failed, but is in %s (%v)", id, g.DistDirectory, err)
 		}
 	}
 }

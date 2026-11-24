@@ -20,6 +20,8 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"runtime"
+	"runtime/debug"
 	"strconv"
 	"strings"
 	"sync"
@@ -51,6 +53,10 @@ type K8sManifestGenerator struct {
 	CommandLineArgs string
 	// Slack picks the Slack secret the tests get. Empty means SlackTest.
 	Slack Slack
+	// Parallel is how many tests are made at the same time, and so how many
+	// k6 archive processes run at once. Zero means GOMAXPROCS, which follows
+	// the CPU limit of the container the generator runs in.
+	Parallel int
 }
 
 // ReadConfigFile reads the config file at filePath and checks it, without
@@ -242,12 +248,21 @@ func (r K8sManifestGenerator) generate(td *TestDefinition, c *TestContext, cf Co
 	}, cluster)
 }
 
-// Generate makes the manifests for every enabled test in cf. The tests are
-// made in parallel. A test that fails does not stop the others; the errors
-// are returned together.
+// Generate makes the manifests for every enabled test in cf. Up to Parallel
+// tests are made at the same time. A test that fails, or panics, does not
+// stop the others; the errors are returned together, in the order of the
+// config file, each with the id of its test. A test that fails leaves nothing
+// in DistDirectory, so applying it only applies the tests that were made in
+// full.
+//
+// k6 must be on PATH. Generate does not check it; the command does, with
+// tools.Require, before it starts.
 func (r K8sManifestGenerator) Generate(cf ConfigFile) error {
 	if !r.Slack.Valid() {
 		return fmt.Errorf("%w: unknown Slack setting %q", errs.Invalid, r.Slack)
+	}
+	if r.Parallel < 0 {
+		return fmt.Errorf("%w: Parallel must be 0 or more, got %d", errs.Invalid, r.Parallel)
 	}
 	cluster, err := loadK6Cluster()
 	if err != nil {
@@ -257,34 +272,77 @@ func (r K8sManifestGenerator) Generate(cf ConfigFile) error {
 	// Command line args, used mainly with ad-hoc tests
 	envOptions := getEnvVarsFromCliArgs(r.CommandLineArgs)
 
+	// Every env file is read before any test is made, and all that cannot be
+	// read are reported.
+	var failed []error
 	envFiles := make([][]*Env, len(cf.TestDefinitions))
 	for i, td := range cf.TestDefinitions {
 		if td.EnvFile != "" {
 			envFiles[i], err = parseEnvFile(fmt.Sprintf("%s/%s", r.RepoRootDirectory, td.EnvFile))
 			if err != nil {
-				return err
+				failed = append(failed, err)
 			}
 		}
+	}
+	if len(failed) > 0 {
+		return errors.Join(failed...)
 	}
 
-	var mu sync.Mutex
-	var failed []error
-	wg := &sync.WaitGroup{}
+	var ids []string
+	var jobs []func() error
 	for i, td := range cf.TestDefinitions {
 		for _, c := range td.Contexts {
-			if c.TestTypeDefinition.Enabled {
-				wg.Go(func() {
-					if err := r.generate(td, c, cf, envFiles[i], envOptions, cluster); err != nil {
-						mu.Lock()
-						failed = append(failed, fmt.Errorf("%s: %w", *c.TestRun.Id, err))
-						mu.Unlock()
-					}
-				})
+			if !c.TestTypeDefinition.Enabled {
+				continue
 			}
+			ids = append(ids, *c.TestRun.Id)
+			jobs = append(jobs, func() error {
+				return r.generate(td, c, cf, envFiles[i], envOptions, cluster)
+			})
 		}
 	}
-	wg.Wait()
+	parallel := r.Parallel
+	if parallel == 0 {
+		parallel = runtime.GOMAXPROCS(0)
+	}
+	for i, err := range runLimited(parallel, jobs) {
+		if err == nil {
+			continue
+		}
+		// A test that failed halfway may have written its ConfigMap but not
+		// its TestRun.
+		if rmErr := os.RemoveAll(filepath.Join(r.DistDirectory, ids[i])); rmErr != nil {
+			err = errors.Join(err, rmErr)
+		}
+		failed = append(failed, fmt.Errorf("%s: %w", ids[i], err))
+	}
 	return errors.Join(failed...)
+}
+
+// runLimited runs the jobs, at most limit at a time, and returns their errors
+// in the order of jobs. A job that fails does not stop the others, and a job
+// that panics gets the panic and its stack as its error, so the other jobs
+// still finish.
+func runLimited(limit int, jobs []func() error) []error {
+	results := make([]error, len(jobs))
+	// A job takes a slot before its goroutine starts, so no more than limit
+	// goroutines exist at once.
+	slots := make(chan struct{}, max(limit, 1))
+	var wg sync.WaitGroup
+	for i, job := range jobs {
+		slots <- struct{}{}
+		wg.Go(func() {
+			defer func() { <-slots }()
+			defer func() {
+				if p := recover(); p != nil {
+					results[i] = fmt.Errorf("panic: %v\n%s", p, debug.Stack())
+				}
+			}()
+			results[i] = job()
+		})
+	}
+	wg.Wait()
+	return results
 }
 
 func (r K8sManifestGenerator) HandleConfigFileOverride(base map[string]any, overrideConfigFile string) (map[string]any, error) {

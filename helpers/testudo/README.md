@@ -446,6 +446,18 @@ kubectl apply --server-side -f .dist/ -R
 The four folders are emptied first, so manifests from an earlier run are not
 applied by mistake.
 
+The tests are made at the same time, as many at once as `--parallel` says. The
+default is the number of CPUs testudo may use, which in a container is its CPU
+limit. Each test runs `k6 archive`, so this is also how many k6 processes run at
+once.
+
+A test that fails does not stop the others. testudo lists every test that
+failed, in the order of the config file and with its test id, and exits with a
+non-zero code. A test that fails leaves nothing in `.dist/`, so applying `.dist/`
+after a failed run only applies the tests that were made in full. testudo
+checks that k6 is on PATH before it reads the config file or empties the
+folders, so a missing k6 is one error and changes nothing.
+
 ### Schedules
 
 The CronJob runs the tests in the config file on the schedule in `schedule:`, a
@@ -524,6 +536,7 @@ make fmt      # formats the code
 | `internal/config/` | Reads `~/.testudo.yaml` and environment variables. |
 | `internal/playwright/`, `internal/slack/` | Reading the Playwright report and sending to Slack, for `notify playwright`. |
 | `internal/k6manifest/` | Reads the K6 config files and makes the manifests for `k6 generate`. `testrun.go` makes the TestRun, in the same format jsonnet wrote it in before. `assets/` has the default load profile for each test type and the k6 cluster config. `testdata/` has example config files and the expected output. |
+| `internal/tools/` | Checks that the programs a command runs, such as k6, are on PATH. A command calls `tools.Require` before it starts. |
 
 `TestGenerate` in `internal/k6manifest/` runs k6, and fails when it is not on
 PATH. Install k6 before you run the tests.
