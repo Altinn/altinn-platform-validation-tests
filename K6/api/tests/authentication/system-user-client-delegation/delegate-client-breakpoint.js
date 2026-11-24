@@ -1,9 +1,9 @@
-import { check, fail, group } from "k6";
+import { fail, group } from "k6";
 import exec from "k6/execution";
 
 import { getOptions } from "../../../../helpers.js";
 import { SystemUserClientDelegationBuildingBlocks, SystemUserClientDelegationClient } from "../../../authentication-imports.js";
-import { arrangeAgentSystemUser, cleanupArranged, getClients, getFacilitatorTokenOpts } from "./commons.js";
+import { arrangeBreakpoint, cleanupArranged, getClients, getFacilitatorTokenOpts } from "./commons.js";
 
 const SYSTEM_NAME_PREFIX = "clientdelegation-breakpoint";
 
@@ -30,64 +30,14 @@ export const options = {
  * k6 setup stage. Gives each auditor its agent system users and lists the clients
  * they can be given.
  *
- * @returns The arranged agent system users and the client ids available per auditor.
+ * @returns {import("./commons.js").ArrangedBreakpoint} The agent system users and the clients available per auditor.
  */
 export function setup() {
     if (__ENV.ENVIRONMENT !== "yt01") {
         fail(`the client delegation breakpoint test runs in yt01 only, not in ${__ENV.ENVIRONMENT}`);
     }
 
-    const { clients, facilitatorTokenGenerator } = getClients();
-
-    const arranged = [];
-    const facilitators = [];
-
-    for (const orgNo of FACILITATOR_ORG_NOS) {
-        const own = Array.from(
-            { length: AGENT_SYSTEM_USERS_PER_FACILITATOR },
-            () => arrangeAgentSystemUser(SYSTEM_NAME_PREFIX, null, orgNo)[0],
-        );
-
-        arranged.push(...own);
-
-        facilitatorTokenGenerator.setTokenGeneratorOptions(getFacilitatorTokenOpts(own[0].facilitator));
-
-        // Asked for the same access packages, so the auditor's agent system users have the same clients available.
-        const available = SystemUserClientDelegationBuildingBlocks.GetAvailableClients(clients.facilitator.clientDelegationClient, own[0].systemUserId);
-        const clientIds = (available?.data ?? []).map((client) => client.clientId);
-
-        if (!check(clientIds, { [`the facilitator has at least ${MIN_CLIENTS} clients available`]: (ids) => ids.length >= MIN_CLIENTS })) {
-            cleanupArranged(arranged);
-
-            fail(`cannot run the breakpoint: ${orgNo} has ${clientIds.length} clients available, needs ${MIN_CLIENTS}`);
-        }
-
-        facilitators.push({ facilitator: own[0].facilitator, clientIds });
-    }
-
-    // Round robin over the auditors first, so consecutive iterations go to different auditors.
-    const agents = [];
-
-    for (let slot = 0; slot < AGENT_SYSTEM_USERS_PER_FACILITATOR; slot++) {
-        for (let f = 0; f < FACILITATOR_ORG_NOS.length; f++) {
-            const clientCount = facilitators[f].clientIds.length;
-
-            agents.push({
-                facilitatorIndex: f,
-                systemUserId: arranged[f * AGENT_SYSTEM_USERS_PER_FACILITATOR + slot].systemUserId,
-                // Each agent starts in its own part of the client list, so agents of the same
-                // auditor are not given the same client at the same time.
-                clientOffset: Math.floor(slot * clientCount / AGENT_SYSTEM_USERS_PER_FACILITATOR),
-            });
-        }
-    }
-
-    return {
-        arranged,
-        facilitators,
-        agents,
-        clientsPerAgent: Math.min(...facilitators.map((f) => f.clientIds.length)),
-    };
+    return arrangeBreakpoint(SYSTEM_NAME_PREFIX, FACILITATOR_ORG_NOS, AGENT_SYSTEM_USERS_PER_FACILITATOR, MIN_CLIENTS);
 }
 
 /**
@@ -97,7 +47,7 @@ export function setup() {
  * has come through its clients, so no client is delegated twice to the same agent
  * system user. The run stops once every agent system user has been through its clients.
  *
- * @param {ReturnType<typeof setup>} data The arranged agent system users and the clients available per auditor.
+ * @param {import("./commons.js").ArrangedBreakpoint} data The arranged agent system users and the clients available per auditor.
  */
 export default function (data) {
     const iteration = exec.scenario.iterationInTest;
@@ -124,7 +74,7 @@ export default function (data) {
  * k6 teardown stage. Deletes the agent system users, which takes their client
  * delegations with them, and the systems they belong to.
  *
- * @param {ReturnType<typeof setup>} data The arranged agent system users and the clients available per auditor.
+ * @param {import("./commons.js").ArrangedBreakpoint} data The arranged agent system users and the clients available per auditor.
  */
 export function teardown(data) {
     cleanupArranged(data.arranged);
