@@ -1,5 +1,7 @@
 import { check } from "k6";
 
+import { sameSet } from "../../../../helpers.js";
+
 /**
  * @typedef {import("../../../../clients/access-management/enduser/connections/connections.types.js").AccessPackageDtoCheck} AccessPackageDtoCheck
  */
@@ -107,9 +109,59 @@ function CheckPackageCannotBeDelegated(checks, packageUrn) {
     return success;
 }
 
+/**
+ * Checks that the delegation check returns exactly the access packages that
+ * were filtered on, and nothing else.
+ *
+ * @param {AccessPackageDtoCheck[]} checks - The delegation check results returned by the API.
+ * @param {Array<string>} expectedPackageUrns - The URNs of the access packages filtered on.
+ * @returns {boolean} True if exactly those packages are returned, false otherwise.
+ */
+function CheckOnlyFilteredPackagesAreReturned(checks, expectedPackageUrns) {
+    const returnedPackageUrns = checks.map((packageCheck) => packageCheck.package?.urn ?? "");
+
+    const success = check(returnedPackageUrns, {
+        "CheckOnlyFilteredPackagesAreReturned - Delegation check returns exactly the packages filtered on": () =>
+            sameSet(returnedPackageUrns, expectedPackageUrns),
+    });
+
+    if (!success) {
+        console.error(`CheckOnlyFilteredPackagesAreReturned - expected: ${JSON.stringify(expectedPackageUrns)}`);
+        console.error(`CheckOnlyFilteredPackagesAreReturned - got: ${JSON.stringify(returnedPackageUrns)}`);
+    }
+
+    return success;
+}
+
+/**
+ * Checks that the user can delegate the access package because a role they
+ * have on the party gives it (reason Direct-RolePackage).
+ *
+ * @param {AccessPackageDtoCheck[]} checks - The delegation check results returned by the API.
+ * @param {string} packageUrn - The URN of the access package.
+ * @returns {boolean} True if the package can be delegated through the role, false otherwise.
+ */
+function CheckPackageCanBeDelegatedThroughRole(checks, packageUrn) {
+    const packageCheck = FindPackage(checks, packageUrn);
+
+    const success = check(packageCheck, {
+        "CheckPackageCanBeDelegatedThroughRole - Access package can be delegated through the user's role on the party": (returned) =>
+            returned?.result === true &&
+            (returned.reasons ?? []).some((reason) => reason.description === "Direct-RolePackage"),
+    });
+
+    if (!success) {
+        console.error(`CheckPackageCanBeDelegatedThroughRole - expected '${packageUrn}' to be delegable through a role, got: ${JSON.stringify(packageCheck ?? "not returned")}`);
+    }
+
+    return success;
+}
+
 export const DelegationCheckDomainChecks = {
     CheckPackagesAreReturned,
     CheckNoPersonOnlyPackages,
     CheckPackageCanBeDelegated,
     CheckPackageCannotBeDelegated,
+    CheckOnlyFilteredPackagesAreReturned,
+    CheckPackageCanBeDelegatedThroughRole,
 };

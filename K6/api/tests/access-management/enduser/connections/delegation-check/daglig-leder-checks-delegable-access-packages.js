@@ -4,9 +4,9 @@ import { AccessPackageDelegationCheckQueryBuilder, ConnectionsClient } from "../
 import { getItemFromList, getOptions } from "../../../../../../helpers.js";
 import { GetAccessPackageDelegationCheck } from "../../../../../building-blocks/access-management/enduser/connections/index.js";
 import { DelegationCheckDomainChecks } from "../../../../../domain-checks/access-management/enduser/delegation-check.js";
-import { getClients, getDagligLederTokenOpts, setup } from "./common.js";
+import { getClients, getPersonTokenOpts, setupOrganizations } from "./common.js";
 
-export { setup };
+export const setup = setupOrganizations;
 
 const groupLabel = "Daglig leder checks which access packages can be delegated";
 
@@ -30,7 +30,7 @@ export default function (data) {
     const row = getItemFromList(data.organizations);
     const { connections, tokenGenerator } = getClients();
 
-    tokenGenerator.setTokenGeneratorOptions(getDagligLederTokenOpts(row));
+    tokenGenerator.setTokenGeneratorOptions(getPersonTokenOpts(row));
 
     group(groupLabel, function () {
         const result = GetAccessPackageDelegationCheck(
