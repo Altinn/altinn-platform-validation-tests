@@ -11,12 +11,19 @@ the user can and cannot delegate.
 | Test | Bruno test | Authenticates as | Query |
 | --- | --- | --- | --- |
 | [daglig-leder-checks-delegable-access-packages.js](daglig-leder-checks-delegable-access-packages.js) | `GET_Enduser_Conn_AccPcks_DelgCheck_Dagl_NoFilter` | Daglig leder of an AS | `party` only |
+| [daglig-leder-checks-access-packages-by-id.js](daglig-leder-checks-access-packages-by-id.js) | `GET_Enduser_Conn_AccPcks_DelgCheck_Dagl_IdFilter` | Daglig leder of an AS | `party`, `packageIds` |
 | [bostyrer-checks-konkursbo-access-packages.js](bostyrer-checks-konkursbo-access-packages.js) | `GET_Enduser_Conn_AccPcks_DelgCheck_BOBE_Role_idFilter` | Bostyrer of a konkursbo | `party`, `packageIds` |
 
 `daglig-leder-checks-delegable-access-packages.js` checks that the answer covers access
 packages, that none of the packages only a person can hold (`innbygger-*` and `vergemal-*`)
 are offered for the organization, that `eksplisitt` cannot be delegated, and that
 `post-til-virksomheten-med-taushetsbelagt-innhold` can.
+
+`daglig-leder-checks-access-packages-by-id.js` filters on the ids of `klientadministrator`,
+`post-til-virksomheten-med-taushetsbelagt-innhold` and `regnskapsforer-lonn`. It checks that
+only those three are returned, that the daglig leder can delegate the first two, which the
+role gives, and that they cannot delegate `regnskapsforer-lonn`, which only comes with the
+regnskapsfører role. It uses the same organizations as the test without a filter.
 
 `bostyrer-checks-konkursbo-access-packages.js` filters on the ids of
 `konkursbo-skrivetilgang` and `konkursbo-lesetilgang`. It checks that only those two are
