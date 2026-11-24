@@ -9,4 +9,4 @@ test_definitions:
             - name: BREAKPOINT_STAGE_DURATION
               value: "10m"
             - name: BREAKPOINT_STAGE_TARGET
-              value: 50
+              value: 100
