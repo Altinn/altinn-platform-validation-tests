@@ -37,6 +37,6 @@ Flags are always written with two dashes, e.g. --count and --help.`,
 	// Declared here so cobra does not add its own help flag with the -h
 	// shorthand. testudo has no single-dash flags.
 	root.PersistentFlags().Bool("help", false, "Show help for the command")
-	root.AddCommand(newFindCmd(), newServeCmd())
+	root.AddCommand(newFindCmd(), newServeCmd(), newNotifyCmd())
 	return root
 }
