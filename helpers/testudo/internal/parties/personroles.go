@@ -41,6 +41,7 @@ var PersonRoles = []PersonRole{
 	{Name: "signerer-fellesskap", Code: "SIFE"},
 	{Name: "signerer-hver-for-seg", Code: "SIHV"},
 	{Name: "stifter", Code: "STFT"},
+	{Name: "bostyrer", Code: "BOBE"},
 	// The spelling is Access Management's.
 	{Name: "elektronisk-signeringsrettig", Code: "ESGR"},
 	{Name: "elektronisk-signeringsrett-tildeler", Code: "ETDL"},

@@ -153,7 +153,8 @@ func newOrganizationsCmd() *cobra.Command {
 		Use:   "organizations",
 		Short: "Fetch organizations from Tenor in bulk",
 		Long: `Fetch organizations with a person from Tenor. The person is the leader: daglig
-leder, innehaver for ENK, or styreleder for BRL and ESEK without a daglig leder.
+leder, innehaver for ENK, styreleder for BRL and ESEK without a daglig leder, or
+bostyrer for KBO (konkursbo).
 With --person-role it is a person with that role in Enhetsregisteret, e.g.
 styreleder or styremedlem.
 
@@ -172,6 +173,7 @@ underenheter, or with --subunits, the hovedenheter.`,
   testudo find organizations --unit-type enk,nuf --count 5 --format csv
   testudo find organizations --subunits --count 5 --format csv --columns organizationIdentifier,hovedenhetOrganizationIdentifier,ssn
   testudo find organizations --min-subunits 2 --count 5 --format csv
+  testudo find organizations --unit-type kbo --count 5 --format csv --columns organizationIdentifier,personRole,ssn
   testudo find organizations --person-role styremedlem --count 5 --format csv --columns organizationIdentifier,personRole,ssn
   testudo find organizations --orgno 313490114 --format csv
   testudo find organizations --role regnskapsfoerer --count 5 --format csv`,

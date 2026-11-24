@@ -132,8 +132,9 @@ The default is `personIdentifier,userId,partyId,partyUuid`.
 ## find organizations
 
 Finds organizations together with a person in the organization. By default the
-person is the leader: the daglig leder, the innehaver of an `ENK`, or the
-styreleder of a `BRL` or `ESEK` that has no daglig leder.
+person is the leader: the daglig leder, the innehaver of an `ENK`, the
+styreleder of a `BRL` or `ESEK` that has no daglig leder, or the bostyrer of a
+`KBO` (konkursbo).
 
 ```bash
 testudo find organizations --count 3 --env at23
@@ -150,8 +151,8 @@ Fetching 3 organizations with the leader from Tenor with KQL: organisasjonsform.
 | --- | --- | --- |
 | `--count` | `10` | Number of organizations, at most 1000. |
 | `--env` | `at23` | Environment: `at22`, `at23`, `tt02` or `yt01`. |
-| `--unit-type` | `AS` | Comma-separated organisasjonsformer: `AS`, `ENK`, `ESEK`, `BRL`, `NUF`. |
-| `--person-role` | the leader | The person has this role in Enhetsregisteret instead, for example `styreleder`, `styremedlem`, `kontaktperson` or `prokurist`. `--help` lists all 21. |
+| `--unit-type` | `AS` | Comma-separated organisasjonsformer: `AS`, `ENK`, `ESEK`, `BRL`, `NUF`, `KBO`. |
+| `--person-role` | the leader | The person has this role in Enhetsregisteret instead, for example `styreleder`, `styremedlem`, `kontaktperson` or `prokurist`. `--help` lists all 22. |
 | `--role` | | Finds tilretteleggere instead: organizations that are `revisor`, `regnskapsfoerer` or `forretningsfoerer` for at least one client. |
 | `--subunits` | | Finds underenheter (`BEDR` and `AAFY`) instead, one per hovedenhet. The person is the hovedenhet's, since underenheter have no persons of their own. |
 | `--min-subunits` | | Only organizations with at least this many underenheter. With `--subunits`, it applies to the hovedenheter. |
@@ -171,7 +172,7 @@ work with `--orgno`.
 | `partyId`, `partyUuid` | The organization's party id and party uuid. |
 | `unitType` | Organisasjonsform, for example `AS` or `BEDR`. |
 | `type` | The tilrettelegger role with `--role`, for example `regnskapsfoerer`. |
-| `personRole` | The person's role, for example `daglig-leder`, `innehaver` or `styreleder`. |
+| `personRole` | The person's role, for example `daglig-leder`, `innehaver`, `styreleder` or `bostyrer`. |
 | `ssn` | The person's fødselsnummer. |
 | `userId`, `userPartyId`, `userPartyUuid` | The person's user id, party id and party uuid. |
 | `lastName` | The person's last name. |
@@ -312,6 +313,13 @@ testudo find organizations --count 10 --env at23 --unit-type ENK --format csv \
   --columns organizationIdentifier,unitType,personRole,ssn,userId
 testudo find organizations --count 10 --env at23 --unit-type AS,ENK,NUF --format csv \
   --columns organizationIdentifier,unitType,ssn
+```
+
+**A konkursbo and its bostyrer.** For tests of what the bostyrer can do on
+behalf of the konkursbo:
+
+```bash
+testudo find organizations --count 10 --env at23 --unit-type KBO --format csv \n  --columns organizationIdentifier,partyUuid,personRole,ssn,userId,userPartyId,userPartyUuid
 ```
 
 **A person with a given ER role.** For example the styreleder, for tests of
@@ -467,8 +475,8 @@ What testudo is built on, and where to look when something changes.
 - [API documentation](https://data.brreg.no/enhetsregisteret/api/dokumentasjon/no/index.html):
   role groups and roles in `kildedata`.
 - [Role types](https://data.brreg.no/enhetsregisteret/api/roller/rolletyper):
-  the codes behind `--person-role` and the leader (`DAGL`, `INNH`, `LEDE` and
-  so on).
+  the codes behind `--person-role` and the leader (`DAGL`, `INNH`, `LEDE`,
+  `BOBE` and so on).
 - [Organisasjonsformer](https://data.brreg.no/enhetsregisteret/api/organisasjonsformer):
   the codes behind `--unit-type`, and `BEDR` and `AAFY` for underenheter.
 

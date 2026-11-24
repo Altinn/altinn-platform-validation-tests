@@ -17,9 +17,9 @@ import (
 
 // UnitTypes are the unit types FindOrganizations can fetch, with the codes
 // from Enhetsregisteret: aksjeselskap, enkeltpersonforetak,
-// eierseksjonssameie, borettslag and norskregistrert utenlandsk foretak.
-// Their underenheter are fetched with OrganizationQuery.Subunits.
-var UnitTypes = []string{"AS", "ENK", "ESEK", "BRL", "NUF"}
+// eierseksjonssameie, borettslag, norskregistrert utenlandsk foretak and
+// konkursbo. Their underenheter are fetched with OrganizationQuery.Subunits.
+var UnitTypes = []string{"AS", "ENK", "ESEK", "BRL", "NUF", "KBO"}
 
 // DefaultUnitType is the unit type fetched when none is chosen.
 const DefaultUnitType = "AS"
@@ -27,6 +27,10 @@ const DefaultUnitType = "AS"
 // styrelederUnitTypes are the unit types that rarely have a daglig leder,
 // and where the styreleder is the leader.
 var styrelederUnitTypes = []string{"ESEK", "BRL"}
+
+// bostyrerUnitTypes are the unit types run by a bostyrer (BOBE), who is the
+// leader. A konkursbo has no daglig leder.
+var bostyrerUnitTypes = []string{"KBO"}
 
 // underenhetUnitTypes are the underenheter, of hovedenheter with and without
 // business activity. They have no person roles of their own, so the person
@@ -395,11 +399,15 @@ type rollegruppe struct {
 // leader returns the fødselsnummer of the daglig leder (DAGL), or of the
 // innehaver (INNH) if there is no daglig leder, and the code for the role.
 // Borettslag and eierseksjonssameier rarely have a daglig leder, so for them
-// it is the styreleder (LEDE) when there is no daglig leder.
+// it is the styreleder (LEDE) when there is no daglig leder. A konkursbo is
+// run by its bostyrer (BOBE).
 func leader(unitType string, groups []rollegruppe) (personIdentifier, code string) {
 	codes := []string{"DAGL", "INNH"}
-	if slices.Contains(styrelederUnitTypes, unitType) {
+	switch {
+	case slices.Contains(styrelederUnitTypes, unitType):
 		codes = []string{"DAGL", "LEDE"}
+	case slices.Contains(bostyrerUnitTypes, unitType):
+		codes = []string{"BOBE"}
 	}
 	for _, code := range codes {
 		if personIdentifier := personWithRole(groups, code); personIdentifier != "" {

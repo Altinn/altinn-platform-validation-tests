@@ -310,6 +310,11 @@ func TestLeader(t *testing.T) {
 		{"styreleder in ESEK", "ESEK", `[` + board + `]`, "55555555555", "LEDE"},
 		{"DAGL before styreleder", "BRL", `[` + board + `,` + dagl("22222222222") + `]`, "22222222222", "DAGL"},
 		{"only board in AS", "AS", `[` + board + `]`, "", ""},
+		// A konkursbo has the bostyrer, and the konkursdebitor, which is an
+		// organization.
+		{"bostyrer in KBO", "KBO", `[{"type":{"kode":"BOBE"},"roller":[{"type":{"kode":"BOBE"},"person":{"foedselsnummer":"66666666666"},"fratraadt":"N"}]},
+			{"type":{"kode":"KDEB"},"roller":[{"type":{"kode":"KDEB"},"virksomhet":{"organisasjonsnummer":"900000004"}}]}]`, "66666666666", "BOBE"},
+		{"no bostyrer in AS", "AS", `[{"type":{"kode":"BOBE"},"roller":[{"type":{"kode":"BOBE"},"person":{"foedselsnummer":"66666666666"}}]}]`, "", ""},
 		{"no roles", "AS", `[]`, "", ""},
 	}
 	for _, tt := range tests {
