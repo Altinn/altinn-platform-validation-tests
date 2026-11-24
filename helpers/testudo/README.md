@@ -21,6 +21,7 @@ cluster, see [k6 generate](#k6-generate).
 - [find organizations](#find-organizations)
 - [Output](#output)
 - [API](#api)
+- [notify playwright](#notify-playwright)
 - [Recipes for K6 setup](#recipes-for-k6-setup)
 - [k6 generate](#k6-generate)
 - [What testudo does not do](#what-testudo-does-not-do)
@@ -249,6 +250,36 @@ each request and what it fetched to stderr. Stop it with Ctrl+C.
 > [!NOTE]
 > The server answers anyone who can reach it, with your keys. Keep the default
 > `localhost` unless the network around it is closed.
+
+## notify playwright
+
+Sends the result of a Playwright run to Slack.
+
+```bash
+testudo notify playwright --env at23 --report test-results.json \
+  --report-url https://... --playwright-exit 1 --dry-run
+```
+```
+:red_circle: *at23*: 2 of 14 Playwright tests failed
+• logs in
+• switches language
+Report: https://...
+```
+
+A test is counted once however many browsers it ran in, and is failed if it
+failed in at least one. The message names the first five failed tests, and only
+their titles, since error messages can contain test data from prod. If the
+report is missing or no tests ran, the message says that the run did not start.
+
+| Flag | Default | Description |
+| --- | --- | --- |
+| `--env` | | Environment the tests ran against. `prod` is shown as Production. |
+| `--report` | `test-results.json` | Path to the Playwright JSON report. |
+| `--report-url` | | URL to the published HTML report. |
+| `--playwright-exit` | `0` | Exit code from Playwright, shown when no tests ran. |
+| `--dry-run` | | Prints the message instead of sending it. |
+
+The message is sent to the webhook in `SLACK_WEBHOOK_URL`.
 
 ## Recipes for K6 setup
 
@@ -491,6 +522,7 @@ make fmt      # formats the code
 | `internal/register/` | Register client. `registertest/` has fakes for tests. |
 | `internal/maskinporten/`, `internal/platformtoken/` | Tokens for Tenor and Register. |
 | `internal/config/` | Reads `~/.testudo.yaml` and environment variables. |
+| `internal/playwright/`, `internal/slack/` | Reading the Playwright report and sending to Slack, for `notify playwright`. |
 | `internal/k6manifest/` | Reads the K6 config files and makes the manifests for `k6 generate`. `testrun.go` makes the TestRun, in the same format jsonnet wrote it in before. `assets/` has the default load profile for each test type and the k6 cluster config. `testdata/` has example config files and the expected output. |
 
 `TestGenerate` in `internal/k6manifest/` runs k6, and fails when it is not on

@@ -599,6 +599,15 @@ class NotificationBuilder {
     }
 
     /**
+     * @param {boolean} useStale Whether person recipients are notified using KRR contact information that has not been verified within the last 18 months. Only intended for service messages.
+     * @returns {NotificationBuilder} This builder, for chaining.
+     */
+    withUseStaleContactInformation(useStale) {
+        this.model.useStaleContactInformation = useStale;
+        return this;
+    }
+
+    /**
      * Builds InitializeCorrespondenceNotificationExt.
      *
      * @returns {InitializeCorrespondenceNotificationExt} The built payload.
@@ -689,6 +698,7 @@ class NotificationBuilder {
                 this.model.customNotificationRecipients,
             overrideRegisteredContactInformation:
                 this.model.overrideRegisteredContactInformation,
+            useStaleContactInformation: this.model.useStaleContactInformation,
         };
     }
 }
