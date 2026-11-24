@@ -1,0 +1,8 @@
+namespace: access-management
+base_dir: K6/api/tests/access-management/enduser/connections/delegation-check/
+test_definitions:
+  - test_file: daglig-leder-checks-delegable-access-packages.js
+    test_scope: enduser-connections-delegation-check
+    contexts:
+      - environment: at22
+      - environment: tt02
