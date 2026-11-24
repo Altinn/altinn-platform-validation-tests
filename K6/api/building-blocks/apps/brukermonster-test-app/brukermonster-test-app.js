@@ -1,9 +1,9 @@
 import { check } from "k6";
 
-import { AppProcessState, InstanceWrite, ProcessNext } from "../../../clients/apps/apps.types.js";
-import { InstancesClient } from "../../../clients/apps/index.js";
-import { Instance } from "../../../clients/storage/instances.types.js";
-import { withRetries } from "../common/retry.js";
+import { AppProcessState, InstanceWrite, ProcessNext } from "../../../../clients/apps/brukermonster-test-app/brukermonster-test-app.types.js";
+import { BrukermonsterTestAppClient } from "../../../../clients/apps/brukermonster-test-app/index.js";
+import { Instance } from "../../../../clients/storage/instances.types.js";
+import { withRetries } from "../../common/retry.js";
 
 /**
  * Parses the body of a response, as a check.
@@ -36,24 +36,18 @@ function parseBody(name, res) {
 /**
  * Create new instance.
  *
- * @param {InstancesClient} instancesClient Client for the API.
- * @param {string} org The service owner of the app.
- * @param {string} app The app name.
+ * @param {BrukermonsterTestAppClient} client Client for the API.
  * @param {InstanceWrite} instance The instance document, which names the instance owner.
  * @param {{[key:string]:string}|null} [labels] Optional k6 request labels.
  * @returns {Instance|null} Parsed response body, or null when the call failed.
  */
 export function CreateNewInstance(
-    instancesClient,
-    org,
-    app,
+    client,
     instance,
     labels = null,
 ) {
     const res = withRetries(
-        () => instancesClient.CreateNewInstance(
-            org,
-            app,
+        () => client.CreateNewInstance(
             instance,
             labels,
         ),
@@ -77,9 +71,7 @@ export function CreateNewInstance(
 /**
  * Move instance to next process step.
  *
- * @param {InstancesClient} instancesClient Client for the API.
- * @param {string} org The service owner of the app.
- * @param {string} app The app name.
+ * @param {BrukermonsterTestAppClient} client Client for the API.
  * @param {string} instanceOwnerPartyId Instance owner party id.
  * @param {string} instanceGuid Instance UUID.
  * @param {ProcessNext|null} [processNext] Optional action to perform.
@@ -87,18 +79,14 @@ export function CreateNewInstance(
  * @returns {AppProcessState|null} Parsed response body, or null when the call failed.
  */
 export function MoveInstanceToNextProcessStep(
-    instancesClient,
-    org,
-    app,
+    client,
     instanceOwnerPartyId,
     instanceGuid,
     processNext = null,
     labels = null,
 ) {
     const res = withRetries(
-        () => instancesClient.MoveInstanceToNextProcessStep(
-            org,
-            app,
+        () => client.MoveInstanceToNextProcessStep(
             instanceOwnerPartyId,
             instanceGuid,
             processNext,

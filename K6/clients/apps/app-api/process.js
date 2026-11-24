@@ -1,20 +1,17 @@
 import http from "k6/http";
 
-import { jsonBody, requestParams } from "../common/request.js";
-import { InstanceWrite, ProcessNext } from "./apps.types.js";
+import { jsonBody, requestParams } from "../../common/request.js";
+import { ProcessNext } from "./app-api.types.js";
 
 const TAGS = {
-    CreateNewInstance: {
-        action: "create-new-instance",
-    },
-    MoveInstanceToNextProcessStep: {
-        action: "move-instance-to-next-process-step",
+    NextElement: {
+        action: "move-process-to-next-element",
     },
 };
 
-class InstancesClient {
+class ProcessClient {
     /**
-     * Creates a client for the instances API of an Altinn app.
+     * Creates a client for the process API that every Altinn app has.
      *
      * @param {string} baseUrl The apps host of the service owner, e.g. https://ttd.apps.tt02.altinn.no.
      * @param {*} tokenGenerator Token generator used for authenticated API calls.
@@ -36,32 +33,7 @@ class InstancesClient {
     }
 
     /**
-     * Create new instance.
-     *
-     * POST /{org}/{app}/instances
-     *
-     * @param {string} org The service owner of the app.
-     * @param {string} app The app name.
-     * @param {InstanceWrite} instance The instance document, which names the instance owner.
-     * @param {{[key:string]:string}|null} [labels] Optional k6 request labels.
-     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
-     */
-    CreateNewInstance(org, app, instance, labels = null) {
-        return http.post(
-            `${this.FULL_PATH}/${org}/${app}/instances`,
-            jsonBody(instance),
-            requestParams({
-                endpoint: `${this.FULL_PATH}/{org}/{app}/instances`,
-                action: TAGS.CreateNewInstance.action,
-                labels,
-                token: this.tokenGenerator.getToken(),
-                json: true,
-            }),
-        );
-    }
-
-    /**
-     * Move instance to next process step.
+     * Moves the process of an instance on to the next element.
      *
      * PUT /{org}/{app}/instances/{instanceOwnerPartyId}/{instanceGuid}/process/next
      *
@@ -73,13 +45,13 @@ class InstancesClient {
      * @param {{[key:string]:string}|null} [labels] Optional k6 request labels.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
-    MoveInstanceToNextProcessStep(org, app, instanceOwnerPartyId, instanceGuid, processNext = null, labels = null) {
+    NextElement(org, app, instanceOwnerPartyId, instanceGuid, processNext = null, labels = null) {
         return http.put(
             `${this.FULL_PATH}/${org}/${app}/instances/${instanceOwnerPartyId}/${instanceGuid}/process/next`,
             processNext === null ? null : jsonBody(processNext),
             requestParams({
                 endpoint: `${this.FULL_PATH}/{org}/{app}/instances/{instanceOwnerPartyId}/{instanceGuid}/process/next`,
-                action: TAGS.MoveInstanceToNextProcessStep.action,
+                action: TAGS.NextElement.action,
                 labels,
                 token: this.tokenGenerator.getToken(),
                 json: processNext !== null,
@@ -88,4 +60,4 @@ class InstancesClient {
     }
 }
 
-export { InstancesClient };
+export { ProcessClient };

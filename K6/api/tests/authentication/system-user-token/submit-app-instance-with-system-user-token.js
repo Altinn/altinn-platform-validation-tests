@@ -1,19 +1,16 @@
 import { fail, group } from "k6";
 
-import { InstancesClient } from "../../../../clients/apps/index.js";
+import { BrukermonsterTestAppClient } from "../../../../clients/apps/brukermonster-test-app/index.js";
 import { appsBaseUrl, getItemFromList, lazy } from "../../../../helpers.js";
 import { AltinnScopes } from "../../../../scopes.js";
 import { AuthenticationBuildingBlocks } from "../../../authentication-imports.js";
-import { CreateNewInstance, MoveInstanceToNextProcessStep } from "../../../building-blocks/apps/index.js";
+import { CreateNewInstance, MoveInstanceToNextProcessStep } from "../../../building-blocks/apps/brukermonster-test-app/index.js";
 import { AppProcessDomainChecks } from "../../../domain-checks/apps/process.js";
 import { fetchSystemUserToken, getClients } from "./commons.js";
 
 export { setup, teardown } from "./commons.js";
 
 const randomize = (__ENV.RANDOMIZE ?? "true") === "true";
-
-const ORG = "ttd";
-const APP = "brukermonster-test-app";
 
 /**
  * The app client, and the token it calls with.
@@ -30,7 +27,7 @@ const getAppClients = lazy(function () {
         },
     };
 
-    return { tokenGenerator, instancesClient: new InstancesClient(appsBaseUrl(ORG, __ENV.ENVIRONMENT), tokenGenerator) };
+    return { tokenGenerator, appClient: new BrukermonsterTestAppClient(appsBaseUrl("ttd", __ENV.ENVIRONMENT), tokenGenerator) };
 });
 
 /**
@@ -61,11 +58,11 @@ export default async function (data) {
         fail("cannot call the app: the system user token could not be exchanged for an Altinn token");
     }
 
-    const { tokenGenerator, instancesClient } = getAppClients();
+    const { tokenGenerator, appClient } = getAppClients();
     tokenGenerator.token = altinnToken;
 
     group("As a system user, I can submit an instance of an app", function () {
-        const instance = CreateNewInstance(instancesClient, ORG, APP, {
+        const instance = CreateNewInstance(appClient, {
             instanceOwner: { partyId: String(arranged.customer.orgPartyId) },
         });
 
@@ -75,7 +72,7 @@ export default async function (data) {
 
         const [instanceOwnerPartyId, instanceGuid] = instance.id.split("/");
 
-        const processState = MoveInstanceToNextProcessStep(instancesClient, ORG, APP, instanceOwnerPartyId, instanceGuid);
+        const processState = MoveInstanceToNextProcessStep(appClient, instanceOwnerPartyId, instanceGuid);
 
         AppProcessDomainChecks.CheckInstanceSubmitted(processState);
     });

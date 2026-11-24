@@ -1,6 +1,6 @@
 import { check } from "k6";
 
-import { AppProcessState } from "../../../clients/apps/apps.types.js";
+import { AppProcessState } from "../../../clients/apps/brukermonster-test-app/brukermonster-test-app.types.js";
 
 /**
  * Checks that moving the process on submitted the instance.
