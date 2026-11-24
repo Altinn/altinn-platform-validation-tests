@@ -13,6 +13,7 @@ the user can and cannot delegate.
 | [daglig-leder-checks-delegable-access-packages.js](daglig-leder-checks-delegable-access-packages.js) | `GET_Enduser_Conn_AccPcks_DelgCheck_Dagl_NoFilter` | Daglig leder of an AS | `party` only |
 | [daglig-leder-checks-access-packages-by-id.js](daglig-leder-checks-access-packages-by-id.js) | `GET_Enduser_Conn_AccPcks_DelgCheck_Dagl_IdFilter` | Daglig leder of an AS | `party`, `packageIds` |
 | [daglig-leder-checks-access-packages-by-urn.js](daglig-leder-checks-access-packages-by-urn.js) | `GET_Enduser_Conn_AccPcks_DelgCheck_Dagl_UrnFilter` | Daglig leder of an AS | `party`, `packages` |
+| [daglig-leder-checks-access-packages-by-id-and-urn.js](daglig-leder-checks-access-packages-by-id-and-urn.js) | `GET_Enduser_Conn_AccPcks_DelgCheck_Dagl_UrnIdFiltr` | Daglig leder of an AS | `party`, `packageIds`, `packages` |
 | [bostyrer-checks-konkursbo-access-packages.js](bostyrer-checks-konkursbo-access-packages.js) | `GET_Enduser_Conn_AccPcks_DelgCheck_BOBE_Role_idFilter` | Bostyrer of a konkursbo | `party`, `packageIds` |
 
 `daglig-leder-checks-delegable-access-packages.js` checks that the answer covers access
@@ -31,6 +32,13 @@ accepts: the codes `hovedadministrator` and `barnehageleder`, and the full urn
 `urn:altinn:accesspackage:eksplisitt`. It checks that only those three are returned, that the
 daglig leder can delegate the first two, and that `eksplisitt` cannot be delegated. It uses
 the same organizations as the test without a filter.
+
+`daglig-leder-checks-access-packages-by-id-and-urn.js` filters on the ids of
+`klientadministrator`, `veitransport` and `regnskapsforer-lonn`, and on the urns of
+`hovedadministrator`, `barnehageleder` and `eksplisitt`. The two filters add up, so it checks
+that all six and nothing else are returned, that the daglig leder can delegate the four the
+role gives, and that `regnskapsforer-lonn` and `eksplisitt` cannot be delegated. It uses the
+same organizations as the test without a filter.
 
 `bostyrer-checks-konkursbo-access-packages.js` filters on the ids of
 `konkursbo-skrivetilgang` and `konkursbo-lesetilgang`. It checks that only those two are
