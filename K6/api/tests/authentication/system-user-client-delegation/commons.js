@@ -220,11 +220,10 @@ export function arrangeAgentSystemUser(systemNamePrefix, orgType = null, orgNo =
 
     /** @type {Facilitator[]} */
     const candidates = fetchTestData(`authentication/system-user-client-delegation/${__ENV.ENVIRONMENT}.csv`)
-        .filter((/** @type {Facilitator} */ row) => orgType === null || row.orgType === orgType)
-        .filter((/** @type {Facilitator} */ row) => orgNo === null || row.orgNo === orgNo);
+        .filter((/** @type {Facilitator} */ row) => (orgType === null || row.orgType === orgType) && (orgNo === null || row.orgNo === orgNo));
 
     if (candidates.length === 0) {
-        fail(`cannot arrange an agent system user: no facilitator of type '${orgType}' and org '${orgNo}' in ${__ENV.ENVIRONMENT}`);
+        fail(`cannot arrange an agent system user: no facilitator matches type '${orgType}' and org '${orgNo}' in ${__ENV.ENVIRONMENT}`);
     }
 
     const facilitator = getItemFromList(candidates, randomize);

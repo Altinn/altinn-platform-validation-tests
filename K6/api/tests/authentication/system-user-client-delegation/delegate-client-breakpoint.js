@@ -45,7 +45,7 @@ export function setup() {
     for (const orgNo of FACILITATOR_ORG_NOS) {
         const own = Array.from(
             { length: AGENT_SYSTEM_USERS_PER_FACILITATOR },
-            () => arrangeAgentSystemUser(SYSTEM_NAME_PREFIX, "revisor", orgNo)[0],
+            () => arrangeAgentSystemUser(SYSTEM_NAME_PREFIX, null, orgNo)[0],
         );
 
         arranged.push(...own);
