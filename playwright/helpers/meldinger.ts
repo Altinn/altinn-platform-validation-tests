@@ -4,7 +4,7 @@ import { randomUUID } from "crypto";
 import { ApiClient } from "../clients";
 import { InitializedCorrespondences } from "../clients/correspondence";
 import { TestUser } from "../config/environment";
-import { aktivAktorUuid, brukerIder } from "./sesjonsdata";
+import { aktivAktorUuid, innloggetBruker } from "./sesjonsdata";
 
 /** En melding en test har sendt. Tittelen er unik, så meldingen kan kjennes igjen i innboksen. */
 export type Melding = { id: string; tittel: string; tekst: string };
@@ -57,11 +57,13 @@ export async function sendMelding(api: ApiClient, miljo: string, mottaker: TestU
  * ikke slette en melding som er publisert, og mottakeren først når den er bekreftet.
  */
 export async function slettMelding(api: ApiClient, page: Page, miljo: string, mottaker: TestUser, { id }: Melding) {
+    // Tokenet får samme sikkerhetsnivå som innloggingen. Policyen for bruno-correspondence i at23
+    // krever nivå 4 fra 18. november 2026, og generatorens standard, 3, blir avvist med 401.
     const token = await api.tokenGenerator.GetPersonalToken({
         env: miljo,
         scopes: "altinn:correspondence.write",
         pid: mottaker.pid,
-        ...(await brukerIder(page)),
+        ...(await innloggetBruker(page)),
         partyuuid: await aktivAktorUuid(page),
     });
     const response = await api.correspondence.PurgeCorrespondence(token, id);

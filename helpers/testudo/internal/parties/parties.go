@@ -1,0 +1,20 @@
+// Package parties finds test persons and organizations. The candidates are
+// fetched from Tenor, and only those that exist in Register for the
+// environment are kept, with the party from there (like
+// lib/registerEnrichment.ts in the frontend).
+package parties
+
+import "github.com/Altinn/altinn-platform-validation-tests/helpers/testudo/internal/register"
+
+// registerFields are the fields fetched from Register.
+var registerFields = []register.Field{register.FieldParty, register.FieldPerson, register.FieldOrg, register.FieldUser}
+
+// maxRegisterRounds is how many times new candidates are fetched from Tenor
+// when some do not exist in Register.
+const maxRegisterRounds = 5
+
+// MaxCount is the most persons or organizations one search can ask for. The
+// count comes from a flag or a query parameter, so without a limit one request
+// to testudo serve could make it ask Tenor and Register for millions, and
+// allocate room for them.
+const MaxCount = 1000
