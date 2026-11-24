@@ -157,6 +157,33 @@ function CheckPackageCanBeDelegatedThroughRole(checks, packageUrn) {
     return success;
 }
 
+/**
+ * Checks that the delegation check lists the same access packages as it does
+ * for the user's own organization, whatever the result for each.
+ *
+ * @param {AccessPackageDtoCheck[]} checks - The delegation check results for the party.
+ * @param {AccessPackageDtoCheck[]} ownOrganizationChecks - The delegation check results for the user's own organization.
+ * @returns {boolean} True if both list the same packages, false otherwise.
+ */
+function CheckSamePackagesAsOwnOrganization(checks, ownOrganizationChecks) {
+    const packageUrns = checks.map((packageCheck) => packageCheck.package?.urn ?? "");
+    const ownOrganizationPackageUrns = ownOrganizationChecks.map((packageCheck) => packageCheck.package?.urn ?? "");
+
+    const success = check(packageUrns, {
+        "CheckSamePackagesAsOwnOrganization - Delegation check lists the same access packages as for the user's own organization": () =>
+            sameSet(packageUrns, ownOrganizationPackageUrns),
+    });
+
+    if (!success) {
+        const missing = ownOrganizationPackageUrns.filter((urn) => !packageUrns.includes(urn));
+        const extra = packageUrns.filter((urn) => !ownOrganizationPackageUrns.includes(urn));
+        console.error(`CheckSamePackagesAsOwnOrganization - ${packageUrns.length} packages, ${ownOrganizationPackageUrns.length} for the own organization`);
+        console.error(`CheckSamePackagesAsOwnOrganization - missing: ${JSON.stringify(missing)}, extra: ${JSON.stringify(extra)}`);
+    }
+
+    return success;
+}
+
 export const DelegationCheckDomainChecks = {
     CheckPackagesAreReturned,
     CheckNoPersonOnlyPackages,
@@ -164,4 +191,5 @@ export const DelegationCheckDomainChecks = {
     CheckPackageCannotBeDelegated,
     CheckOnlyFilteredPackagesAreReturned,
     CheckPackageCanBeDelegatedThroughRole,
+    CheckSamePackagesAsOwnOrganization,
 };

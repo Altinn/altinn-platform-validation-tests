@@ -14,6 +14,7 @@ the user can and cannot delegate.
 | [daglig-leder-checks-access-packages-by-id.js](daglig-leder-checks-access-packages-by-id.js) | `GET_Enduser_Conn_AccPcks_DelgCheck_Dagl_IdFilter` | Daglig leder of an AS | `party`, `packageIds` |
 | [daglig-leder-checks-access-packages-by-urn.js](daglig-leder-checks-access-packages-by-urn.js) | `GET_Enduser_Conn_AccPcks_DelgCheck_Dagl_UrnFilter` | Daglig leder of an AS | `party`, `packages` |
 | [daglig-leder-checks-access-packages-by-id-and-urn.js](daglig-leder-checks-access-packages-by-id-and-urn.js) | `GET_Enduser_Conn_AccPcks_DelgCheck_Dagl_UrnIdFiltr` | Daglig leder of an AS | `party`, `packageIds`, `packages` |
+| [daglig-leder-checks-access-packages-through-key-role.js](daglig-leder-checks-access-packages-through-key-role.js) | `GET_Enduser_Conn_AccPcks_DelgCheck_KeyRole` | Daglig leder of an AS that is tilgangsstyrer for another AS | `party` only |
 | [bostyrer-checks-konkursbo-access-packages.js](bostyrer-checks-konkursbo-access-packages.js) | `GET_Enduser_Conn_AccPcks_DelgCheck_BOBE_Role_idFilter` | Bostyrer of a konkursbo | `party`, `packageIds` |
 
 `daglig-leder-checks-delegable-access-packages.js` checks that the answer covers access
@@ -39,6 +40,23 @@ the same organizations as the test without a filter.
 that all six and nothing else are returned, that the daglig leder can delegate the four the
 role gives, and that `regnskapsforer-lonn` and `eksplisitt` cannot be delegated. It uses the
 same organizations as the test without a filter.
+
+`daglig-leder-checks-access-packages-through-key-role.js` is the only test here that writes
+data. In `setup()` it draws two organizations from the same fixture as the tests above, and
+the daglig leder of the first delegates `tilgangsstyrer` to the second. The daglig leder of
+the second then reaches the first only through their key role. The test runs the check for the
+first organization, and checks that it answers with the same packages as for the daglig
+leder's own organization. `teardown()` removes the connection with the package. The Bruno
+test asserts a fixed count instead (147 today), which changes whenever a package is added.
+
+Two things found while porting it:
+
+- An ordinary package such as `motorvognavgift` only gives access to the party. The check
+  then answers `403`; it takes `tilgangsstyrer` to run it on the party's behalf. The Bruno
+  fixture's `client_rightholderOrg1` has delegated `tilgangsstyrer` too.
+- Access Management caches a `403` for a user and a party for up to about a minute. A check
+  made before the delegation, or a failed run with the same pair less than a minute earlier,
+  can make the test fail. The test makes no check before the delegation.
 
 `bostyrer-checks-konkursbo-access-packages.js` filters on the ids of
 `konkursbo-skrivetilgang` and `konkursbo-lesetilgang`. It checks that only those two are

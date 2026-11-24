@@ -1,7 +1,10 @@
-import { ConnectionsClient } from "../../../../../../clients/access-management/enduser/connections/index.js";
+import { fail } from "k6";
+
+import { ConnectionsClient, CreateAccessPackageQueryBuilder, CreateConnectionQueryBuilder, DeleteConnectionQueryBuilder } from "../../../../../../clients/access-management/enduser/connections/index.js";
 import { PersonalTokenBuilder, PersonalTokenGenerator } from "../../../../../../common-imports.js";
-import { fetchTestData, lazy, requireEnv } from "../../../../../../helpers.js";
+import { fetchTestData, lazy, pickUnique, requireEnv } from "../../../../../../helpers.js";
 import { AltinnScopes, CreateScopeString } from "../../../../../../scopes.js";
+import { CreateAccessPackage, CreateConnection, DeleteConnection } from "../../../../../building-blocks/access-management/enduser/connections/index.js";
 
 const ENDUSER_SCOPES = CreateScopeString([
     AltinnScopes.PORTAL.ENDUSER,
@@ -41,6 +44,90 @@ function loadFixture(fixture) {
  */
 export function setupOrganizations() {
     return { organizations: loadFixture("organizations") };
+}
+
+/**
+ * Two organizations where the first has delegated an access package to the
+ * second, so the daglig leder of the receiving organization reaches the
+ * delegating one through their key role.
+ *
+ * @typedef {object} KeyRoleConnection
+ * @property {OrganizationRow} delegatingOrganization The organization that delegated the access package.
+ * @property {OrganizationRow} receivingOrganization The organization that received it.
+ */
+
+/**
+ * Setup for the tests where the daglig leder reaches a party through a key
+ * role. Draws two AS organizations. The daglig leder of the first adds the
+ * second as a connection and delegates the access package to it. The run
+ * stops if that fails, after removing what was made.
+ *
+ * @param {string} accessPackage The access package to delegate, for example tilgangsstyrer.
+ * @param {{createConnection: {[key: string]: string}, delegatePackage: {[key: string]: string}, deleteConnection: {[key: string]: string}}} labels k6 request labels for the steps.
+ * @returns {KeyRoleConnection} The two organizations.
+ */
+export function setupKeyRoleConnection(accessPackage, labels) {
+    const [delegatingOrganization, receivingOrganization] = pickUnique(loadFixture("organizations"), 2);
+    const { connections, tokenGenerator } = getClients();
+
+    tokenGenerator.setTokenGeneratorOptions(getPersonTokenOpts(delegatingOrganization));
+
+    const connection = CreateConnection(
+        connections,
+        new CreateConnectionQueryBuilder()
+            .withParty(delegatingOrganization.partyUuid)
+            .withTo(receivingOrganization.partyUuid)
+            .build(),
+        null,
+        labels.createConnection,
+    );
+
+    if (connection === null) {
+        fail(`Could not add ${receivingOrganization.organizationIdentifier} as a connection of ${delegatingOrganization.organizationIdentifier}`);
+    }
+
+    const assignment = CreateAccessPackage(
+        connections,
+        new CreateAccessPackageQueryBuilder()
+            .withParty(delegatingOrganization.partyUuid)
+            .withTo(receivingOrganization.partyUuid)
+            .withPackage(accessPackage)
+            .build(),
+        null,
+        labels.delegatePackage,
+    );
+
+    if (assignment === null) {
+        removeKeyRoleConnection({ delegatingOrganization, receivingOrganization }, labels.deleteConnection);
+        fail(`Could not delegate ${accessPackage} from ${delegatingOrganization.organizationIdentifier} to ${receivingOrganization.organizationIdentifier}`);
+    }
+
+    return { delegatingOrganization, receivingOrganization };
+}
+
+/**
+ * Removes the connection setupKeyRoleConnection made, with the access package
+ * on it.
+ *
+ * @param {KeyRoleConnection} data The two organizations.
+ * @param {{[key: string]: string}} label k6 request label for the step.
+ * @returns {void}
+ */
+export function removeKeyRoleConnection(data, label) {
+    const { connections, tokenGenerator } = getClients();
+
+    tokenGenerator.setTokenGeneratorOptions(getPersonTokenOpts(data.delegatingOrganization));
+
+    DeleteConnection(
+        connections,
+        new DeleteConnectionQueryBuilder()
+            .withParty(data.delegatingOrganization.partyUuid)
+            .withFrom(data.delegatingOrganization.partyUuid)
+            .withTo(data.receivingOrganization.partyUuid)
+            .withCascade(true)
+            .build(),
+        label,
+    );
 }
 
 /**
