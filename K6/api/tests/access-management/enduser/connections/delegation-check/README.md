@@ -12,6 +12,7 @@ the user can and cannot delegate.
 | --- | --- | --- | --- |
 | [daglig-leder-checks-delegable-access-packages.js](daglig-leder-checks-delegable-access-packages.js) | `GET_Enduser_Conn_AccPcks_DelgCheck_Dagl_NoFilter` | Daglig leder of an AS | `party` only |
 | [daglig-leder-checks-access-packages-by-id.js](daglig-leder-checks-access-packages-by-id.js) | `GET_Enduser_Conn_AccPcks_DelgCheck_Dagl_IdFilter` | Daglig leder of an AS | `party`, `packageIds` |
+| [daglig-leder-checks-access-packages-by-urn.js](daglig-leder-checks-access-packages-by-urn.js) | `GET_Enduser_Conn_AccPcks_DelgCheck_Dagl_UrnFilter` | Daglig leder of an AS | `party`, `packages` |
 | [bostyrer-checks-konkursbo-access-packages.js](bostyrer-checks-konkursbo-access-packages.js) | `GET_Enduser_Conn_AccPcks_DelgCheck_BOBE_Role_idFilter` | Bostyrer of a konkursbo | `party`, `packageIds` |
 
 `daglig-leder-checks-delegable-access-packages.js` checks that the answer covers access
@@ -24,6 +25,12 @@ are offered for the organization, that `eksplisitt` cannot be delegated, and tha
 only those three are returned, that the daglig leder can delegate the first two, which the
 role gives, and that they cannot delegate `regnskapsforer-lonn`, which only comes with the
 regnskapsfører role. It uses the same organizations as the test without a filter.
+
+`daglig-leder-checks-access-packages-by-urn.js` filters on `packages` with both forms the API
+accepts: the codes `hovedadministrator` and `barnehageleder`, and the full urn
+`urn:altinn:accesspackage:eksplisitt`. It checks that only those three are returned, that the
+daglig leder can delegate the first two, and that `eksplisitt` cannot be delegated. It uses
+the same organizations as the test without a filter.
 
 `bostyrer-checks-konkursbo-access-packages.js` filters on the ids of
 `konkursbo-skrivetilgang` and `konkursbo-lesetilgang`. It checks that only those two are
