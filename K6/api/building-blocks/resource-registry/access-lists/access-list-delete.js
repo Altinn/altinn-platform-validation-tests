@@ -23,6 +23,7 @@ export function AccessListDelete(
         () => accessListClient.AccessListDelete(
             owner,
             identifier,
+            {},
             labels,
         ),
         "AccessListDelete",

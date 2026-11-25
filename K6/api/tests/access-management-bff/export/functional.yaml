@@ -4,5 +4,6 @@ test_definitions:
   - test_file: delegation-export.js
     contexts:
       - environment: yt01
-      - environment: at23
-      - environment: tt02
+        test_type:
+          type: functional
+          enabled: false

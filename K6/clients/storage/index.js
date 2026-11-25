@@ -1,7 +1,11 @@
 export { ApplicationsClient } from "./applications.js";
 export { DataClient } from "./data.js";
+export { DataLockClient } from "./data-lock.js";
 export { InstanceEventsClient } from "./instance-events.js";
+export { InstanceLockClient } from "./instance-lock.js";
+export { InstanceMutationsClient } from "./instance-mutations.js";
 export { InstancesClient } from "./instances.js";
 export { ProcessClient } from "./process.js";
 export { SignClient } from "./sign.js";
 export { TextsClient } from "./texts.js";
+export { VersionMatch, versionMatchHeaders } from "./version-match.js";

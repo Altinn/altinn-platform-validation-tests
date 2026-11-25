@@ -19,7 +19,7 @@ import { ChangeRequestSystemUserDomainChecks, CreateRequestSystemUserBuilder, Re
 import { PackagesSearch } from "../../../building-blocks/access-management/metadata/packages/index.js";
 import { DeleteSystemUser } from "../../../building-blocks/access-management-bff/system-user/index.js";
 import { ApproveSystemUserRequest, GetSystemUserRequest } from "../../../building-blocks/access-management-bff/system-user-request/index.js";
-import { sweepPendingChangeRequests, sweepRegisteredSystems } from "../commons.js";
+import { deleteRequest, deleteSystem, sweepPendingChangeRequests, sweepRegisteredSystems } from "../commons.js";
 
 /**
  * Whether to pick a random customer rather than walk the list.
@@ -600,14 +600,14 @@ function createApprovedSystemUser(registration, customer, grantedRights, granted
  * goes first, since a pending one outlives the system it was made for.
  *
  * @param {ReturnType<typeof createSystemRegistration>} registration - Registration from createSystemRegistration.
- * @param {string} [requestId] - The system user request to withdraw, when the arrange got as far as creating one.
+ * @param {string} [requestId] - The system user request to delete, when the arrange got as far as creating one.
  */
 function unwindArrange(registration, requestId = undefined) {
     const { clients: apiClients } = getClients();
 
     if (requestId !== undefined) {
-        RequestSystemUserBuildingBlocks.VendorDelete(apiClients.vendor.requestSystemUserClient, requestId);
+        deleteRequest(apiClients.vendor.requestSystemUserClient, requestId);
     }
 
-    SystemRegisterBuildingBlocks.VendorDelete(apiClients.vendor.systemRegisterClient, registration.systemId);
+    deleteSystem(apiClients.vendor.systemRegisterClient, registration.systemId);
 }

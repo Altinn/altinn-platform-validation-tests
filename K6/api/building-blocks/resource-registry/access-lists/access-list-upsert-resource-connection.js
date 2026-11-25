@@ -29,6 +29,7 @@ export function AccessListsUpsertResourceConnection(
             identifier,
             resourceIdentifier,
             request,
+            {},
             labels,
         ),
         "AccessListsUpsertResourceConnection",

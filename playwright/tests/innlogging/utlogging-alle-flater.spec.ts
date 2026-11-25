@@ -1,49 +1,123 @@
-import { testMedFlater as test, Flate } from "../../fixtures/test";
-import { runInEnvironment } from "../../miljo";
+import { test } from "../../fixtures/test";
 
-// Endrer ingen data. Utloggingen går gjennom authentication /logout, som sender
-// brukeren videre til /logout/handleloggedout, og det er de to endepunktene testen
-// er her for. I prod går innloggingen via mockporten, siden TestID-skjermbildene
-// bare finnes i testmiljøene.
-runInEnvironment("at23", "tt02", "prod");
+// Endrer ingen data. Utloggingen går via /logout og tilbake til
+// /logout/handleloggedout, og det er de endepunktene testene er her for. Sesjonen
+// gjelder på tvers av flatene, så en utlogging fra én av dem skal ta brukeren ut av
+// alle. Infoportalen sjekkes, men logges ikke ut fra: den har ikke menyen
+// utloggingen ligger i.
+//
+// Ikke i prod: der logger testene inn via Mockporten, og utloggingen derfra lander
+// på en feilside.
+//
+// I WebKit på Linux krasjer Playwright med "Assertion error" når am.ui sender den
+// utloggede brukeren tilbake til samme ID-porten-side som den allerede står på.
+// Lokalt på macOS går det fint. Testene hoppes over der til Playwright har fikset
+// det, se https://github.com/microsoft/playwright/issues/43067#issuecomment-6477304285
 
-/**
- * Flatene som skal være utlogget etterpå. Infoportalen er med her, men ikke som
- * utgangspunkt: den er åpen og har ikke hovednavigasjonen utloggingen ligger i, så
- * den kan sjekkes men ikke logges ut fra.
- */
-const flater: Flate[] = [
-  "arbeidsflate",
-  "arbeidsflate-profil",
-  "tilgangsstyring",
-  "infoportalen",
-];
-
-const utloggingsflater = flater.filter((flate) => flate !== "infoportalen");
-
-for (const start of utloggingsflater) {
-  // Sesjonen gjelder på tvers av flatene, så en utlogging fra én av dem skal ta
-  // brukeren ut av alle.
-  test(`Bruker er utlogget på alle flater etter utlogging fra ${start}`, async ({
+test("Bruker er utlogget på alle flater etter utlogging fra arbeidsflate", { tag: ["@at23", "@tt02"] }, async ({
+    browserName,
     innlogging,
     user,
-    flater: sider,
-  }) => {
-    await test.step(`Bruker logger inn og lander på ${start}`, async () => {
-      await innlogging.logIn(sider[start], user);
-      await sider[start].assertLoggedIn(user);
+    arbeidsflate,
+    arbeidsflateProfil,
+    tilgangsstyring,
+    infoportal,
+}) => {
+    test.fixme(browserName === "webkit", "Playwright krasjer i WebKit på Linux, microsoft/playwright#43067");
+
+    await test.step("Bruker logger inn via arbeidsflate", async () => {
+        await innlogging.loggInnViaArbeidsflate(user);
+        await arbeidsflate.assertLoggedIn();
     });
 
     await test.step("Bruker logger ut", async () => {
-      await innlogging.logOut();
-      await innlogging.assertLoggedOut();
+        await innlogging.loggUt();
     });
 
     await test.step("Ingen av flatene viser brukeren som innlogget", async () => {
-      for (const flate of flater) {
-        await sider[flate].navigateTo();
-        await sider[flate].assertLoggedOut(user);
-      }
+        await arbeidsflate.navigateTo();
+        await arbeidsflate.assertLoggedOut(user);
+
+        await arbeidsflateProfil.navigateTo();
+        await arbeidsflateProfil.assertLoggedOut(user);
+
+        await tilgangsstyring.navigateTo();
+        await tilgangsstyring.assertLoggedOut(user);
+
+        await infoportal.navigateTo();
+        await infoportal.assertLoggedOut(user);
     });
-  });
-}
+});
+
+test("Bruker er utlogget på alle flater etter utlogging fra profilen", { tag: ["@at23", "@tt02"] }, async ({
+    browserName,
+    innlogging,
+    user,
+    arbeidsflate,
+    arbeidsflateProfil,
+    tilgangsstyring,
+    infoportal,
+}) => {
+    test.fixme(browserName === "webkit", "Playwright krasjer i WebKit på Linux, microsoft/playwright#43067");
+
+    await test.step("Bruker logger inn via arbeidsflate og går til profilen", async () => {
+        await innlogging.loggInnViaArbeidsflate(user);
+        await arbeidsflate.assertLoggedIn();
+
+        await arbeidsflate.meny.gaTilProfil();
+        await arbeidsflateProfil.assertLoggedIn();
+    });
+
+    await test.step("Bruker logger ut", async () => {
+        await innlogging.loggUt();
+    });
+
+    await test.step("Ingen av flatene viser brukeren som innlogget", async () => {
+        await arbeidsflate.navigateTo();
+        await arbeidsflate.assertLoggedOut(user);
+
+        await arbeidsflateProfil.navigateTo();
+        await arbeidsflateProfil.assertLoggedOut(user);
+
+        await tilgangsstyring.navigateTo();
+        await tilgangsstyring.assertLoggedOut(user);
+
+        await infoportal.navigateTo();
+        await infoportal.assertLoggedOut(user);
+    });
+});
+
+test("Bruker er utlogget på alle flater etter utlogging fra tilgangsstyring", { tag: ["@at23", "@tt02"] }, async ({
+    browserName,
+    innlogging,
+    user,
+    arbeidsflate,
+    arbeidsflateProfil,
+    tilgangsstyring,
+    infoportal,
+}) => {
+    test.fixme(browserName === "webkit", "Playwright krasjer i WebKit på Linux, microsoft/playwright#43067");
+
+    await test.step("Bruker logger inn via tilgangsstyring", async () => {
+        await innlogging.loggInnViaTilgangsstyring(user);
+        await tilgangsstyring.assertLoggedIn();
+    });
+
+    await test.step("Bruker logger ut", async () => {
+        await innlogging.loggUt();
+    });
+
+    await test.step("Ingen av flatene viser brukeren som innlogget", async () => {
+        await arbeidsflate.navigateTo();
+        await arbeidsflate.assertLoggedOut(user);
+
+        await arbeidsflateProfil.navigateTo();
+        await arbeidsflateProfil.assertLoggedOut(user);
+
+        await tilgangsstyring.navigateTo();
+        await tilgangsstyring.assertLoggedOut(user);
+
+        await infoportal.navigateTo();
+        await infoportal.assertLoggedOut(user);
+    });
+});

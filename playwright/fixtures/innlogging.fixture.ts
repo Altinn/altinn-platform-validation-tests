@@ -1,13 +1,26 @@
-import { test as base } from '@playwright/test';
-import { getTestUser, TestUser } from '../config/environment';
-import { Innlogging } from '../flows/innlogging';
+import { test as base } from "@playwright/test";
 
-export const test = base.extend<{ innlogging: Innlogging; user: TestUser }>({
-    innlogging: async ({ page }, use) => {
-        await use(new Innlogging(page));
+import { Urler } from "../config/environment";
+import { Sprak } from "../config/sprak";
+import { AktorvelgerPom } from "../pages/felles/aktorvelger";
+import { InnloggingPom } from "../pages/felles/innlogging";
+
+export const innloggingFixture = base.extend<{
+    innlogging: InnloggingPom;
+    aktorvelger: AktorvelgerPom;
+    urler: Urler;
+    mockporten: boolean;
+    sprak: Sprak;
+}>({
+    urler: [{} as Urler, { option: true }],
+    mockporten: [false, { option: true }],
+    sprak: ["" as Sprak, { option: true }],
+
+    innlogging: async ({ page, mockporten, urler, sprak }, use) => {
+        await use(new InnloggingPom(page, urler, mockporten, sprak));
     },
 
-    user: async ({ }, use) => {
-        await use(getTestUser());
+    aktorvelger: async ({ page, sprak }, use) => {
+        await use(new AktorvelgerPom(page, sprak));
     },
 });

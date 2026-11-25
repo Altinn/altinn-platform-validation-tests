@@ -1,14 +1,18 @@
-import { test as base } from '@playwright/test';
-import { InfoportalForside } from '../pages/infoportal/forside';
+import { test as base } from "@playwright/test";
 
-export type Infoportal = {
-    forside: InfoportalForside;
-};
+import { Urler } from "../config/environment";
+import { Sprak } from "../config/sprak";
+import { InfoportalForsidePom } from "../pages/infoportal/forside";
 
-export const test = base.extend<{ infoportal: Infoportal }>({
-    infoportal: async ({ page }, use) => {
-        await use({
-            forside: new InfoportalForside(page),
-        });
+export const infoportalFixture = base.extend<{
+    infoportal: InfoportalForsidePom;
+    urler: Urler;
+    sprak: Sprak;
+}>({
+    urler: [{} as Urler, { option: true }],
+    sprak: ["" as Sprak, { option: true }],
+
+    infoportal: async ({ page, urler, sprak }, use) => {
+        await use(new InfoportalForsidePom(page, urler.infoportal, sprak));
     },
 });

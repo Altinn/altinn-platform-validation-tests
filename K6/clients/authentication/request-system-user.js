@@ -1,5 +1,6 @@
 import http from "k6/http";
 
+import { buildUrl, jsonBody, requestParams } from "../common/request.js";
 import { CreateAgentRequestSystemUser, CreateRequestSystemUser, GuidOpaque } from "./types.js";
 
 const TAGS = {
@@ -69,31 +70,17 @@ class RequestSystemUserClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     RequestSystemUserVendorCreate(request, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}`;
-
-        let tags = {
-            endpoint: url,
-            name: url,
-            action: TAGS.RequestSystemUserVendorCreate.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.post(url, JSON.stringify(request), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json",
-                Accept: "application/json",
-            },
-        });
+        return http.post(
+            `${this.FULL_PATH}`,
+            jsonBody(request),
+            requestParams({
+                endpoint: this.FULL_PATH,
+                action: TAGS.RequestSystemUserVendorCreate.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+                json: true,
+            }),
+        );
     }
 
     /**
@@ -107,31 +94,17 @@ class RequestSystemUserClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     RequestSystemUserVendorAgentCreate(request, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}/agent`;
-
-        let tags = {
-            endpoint: url,
-            name: url,
-            action: TAGS.RequestSystemUserVendorAgentCreate.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.post(url, JSON.stringify(request), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json",
-                Accept: "application/json",
-            },
-        });
+        return http.post(
+            `${this.FULL_PATH}/agent`,
+            jsonBody(request),
+            requestParams({
+                endpoint: `${this.FULL_PATH}/agent`,
+                action: TAGS.RequestSystemUserVendorAgentCreate.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+                json: true,
+            }),
+        );
     }
 
     /**
@@ -145,30 +118,15 @@ class RequestSystemUserClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     RequestSystemUserVendorGet(requestId, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}/${encodeURIComponent(requestId)}`;
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/{requestId}`,
-            name: `${this.FULL_PATH}/{requestId}`,
-            action: TAGS.RequestSystemUserVendorGet.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url, {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.get(
+            `${this.FULL_PATH}/${encodeURIComponent(requestId)}`,
+            requestParams({
+                endpoint: `${this.FULL_PATH}/{requestId}`,
+                action: TAGS.RequestSystemUserVendorGet.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 
     /**
@@ -182,30 +140,16 @@ class RequestSystemUserClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     RequestSystemUserVendorDelete(requestId, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}/${encodeURIComponent(requestId)}`;
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/{requestId}`,
-            name: `${this.FULL_PATH}/{requestId}`,
-            action: TAGS.RequestSystemUserVendorDelete.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.del(url, null, {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.del(
+            `${this.FULL_PATH}/${encodeURIComponent(requestId)}`,
+            null,
+            requestParams({
+                endpoint: `${this.FULL_PATH}/{requestId}`,
+                action: TAGS.RequestSystemUserVendorDelete.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 
     /**
@@ -219,30 +163,15 @@ class RequestSystemUserClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     RequestSystemUserVendorAgentGet(requestId, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}/agent/${encodeURIComponent(requestId)}`;
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/agent/{requestId}`,
-            name: `${this.FULL_PATH}/agent/{requestId}`,
-            action: TAGS.RequestSystemUserVendorAgentGet.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url, {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.get(
+            `${this.FULL_PATH}/agent/${encodeURIComponent(requestId)}`,
+            requestParams({
+                endpoint: `${this.FULL_PATH}/agent/{requestId}`,
+                action: TAGS.RequestSystemUserVendorAgentGet.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 
     /**
@@ -263,30 +192,15 @@ class RequestSystemUserClient {
         externalRef,
         labels = null,
     ) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}/byexternalref/${encodeURIComponent(systemId)}/${encodeURIComponent(orgNo)}/${encodeURIComponent(externalRef)}`;
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/byexternalref/{systemId}/{orgNo}/{externalRef}`,
-            name: `${this.FULL_PATH}/byexternalref/{systemId}/{orgNo}/{externalRef}`,
-            action: TAGS.RequestSystemUserVendorGetByExternalRef.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url, {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.get(
+            `${this.FULL_PATH}/byexternalref/${encodeURIComponent(systemId)}/${encodeURIComponent(orgNo)}/${encodeURIComponent(externalRef)}`,
+            requestParams({
+                endpoint: `${this.FULL_PATH}/byexternalref/{systemId}/{orgNo}/{externalRef}`,
+                action: TAGS.RequestSystemUserVendorGetByExternalRef.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 
     /**
@@ -307,30 +221,15 @@ class RequestSystemUserClient {
         externalRef,
         labels = null,
     ) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}/agent/byexternalref/${encodeURIComponent(systemId)}/${encodeURIComponent(orgNo)}/${encodeURIComponent(externalRef)}`;
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/agent/byexternalref/{systemId}/{orgNo}/{externalRef}`,
-            name: `${this.FULL_PATH}/agent/byexternalref/{systemId}/{orgNo}/{externalRef}`,
-            action: TAGS.RequestSystemUserVendorAgentGetByExternalRef.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url, {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.get(
+            `${this.FULL_PATH}/agent/byexternalref/${encodeURIComponent(systemId)}/${encodeURIComponent(orgNo)}/${encodeURIComponent(externalRef)}`,
+            requestParams({
+                endpoint: `${this.FULL_PATH}/agent/byexternalref/{systemId}/{orgNo}/{externalRef}`,
+                action: TAGS.RequestSystemUserVendorAgentGetByExternalRef.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 
     /**
@@ -345,34 +244,17 @@ class RequestSystemUserClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     RequestSystemUserVendorGetBySystem(systemId, token = null, labels = null) {
-        const authToken = this.tokenGenerator.getToken();
-
-        let url = `${this.FULL_PATH}/bysystem/${encodeURIComponent(systemId)}`;
-
-        if (token !== null) {
-            url += `?token=${encodeURIComponent(JSON.stringify(token))}`;
-        }
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/bysystem/{systemId}`,
-            name: `${this.FULL_PATH}/bysystem/{systemId}`,
-            action: TAGS.RequestSystemUserVendorGetBySystem.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url, {
-            tags,
-            headers: {
-                Authorization: `Bearer ${authToken}`,
-                Accept: "application/json",
-            },
-        });
+        return http.get(
+            buildUrl(`${this.FULL_PATH}/bysystem/${encodeURIComponent(systemId)}`, {
+                token: token !== null ? JSON.stringify(token) : null,
+            }),
+            requestParams({
+                endpoint: `${this.FULL_PATH}/bysystem/{systemId}`,
+                action: TAGS.RequestSystemUserVendorGetBySystem.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 
     /**
@@ -391,34 +273,17 @@ class RequestSystemUserClient {
         token = null,
         labels = null,
     ) {
-        const authToken = this.tokenGenerator.getToken();
-
-        let url = `${this.FULL_PATH}/agent/bysystem/${encodeURIComponent(systemId)}`;
-
-        if (token !== null) {
-            url += `?token=${encodeURIComponent(JSON.stringify(token))}`;
-        }
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/agent/bysystem/{systemId}`,
-            name: `${this.FULL_PATH}/agent/bysystem/{systemId}`,
-            action: TAGS.RequestSystemUserVendorAgentGetBySystem.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url, {
-            tags,
-            headers: {
-                Authorization: `Bearer ${authToken}`,
-                Accept: "application/json",
-            },
-        });
+        return http.get(
+            buildUrl(`${this.FULL_PATH}/agent/bysystem/${encodeURIComponent(systemId)}`, {
+                token: token !== null ? JSON.stringify(token) : null,
+            }),
+            requestParams({
+                endpoint: `${this.FULL_PATH}/agent/bysystem/{systemId}`,
+                action: TAGS.RequestSystemUserVendorAgentGetBySystem.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 }
 

@@ -28,6 +28,3 @@ export default function () {
 
     PaginationDomainChecks.CheckNextLink(updatedResources, expectedBaseUrl, "ResourceUpdated");
 }
-
-// add the custom reporting for this test to the default summary
-export { handleSummary } from "../../../common-imports.js";

@@ -1,22 +1,18 @@
 import http from "k6/http";
 
-import { TextResource } from "./applications.types.js";
+import { requestParams } from "../common/request.js";
 
 const TAGS = {
-    CreateTextResource: {
-        action: "create-text-resource",
-    },
     GetTextResource: {
         action: "get-text-resource",
     },
-    UpdateTextResource: {
-        action: "update-text-resource",
-    },
-    DeleteTextResource: {
-        action: "delete-text-resource",
-    },
 };
 
+/**
+ * Client for the Texts API. Read only: the swagger no longer lists the create,
+ * update and delete operations, which are Studio Designer's and take a
+ * platform token this repository does not have.
+ */
 class TextsClient {
     /**
      * Creates a client for the Texts API.
@@ -46,39 +42,6 @@ class TextsClient {
     }
 
     /**
-     * Creates a text resource for an application.
-     *
-     * POST /applications/{org}/{app}/texts
-     *
-     * @param {string} org Application owner, e.g. ttd.
-     * @param {string} app Application name.
-     * @param {TextResource} request Text resource to create.
-     * @param {{[key:string]:string}|null} [labels] Optional k6 request labels.
-     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
-     */
-    CreateTextResource(org, app, request, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}/applications/${org}/${app}/texts`;
-
-        const tags = {
-            ...labels,
-            endpoint: `${this.FULL_PATH}/applications/{org}/{app}/texts`,
-            name: `${this.FULL_PATH}/applications/{org}/{app}/texts`,
-            action: TAGS.CreateTextResource.action,
-        };
-
-        return http.post(url, JSON.stringify(request), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-                "Content-Type": "application/json",
-            },
-        });
-    }
-
-    /**
      * Gets a text resource for an application and language.
      *
      * GET /applications/{org}/{app}/texts/{language}
@@ -90,90 +53,15 @@ class TextsClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetTextResource(org, app, language, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}/applications/${org}/${app}/texts/${language}`;
-
-        const tags = {
-            ...labels,
-            endpoint: `${this.FULL_PATH}/applications/{org}/{app}/texts/{language}`,
-            name: `${this.FULL_PATH}/applications/{org}/{app}/texts/{language}`,
-            action: TAGS.GetTextResource.action,
-        };
-
-        return http.get(url, {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
-    }
-
-    /**
-     * Replaces a text resource for an application and language.
-     *
-     * PUT /applications/{org}/{app}/texts/{language}
-     *
-     * @param {string} org Application owner, e.g. ttd.
-     * @param {string} app Application name.
-     * @param {string} language Language code, e.g. nb.
-     * @param {TextResource} request Text resource to store.
-     * @param {{[key:string]:string}|null} [labels] Optional k6 request labels.
-     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
-     */
-    UpdateTextResource(org, app, language, request, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}/applications/${org}/${app}/texts/${language}`;
-
-        const tags = {
-            ...labels,
-            endpoint: `${this.FULL_PATH}/applications/{org}/{app}/texts/{language}`,
-            name: `${this.FULL_PATH}/applications/{org}/{app}/texts/{language}`,
-            action: TAGS.UpdateTextResource.action,
-        };
-
-        return http.put(url, JSON.stringify(request), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-                "Content-Type": "application/json",
-            },
-        });
-    }
-
-    /**
-     * Deletes a text resource for an application and language.
-     *
-     * DELETE /applications/{org}/{app}/texts/{language}
-     *
-     * @param {string} org Application owner, e.g. ttd.
-     * @param {string} app Application name.
-     * @param {string} language Language code, e.g. nb.
-     * @param {{[key:string]:string}|null} [labels] Optional k6 request labels.
-     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
-     */
-    DeleteTextResource(org, app, language, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}/applications/${org}/${app}/texts/${language}`;
-
-        const tags = {
-            ...labels,
-            endpoint: `${this.FULL_PATH}/applications/{org}/{app}/texts/{language}`,
-            name: `${this.FULL_PATH}/applications/{org}/{app}/texts/{language}`,
-            action: TAGS.DeleteTextResource.action,
-        };
-
-        return http.del(url, null, {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.get(
+            `${this.FULL_PATH}/applications/${org}/${app}/texts/${language}`,
+            requestParams({
+                endpoint: `${this.FULL_PATH}/applications/{org}/{app}/texts/{language}`,
+                action: TAGS.GetTextResource.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 }
 

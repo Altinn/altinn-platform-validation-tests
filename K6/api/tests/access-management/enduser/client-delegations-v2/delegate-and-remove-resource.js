@@ -1,4 +1,3 @@
-export { handleSummary } from "../../../../../common-imports.js";
 import { fail, group } from "k6";
 import exec from "k6/execution";
 

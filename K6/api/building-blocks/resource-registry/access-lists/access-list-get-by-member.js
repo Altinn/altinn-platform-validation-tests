@@ -7,7 +7,7 @@ import { withRetries } from "../../common/retry.js";
 /**
  * Gets access lists for a given member.
  *
- * @param {AccessListClient} accessListClient Client for the Access List API.
+ * @param {AccessListClient} accessListClient Client for the Access List API, built with a platform access token generator (see AccessListClient).
  * @param {string} party Member party UUID URN.
  * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {Array<AccessListInfoDto>|null} Access lists.

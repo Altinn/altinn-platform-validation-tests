@@ -1,6 +1,5 @@
 export { CreateFavorite } from "./create-favorite.js";
 export { DeleteFavorite } from "./delete-favorite.js";
-export { GetActorList } from "./get-actor-list.js";
 export { GetActorListOld } from "./get-actor-list-old.js";
 export { GetFavorites } from "./get-favorites.js";
 export { GetIsAdmin } from "./get-is-admin.js";
@@ -10,6 +9,5 @@ export { GetIsHovedadmin } from "./get-is-hovedadmin.js";
 export { GetIsInstanceAdmin } from "./get-is-instance-admin.js";
 export { GetIsMaskinportenAdmin } from "./get-is-maskinporten-admin.js";
 export { GetReportee } from "./get-reportee.js";
-export { GetReporteeList } from "./get-reportee-list.js";
 export { GetUserProfile } from "./get-user-profile.js";
 export { UpdateShowDeleted } from "./update-show-deleted.js";

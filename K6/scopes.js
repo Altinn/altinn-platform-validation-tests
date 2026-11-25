@@ -199,6 +199,11 @@ export const AltinnScopes = {
     REPORTEES: "altinn:reportees",
 
     RESOURCEREGISTRY: {
+        ACCESSLIST: {
+            READ: "altinn:resourceregistry/accesslist.read",
+            WRITE: "altinn:resourceregistry/accesslist.write"
+        },
+
         RESOURCE: {
             ADMIN: "altinn:resourceregistry/resource.admin",
             READ: "altinn:resourceregistry/resource.read",
@@ -217,6 +222,12 @@ export const AltinnScopes = {
         },
 
         DELEGATIONS: {
+            ACCESSPACKAGE: {
+                WRITE: "altinn:serviceowner/delegations:accesspackage.write"
+            },
+            RESOURCE: {
+                WRITE: "altinn:serviceowner/delegations:resource.write"
+            },
             WRITE: "altinn:serviceowner/delegations.write"
         },
 

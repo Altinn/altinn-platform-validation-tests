@@ -1,6 +1,8 @@
 import http from "k6/http";
 
+import { buildUrl, jsonBody, requestParams } from "../common/request.js";
 import { DataElement, FileScanStatus } from "./instances.types.js";
+import { VersionMatch, versionMatchHeaders } from "./version-match.js";
 
 const TAGS = {
     CreateData: {
@@ -8,6 +10,9 @@ const TAGS = {
     },
     GetData: {
         action: "get-data",
+    },
+    GetDataVersion: {
+        action: "get-data-version",
     },
     UpdateData: {
         action: "update-data",
@@ -65,41 +70,26 @@ class DataClient {
      * @param {string|null} [dataType] Data type id the element belongs to.
      * @param {Array<string>|null} [refs] Ids of related data elements.
      * @param {string|null} [generatedFromTask] Task the element was generated from.
+     * @param {VersionMatch|null} [versionMatch] Instance and process-state versions the write is conditioned on.
      * @param {{[key:string]:string}|null} [labels] Optional k6 request labels.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
-    CreateData(instanceOwnerPartyId, instanceGuid, body, dataType = null, refs = null, generatedFromTask = null, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(`${this.FULL_PATH}/instances/${instanceOwnerPartyId}/${instanceGuid}/data`);
-
-        if (dataType !== null) {
-            url.searchParams.append("dataType", dataType);
-        }
-
-        if (refs !== null) {
-            url.searchParams.append("refs", refs.join(","));
-        }
-
-        if (generatedFromTask !== null) {
-            url.searchParams.append("generatedFromTask", generatedFromTask);
-        }
-
-        const tags = {
-            ...labels,
-            endpoint: `${this.FULL_PATH}/instances/{instanceOwnerPartyId}/{instanceGuid}/data`,
-            name: `${this.FULL_PATH}/instances/{instanceOwnerPartyId}/{instanceGuid}/data`,
-            action: TAGS.CreateData.action,
-        };
-
-        return http.post(url.toString(), body, {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-                "Content-Type": "application/octet-stream",
-            },
-        });
+    CreateData(instanceOwnerPartyId, instanceGuid, body, dataType = null, refs = null, generatedFromTask = null, versionMatch = null, labels = null) {
+        return http.post(
+            buildUrl(`${this.FULL_PATH}/instances/${instanceOwnerPartyId}/${instanceGuid}/data`, {
+                dataType,
+                refs: refs !== null ? refs.join(",") : null,
+                generatedFromTask,
+            }),
+            body,
+            requestParams({
+                endpoint: `${this.FULL_PATH}/instances/{instanceOwnerPartyId}/{instanceGuid}/data`,
+                action: TAGS.CreateData.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+                headers: { "Content-Type": "application/octet-stream", ...versionMatchHeaders(versionMatch) },
+            }),
+        );
     }
 
     /**
@@ -114,23 +104,41 @@ class DataClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetData(instanceOwnerPartyId, instanceGuid, dataGuid, labels = null) {
-        const token = this.tokenGenerator.getToken();
+        return http.get(
+            `${this.FULL_PATH}/instances/${instanceOwnerPartyId}/${instanceGuid}/data/${dataGuid}`,
+            requestParams({
+                endpoint: `${this.FULL_PATH}/instances/{instanceOwnerPartyId}/{instanceGuid}/data/{dataGuid}`,
+                action: TAGS.GetData.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+                accept: null,
+            }),
+        );
+    }
 
-        const url = `${this.FULL_PATH}/instances/${instanceOwnerPartyId}/${instanceGuid}/data/${dataGuid}`;
-
-        const tags = {
-            ...labels,
-            endpoint: `${this.FULL_PATH}/instances/{instanceOwnerPartyId}/{instanceGuid}/data/{dataGuid}`,
-            name: `${this.FULL_PATH}/instances/{instanceOwnerPartyId}/{instanceGuid}/data/{dataGuid}`,
-            action: TAGS.GetData.action,
-        };
-
-        return http.get(url, {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-        });
+    /**
+     * Downloads the content of one blob version of a data element, for the instance's own service owner.
+     *
+     * GET /instances/{instanceOwnerPartyId}/{instanceGuid}/data/{dataGuid}/versions/{blobVersionId}
+     *
+     * @param {number} instanceOwnerPartyId Instance owner party id.
+     * @param {string} instanceGuid Instance UUID.
+     * @param {string} dataGuid Data element UUID.
+     * @param {string} blobVersionId The blob version to retrieve.
+     * @param {{[key:string]:string}|null} [labels] Optional k6 request labels.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
+     */
+    GetDataVersion(instanceOwnerPartyId, instanceGuid, dataGuid, blobVersionId, labels = null) {
+        return http.get(
+            `${this.FULL_PATH}/instances/${instanceOwnerPartyId}/${instanceGuid}/data/${dataGuid}/versions/${encodeURIComponent(blobVersionId)}`,
+            requestParams({
+                endpoint: `${this.FULL_PATH}/instances/{instanceOwnerPartyId}/{instanceGuid}/data/{dataGuid}/versions/{blobVersionId}`,
+                action: TAGS.GetDataVersion.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+                accept: null,
+            }),
+        );
     }
 
     /**
@@ -144,37 +152,25 @@ class DataClient {
      * @param {*} body Binary file content.
      * @param {Array<string>|null} [refs] Ids of related data elements.
      * @param {string|null} [generatedFromTask] Task the element was generated from.
+     * @param {VersionMatch|null} [versionMatch] Instance and process-state versions the write is conditioned on.
      * @param {{[key:string]:string}|null} [labels] Optional k6 request labels.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
-    UpdateData(instanceOwnerPartyId, instanceGuid, dataGuid, body, refs = null, generatedFromTask = null, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(`${this.FULL_PATH}/instances/${instanceOwnerPartyId}/${instanceGuid}/data/${dataGuid}`);
-
-        if (refs !== null) {
-            url.searchParams.append("refs", refs.join(","));
-        }
-
-        if (generatedFromTask !== null) {
-            url.searchParams.append("generatedFromTask", generatedFromTask);
-        }
-
-        const tags = {
-            ...labels,
-            endpoint: `${this.FULL_PATH}/instances/{instanceOwnerPartyId}/{instanceGuid}/data/{dataGuid}`,
-            name: `${this.FULL_PATH}/instances/{instanceOwnerPartyId}/{instanceGuid}/data/{dataGuid}`,
-            action: TAGS.UpdateData.action,
-        };
-
-        return http.put(url.toString(), body, {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-                "Content-Type": "application/octet-stream",
-            },
-        });
+    UpdateData(instanceOwnerPartyId, instanceGuid, dataGuid, body, refs = null, generatedFromTask = null, versionMatch = null, labels = null) {
+        return http.put(
+            buildUrl(`${this.FULL_PATH}/instances/${instanceOwnerPartyId}/${instanceGuid}/data/${dataGuid}`, {
+                refs: refs !== null ? refs.join(",") : null,
+                generatedFromTask,
+            }),
+            body,
+            requestParams({
+                endpoint: `${this.FULL_PATH}/instances/{instanceOwnerPartyId}/{instanceGuid}/data/{dataGuid}`,
+                action: TAGS.UpdateData.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+                headers: { "Content-Type": "application/octet-stream", ...versionMatchHeaders(versionMatch) },
+            }),
+        );
     }
 
     /**
@@ -186,32 +182,22 @@ class DataClient {
      * @param {string} instanceGuid Instance UUID.
      * @param {string} dataGuid Data element UUID.
      * @param {boolean|null} [delay] Whether to delay the delete until the instance is deleted.
+     * @param {VersionMatch|null} [versionMatch] Instance and process-state versions the delete is conditioned on.
      * @param {{[key:string]:string}|null} [labels] Optional k6 request labels.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
-    DeleteData(instanceOwnerPartyId, instanceGuid, dataGuid, delay = null, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(`${this.FULL_PATH}/instances/${instanceOwnerPartyId}/${instanceGuid}/data/${dataGuid}`);
-
-        if (delay !== null) {
-            url.searchParams.append("delay", String(delay));
-        }
-
-        const tags = {
-            ...labels,
-            endpoint: `${this.FULL_PATH}/instances/{instanceOwnerPartyId}/{instanceGuid}/data/{dataGuid}`,
-            name: `${this.FULL_PATH}/instances/{instanceOwnerPartyId}/{instanceGuid}/data/{dataGuid}`,
-            action: TAGS.DeleteData.action,
-        };
-
-        return http.del(url.toString(), null, {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+    DeleteData(instanceOwnerPartyId, instanceGuid, dataGuid, delay = null, versionMatch = null, labels = null) {
+        return http.del(
+            buildUrl(`${this.FULL_PATH}/instances/${instanceOwnerPartyId}/${instanceGuid}/data/${dataGuid}`, { delay }),
+            null,
+            requestParams({
+                endpoint: `${this.FULL_PATH}/instances/{instanceOwnerPartyId}/{instanceGuid}/data/{dataGuid}`,
+                action: TAGS.DeleteData.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+                headers: versionMatchHeaders(versionMatch),
+            }),
+        );
     }
 
     /**
@@ -225,24 +211,15 @@ class DataClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetDataElements(instanceOwnerPartyId, instanceGuid, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}/instances/${instanceOwnerPartyId}/${instanceGuid}/dataelements`;
-
-        const tags = {
-            ...labels,
-            endpoint: `${this.FULL_PATH}/instances/{instanceOwnerPartyId}/{instanceGuid}/dataelements`,
-            name: `${this.FULL_PATH}/instances/{instanceOwnerPartyId}/{instanceGuid}/dataelements`,
-            action: TAGS.GetDataElements.action,
-        };
-
-        return http.get(url, {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.get(
+            `${this.FULL_PATH}/instances/${instanceOwnerPartyId}/${instanceGuid}/dataelements`,
+            requestParams({
+                endpoint: `${this.FULL_PATH}/instances/{instanceOwnerPartyId}/{instanceGuid}/dataelements`,
+                action: TAGS.GetDataElements.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 
     /**
@@ -254,29 +231,23 @@ class DataClient {
      * @param {string} instanceGuid Instance UUID.
      * @param {string} dataGuid Data element UUID.
      * @param {DataElement} request Data element metadata to store.
+     * @param {VersionMatch|null} [versionMatch] Instance and process-state versions the write is conditioned on.
      * @param {{[key:string]:string}|null} [labels] Optional k6 request labels.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
-    UpdateDataElement(instanceOwnerPartyId, instanceGuid, dataGuid, request, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}/instances/${instanceOwnerPartyId}/${instanceGuid}/dataelements/${dataGuid}`;
-
-        const tags = {
-            ...labels,
-            endpoint: `${this.FULL_PATH}/instances/{instanceOwnerPartyId}/{instanceGuid}/dataelements/{dataGuid}`,
-            name: `${this.FULL_PATH}/instances/{instanceOwnerPartyId}/{instanceGuid}/dataelements/{dataGuid}`,
-            action: TAGS.UpdateDataElement.action,
-        };
-
-        return http.put(url, JSON.stringify(request), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-                "Content-Type": "application/json",
-            },
-        });
+    UpdateDataElement(instanceOwnerPartyId, instanceGuid, dataGuid, request, versionMatch = null, labels = null) {
+        return http.put(
+            `${this.FULL_PATH}/instances/${instanceOwnerPartyId}/${instanceGuid}/dataelements/${dataGuid}`,
+            jsonBody(request),
+            requestParams({
+                endpoint: `${this.FULL_PATH}/instances/{instanceOwnerPartyId}/{instanceGuid}/dataelements/{dataGuid}`,
+                action: TAGS.UpdateDataElement.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+                json: true,
+                headers: versionMatchHeaders(versionMatch),
+            }),
+        );
     }
 
     /**
@@ -292,25 +263,17 @@ class DataClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     UpdateFileScanStatus(instanceOwnerPartyId, instanceGuid, dataGuid, request, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}/instances/${instanceOwnerPartyId}/${instanceGuid}/dataelements/${dataGuid}/filescanstatus`;
-
-        const tags = {
-            ...labels,
-            endpoint: `${this.FULL_PATH}/instances/{instanceOwnerPartyId}/{instanceGuid}/dataelements/{dataGuid}/filescanstatus`,
-            name: `${this.FULL_PATH}/instances/{instanceOwnerPartyId}/{instanceGuid}/dataelements/{dataGuid}/filescanstatus`,
-            action: TAGS.UpdateFileScanStatus.action,
-        };
-
-        return http.put(url, JSON.stringify(request), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-                "Content-Type": "application/json",
-            },
-        });
+        return http.put(
+            `${this.FULL_PATH}/instances/${instanceOwnerPartyId}/${instanceGuid}/dataelements/${dataGuid}/filescanstatus`,
+            jsonBody(request),
+            requestParams({
+                endpoint: `${this.FULL_PATH}/instances/{instanceOwnerPartyId}/{instanceGuid}/dataelements/{dataGuid}/filescanstatus`,
+                action: TAGS.UpdateFileScanStatus.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+                json: true,
+            }),
+        );
     }
 }
 

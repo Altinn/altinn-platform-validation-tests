@@ -1,24 +1,54 @@
-import { expect, Page } from "@playwright/test";
-import { baseUrls, TestUser } from "../../config/environment";
+import { expect, Locator, Page } from "@playwright/test";
+
+import { TestUser } from "../../config/environment";
 import { Sprak } from "../../config/sprak";
-import { Seksjon, seksjonsnavn } from "./seksjoner";
-import { Meny } from "../felles/meny";
-import { gaaTil } from "../felles/navigasjon";
+import { CookiebannerPom } from "../felles/cookiebanner";
+import { MenyPom } from "../felles/meny";
 import { assertFlateUtlogget } from "../felles/utlogget";
-import { Side } from "../side";
+import { TilgangsstyringBrukerePom } from "./brukere";
 
-export class TilgangsstyringForside implements Side {
-    readonly url = `${baseUrls.tilgangsstyring}/accessmanagement/ui`;
+// Brukes også av `InnloggingPom`, så stien står ett sted.
+export const tilgangsstyringUrl = (tilgangsstyring: string) => `${tilgangsstyring}/accessmanagement/ui`;
 
-    // Språket kommer fra fixturen, så assertions slipper å ta det som argument.
+export class TilgangsstyringForsidePom {
+    readonly url: string;
+
+    // Lenkene i sidemenyen finnes på href, som er den samme uansett språk. Navnet
+    // får en teller når brukeren har ubehandlede forespørsler, og sidemenyen har
+    // ingen test-id-er. Stiene er fra amUIPath i tilgangsstyring.
+    readonly sidemeny: Locator;
+    readonly foresporslerLink: Locator;
+    readonly brukereLink: Locator;
+    readonly fullmakterLink: Locator;
+    readonly fullmakterHosAndreLink: Locator;
+    readonly samtykkeOgFullmaktsavtalerLink: Locator;
+
+    readonly brukere: TilgangsstyringBrukerePom;
+
     constructor(
         private page: Page,
-        private sprak: Sprak,
-        private meny = new Meny(page),
-    ) { }
+        tilgangsstyring: string,
+        sprak: Sprak,
+        readonly meny = new MenyPom(page),
+        readonly cookiebanner = new CookiebannerPom(page),
+    ) {
+        this.url = tilgangsstyringUrl(tilgangsstyring);
+
+        this.sidemeny = page.getByRole("complementary");
+        // Lenken i sidemenyen til en side i tilgangsstyring, gitt stien etter
+        // /accessmanagement/ui/, for eksempel "users" for Brukere.
+        const sidemenyLenkeTil = (sti: string) => this.sidemeny.locator(`a[href="/accessmanagement/ui/${sti}"]`);
+        this.foresporslerLink = sidemenyLenkeTil("requests");
+        this.brukereLink = sidemenyLenkeTil("users");
+        this.fullmakterLink = sidemenyLenkeTil("poa-overview");
+        this.fullmakterHosAndreLink = sidemenyLenkeTil("received-from");
+        this.samtykkeOgFullmaktsavtalerLink = sidemenyLenkeTil("consent/active");
+
+        this.brukere = new TilgangsstyringBrukerePom(page, sprak);
+    }
 
     async navigateTo() {
-        await gaaTil(this.page, this.url);
+        await this.page.goto(this.url, { waitUntil: "commit" });
     }
 
     // Flatene bak innlogging svarer likt for en utlogget bruker, så påstanden
@@ -30,30 +60,7 @@ export class TilgangsstyringForside implements Side {
     async assertLoggedIn() {
         await this.meny.assertLoggedIn();
 
-        // Brukere-lenken i sidemenyen finnes på alle tilgangsstyringssidene, og
-        // href-en er den samme uansett språk.
-        await expect(
-            this.page.getByRole('complementary').locator('a[href="/accessmanagement/ui/users"]'),
-            'Tilgangsstyringens sidemeny vises'
-        ).toBeVisible();
+        await expect(this.brukereLink, "Tilgangsstyringens sidemeny vises").toBeVisible();
     }
 
-    /**
-     * Sjekker at nøyaktig de forventede seksjonene vises i sidemenyen. Hvilke det
-     * er avhenger av brukerens tilganger, så testen sier hva den forventer.
-     */
-    async assertSections(forventet: Seksjon[]) {
-        const sidebar = this.page.getByRole('complementary');
-        const navn = seksjonsnavn[this.sprak];
-
-        for (const seksjon of Object.values(Seksjon)) {
-            const lenke = sidebar.getByLabel(navn[seksjon], { exact: true }).first();
-
-            if (forventet.includes(seksjon)) {
-                await expect(lenke, `Seksjonen "${navn[seksjon]}" vises`).toBeVisible();
-            } else {
-                await expect(lenke, `Seksjonen "${navn[seksjon]}" vises ikke`).toBeHidden();
-            }
-        }
-    }
 }

@@ -1,4 +1,4 @@
-import { BaseCorrespondenceExt, CorrespondenceQuery, CorrespondenceReplyOptionExt, CorrespondencesRoleType, CorrespondenceStatusExt, CustomNotificationRecipientExt, EmailContentType, ExternalReferenceExt, InitializeCorrespondenceContentExt, InitializeCorrespondenceNotificationExt, InitializeCorrespondencesExt, NotificationChannelExt, NotificationRecipientExt, NotificationTemplateExt } from "./correspondence.types.js";
+import { BaseCorrespondenceExt, CorrespondenceQuery, CorrespondenceReplyOptionExt, CorrespondencesRoleType, CorrespondenceStatusExt, CustomNotificationRecipientExt, EmailContentType, ExternalReferenceExt, ForwardCorrespondenceRequestExt, InitializeCorrespondenceContentExt, InitializeCorrespondenceNotificationExt, InitializeCorrespondencesExt, NotificationChannelExt, NotificationRecipientExt, NotificationTemplateExt } from "./correspondence.types.js";
 
 /**
  * Builder for CorrespondenceQuery.
@@ -367,6 +367,15 @@ class BaseCorrespondenceBuilder {
     }
 
     /**
+     * @param {boolean} value Whether the recipient may forward the correspondence.
+     * @returns {BaseCorrespondenceBuilder} This builder, for chaining.
+     */
+    withAllowForwarding(value) {
+        this.model.allowForwarding = value;
+        return this;
+    }
+
+    /**
      * @returns {BaseCorrespondenceExt} The built payload.
      */
     build() {
@@ -402,6 +411,7 @@ class BaseCorrespondenceBuilder {
             ignoreReservation: this.model.ignoreReservation,
             isConfirmationNeeded: this.model.isConfirmationNeeded,
             isConfidential: this.model.isConfidential,
+            allowForwarding: this.model.allowForwarding,
         };
     }
 }
@@ -572,6 +582,7 @@ class NotificationBuilder {
     /**
      * @param {Array<CustomNotificationRecipientExt>} recipients See the client method.
      * @returns {NotificationBuilder} This builder, for chaining.
+     * @deprecated Use withCustomRecipient or withCustomRecipients with NotificationRecipientExt payloads.
      */
     withCustomNotificationRecipients(recipients) {
         this.model.customNotificationRecipients = recipients;
@@ -584,6 +595,15 @@ class NotificationBuilder {
      */
     withOverrideRegisteredContactInformation(override) {
         this.model.overrideRegisteredContactInformation = override;
+        return this;
+    }
+
+    /**
+     * @param {boolean} useStale Whether person recipients are notified using KRR contact information that has not been verified within the last 18 months. Only intended for service messages.
+     * @returns {NotificationBuilder} This builder, for chaining.
+     */
+    withUseStaleContactInformation(useStale) {
+        this.model.useStaleContactInformation = useStale;
         return this;
     }
 
@@ -678,13 +698,52 @@ class NotificationBuilder {
                 this.model.customNotificationRecipients,
             overrideRegisteredContactInformation:
                 this.model.overrideRegisteredContactInformation,
+            useStaleContactInformation: this.model.useStaleContactInformation,
         };
+    }
+}
+
+/**
+ * Builder for the correspondence forwarding payload.
+ */
+class ForwardCorrespondenceRequestBuilder {
+    /**
+     * @param {string} forwardTo Recipient email address.
+     */
+    constructor(forwardTo) {
+        this.request = /** @type {ForwardCorrespondenceRequestExt} */ ({ forwardTo });
+    }
+
+    /**
+     * @param {string|null} forwardingText Text accompanying the forwarded correspondence.
+     * @returns {ForwardCorrespondenceRequestBuilder} This builder, for chaining.
+     */
+    withForwardingText(forwardingText) {
+        this.request.forwardingText = forwardingText;
+        return this;
+    }
+
+    /**
+     * @param {boolean} includeAttachments Whether to include the attachments in the forwarded correspondence.
+     * @returns {ForwardCorrespondenceRequestBuilder} This builder, for chaining.
+     */
+    withIncludeAttachments(includeAttachments) {
+        this.request.includeAttachments = includeAttachments;
+        return this;
+    }
+
+    /**
+     * @returns {ForwardCorrespondenceRequestExt} The built payload.
+     */
+    build() {
+        return { ...this.request };
     }
 }
 
 export {
     BaseCorrespondenceBuilder,
     CorrespondenceQueryBuilder,
+    ForwardCorrespondenceRequestBuilder,
     InitializeCorrespondencesBuilder,
     NotificationBuilder
 };

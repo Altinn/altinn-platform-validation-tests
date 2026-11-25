@@ -1,0 +1,41 @@
+import { test } from "../../fixtures/test";
+
+test("Cookiebanneret vises på arbeidsflate for en ny sesjon", { tag: ["@at23", "@tt02", "@prod"] }, async ({
+    innlogging,
+    user,
+    arbeidsflate,
+}) => {
+    await innlogging.loggInnViaArbeidsflate(user);
+    await arbeidsflate.assertLoggedIn();
+    await arbeidsflate.cookiebanner.assertVisible();
+});
+
+test("Cookiebanneret vises på profilen for en ny sesjon", { tag: ["@at23", "@tt02", "@prod"] }, async ({
+    innlogging,
+    user,
+    arbeidsflate,
+    arbeidsflateProfil,
+}) => {
+    await innlogging.loggInnViaArbeidsflate(user);
+    await arbeidsflate.meny.gaTilProfil();
+    await arbeidsflateProfil.assertLoggedIn();
+    await arbeidsflateProfil.cookiebanner.assertVisible();
+});
+
+// Tilgangsstyring mangler banneret i prod.
+test("Cookiebanneret vises på tilgangsstyring for en ny sesjon", { tag: ["@at23", "@tt02"] }, async ({
+    innlogging,
+    user,
+    tilgangsstyring,
+}) => {
+    await innlogging.loggInnViaTilgangsstyring(user);
+    await tilgangsstyring.assertLoggedIn();
+    await tilgangsstyring.cookiebanner.assertVisible();
+});
+
+test("Cookiebanneret vises på infoportalen for en ny sesjon", { tag: ["@at23", "@tt02", "@prod"] }, async ({
+    infoportal,
+}) => {
+    await infoportal.navigateTo();
+    await infoportal.cookiebanner.assertVisible();
+});

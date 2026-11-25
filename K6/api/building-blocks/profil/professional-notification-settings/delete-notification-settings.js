@@ -1,18 +1,19 @@
 import { check } from "k6";
 
 import { ProfessionalNotificationSettingsClient } from "../../../../clients/profil/professional-notification-settings/index.js";
-import { NotificationSettingsResponse } from "../../../../clients/profil/professional-notification-settings/professional-notification-settings.types.js";
 import { withRetries } from "../../common/retry.js";
 
 /**
  * Deletes notification settings for a party.
+ *
+ * The API answers 200 with an empty body.
  *
  * @param {ProfessionalNotificationSettingsClient} professionalNotificationSettingsClient
  * Client for the Professional Notification Settings API.
  * @param {string} partyUuid Party UUID.
  * @param {{[key: string]: string}|null} [labels]
  * Optional k6 request labels.
- * @returns {NotificationSettingsResponse|null} Parsed response body, or null when the call failed.
+ * @returns {boolean} Whether the settings were deleted.
  */
 export function DeleteNotificationSettings(
     professionalNotificationSettingsClient,
@@ -27,9 +28,6 @@ export function DeleteNotificationSettings(
         "DeleteNotificationSettings",
     );
 
-    /** @type {NotificationSettingsResponse|null} */
-    let settings = null;
-
     const succeed = check(res, {
         "DeleteNotificationSettings - status code is 200": (r) =>
             r.status === 200,
@@ -38,23 +36,7 @@ export function DeleteNotificationSettings(
     if (!succeed) {
         console.log(res.status);
         console.log(res.body);
-        return settings;
     }
 
-    check(res, {
-        "DeleteNotificationSettings - body is valid": (r) => {
-            try {
-                settings = JSON.parse(r.body);
-
-                return true;
-            } catch (err) {
-                console.log("Unable to parse response body");
-                console.log(r.body);
-
-                return false;
-            }
-        },
-    });
-
-    return settings;
+    return succeed;
 }

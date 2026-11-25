@@ -479,6 +479,7 @@ export const AccessListInfoDtoPaginated = undefined;
 export const AccessListMembershipDtoAggregateVersionVersionedPaginated = undefined;
 export const AccessListMembershipsQuery = undefined;
 export const AccessListPagedQuery = undefined;
+export const AccessListResourceConnectionDto = undefined;
 export const AccessListResourceConnectionDtoAggregateVersionVersionedPaginated = undefined;
 export const AccessListResourceConnectionWithVersionDto = undefined;
 export const AccessListResourceMembershipWithActionFilterDtoListObject = undefined;

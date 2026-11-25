@@ -1,5 +1,3 @@
-import { Page } from "@playwright/test";
-
 /**
  * Hvor lenge en flate får på å komme til rette etter en utlogging. Playwrights
  * standard på fem sekunder er for kort: flaten omdirigerer noen ganger til ID-porten
@@ -9,37 +7,12 @@ import { Page } from "@playwright/test";
 export const REDIRECT_TIMEOUT = 20_000;
 
 /**
- * Går til en URL, og lar `net::ERR_ABORTED` få et nytt forsøk.
- *
- * Flatene avbryter av og til navigeringen med `net::ERR_ABORTED` uten at siden
- * faktisk feiler. Det skjer særlig når en utlogget bruker går til en flate bak
- * innlogging: serveren svarer med en omdirigering samtidig som siden begynner å
- * laste, og da ryker navigeringen selv om neste forsøk går rett inn. Alle andre
- * feil kastes videre med en gang, siden de sier noe ekte om flaten.
- *
- * Tallene er valgt slik at forsøkene rekker å bli ferdige før testen selv gir opp:
- * to forsøk à 20 sekunder er 40, mens en test har 60. Tre forsøk à 30 ville vart
- * lenger enn testen, og da hadde en treg flate blitt rapportert som en test-timeout
- * uten spor av hva navigeringen ventet på. Infoportalen sender inn sitt eget tak.
- *
- * @param page Siden som skal navigere.
- * @param url URLen den skal til.
- * @param timeout Hvor lenge hvert forsøk får bruke.
- * @param maxAttempts Hvor mange forsøk den får.
+ * Hvor lenge innboksen får på å vise en ny fullmakt eller et nytt utkast. Dialogporten
+ * mellomlagrer aktørene til en bruker i 15 minutter uten å tømme cachen når fullmakter
+ * endres, så en ny fullmakt vises først etter rundt 12 minutter. Det er en kjent feil,
+ * ikke forventet oppførsel, og en test som må vente så lenge, er for treg og ustabil
+ * til å si noe om bruksmønsteret, se #695. Siden lastes på nytt mellom hvert forsøk,
+ * derfor ikke for ofte.
  */
-export async function gaaTil(page: Page, url: string, timeout = 20_000, maxAttempts = 2) {
-    for (let attempt = 1; attempt <= maxAttempts; attempt++) {
-        try {
-            await page.goto(url, { timeout });
-            return;
-        } catch (error) {
-            const message = error instanceof Error ? error.message : String(error);
-
-            if (!message.includes('net::ERR_ABORTED') || attempt === maxAttempts) {
-                throw error;
-            }
-
-            console.warn(`Navigering avbrutt (${attempt}/${maxAttempts}): ${url}`);
-        }
-    }
-}
+export const DIALOGPORTEN_TIMEOUT = 16 * 60_000;
+export const DIALOGPORTEN_INTERVALLER = [5_000, 10_000, 15_000];

@@ -25,6 +25,7 @@
  * @property {Record<string, string|null>|null} description
  * @property {AppMetadataAccess|null} access
  * @property {Array<AppMetadataContactPoint>|null} contactPoints
+ * @property {AppStatus} status
  * @property {string|null} created
  * @property {string|null} createdBy
  * @property {string|null} lastChanged
@@ -37,11 +38,15 @@
  */
 
 /**
+ * @typedef {"Completed"|"Deprecated"|"UnderDevelopment"|"Withdrawn"} AppStatus
+ */
+
+/**
  * @typedef {object} DataType
  * @property {string|null} id
  * @property {{[key: string]: string}|null} description
  * @property {Array<string>|null} allowedContentTypes
- * @property {Array<string>|null} allowedContributers
+ * @property {Array<string>|null} allowedContributers Deprecated in Swagger; use allowedContributors.
  * @property {Array<string>|null} allowedContributors
  * @property {string|null} actionRequiredToRead
  * @property {string|null} actionRequiredToWrite
@@ -51,7 +56,7 @@
  * @property {number} maxCount
  * @property {number} minCount
  * @property {string|null} grouping
- * @property {boolean} enablePdfCreation
+ * @property {boolean|null} enablePdfCreation Deprecated in Swagger.
  * @property {boolean} enableFileScan
  * @property {boolean} validationErrorOnPendingFileScan
  * @property {Array<string>|null} enabledFileAnalysers
@@ -76,7 +81,6 @@
  * @property {boolean} autoDeleteOnProcessEnd
  * @property {boolean} disallowUserCreate
  * @property {boolean} disallowUserDelete
- * @property {boolean} allowInSubform
  * @property {ShadowFields|null} shadowFields
  */
 
@@ -124,6 +128,9 @@
  * @property {Array<string>|null} excludedDataTypes
  * @property {Array<string>|null} excludedDataFields
  * @property {boolean} includeAttachments
+ * @property {boolean} includeDueBefore
+ * @property {Array<string>|null} includedDataValues
+ * @property {Array<string>|null} includedPresentationTexts
  */
 
 /**
@@ -212,6 +219,7 @@
 // Runtime exports for VS Code autocomplete/imports.
 export const Application = {};
 export const ApplicationList = {};
+export const AppStatus = {};
 export const DataType = {};
 export const PartyTypesAllowed = {};
 export const ApplicationLogic = {};

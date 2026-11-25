@@ -102,6 +102,3 @@ export default function (data) {
 export function teardown(data) {
     cleanupArranged(data);
 }
-
-// add the custom reporting for this test to the default summary
-export { handleSummary } from "../../../../common-imports.js";

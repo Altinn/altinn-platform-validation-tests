@@ -1,6 +1,8 @@
 import http from "k6/http";
 
+import { jsonBody, requestParams } from "../common/request.js";
 import { SignRequest } from "./instances.types.js";
+import { VersionMatch, versionMatchHeaders } from "./version-match.js";
 
 const TAGS = {
     SignInstance: {
@@ -44,29 +46,23 @@ class SignClient {
      * @param {number} instanceOwnerPartyId Instance owner party id.
      * @param {string} instanceGuid Instance UUID.
      * @param {SignRequest} request Signature request.
+     * @param {VersionMatch|null} [versionMatch] Instance and process-state versions the write is conditioned on.
      * @param {{[key:string]:string}|null} [labels] Optional k6 request labels.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
-    SignInstance(instanceOwnerPartyId, instanceGuid, request, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}/instances/${instanceOwnerPartyId}/${instanceGuid}/sign`;
-
-        const tags = {
-            ...labels,
-            endpoint: `${this.FULL_PATH}/instances/{instanceOwnerPartyId}/{instanceGuid}/sign`,
-            name: `${this.FULL_PATH}/instances/{instanceOwnerPartyId}/{instanceGuid}/sign`,
-            action: TAGS.SignInstance.action,
-        };
-
-        return http.post(url, JSON.stringify(request), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-                "Content-Type": "application/json",
-            },
-        });
+    SignInstance(instanceOwnerPartyId, instanceGuid, request, versionMatch = null, labels = null) {
+        return http.post(
+            `${this.FULL_PATH}/instances/${instanceOwnerPartyId}/${instanceGuid}/sign`,
+            jsonBody(request),
+            requestParams({
+                endpoint: `${this.FULL_PATH}/instances/{instanceOwnerPartyId}/{instanceGuid}/sign`,
+                action: TAGS.SignInstance.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+                json: true,
+                headers: versionMatchHeaders(versionMatch),
+            }),
+        );
     }
 }
 

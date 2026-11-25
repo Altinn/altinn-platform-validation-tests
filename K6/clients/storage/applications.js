@@ -1,13 +1,10 @@
 import http from "k6/http";
 
-import { Application } from "./applications.types.js";
+import { requestParams } from "../common/request.js";
 
 const TAGS = {
     GetApplications: {
         action: "get-applications",
-    },
-    CreateApplication: {
-        action: "create-application",
     },
     GetApplicationsByOrg: {
         action: "get-applications-by-org",
@@ -15,14 +12,13 @@ const TAGS = {
     GetApplication: {
         action: "get-application",
     },
-    UpdateApplication: {
-        action: "update-application",
-    },
-    DeleteApplication: {
-        action: "delete-application",
-    },
 };
 
+/**
+ * Client for the Applications API. Read only: the swagger no longer lists the
+ * create, update and delete operations, which are Studio Designer's and take a
+ * platform token this repository does not have.
+ */
 class ApplicationsClient {
     /**
      * Creates a client for the Applications API.
@@ -63,61 +59,14 @@ class ApplicationsClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetApplications(labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}/applications`;
-
-        const tags = {
-            ...labels,
-            endpoint: `${this.FULL_PATH}/applications`,
-            name: `${this.FULL_PATH}/applications`,
-            action: TAGS.GetApplications.action,
-        };
-
-        return http.get(url, {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
-    }
-
-    /**
-     * Create application metadata.
-     *
-     * @param {string|null} appId Application identifier.
-     * @param {Application} application Application metadata.
-     * @param {{[key:string]:string}|null} labels Optional k6 request labels.
-     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
-     */
-    CreateApplication(appId, application, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(`${this.FULL_PATH}/applications`);
-
-        if (appId !== null && appId !== undefined) {
-            url.searchParams.append("appId", appId);
-        }
-
-        const tags = {
-            ...labels,
-            endpoint: `${this.FULL_PATH}/applications`,
-            name: `${this.FULL_PATH}/applications`,
-            action: TAGS.CreateApplication.action,
-        };
-
-        return http.post(
-            url.toString(),
-            JSON.stringify(application),
-            {
-                tags,
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    Accept: "application/json",
-                    "Content-Type": "application/json",
-                },
-            },
+        return http.get(
+            `${this.FULL_PATH}/applications`,
+            requestParams({
+                endpoint: `${this.FULL_PATH}/applications`,
+                action: TAGS.GetApplications.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
         );
     }
 
@@ -129,24 +78,15 @@ class ApplicationsClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetApplicationsByOrg(org, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}/applications/${org}`;
-
-        const tags = {
-            ...labels,
-            endpoint: `${this.FULL_PATH}/applications/{org}`,
-            name: `${this.FULL_PATH}/applications/{org}`,
-            action: TAGS.GetApplicationsByOrg.action,
-        };
-
-        return http.get(url, {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.get(
+            `${this.FULL_PATH}/applications/${org}`,
+            requestParams({
+                endpoint: `${this.FULL_PATH}/applications/{org}`,
+                action: TAGS.GetApplicationsByOrg.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 
     /**
@@ -158,95 +98,15 @@ class ApplicationsClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetApplication(org, app, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}/applications/${org}/${app}`;
-
-        const tags = {
-            ...labels,
-            endpoint: `${this.FULL_PATH}/applications/{org}/{app}`,
-            name: `${this.FULL_PATH}/applications/{org}/{app}`,
-            action: TAGS.GetApplication.action,
-        };
-
-        return http.get(url, {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
-    }
-
-    /**
-     * Update application metadata.
-     *
-     * @param {string} org Organization identifier.
-     * @param {string} app Application identifier.
-     * @param {Application} application Application metadata.
-     * @param {{[key:string]:string}|null} labels Optional k6 request labels.
-     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
-     */
-    UpdateApplication(org, app, application, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}/applications/${org}/${app}`;
-
-        const tags = {
-            ...labels,
-            endpoint: `${this.FULL_PATH}/applications/{org}/{app}`,
-            name: `${this.FULL_PATH}/applications/{org}/{app}`,
-            action: TAGS.UpdateApplication.action,
-        };
-
-        return http.put(
-            url,
-            JSON.stringify(application),
-            {
-                tags,
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    Accept: "application/json",
-                    "Content-Type": "application/json",
-                },
-            },
-        );
-    }
-
-    /**
-     * Delete application metadata.
-     *
-     * @param {string} org Organization identifier.
-     * @param {string} app Application identifier.
-     * @param {boolean|null} hard Permanently delete.
-     * @param {{[key:string]:string}|null} labels Optional k6 request labels.
-     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
-     */
-    DeleteApplication(org, app, hard = null, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(
+        return http.get(
             `${this.FULL_PATH}/applications/${org}/${app}`,
+            requestParams({
+                endpoint: `${this.FULL_PATH}/applications/{org}/{app}`,
+                action: TAGS.GetApplication.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
         );
-
-        if (hard !== null && hard !== undefined) {
-            url.searchParams.append("hard", String(hard));
-        }
-
-        const tags = {
-            ...labels,
-            endpoint: `${this.FULL_PATH}/applications/{org}/{app}`,
-            name: `${this.FULL_PATH}/applications/{org}/{app}`,
-            action: TAGS.DeleteApplication.action,
-        };
-
-        return http.del(url.toString(), null, {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
     }
 }
 

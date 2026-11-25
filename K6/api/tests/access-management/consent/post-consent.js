@@ -65,7 +65,7 @@ export default function (data) {
     const person = randomItem(data.persons);
 
     consenteeTokenGenerator.setTokenGeneratorOptions(getConsenteeTokenOpts(org.orgNo));
-    consenterTokenGenerator.setTokenGeneratorOptions(getConsenterTokenOpts(person.partyUuid));
+    consenterTokenGenerator.setTokenGeneratorOptions(getConsenterTokenOpts(person));
 
     const consentId = uuidv4();
     const from = personUrn(person.ssn);
@@ -139,6 +139,3 @@ export default function (data) {
         });
     });
 }
-
-// add the custom reporting for this test to the default summary
-export { handleSummary } from "../../../../common-imports.js";

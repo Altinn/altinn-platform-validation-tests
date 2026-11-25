@@ -24,6 +24,10 @@ import {
 
 const DEFAULT_ATTACHMENT_SIZE_BYTES = 50 * 1024;
 const DEFAULT_MAX_ITEMS_PER_ITERATION = 20;
+// The recipient logs in like an ID-porten user at level high (TestID). Since
+// 2026-11-18 the bruno-correspondence policy in at23 requires level 4, and the
+// token generator issues level 3 unless told otherwise.
+const RECIPIENT_AUTH_LEVEL = 4;
 
 /**
  * Builds options for the Correspondence validation and performance tests.
@@ -322,6 +326,7 @@ export function getRecipientClient(endUser) {
         .withUserId(endUser.userId)
         .withPartyId(endUser.userPartyId)
         .withPartyUuid(endUser.partyUuid)
+        .withAuthLevel(RECIPIENT_AUTH_LEVEL)
         .build();
 
     if (recipientClient === undefined || recipientTokenGenerator === undefined) {
@@ -353,6 +358,7 @@ export function getDialogportenClient(endUser) {
         .withUserId(endUser.userId)
         .withPartyId(endUser.userPartyId)
         .withPartyUuid(endUser.partyUuid)
+        .withAuthLevel(RECIPIENT_AUTH_LEVEL)
         .build();
 
     if (dialogportenClient === undefined || dialogportenTokenGenerator === undefined) {

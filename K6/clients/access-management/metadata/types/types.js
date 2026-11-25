@@ -1,5 +1,7 @@
 import http from "k6/http";
 
+import { requestParams } from "../../../common/request.js";
+
 const TAGS = {
     TypesGetOrganizationSubTypes: {
         action: "types-get-organization-sub-types",
@@ -40,30 +42,15 @@ class TypesClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     TypesGetOrganizationSubTypes(labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}/meta/types/organization/subtypes`;
-
-        let tags = {
-            endpoint: url,
-            name: url,
-            action: TAGS.TypesGetOrganizationSubTypes.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url, {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.get(
+            `${this.FULL_PATH}/meta/types/organization/subtypes`,
+            requestParams({
+                endpoint: `${this.FULL_PATH}/meta/types/organization/subtypes`,
+                action: TAGS.TypesGetOrganizationSubTypes.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 }
 

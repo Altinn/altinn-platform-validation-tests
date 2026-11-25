@@ -5,8 +5,8 @@ import { AddressVerificationClient } from "../../../../clients/profil/address-ve
 import { withRetries } from "../../common/retry.js";
 
 /**
- * Resets the verification process for the current user and the given address
- * by regenerating and sending a new verification code.
+ * Sends a new verification code after the server's cooldown has elapsed.
+ * Uses the same send endpoint as the initial verification request.
  *
  * @param {AddressVerificationClient} addressVerificationClient Client for the Address Verification API.
  * @param {AddressCodeResendRequest} request

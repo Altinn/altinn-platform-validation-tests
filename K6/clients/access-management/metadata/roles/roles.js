@@ -1,5 +1,6 @@
 import http from "k6/http";
 
+import { buildUrl, requestParams } from "../../../common/request.js";
 import { RolesGetRolePackagesByIdQuery, RolesGetRolePackagesQuery, RolesGetRoleResourcesByIdQuery, RolesGetRoleResourcesQuery } from "./roles.types.js";
 
 const TAGS = {
@@ -57,30 +58,15 @@ class RolesClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     RolesGetRoles(labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}/meta/info/roles`;
-
-        let tags = {
-            endpoint: url,
-            name: url,
-            action: TAGS.RolesGetRoles.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url, {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.get(
+            `${this.FULL_PATH}/meta/info/roles`,
+            requestParams({
+                endpoint: `${this.FULL_PATH}/meta/info/roles`,
+                action: TAGS.RolesGetRoles.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 
     /**
@@ -92,30 +78,15 @@ class RolesClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     RolesGetRole(id, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}/meta/info/roles/${id}`;
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/meta/info/roles/{id}`,
-            name: `${this.FULL_PATH}/meta/info/roles/{id}`,
-            action: TAGS.RolesGetRole.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url, {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.get(
+            `${this.FULL_PATH}/meta/info/roles/${id}`,
+            requestParams({
+                endpoint: `${this.FULL_PATH}/meta/info/roles/{id}`,
+                action: TAGS.RolesGetRole.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 
     /**
@@ -128,59 +99,15 @@ class RolesClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     RolesGetRolePackages(query, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        let url = `${this.FULL_PATH}/meta/info/roles/packages`;
-
-        if (query !== null) {
-            const params = /** @type {string[]} */ ([]);
-
-            Object.entries(query).forEach(([key, value]) => {
-
-                if (value === undefined || value === null) {
-                    return;
-                }
-
-                if (Array.isArray(value)) {
-                    value.forEach((item) => {
-                        params.push(
-                            `${encodeURIComponent(key)}=${encodeURIComponent(item)}`,
-                        );
-                    });
-
-                    return;
-                }
-
-                params.push(
-                    `${encodeURIComponent(key)}=${encodeURIComponent(value)}`,
-                );
-            });
-
-            if (params.length > 0) {
-                url = `${url}?${params.join("&")}`;
-            }
-        }
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/meta/info/roles/{id}`,
-            name: `${this.FULL_PATH}/meta/info/roles/{id}`,
-            action: TAGS.RolesGetRolePackages.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url, {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.get(
+            buildUrl(`${this.FULL_PATH}/meta/info/roles/packages`, query),
+            requestParams({
+                endpoint: `${this.FULL_PATH}/meta/info/roles/{id}`,
+                action: TAGS.RolesGetRolePackages.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 
     /**
@@ -193,59 +120,15 @@ class RolesClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     RolesGetRoleResources(query, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        let url = `${this.FULL_PATH}/meta/info/roles/resources`;
-
-        if (query !== null) {
-            const params = /** @type {string[]} */ ([]);
-
-            Object.entries(query).forEach(([key, value]) => {
-
-                if (value === undefined || value === null) {
-                    return;
-                }
-
-                if (Array.isArray(value)) {
-                    value.forEach((item) => {
-                        params.push(
-                            `${encodeURIComponent(key)}=${encodeURIComponent(item)}`,
-                        );
-                    });
-
-                    return;
-                }
-
-                params.push(
-                    `${encodeURIComponent(key)}=${encodeURIComponent(value)}`,
-                );
-            });
-
-            if (params.length > 0) {
-                url = `${url}?${params.join("&")}`;
-            }
-        }
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/meta/info/roles/{id}`,
-            name: `${this.FULL_PATH}/meta/info/roles/{id}`,
-            action: TAGS.RolesGetRoleResources.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url, {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.get(
+            buildUrl(`${this.FULL_PATH}/meta/info/roles/resources`, query),
+            requestParams({
+                endpoint: `${this.FULL_PATH}/meta/info/roles/{id}`,
+                action: TAGS.RolesGetRoleResources.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 
     /**
@@ -259,49 +142,15 @@ class RolesClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     RolesGetRolePackagesById(id, query, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        let url = `${this.FULL_PATH}/meta/info/roles/${id}/packages`;
-
-        if (query !== null) {
-            const params = /** @type {string[]} */ ([]);
-
-            Object.entries(query).forEach(([key, value]) => {
-
-                if (value === undefined || value === null) {
-                    return;
-                }
-
-                params.push(
-                    `${encodeURIComponent(key)}=${encodeURIComponent(value)}`,
-                );
-            });
-
-            if (params.length > 0) {
-                url = `${url}?${params.join("&")}`;
-            }
-        }
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/meta/info/roles/{id}`,
-            name: `${this.FULL_PATH}/meta/info/roles/{id}`,
-            action: TAGS.RolesGetRolePackagesById.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url, {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.get(
+            buildUrl(`${this.FULL_PATH}/meta/info/roles/${id}/packages`, query),
+            requestParams({
+                endpoint: `${this.FULL_PATH}/meta/info/roles/{id}`,
+                action: TAGS.RolesGetRolePackagesById.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 
     /**
@@ -315,49 +164,15 @@ class RolesClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     RolesGetRoleResourcesById(id, query, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        let url = `${this.FULL_PATH}/meta/info/roles/${id}/resources`;
-
-        if (query !== null) {
-            const params = /** @type {string[]} */ ([]);
-
-            Object.entries(query).forEach(([key, value]) => {
-
-                if (value === undefined || value === null) {
-                    return;
-                }
-
-                params.push(
-                    `${encodeURIComponent(key)}=${encodeURIComponent(value)}`,
-                );
-            });
-
-            if (params.length > 0) {
-                url = `${url}?${params.join("&")}`;
-            }
-        }
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/meta/info/roles/{id}`,
-            name: `${this.FULL_PATH}/meta/info/roles/{id}`,
-            action: TAGS.RolesGetRoleResourcesById.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url, {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.get(
+            buildUrl(`${this.FULL_PATH}/meta/info/roles/${id}/resources`, query),
+            requestParams({
+                endpoint: `${this.FULL_PATH}/meta/info/roles/{id}`,
+                action: TAGS.RolesGetRoleResourcesById.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 }
 

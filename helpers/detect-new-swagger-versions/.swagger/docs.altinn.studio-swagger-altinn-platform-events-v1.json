@@ -1,0 +1,1139 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "Altinn Platform Events",
+    "version": "v1"
+  },
+  "servers": [
+    {
+      "url": "https://platform.tt02.altinn.no/events/api/v1",
+      "description": "TT02"
+    },
+    {
+      "url": "https://platform.altinn.no/events/api/v1",
+      "description": "Production"
+    }
+  ],
+  "paths": {
+    "/app": {
+      "post": {
+        "tags": [
+          "App"
+        ],
+        "summary": "Inserts a new event.",
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "description": "Optional idempotency key (GUID) used to detect and skip duplicate submissions.",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "The cloud event request model.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AppCloudEventRequestModel"
+              },
+              "examples": {
+                "Instance created event with alternative subject": {
+                  "value": {
+                    "resource": "urn:altinn:resource:app_ttd_apps-test",
+                    "resourceinstance": "50015641/a72223a3-926b-4095-a2a6-bacc10815f2d",
+                    "source": "https://ttd.apps.altinn.no/ttd/apps-test/instances/50015641/a72223a3-926b-4095-a2a6-bacc10815f2d",
+                    "specversion": "1.0",
+                    "type": "app.instance.created",
+                    "subject": "/party/50015641",
+                    "alternativesubject": "/person/01017512345"
+                  }
+                },
+                "Instance created event without alternative subject": {
+                  "value": {
+                    "resource": "urn:altinn:resource:app_ttd_apps-test",
+                    "resourceinstance": "50067592/f3c92d96-0eb3-4532-a16f-bcafd94bde3a",
+                    "source": "https://ttd.apps.altinn.no/ttd/apps-test/instances/50067592/f3c92d96-0eb3-4532-a16f-bcafd94bde3a",
+                    "specversion": "1.0",
+                    "type": "app.instance.created",
+                    "subject": "/party/50067592"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "uuid"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/app/{org}/{app}": {
+      "get": {
+        "tags": [
+          "App"
+        ],
+        "summary": "Retrieves a set of events related to an application owner based on query parameters.",
+        "parameters": [
+          {
+            "name": "org",
+            "in": "path",
+            "description": "The application owner acronym",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "app",
+            "in": "path",
+            "description": "The name of the app",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "after",
+            "in": "query",
+            "description": "Id of the latter even that should be included",
+            "schema": {
+              "type": "string"
+            },
+            "example": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+          },
+          {
+            "name": "from",
+            "in": "query",
+            "description": "The lower limit for when the cloud event was created in UTC",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "example": "2022-02-14 07:22:19Z"
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "description": "The upper limit for when the cloud event was created in UTC",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "example": "2022-06-16 13:37:00Z"
+          },
+          {
+            "name": "party",
+            "in": "query",
+            "description": "The party id representing the subjects",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "example": 50002108
+          },
+          {
+            "name": "unit",
+            "in": "query",
+            "description": "The organisation number representing the subject",
+            "schema": {
+              "type": "string"
+            },
+            "example": "989271156"
+          },
+          {
+            "name": "person",
+            "in": "header",
+            "description": "The person number representing the subject",
+            "schema": {
+              "type": "string"
+            },
+            "example": "01014922047"
+          },
+          {
+            "name": "type",
+            "in": "query",
+            "description": "A list of the event types to include",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "example": [
+              "app.instance.created",
+              "app.instance.process.completed"
+            ]
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "description": "The maximum number of events to include in the response",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 50
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CloudEvent"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/app/party": {
+      "get": {
+        "tags": [
+          "App"
+        ],
+        "summary": "Retrieves a set of events related to a party based on query parameters.",
+        "parameters": [
+          {
+            "name": "after",
+            "in": "query",
+            "description": "Id of the latter event that should be included",
+            "schema": {
+              "type": "string"
+            },
+            "example": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+          },
+          {
+            "name": "from",
+            "in": "query",
+            "description": "The lower limit for when the cloud event was created in UTC",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "example": "2022-02-14 07:22:19Z"
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "description": "The upper limit for when the cloud event was created in UTC",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "example": "2022-06-16 13:37:00Z"
+          },
+          {
+            "name": "party",
+            "in": "query",
+            "description": "The party id representing the subjects",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "example": 50002108
+          },
+          {
+            "name": "unit",
+            "in": "query",
+            "description": "The organisation number representing the subject",
+            "schema": {
+              "type": "string"
+            },
+            "example": "989271156"
+          },
+          {
+            "name": "person",
+            "in": "header",
+            "description": "The person number representing the subject",
+            "schema": {
+              "type": "string"
+            },
+            "example": "01014922047"
+          },
+          {
+            "name": "source",
+            "in": "query",
+            "description": "A list of the sources to include",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "example": [
+              "https://ttd.apps.at22.altinn.cloud/ttd/apps-test/",
+              "https://ttd.apps.at22.altinn.cloud/digdir/bli-tjenesteeier/",
+              "https://ttd.apps.at22.altinn.cloud/ttd/apps-%/"
+            ]
+          },
+          {
+            "name": "type",
+            "in": "query",
+            "description": "A list of the event types to include",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "example": [
+              "app.instance.created",
+              "app.instance.process.completed"
+            ]
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "description": "The maximum number of events to include in the response",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 50
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CloudEvent"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/events": {
+      "post": {
+        "tags": [
+          "Events"
+        ],
+        "summary": "Registers a new cloud event to be stored and processed.",
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "description": "Optional idempotency key (GUID) used to detect and skip duplicate submissions.",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "The cloud event to be stored and processed.",
+          "content": {
+            "application/cloudevents+json": {
+              "schema": {
+                "$ref": "#/components/schemas/CloudEvent"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Events"
+        ],
+        "summary": "Retrieves a set of events related based on query parameters.",
+        "parameters": [
+          {
+            "name": "resource",
+            "in": "query",
+            "description": "Required resource attribute",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "urn:altinn:resource:app_ttd_apps-test"
+          },
+          {
+            "name": "after",
+            "in": "query",
+            "description": "Retrieve events that were registered after this event Id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+          },
+          {
+            "name": "subject",
+            "in": "query",
+            "description": "Optional filter by subject. Only exact matches will be returned.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Altinn-AlternativeSubject",
+            "in": "header",
+            "description": "Optional filter by extension attribute alternative subject. Only exact matches will be returned.",
+            "schema": {
+              "type": "string"
+            },
+            "example": "/person/16035001577"
+          },
+          {
+            "name": "type",
+            "in": "query",
+            "description": "Optional filter by event type.",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "example": [
+              "instance.created",
+              "instance.process.completed"
+            ]
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "description": "The maximum number of events to include in the response.",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/cloudevents+json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CloudEvent"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/cloudevents+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/subscriptions": {
+      "post": {
+        "tags": [
+          "Subscription"
+        ],
+        "summary": "Register an subscription for events.",
+        "description": "Requires information about endpoint to post events for subscribers.",
+        "requestBody": {
+          "description": "The subscription details",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SubscriptionRequestModel"
+              },
+              "examples": {
+                "End user (system) subscribing to events regarding themselves": {
+                  "value": {
+                    "endpoint": "https://org-reception-func.azurewebsites.net/api/processCompleteInstance?code=APIKEY",
+                    "sourceFilter": "https://skd.apps.altinn.no/skd/mva-melding",
+                    "alternativeSubjectFilter": "/person/01017512345",
+                    "typeFilter": "app.instance.process.completed"
+                  }
+                },
+                "End user (system) subscribing to events from a specific regarding an organisation": {
+                  "value": {
+                    "endpoint": "https://org-reception-func.azurewebsites.net/api/processCompleteInstance?code=APIKEY",
+                    "sourceFilter": "https://skd.apps.altinn.no/skd/mva-melding",
+                    "alternativeSubjectFilter": "/organisation/897069651",
+                    "typeFilter": "app.instance.process.completed"
+                  }
+                },
+                "Org subscription to events of all their apps": {
+                  "value": {
+                    "endpoint": "https://org-reception-func.azurewebsites.net/api/processCompleteInstance?code=APIKEY",
+                    "sourceFilter": "https://ttd.apps.altinn.no/ttd/%25",
+                    "typeFilter": "app.instance.process.completed"
+                  }
+                },
+                "Subscription with Slack webhook": {
+                  "value": {
+                    "endpoint": "https://hooks.slack.com/services/{include-webhook}",
+                    "resourceFilter": "urn:altinn:resource:app_ttd_apps-test"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Subscription"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Subscription"
+        ],
+        "summary": "Get all subscription for the authorized consumer",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SubscriptionList"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/subscriptions/{id}": {
+      "get": {
+        "tags": [
+          "Subscription"
+        ],
+        "summary": "Get a specific subscription",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Subscription"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Subscription"
+        ],
+        "summary": "Delete a given subscription",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "AppCloudEventRequestModel": {
+        "type": "object",
+        "properties": {
+          "source": {
+            "type": "string",
+            "description": "Gets or sets the source of the event.",
+            "format": "uri",
+            "nullable": true
+          },
+          "specversion": {
+            "type": "string",
+            "description": "Gets or sets the specification version of the event.",
+            "nullable": true
+          },
+          "type": {
+            "type": "string",
+            "description": "Gets or sets the type of the event.",
+            "nullable": true
+          },
+          "subject": {
+            "type": "string",
+            "description": "Gets or sets the subject of the event.",
+            "nullable": true
+          },
+          "alternativesubject": {
+            "type": "string",
+            "description": "Gets or sets the alternative subject of the event.",
+            "nullable": true
+          },
+          "data": {
+            "description": "Gets or sets the cloudEvent data content. The event payload.\r\nThe payload depends on the type and the dataschema.",
+            "nullable": true
+          },
+          "dataschema": {
+            "type": "string",
+            "description": "Gets or sets the cloudEvent dataschema attribute.\r\nA link to the schema that the data attribute adheres to.",
+            "format": "uri",
+            "nullable": true
+          },
+          "contenttype": {
+            "$ref": "#/components/schemas/ContentType"
+          }
+        },
+        "additionalProperties": false,
+        "description": "The model used in the request for registering a new cloud event."
+      },
+      "CloudEvent": {
+        "type": "object",
+        "properties": {
+          "specVersion": {
+            "type": "string",
+            "nullable": true,
+            "readOnly": true
+          },
+          "data": {
+            "nullable": true
+          },
+          "dataContentType": {
+            "type": "string",
+            "nullable": true
+          },
+          "id": {
+            "type": "string",
+            "nullable": true
+          },
+          "dataSchema": {
+            "type": "string",
+            "format": "uri",
+            "nullable": true
+          },
+          "source": {
+            "type": "string",
+            "format": "uri",
+            "nullable": true
+          },
+          "subject": {
+            "type": "string",
+            "nullable": true
+          },
+          "time": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "type": {
+            "type": "string",
+            "nullable": true
+          },
+          "resourceinstance": {
+            "type": "string",
+            "description": "Identifier of the specific instance of the resource the event relates to.",
+            "nullable": true,
+            "example": "50015641/a72223a3-926b-4095-a2a6-bacc10815f2d"
+          },
+          "resource": {
+            "type": "string",
+            "description": "URN uniquely identifying the resource the event relates to.",
+            "nullable": true,
+            "example": "urn:altinn:resource:app_ttd_apps-test"
+          },
+          "alternativesubject": {
+            "type": "string",
+            "description": "Alternative identifier for the subject of the event, e.g. a person or organisation number, used when the subject cannot be expressed as a party id.",
+            "nullable": true,
+            "example": "/person/27124902369"
+          }
+        },
+        "example": {
+          "id": "a4f6269b-1f29-495c-a7bd-423dcc5fd92b",
+          "resource": "urn:altinn:resource:app_ttd_apps-test",
+          "source": "https://ttd.apps.altinn.no/ttd/apps-test/instances/50015641/a72223a3-926b-4095-a2a6-bacc10815f2d",
+          "specversion": "1.0",
+          "type": "app.instance.created",
+          "subject": "/party/50015641",
+          "alternativesubject": "/person/27124902369",
+          "time": "2020-10-29T07:22:19.438039Z"
+        }
+      },
+      "ContentType": {
+        "type": "object",
+        "properties": {
+          "boundary": {
+            "type": "string",
+            "nullable": true
+          },
+          "charSet": {
+            "type": "string",
+            "nullable": true
+          },
+          "mediaType": {
+            "type": "string",
+            "nullable": true
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "parameters": {
+            "type": "array",
+            "items": { },
+            "nullable": true,
+            "readOnly": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "ProblemDetails": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "nullable": true
+          },
+          "title": {
+            "type": "string",
+            "nullable": true
+          },
+          "status": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "detail": {
+            "type": "string",
+            "nullable": true
+          },
+          "instance": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": { }
+      },
+      "Subscription": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Subscription Id",
+            "format": "int32"
+          },
+          "endPoint": {
+            "type": "string",
+            "description": "Endpoint to receive matching events",
+            "format": "uri",
+            "nullable": true
+          },
+          "sourceFilter": {
+            "type": "string",
+            "description": "Filter on source",
+            "format": "uri",
+            "nullable": true
+          },
+          "resourceFilter": {
+            "type": "string",
+            "description": "Filter on resource",
+            "nullable": true
+          },
+          "subjectFilter": {
+            "type": "string",
+            "description": "Filter on subject",
+            "nullable": true
+          },
+          "alternativeSubjectFilter": {
+            "type": "string",
+            "description": "Filter on alternative subject",
+            "nullable": true
+          },
+          "typeFilter": {
+            "type": "string",
+            "description": "Filter for type. The different sources has different types.",
+            "nullable": true
+          },
+          "consumer": {
+            "type": "string",
+            "description": "The events consumer",
+            "nullable": true
+          },
+          "createdBy": {
+            "type": "string",
+            "description": "Who created this subscription",
+            "nullable": true
+          },
+          "created": {
+            "type": "string",
+            "description": "When subscription was created",
+            "format": "date-time"
+          },
+          "validated": {
+            "type": "boolean",
+            "description": "Indicate whether the subscription has been validated to be ok."
+          },
+          "includeSubunits": {
+            "type": "boolean",
+            "description": "Indicates whether events for sub-units of the subject should be included. This has an effect only when subjectFilter identifies the actual main unit of the organisation."
+          }
+        },
+        "additionalProperties": false,
+        "description": "Class that describes an events subscription",
+        "example": {
+          "endPoint": "https://enduser-reception-func.azurewebsites.net/api/processCompleteInstance?code=APIKEY",
+          "id": 1,
+          "sourceFilter": "https://skd.apps.altinn.cloud/skd/mva-melding",
+          "subjectFilter": "/party/512345",
+          "typeFilter": "app.instance.process.completed",
+          "consumer": "/user/12345",
+          "createdBy": "/user/12345",
+          "created": "2022-07-27T13:14:14.395226Z"
+        }
+      },
+      "SubscriptionList": {
+        "type": "object",
+        "properties": {
+          "count": {
+            "type": "integer",
+            "description": "The nuber of subscriptions in the list",
+            "format": "int32"
+          },
+          "subscriptions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Subscription"
+            },
+            "description": "The list of subscriptions",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "An object containing a list of subscriptions and metadata",
+        "example": {
+          "count": 2,
+          "subscriptions": [
+            {
+              "endPoint": "https://enduser-reception-func.azurewebsites.net/api/processCompleteInstance?code=APIKEY",
+              "id": 1,
+              "sourceFilter": "https://skd.apps.altinn.cloud/skd/mva-melding",
+              "subjectFilter": "/party/512345",
+              "typeFilter": "app.instance.process.completed",
+              "consumer": "/user/12345",
+              "createdBy": "/user/12345",
+              "created": "2022-07-27T13:14:14.395226Z"
+            },
+            {
+              "endPoint": "https://hooks.slack.com/services/ID/CODE",
+              "id": 2,
+              "sourceFilter": "https://ttd.apps.altinn.cloud/ttd/apps-test",
+              "consumer": "/org/ttd",
+              "createdBy": "/org/ttd5",
+              "created": "2022-08-02T08:49:07.269958Z"
+            }
+          ]
+        }
+      },
+      "SubscriptionRequestModel": {
+        "type": "object",
+        "properties": {
+          "endPoint": {
+            "type": "string",
+            "description": "Endpoint to receive matching events",
+            "format": "uri",
+            "nullable": true
+          },
+          "sourceFilter": {
+            "type": "string",
+            "description": "Filter on source",
+            "format": "uri",
+            "nullable": true
+          },
+          "subjectFilter": {
+            "type": "string",
+            "description": "Filter on subject",
+            "nullable": true
+          },
+          "resourceFilter": {
+            "type": "string",
+            "description": "Filter on resource",
+            "nullable": true
+          },
+          "alternativeSubjectFilter": {
+            "type": "string",
+            "description": "Filter on alternative subject",
+            "nullable": true
+          },
+          "typeFilter": {
+            "type": "string",
+            "description": "Filter for type. The different sources has different types.",
+            "nullable": true
+          },
+          "includeSubunits": {
+            "type": "boolean",
+            "description": "Indicates whether events for sub-units of the subject should be included. This has an effect only when subjectFilter identifies the actual main unit of the organisation."
+          }
+        },
+        "additionalProperties": false,
+        "description": "Class that describes the events subscription request model"
+      }
+    },
+    "securitySchemes": {
+      "Bearer": {
+        "type": "http",
+        "description": "Please enter JWT token",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  },
+  "security": [
+    {
+      "Bearer": [ ]
+    }
+  ],
+  "tags": [
+    {
+      "name": "App"
+    },
+    {
+      "name": "Events"
+    },
+    {
+      "name": "Subscription"
+    }
+  ]
+}

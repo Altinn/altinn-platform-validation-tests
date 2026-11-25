@@ -46,6 +46,3 @@ export function teardown(data) {
     teardownCreateAndDelete(data.commons);
     teardownCreateAndDeleteAgent(data.commons);
 }
-
-// Shared end-of-test summary logging (prints check pass/fail counts).
-export { handleSummary } from "../../../../common-imports.js";

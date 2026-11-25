@@ -7,7 +7,8 @@
     "fix": "eslint --fix K6",
     "lint:k6-checks": "node ./hack/find_checks_with_dynamic_names.mjs ./K6",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "typecheck": "tsc -p jsconfig.json --noEmit"
+    "typecheck": "tsc -p jsconfig.json --noEmit",
+    "serve": "http-server K6/testdata -p 8225 -a 127.0.0.1 -c-1"
   },
   "author": "",
   "license": "ISC",
@@ -20,6 +21,7 @@
     "eslint-plugin-simple-import-sort": "^14.0.0",
     "eslint-plugin-unused-imports": "^4.4.1",
     "globals": "^17.0.0",
+    "http-server": "^14.1.1",
     "typescript": "^7.0.2"
   }
 }

@@ -8,6 +8,7 @@ import { AltinnScopes, CreateScopeString } from "../../../../scopes.js";
 import { AuthenticationClient, CreateRequestSystemUserBuilder, RequestSystemUserBuildingBlocks, RequestSystemUserClient, SystemUserBuildingBlocks, SystemUserClient, SystemUserRequestDomainChecks } from "../../../authentication-imports.js";
 import { DeleteSystemUser } from "../../../building-blocks/access-management-bff/system-user/index.js";
 import { ApproveSystemUserRequest, GetSystemUserRequest } from "../../../building-blocks/access-management-bff/system-user-request/index.js";
+import { deleteRequest } from "../commons.js";
 
 /**
  * Whether to draw a random customer rather than walk the list.
@@ -178,7 +179,7 @@ export function setup() {
         const customerMayApprove = SystemUserRequestDomainChecks.CheckUserMayApprove(requestToApprove);
 
         if (!readyToApprove || !customerMayApprove) {
-            RequestSystemUserBuildingBlocks.VendorDelete(apiClients.vendor.requestSystemUserClient, createdRequest?.id);
+            deleteRequest(apiClients.vendor.requestSystemUserClient, createdRequest?.id);
 
             fail("cannot ask for a system user token: the system user request was not there for the customer to approve");
         }
@@ -186,7 +187,7 @@ export function setup() {
         const approved = ApproveSystemUserRequest(apiClients.approver.bffRequestClient, Number(customer.orgPartyId), createdRequest?.id);
 
         if (!SystemUserRequestDomainChecks.CheckRequestApproved(approved)) {
-            RequestSystemUserBuildingBlocks.VendorDelete(apiClients.vendor.requestSystemUserClient, createdRequest?.id);
+            deleteRequest(apiClients.vendor.requestSystemUserClient, createdRequest?.id);
 
             fail("cannot ask for a system user token: the customer did not approve the system user request");
         }
@@ -308,14 +309,15 @@ export function getApproverTokenOpts(customer) {
  * Signing goes through SubtleCrypto, which is promise based, so this is awaited.
  *
  * @param {ArrangedSystemUser} arranged - What setup returned for this iteration.
+ * @param {string[]} [scopes] - The scopes the grant asks for.
  * @returns {Promise<string>} A Maskinporten system user token.
  */
-export async function fetchSystemUserToken(arranged) {
+export async function fetchSystemUserToken(arranged, scopes = [SCOPE]) {
     const maskinportenTokenGenerator = getMaskinportenTokenGenerator();
 
     maskinportenTokenGenerator.setTokenGeneratorOptions(
         new MaskinportenTokenBuilder()
-            .withScopes(CreateScopeString([SCOPE]))
+            .withScopes(CreateScopeString(scopes))
             .withSystemUser(arranged.customer.orgNo, arranged.externalRef)
             .build(),
     );

@@ -1,5 +1,7 @@
 import http from "k6/http";
 
+import { requestParams } from "../common/request.js";
+
 const TAGS = {
     ResourceOwnerGetOrgs: {
         action: "resource-owner-get-orgs",
@@ -9,9 +11,10 @@ const TAGS = {
 class ResourceOwnerClient {
     /**
      * @param {string} baseUrl Base URL, e.g. https://platform.tt02.altinn.no
-     * @param {*} tokenGenerator Generates bearer tokens.
+     * @param {*} [tokenGenerator] Generates bearer tokens. The endpoint is
+     * public, so it is readable without one.
      */
-    constructor(baseUrl, tokenGenerator) {
+    constructor(baseUrl, tokenGenerator = null) {
         /**
          * Generates authentication tokens.
          */
@@ -40,30 +43,17 @@ class ResourceOwnerClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     ResourceOwnerGetOrgs(labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}/orgs`;
-
-        let tags = {
-            endpoint: url,
-            name: url,
-            action: TAGS.ResourceOwnerGetOrgs.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url, {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.get(
+            `${this.FULL_PATH}/orgs`,
+            requestParams({
+                endpoint: `${this.FULL_PATH}/orgs`,
+                action: TAGS.ResourceOwnerGetOrgs.action,
+                labels,
+                // The endpoint is public, so the client may be built without a token
+                // generator. That is what lets this run as a healthcheck in prod.
+                token: this.tokenGenerator?.getToken() || null,
+            }),
+        );
     }
 }
 

@@ -1,5 +1,6 @@
 import http from "k6/http";
 
+import { jsonBody, requestParams } from "../../../common/request.js";
 import { CreateServiceOwnerRequest, RequestPackageDto, RequestResourceDto } from "./request.types.js";
 
 const TAGS = {
@@ -57,30 +58,15 @@ class RequestClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     RequestGetPartyUrns(labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}/_meta/urns/party`;
-
-        let tags = {
-            endpoint: url,
-            name: url,
-            action: TAGS.RequestGetPartyUrns.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url, {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.get(
+            `${this.FULL_PATH}/_meta/urns/party`,
+            requestParams({
+                endpoint: `${this.FULL_PATH}/_meta/urns/party`,
+                action: TAGS.RequestGetPartyUrns.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 
     /**
@@ -92,30 +78,15 @@ class RequestClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     RequestGetRequestStatus(id, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}/${id}/status`;
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/{id}/status`,
-            name: `${this.FULL_PATH}/{id}/status`,
-            action: TAGS.RequestGetRequestStatus.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url, {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.get(
+            `${this.FULL_PATH}/${id}/status`,
+            requestParams({
+                endpoint: `${this.FULL_PATH}/{id}/status`,
+                action: TAGS.RequestGetRequestStatus.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 
     /**
@@ -127,30 +98,16 @@ class RequestClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     RequestWithdrawRequest(id, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}/${id}/withdraw`;
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/{id}/withdraw`,
-            name: `${this.FULL_PATH}/{id}/withdraw`,
-            action: TAGS.RequestWithdrawRequest.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.put(url, null, {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.put(
+            `${this.FULL_PATH}/${id}/withdraw`,
+            null,
+            requestParams({
+                endpoint: `${this.FULL_PATH}/{id}/withdraw`,
+                action: TAGS.RequestWithdrawRequest.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 
     /**
@@ -162,31 +119,17 @@ class RequestClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     RequestCreateResourceRequest(request, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}/resource`;
-
-        let tags = {
-            endpoint: url,
-            name: url,
-            action: TAGS.RequestCreateResourceRequest.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.post(url, JSON.stringify(request), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json",
-                Accept: "application/json",
-            },
-        });
+        return http.post(
+            `${this.FULL_PATH}/resource`,
+            jsonBody(request),
+            requestParams({
+                endpoint: `${this.FULL_PATH}/resource`,
+                action: TAGS.RequestCreateResourceRequest.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+                json: true,
+            }),
+        );
     }
 
     /**
@@ -198,31 +141,17 @@ class RequestClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     RequestCreatePackageRequest(request, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}/package`;
-
-        let tags = {
-            endpoint: url,
-            name: url,
-            action: TAGS.RequestCreatePackageRequest.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.post(url, JSON.stringify(request), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json",
-                Accept: "application/json",
-            },
-        });
+        return http.post(
+            `${this.FULL_PATH}/package`,
+            jsonBody(request),
+            requestParams({
+                endpoint: `${this.FULL_PATH}/package`,
+                action: TAGS.RequestCreatePackageRequest.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+                json: true,
+            }),
+        );
     }
 
     /**
@@ -234,31 +163,17 @@ class RequestClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     RequestCreateRequest(request, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = this.FULL_PATH;
-
-        let tags = {
-            endpoint: url,
-            name: url,
-            action: TAGS.RequestCreateRequest.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.post(url, JSON.stringify(request), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json",
-                Accept: "application/json",
-            },
-        });
+        return http.post(
+            this.FULL_PATH,
+            jsonBody(request),
+            requestParams({
+                endpoint: this.FULL_PATH,
+                action: TAGS.RequestCreateRequest.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+                json: true,
+            }),
+        );
     }
 }
 

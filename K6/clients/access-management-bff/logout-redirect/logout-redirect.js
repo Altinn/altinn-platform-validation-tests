@@ -1,5 +1,7 @@
 import http from "k6/http";
 
+import { requestParams } from "../../common/request.js";
+
 const TAGS = {
     GetLogoutRedirect: {
         action: "get-logout-redirect",
@@ -43,30 +45,15 @@ class LogoutRedirectClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetLogoutRedirect(labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(`${this.FULL_PATH}`);
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}`,
-            name: `${this.FULL_PATH}`,
-            action: TAGS.GetLogoutRedirect.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url.toString(), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.get(
+            `${this.FULL_PATH}`,
+            requestParams({
+                endpoint: this.FULL_PATH,
+                action: TAGS.GetLogoutRedirect.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 }
 

@@ -1,12 +1,8 @@
-import { check } from "k6";
 import { sleep } from "k6";
-import tls from "k6/x/tls";
 
 import { AltinnCdnClient } from "../../../../clients/altinn-cdn/index.js";
 import { requireEnv } from "../../../../helpers.js";
-
-const CERT_EXPIRY_WARNING_DAYS = 30;
-const CERT_EXPIRY_WARNING_MS = CERT_EXPIRY_WARNING_DAYS * 24 * 60 * 60 * 1000;
+import { checkCertificate } from "../../../domain-checks/common/tls.js";
 
 export function setup() {
     requireEnv(["DEPLOY_ENV"]);
@@ -28,41 +24,7 @@ export default async function (data) {
     console.log(`Querying ${data.length} domains`);
 
     for (const [org, deploy_env, domain] of data) {
-        const tags = { org, domain, deploy_env, };
-
-        let cert = null;
-        let lookupSucceeded = false;
-
-        try {
-            cert = await tls.getCertificate(domain);
-            lookupSucceeded = true;
-        } catch (error) {
-            console.error(
-                `Failed to retrieve certificate for ${domain}: ${error}`,
-            );
-        }
-
-        const now = Date.now();
-
-        check(
-            cert,
-            {
-                "certificate lookup succeeded": () => lookupSucceeded,
-                "certificate is not expired": (c) => lookupSucceeded && c.expires > now,
-                "certificate is not expiring soon": (c) => lookupSucceeded && c.expires - now > CERT_EXPIRY_WARNING_MS,
-            },
-            tags,
-        );
-
-        if (cert) {
-            const expiresInDays = (cert.expires - now) / (24 * 60 * 60 * 1000);
-
-            console.log(
-                `Certificate for ${domain} expires: ` +
-                `${new Date(cert.expires).toISOString()} ` +
-                `(${expiresInDays.toFixed(1)} days remaining)`,
-            );
-        }
+        await checkCertificate(domain, { org, domain, deploy_env, });
 
         sleep(1);
     }

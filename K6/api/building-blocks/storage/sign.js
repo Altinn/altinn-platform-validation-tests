@@ -2,6 +2,7 @@ import { check } from "k6";
 
 import { SignClient } from "../../../clients/storage/index.js";
 import { SignRequest } from "../../../clients/storage/instances.types.js";
+import { VersionMatch } from "../../../clients/storage/version-match.js";
 import { withRetries } from "../common/retry.js";
 
 /**
@@ -11,6 +12,7 @@ import { withRetries } from "../common/retry.js";
  * @param {number} instanceOwnerPartyId Instance owner party id.
  * @param {string} instanceGuid Instance UUID.
  * @param {SignRequest} request Signature request.
+ * @param {VersionMatch|null} [versionMatch] Instance and process-state versions the write is conditioned on.
  * @param {{[key:string]:string}|null} [labels] Optional k6 request labels.
  * @returns {boolean} Whether the call succeeded.
  */
@@ -19,6 +21,7 @@ export function SignInstance(
     instanceOwnerPartyId,
     instanceGuid,
     request,
+    versionMatch = null,
     labels = null,
 ) {
     const res = withRetries(
@@ -26,6 +29,7 @@ export function SignInstance(
             instanceOwnerPartyId,
             instanceGuid,
             request,
+            versionMatch,
             labels,
         ),
         "SignInstance",

@@ -4,6 +4,7 @@ test_definitions:
   - test_file: post-consent.js
     contexts:
       - environment: yt01
+      - environment: at22
       - environment: at23
       - environment: tt02
   - test_file: consent-request-events.js

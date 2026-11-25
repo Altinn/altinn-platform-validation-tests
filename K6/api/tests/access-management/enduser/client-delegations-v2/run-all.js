@@ -1,4 +1,3 @@
-export { handleSummary } from "../../../../../common-imports.js";
 import runDelegateAndRemoveResource, { setup as setupDelegateAndRemoveResource, teardown as teardownDelegateAndRemoveResource } from "./delegate-and-remove-resource.js";
 
 export { setupDelegateAndRemoveResource as setup };

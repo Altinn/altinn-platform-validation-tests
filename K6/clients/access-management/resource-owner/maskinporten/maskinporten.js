@@ -1,5 +1,6 @@
 import http from "k6/http";
 
+import { buildUrl, jsonBody, requestParams } from "../../../common/request.js";
 import { ConsentLookupRequest, MaskinportenDelegationsQuery } from "./maskinporten.types.js";
 
 const TAGS = {
@@ -61,47 +62,16 @@ class MaskinportenClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetMaskinportenDelegations(query = null, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(`${this.FULL_PATH}/delegations`);
-
-        if (query !== null) {
-            for (const [key, value] of Object.entries(query)) {
-                if (value === undefined || value === null) {
-                    continue;
-                }
-
-                if (Array.isArray(value)) {
-                    value.forEach((v) => url.searchParams.append(key, v));
-                } else {
-                    url.searchParams.append(key, value);
-                }
-            }
-        }
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/delegations`,
-            name: `${this.FULL_PATH}/delegations`,
-            action: TAGS.GetMaskinportenDelegations.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url.toString(), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-                ...(this.subscriptionKey !== null && {
-                    "Ocp-Apim-Subscription-Key": this.subscriptionKey,
-                }),
-            },
-        });
+        return http.get(
+            buildUrl(`${this.FULL_PATH}/delegations`, query),
+            requestParams({
+                endpoint: `${this.FULL_PATH}/delegations`,
+                action: TAGS.GetMaskinportenDelegations.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+                headers: { "Ocp-Apim-Subscription-Key": this.subscriptionKey },
+            }),
+        );
     }
 
     /**
@@ -121,36 +91,20 @@ class MaskinportenClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     LookupConsent(request, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
         // The trailing slash is part of the route. Without it the request is
         // redirected, and the redirect drops the Authorization header.
-        const url = new URL(`${this.FULL_PATH}/consent/lookup/`);
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/consent/lookup/`,
-            name: `${this.FULL_PATH}/consent/lookup/`,
-            action: TAGS.LookupConsent.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.post(url.toString(), JSON.stringify(request), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json",
-                Accept: "application/json",
-                ...(this.subscriptionKey !== null && {
-                    "Ocp-Apim-Subscription-Key": this.subscriptionKey,
-                }),
-            },
-        });
+        return http.post(
+            `${this.FULL_PATH}/consent/lookup/`,
+            jsonBody(request),
+            requestParams({
+                endpoint: `${this.FULL_PATH}/consent/lookup/`,
+                action: TAGS.LookupConsent.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+                json: true,
+                headers: { "Ocp-Apim-Subscription-Key": this.subscriptionKey },
+            }),
+        );
     }
 }
 

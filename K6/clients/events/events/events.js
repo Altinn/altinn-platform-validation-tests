@@ -1,5 +1,6 @@
 import http from "k6/http";
 
+import { buildUrl, jsonBody, requestParams } from "../../common/request.js";
 import { CloudEvent, EventsQueryParams } from "../types.js";
 
 const TAGS = {
@@ -25,7 +26,7 @@ class EventsClient {
         /**
          * Base API path.
          */
-        this.BASE_PATH = "/events";
+        this.BASE_PATH = "/events/api/v1/events";
 
         /**
          * Fully-qualified API path.
@@ -41,35 +42,27 @@ class EventsClient {
      * Posts a new CloudEvent.
      *
      * @param {CloudEvent} request CloudEvent payload.
+     * @param {string|null} [idempotencyKey] Optional GUID used to skip duplicate submissions.
      * @param {{[key: string]: string}|null} [labels]
      * Optional k6 request tags.
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
-    EventsCreate(request, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = `${this.FULL_PATH}`;
-
-        let tags = {
-            endpoint: url,
-            name: url,
-            action: TAGS.EventsCreate.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.post(url, JSON.stringify(request), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "application/cloudevents+json",
-            },
-        });
+    EventsCreate(request, idempotencyKey = null, labels = null) {
+        return http.post(
+            this.FULL_PATH,
+            jsonBody(request),
+            requestParams({
+                endpoint: this.FULL_PATH,
+                action: TAGS.EventsCreate.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+                accept: null,
+                headers: {
+                    "Content-Type": "application/cloudevents+json",
+                    "Idempotency-Key": idempotencyKey,
+                },
+            }),
+        );
     }
 
     /**
@@ -84,66 +77,17 @@ class EventsClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     EventsGet(query = null, alternativeSubject = null, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        let url = `${this.FULL_PATH}`;
-
-        const params = {
-            tags: {
-                endpoint: url,
-                name: url,
+        return http.get(
+            buildUrl(this.FULL_PATH, query),
+            requestParams({
+                endpoint: this.FULL_PATH,
                 action: TAGS.EventsGet.action,
-            },
-            headers: /** @type {{[key: string]: string}} */ ({
-                Authorization: `Bearer ${token}`,
-                Accept: "application/cloudevents+json",
+                labels,
+                token: this.tokenGenerator.getToken(),
+                accept: "application/cloudevents+json",
+                headers: { "Altinn-AlternativeSubject": alternativeSubject },
             }),
-        };
-
-        if (alternativeSubject !== null) {
-            params.headers["Altinn-AlternativeSubject"] =
-                alternativeSubject;
-        }
-
-        if (query !== null) {
-            const queryParams = /** @type {string[]} */ ([]);
-
-            Object.entries(query).forEach(([key, value]) => {
-                if (value === null || value === undefined) {
-                    return;
-                }
-
-                if (Array.isArray(value)) {
-                    value.forEach((item) => {
-                        queryParams.push(
-                            `${key}=${encodeURIComponent(item)}`,
-                        );
-                    });
-
-                    return;
-                }
-
-                queryParams.push(
-                    `${key}=${encodeURIComponent(value)}`,
-                );
-            });
-
-            if (queryParams.length > 0) {
-                url = `${url}?${queryParams.join("&")}`;
-            }
-        }
-
-        params.tags.endpoint = url;
-        params.tags.name = url;
-
-        if (labels !== null) {
-            params.tags = {
-                ...labels,
-                ...params.tags,
-            };
-        }
-
-        return http.get(url, params);
+        );
     }
 }
 

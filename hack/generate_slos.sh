@@ -8,5 +8,10 @@ if [ ! -d "$DIST_DIRECTORY" ]; then
 fi
 
 jsonnet -m "$DIST_DIRECTORY" ./slos/main.jsonnet
-cat "$DIST_DIRECTORY/slos.json" | yq -p json '.[] | splitDoc' > "$DIST_DIRECTORY/slos.yaml"
-rm "$DIST_DIRECTORY/slos.json"
+
+for json_file in "$DIST_DIRECTORY"/slos-*.json; do
+    yaml_file="${json_file%.json}.yaml"
+
+    yq -p=json -oy '.[] | splitDoc' "$json_file" > "$yaml_file"
+    rm "$json_file"
+done

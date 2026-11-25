@@ -1,5 +1,6 @@
 import http from "k6/http";
 
+import { buildUrl, jsonBody, requestParams } from "../../common/request.js";
 import { InstanceRightsDelegationDto } from "../common/common.types.js";
 import { CreateInstanceRightsQuery, DeleteInstanceDelegationQuery, GetInstanceDelegationCheckQuery, GetInstanceDelegationsQuery, GetInstanceRightsQuery, GetInstanceSimplifiedUsersQuery, UpdateInstanceRightsQuery } from "./instance.types.js";
 
@@ -67,44 +68,15 @@ class InstanceClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetInstanceDelegations(query = null, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(`${this.FULL_PATH}/delegation/instances`);
-
-        if (query !== null) {
-            for (const [key, value] of Object.entries(query)) {
-                if (value === undefined || value === null) {
-                    continue;
-                }
-
-                if (Array.isArray(value)) {
-                    value.forEach((v) => url.searchParams.append(key, v));
-                } else {
-                    url.searchParams.append(key, value);
-                }
-            }
-        }
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/delegation/instances`,
-            name: `${this.FULL_PATH}/delegation/instances`,
-            action: TAGS.GetInstanceDelegations.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url.toString(), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.get(
+            buildUrl(`${this.FULL_PATH}/delegation/instances`, query),
+            requestParams({
+                endpoint: `${this.FULL_PATH}/delegation/instances`,
+                action: TAGS.GetInstanceDelegations.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 
     /**
@@ -116,47 +88,15 @@ class InstanceClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     DeleteInstanceDelegation(query = null, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(`${this.FULL_PATH}/delegation/instances`);
-
-        if (query !== null) {
-            for (const [key, value] of Object.entries(query)) {
-                if (value === undefined || value === null) {
-                    continue;
-                }
-
-                if (Array.isArray(value)) {
-                    value.forEach((v) => url.searchParams.append(key, v));
-                } else {
-                    url.searchParams.append(key, value);
-                }
-            }
-        }
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/delegation/instances`,
-            name: `${this.FULL_PATH}/delegation/instances`,
-            action: TAGS.DeleteInstanceDelegation.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
         return http.del(
-            url.toString(),
+            buildUrl(`${this.FULL_PATH}/delegation/instances`, query),
             null,
-            {
-                tags,
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    Accept: "application/json",
-                },
-            },
+            requestParams({
+                endpoint: `${this.FULL_PATH}/delegation/instances`,
+                action: TAGS.DeleteInstanceDelegation.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
         );
     }
 
@@ -169,44 +109,15 @@ class InstanceClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetInstanceDelegationCheck(query = null, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(`${this.FULL_PATH}/delegationcheck`);
-
-        if (query !== null) {
-            for (const [key, value] of Object.entries(query)) {
-                if (value === undefined || value === null) {
-                    continue;
-                }
-
-                if (Array.isArray(value)) {
-                    value.forEach((v) => url.searchParams.append(key, v));
-                } else {
-                    url.searchParams.append(key, value);
-                }
-            }
-        }
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/delegationcheck`,
-            name: `${this.FULL_PATH}/delegationcheck`,
-            action: TAGS.GetInstanceDelegationCheck.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url.toString(), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.get(
+            buildUrl(`${this.FULL_PATH}/delegationcheck`, query),
+            requestParams({
+                endpoint: `${this.FULL_PATH}/delegationcheck`,
+                action: TAGS.GetInstanceDelegationCheck.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 
     /**
@@ -220,48 +131,16 @@ class InstanceClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     CreateInstanceRights(query = null, body = null, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(`${this.FULL_PATH}/delegation/instances/rights`);
-
-        if (query !== null) {
-            for (const [key, value] of Object.entries(query)) {
-                if (value === undefined || value === null) {
-                    continue;
-                }
-
-                if (Array.isArray(value)) {
-                    value.forEach((v) => url.searchParams.append(key, v));
-                } else {
-                    url.searchParams.append(key, value);
-                }
-            }
-        }
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/delegation/instances/rights`,
-            name: `${this.FULL_PATH}/delegation/instances/rights`,
-            action: TAGS.CreateInstanceRights.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
         return http.post(
-            url.toString(),
-            body !== null ? JSON.stringify(body) : null,
-            {
-                tags,
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    "Content-Type": "application/json",
-                    Accept: "application/json",
-                },
-            },
+            buildUrl(`${this.FULL_PATH}/delegation/instances/rights`, query),
+            jsonBody(body),
+            requestParams({
+                endpoint: `${this.FULL_PATH}/delegation/instances/rights`,
+                action: TAGS.CreateInstanceRights.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+                json: true,
+            }),
         );
     }
 
@@ -274,44 +153,15 @@ class InstanceClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetInstanceRights(query = null, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(`${this.FULL_PATH}/delegation/instances/rights`);
-
-        if (query !== null) {
-            for (const [key, value] of Object.entries(query)) {
-                if (value === undefined || value === null) {
-                    continue;
-                }
-
-                if (Array.isArray(value)) {
-                    value.forEach((v) => url.searchParams.append(key, v));
-                } else {
-                    url.searchParams.append(key, value);
-                }
-            }
-        }
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/delegation/instances/rights`,
-            name: `${this.FULL_PATH}/delegation/instances/rights`,
-            action: TAGS.GetInstanceRights.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url.toString(), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.get(
+            buildUrl(`${this.FULL_PATH}/delegation/instances/rights`, query),
+            requestParams({
+                endpoint: `${this.FULL_PATH}/delegation/instances/rights`,
+                action: TAGS.GetInstanceRights.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 
     /**
@@ -324,48 +174,16 @@ class InstanceClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     UpdateInstanceRights(query = null, body = null, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(`${this.FULL_PATH}/delegation/instances/rights`);
-
-        if (query !== null) {
-            for (const [key, value] of Object.entries(query)) {
-                if (value === undefined || value === null) {
-                    continue;
-                }
-
-                if (Array.isArray(value)) {
-                    value.forEach((v) => url.searchParams.append(key, v));
-                } else {
-                    url.searchParams.append(key, value);
-                }
-            }
-        }
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/delegation/instances/rights`,
-            name: `${this.FULL_PATH}/delegation/instances/rights`,
-            action: TAGS.UpdateInstanceRights.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
         return http.put(
-            url.toString(),
-            body !== null ? JSON.stringify(body) : null,
-            {
-                tags,
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    "Content-Type": "application/json",
-                    Accept: "application/json",
-                },
-            },
+            buildUrl(`${this.FULL_PATH}/delegation/instances/rights`, query),
+            jsonBody(body),
+            requestParams({
+                endpoint: `${this.FULL_PATH}/delegation/instances/rights`,
+                action: TAGS.UpdateInstanceRights.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+                json: true,
+            }),
         );
     }
 
@@ -378,46 +196,15 @@ class InstanceClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetInstanceSimplifiedUsers(query = null, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(
-            `${this.FULL_PATH}/delegation/instances/simplified/users`,
+        return http.get(
+            buildUrl(`${this.FULL_PATH}/delegation/instances/simplified/users`, query),
+            requestParams({
+                endpoint: `${this.FULL_PATH}/delegation/instances/simplified/users`,
+                action: TAGS.GetInstanceSimplifiedUsers.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
         );
-
-        if (query !== null) {
-            for (const [key, value] of Object.entries(query)) {
-                if (value === undefined || value === null) {
-                    continue;
-                }
-
-                if (Array.isArray(value)) {
-                    value.forEach((v) => url.searchParams.append(key, v));
-                } else {
-                    url.searchParams.append(key, value);
-                }
-            }
-        }
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/delegation/instances/simplified/users`,
-            name: `${this.FULL_PATH}/delegation/instances/simplified/users`,
-            action: TAGS.GetInstanceSimplifiedUsers.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url.toString(), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
     }
 }
 

@@ -1,14 +1,10 @@
 import http from "k6/http";
 
+import { requestParams } from "../../common/request.js";
+
 const TAGS = {
     GetOrganization: {
         action: "get-organization",
-    },
-    GetParty: {
-        action: "get-party",
-    },
-    GetUser: {
-        action: "get-user",
     },
     GetPartyForAuthenticatedUser: {
         action: "get-party-for-authenticated-user",
@@ -53,98 +49,15 @@ class LookupClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetOrganization(orgNummer, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(`${this.FULL_PATH}/org/${orgNummer}`);
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/org/{orgNummer}`,
-            name: `${this.FULL_PATH}/org/{orgNummer}`,
-            action: TAGS.GetOrganization.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url.toString(), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
-    }
-
-    /**
-     * Looks up a party by party UUID.
-     *
-     * @param {string} uuid Party UUID.
-     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
-     */
-    GetParty(uuid, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(`${this.FULL_PATH}/party/${uuid}`);
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/party/{uuid}`,
-            name: `${this.FULL_PATH}/party/{uuid}`,
-            action: TAGS.GetParty.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url.toString(), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
-    }
-
-    /**
-     * Looks up a user profile by user UUID.
-     *
-     * @param {string} uuid User UUID.
-     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
-     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
-     */
-    GetUser(uuid, labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(`${this.FULL_PATH}/user/${uuid}`);
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/user/{uuid}`,
-            name: `${this.FULL_PATH}/user/{uuid}`,
-            action: TAGS.GetUser.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url.toString(), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.get(
+            `${this.FULL_PATH}/org/${orgNummer}`,
+            requestParams({
+                endpoint: `${this.FULL_PATH}/org/{orgNummer}`,
+                action: TAGS.GetOrganization.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 
     /**
@@ -154,30 +67,15 @@ class LookupClient {
      * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
      */
     GetPartyForAuthenticatedUser(labels = null) {
-        const token = this.tokenGenerator.getToken();
-
-        const url = new URL(`${this.FULL_PATH}/party/user`);
-
-        let tags = {
-            endpoint: `${this.FULL_PATH}/party/user`,
-            name: `${this.FULL_PATH}/party/user`,
-            action: TAGS.GetPartyForAuthenticatedUser.action,
-        };
-
-        if (labels !== null) {
-            tags = {
-                ...labels,
-                ...tags,
-            };
-        }
-
-        return http.get(url.toString(), {
-            tags,
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        });
+        return http.get(
+            `${this.FULL_PATH}/party/user`,
+            requestParams({
+                endpoint: `${this.FULL_PATH}/party/user`,
+                action: TAGS.GetPartyForAuthenticatedUser.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
     }
 }
 

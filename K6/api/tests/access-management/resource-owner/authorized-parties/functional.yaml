@@ -5,26 +5,41 @@ test_definitions:
     test_scope: resourceowner-authorized-parties
     contexts:
       - environment: at22
+      - environment: at23
+      - environment: tt02
+      - environment: yt01
 
   - test_file: access-information-flags.js
     test_scope: resourceowner-authorized-parties
     contexts:
       - environment: at22
+      - environment: at23
+      - environment: tt02
+      - environment: yt01
 
   - test_file: key-role-filter.js
     test_scope: resourceowner-authorized-parties
     contexts:
       - environment: at22
+      - environment: at23
+      - environment: tt02
+      - environment: yt01
 
   - test_file: party-filter.js
     test_scope: resourceowner-authorized-parties
     contexts:
       - environment: at22
+      - environment: at23
+      - environment: tt02
+      - environment: yt01
 
   - test_file: resource-filter.js
     test_scope: resourceowner-authorized-parties
     contexts:
       - environment: at22
+      - environment: at23
+      - environment: tt02
+      - environment: yt01
 
   - test_file: unit-hierarchy-delegation-directions.js
     test_scope: resourceowner-authorized-parties
@@ -40,6 +55,9 @@ test_definitions:
     test_scope: resourceowner-authorized-parties
     contexts:
       - environment: at22
+      - environment: at23
+      - environment: tt02
+      - environment: yt01
 
   - test_file: deleted-parties.js
     test_scope: resourceowner-authorized-parties
@@ -50,11 +68,17 @@ test_definitions:
     test_scope: resourceowner-authorized-parties
     contexts:
       - environment: at22
+      - environment: at23
+      - environment: tt02
+      - environment: yt01
 
   - test_file: org-code-filter.js
     test_scope: resourceowner-authorized-parties
     contexts:
       - environment: at22
+      - environment: at23
+      - environment: tt02
+      - environment: yt01
 
   - test_file: forretningsforer-clients.js
     test_scope: resourceowner-authorized-parties

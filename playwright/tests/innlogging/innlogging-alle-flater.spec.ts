@@ -1,45 +1,59 @@
-import { testMedFlater as test, Flate } from "../../fixtures/test";
-import { runInEnvironment } from "../../miljo";
+import { test } from "../../fixtures/test";
 
-// Endrer ingen data. I prod går innloggingen via mockporten, siden
-// TestID-skjermbildene bare finnes i testmiljøene.
-runInEnvironment("at23", "tt02", "prod");
-
-const flater: { start: Flate; landing: Flate }[] = [
-  { start: "arbeidsflate", landing: "arbeidsflate" },
-  { start: "tilgangsstyring", landing: "tilgangsstyring" },
-  { start: "infoportalen", landing: "arbeidsflate" },
-  { start: "arbeidsflate-profil", landing: "arbeidsflate-profil" },
-];
-
-for (const { start, landing } of flater) {
-  test(`Bruker er innlogget på alle flater etter innlogging fra ${start}`, async ({
+test("Bruker er innlogget på alle flater etter innlogging via arbeidsflate", { tag: ["@at23", "@tt02", "@prod"] }, async ({
     innlogging,
     user,
-    flater: sider,
-  }) => {
-    await test.step(`Bruker går til ${start} uten å være logget inn`, async () => {
-      await sider[start].navigateTo();
-      if (start !== "infoportalen") {
-        await innlogging.assertOnIdportenLogin();
-      }
+    arbeidsflate,
+    arbeidsflateProfil,
+    tilgangsstyring,
+    infoportal,
+}) => {
+    await test.step("Bruker logger inn via arbeidsflate", async () => {
+        await innlogging.loggInnViaArbeidsflate(user);
+        await arbeidsflate.assertLoggedIn();
     });
 
-    await test.step("Bruker logger inn", async () => {
-      await innlogging.viaInnloggingsflyten(sider[landing], user);
+    await test.step("Bruker er innlogget på profilen", async () => {
+        await arbeidsflate.meny.gaTilProfil();
+        await arbeidsflateProfil.assertLoggedIn();
     });
 
-    await test.step(`Bruker skal være innlogget på ${landing}`, async () => {
-      await sider[landing].assertLoggedIn(user);
+    await test.step("Bruker er innlogget på tilgangsstyring", async () => {
+        await arbeidsflateProfil.meny.gaTilTilgangsstyring();
+        await tilgangsstyring.assertLoggedIn();
     });
 
-    await test.step("Bruker skal fortsatt være innlogget på de andre flatene", async () => {
-      for (const flate of flater
-        .map((f) => f.start)
-        .filter((f) => f !== start)) {
-        await sider[flate].navigateTo();
-        await sider[flate].assertLoggedIn(user);
-      }
+    await test.step("Bruker er innlogget på forsiden", async () => {
+        await tilgangsstyring.meny.gaTilForsiden();
+        await infoportal.assertLoggedIn(user);
     });
-  });
-}
+});
+
+test("Bruker er innlogget på alle flater etter innlogging via tilgangsstyring", { tag: ["@at23", "@tt02", "@prod"] }, async ({
+    innlogging,
+    user,
+    arbeidsflate,
+    arbeidsflateProfil,
+    tilgangsstyring,
+    infoportal,
+}) => {
+    await test.step("Bruker logger inn via tilgangsstyring", async () => {
+        await innlogging.loggInnViaTilgangsstyring(user);
+        await tilgangsstyring.assertLoggedIn();
+    });
+
+    await test.step("Bruker er innlogget på profilen", async () => {
+        await tilgangsstyring.meny.gaTilProfil();
+        await arbeidsflateProfil.assertLoggedIn();
+    });
+
+    await test.step("Bruker er innlogget på arbeidsflate", async () => {
+        await arbeidsflateProfil.meny.gaTilInnboks();
+        await arbeidsflate.assertLoggedIn();
+    });
+
+    await test.step("Bruker er innlogget på forsiden", async () => {
+        await arbeidsflate.meny.gaTilForsiden();
+        await infoportal.assertLoggedIn(user);
+    });
+});

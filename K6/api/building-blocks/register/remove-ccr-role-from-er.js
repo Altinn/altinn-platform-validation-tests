@@ -16,6 +16,7 @@ import { withRetries } from "../common/retry.js";
  * @param {string} ccrRole The role to remove, keyed as in ErRoleFieldTypes,
  * e.g. "revisor".
  * @param {string} clientOrg Organization number of the organization losing a facilitator.
+ * @param {string} clientOrgForm The client's organisasjonsform as Register has it, e.g. "ENK".
  * @param {string} facilitatorOrg Organization number of the facilitator.
  * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
  * @returns {boolean} Whether ER processed the batch.
@@ -26,6 +27,7 @@ export function RemoveCcrRoleFromEr(
     soapErPassword,
     ccrRole,
     clientOrg,
+    clientOrgForm,
     facilitatorOrg,
     labels = null,
 ) {
@@ -36,6 +38,7 @@ export function RemoveCcrRoleFromEr(
                 soapErPassword,
                 ccrRole,
                 clientOrg,
+                clientOrgForm,
                 facilitatorOrg,
                 labels,
             ),

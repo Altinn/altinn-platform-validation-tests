@@ -2,6 +2,7 @@ import { check } from "k6";
 
 import { DataClient } from "../../../clients/storage/index.js";
 import { DataElement, DataElementList, FileScanStatus } from "../../../clients/storage/instances.types.js";
+import { VersionMatch } from "../../../clients/storage/version-match.js";
 import { withRetries } from "../common/retry.js";
 
 /**
@@ -14,6 +15,7 @@ import { withRetries } from "../common/retry.js";
  * @param {string|null} [dataType] Data type id.
  * @param {Array<string>|null} [refs] Ids of related data elements.
  * @param {string|null} [generatedFromTask] Task the element was generated from.
+ * @param {VersionMatch|null} [versionMatch] Instance and process-state versions the write is conditioned on.
  * @param {{[key:string]:string}|null} [labels] Optional k6 request labels.
  * @returns {DataElement|null} Parsed response body, or null when the call failed.
  */
@@ -25,6 +27,7 @@ export function CreateData(
     dataType = null,
     refs = null,
     generatedFromTask = null,
+    versionMatch = null,
     labels = null,
 ) {
     const res = withRetries(
@@ -35,6 +38,7 @@ export function CreateData(
             dataType,
             refs,
             generatedFromTask,
+            versionMatch,
             labels,
         ),
         "CreateData",
@@ -113,6 +117,49 @@ export function GetData(
 }
 
 /**
+ * Downloads the content of one blob version of a data element, for the instance's own service owner.
+ *
+ * @param {DataClient} dataClient Client for the API.
+ * @param {number} instanceOwnerPartyId Instance owner party id.
+ * @param {string} instanceGuid Instance UUID.
+ * @param {string} dataGuid Data element UUID.
+ * @param {string} blobVersionId The blob version to retrieve.
+ * @param {{[key:string]:string}|null} [labels] Optional k6 request labels.
+ * @returns {import("k6/http").RefinedResponse<"text">} The HTTP response. The body is the file
+ * content, so the response is returned rather than a boolean.
+ */
+export function GetDataVersion(
+    dataClient,
+    instanceOwnerPartyId,
+    instanceGuid,
+    dataGuid,
+    blobVersionId,
+    labels = null,
+) {
+    const res = withRetries(
+        () => dataClient.GetDataVersion(
+            instanceOwnerPartyId,
+            instanceGuid,
+            dataGuid,
+            blobVersionId,
+            labels,
+        ),
+        "GetDataVersion",
+    );
+
+    const success = check(res, {
+        "GetDataVersion - status code is 200": (r) => r.status === 200,
+    });
+
+    if (!success) {
+        console.log(res.status);
+        console.log(res.body);
+    }
+
+    return res;
+}
+
+/**
  * Replaces the content of a data element.
  *
  * @param {DataClient} dataClient Client for the API.
@@ -122,6 +169,7 @@ export function GetData(
  * @param {*} body Binary file content.
  * @param {Array<string>|null} [refs] Ids of related data elements.
  * @param {string|null} [generatedFromTask] Task the element was generated from.
+ * @param {VersionMatch|null} [versionMatch] Instance and process-state versions the write is conditioned on.
  * @param {{[key:string]:string}|null} [labels] Optional k6 request labels.
  * @returns {DataElement|null} Parsed response body, or null when the call failed.
  */
@@ -133,6 +181,7 @@ export function UpdateData(
     body,
     refs = null,
     generatedFromTask = null,
+    versionMatch = null,
     labels = null,
 ) {
     const res = withRetries(
@@ -143,6 +192,7 @@ export function UpdateData(
             body,
             refs,
             generatedFromTask,
+            versionMatch,
             labels,
         ),
         "UpdateData",
@@ -188,6 +238,7 @@ export function UpdateData(
  * @param {string} instanceGuid Instance UUID.
  * @param {string} dataGuid Data element UUID.
  * @param {boolean|null} [delay] Whether to delay the delete.
+ * @param {VersionMatch|null} [versionMatch] Instance and process-state versions the delete is conditioned on.
  * @param {{[key:string]:string}|null} [labels] Optional k6 request labels.
  * @returns {DataElement|null} Parsed response body, or null when the call failed.
  */
@@ -197,6 +248,7 @@ export function DeleteData(
     instanceGuid,
     dataGuid,
     delay = null,
+    versionMatch = null,
     labels = null,
 ) {
     const res = withRetries(
@@ -205,6 +257,7 @@ export function DeleteData(
             instanceGuid,
             dataGuid,
             delay,
+            versionMatch,
             labels,
         ),
         "DeleteData",
@@ -306,6 +359,7 @@ export function GetDataElements(
  * @param {string} instanceGuid Instance UUID.
  * @param {string} dataGuid Data element UUID.
  * @param {DataElement} request Data element metadata to store.
+ * @param {VersionMatch|null} [versionMatch] Instance and process-state versions the write is conditioned on.
  * @param {{[key:string]:string}|null} [labels] Optional k6 request labels.
  * @returns {DataElement|null} Parsed response body, or null when the call failed.
  */
@@ -315,6 +369,7 @@ export function UpdateDataElement(
     instanceGuid,
     dataGuid,
     request,
+    versionMatch = null,
     labels = null,
 ) {
     const res = withRetries(
@@ -323,6 +378,7 @@ export function UpdateDataElement(
             instanceGuid,
             dataGuid,
             request,
+            versionMatch,
             labels,
         ),
         "UpdateDataElement",

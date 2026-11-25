@@ -2,7 +2,7 @@ local cronSchedule = std.extVar('cron_schedule');
 local namespace = std.extVar('namespace');
 local input_config_file = std.extVar('config_file');
 
-local maxCronJobNameLength = 52; // Don't remember the correct value, but yea... Need to fix this eventually.
+local maxCronJobNameLength = 52;  // Don't remember the correct value, but yea... Need to fix this eventually.
 
 local deVowel(str) =
   std.foldl(
@@ -13,7 +13,7 @@ local deVowel(str) =
       'e',
       'i',
       'o',
-      'u'
+      'u',
     ],
     str
   );

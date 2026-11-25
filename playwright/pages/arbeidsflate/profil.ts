@@ -1,17 +1,33 @@
-import { expect, Page } from "@playwright/test";
-import { baseUrls, TestUser } from "../../config/environment";
-import { Meny } from "../felles/meny";
-import { gaaTil } from "../felles/navigasjon";
+import { expect, Locator, Page } from "@playwright/test";
+
+import { TestUser } from "../../config/environment";
+import { Sprak } from "../../config/sprak";
+import { CookiebannerPom } from "../felles/cookiebanner";
+import { MenyPom } from "../felles/meny";
 import { assertFlateUtlogget } from "../felles/utlogget";
-import { Side } from "../side";
 
-export class ArbeidsflateProfil implements Side {
-    readonly url = `${baseUrls.arbeidsflate}/profile`;
+export class ArbeidsflateProfilPom {
+    readonly url: string;
 
-    constructor(private page: Page, private meny = new Meny(page)) { }
+    // Lagrede søk i profilens sidemeny. href-en er språkuavhengig.
+    readonly lagredeSokLink: Locator;
+
+    constructor(
+        private page: Page,
+        arbeidsflate: string,
+        readonly sprak: Sprak,
+        readonly meny = new MenyPom(page),
+        readonly cookiebanner = new CookiebannerPom(page),
+    ) {
+        this.url = `${arbeidsflate}/profile`;
+
+        this.lagredeSokLink = page
+            .getByRole("complementary")
+            .locator("a[href=\"/profile/saved-searches\"]");
+    }
 
     async navigateTo() {
-        await gaaTil(this.page, this.url);
+        await this.page.goto(this.url, { waitUntil: "commit" });
     }
 
     // Flatene bak innlogging svarer likt for en utlogget bruker, så påstanden
@@ -23,10 +39,12 @@ export class ArbeidsflateProfil implements Side {
     async assertLoggedIn() {
         await this.meny.assertLoggedIn();
 
-        // Lagrede søk ligger bare under profilen, og href-en er språkuavhengig.
-        await expect(
-            this.page.getByRole('complementary').locator('a[href="/profile/saved-searches"]'),
-            'Profilens sidemeny vises'
-        ).toBeVisible();
+        // Sidemenyen alene skiller ikke profilen fra innboksen: lagrede søk-lenken
+        // finnes i begge. Stien sjekkes, så query-parametre ikke gir falsk feil.
+        await expect
+            .poll(() => new URL(this.page.url()).pathname, { message: "Er på profilen" })
+            .toBe(new URL(this.url).pathname);
+
+        await expect(this.lagredeSokLink, "Profilens sidemeny vises").toBeVisible();
     }
 }
