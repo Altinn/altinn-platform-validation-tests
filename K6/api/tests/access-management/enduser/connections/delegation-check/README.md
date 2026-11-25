@@ -83,16 +83,17 @@ Each test draws one row per iteration from a fixture in
 fixed party each; these are random parties from Tenor that exist in Register for the
 environment. Tenor returns random hits, so running a command again gives other rows.
 
-The files were made with testudo on 2026-11-24, from `helpers/testudo`, with the commands
-below.
+The files were made with [testudo](../../../../../../../helpers/testudo/README.md) on 2026-11-24,
+with the commands below, run from the root of the repository. Install testudo with
+`make install` in `helpers/testudo`.
 
 **`organizations/<environment>.csv`**: an AS and its daglig leder.
 
 ```bash
 for env in at22 tt02; do
-  go run . find organizations --unit-type AS --count 10 --env $env --format csv \
+  testudo find organizations --unit-type AS --count 10 --env $env --format csv \
     --columns organizationIdentifier,partyUuid,personRole,ssn,userId,userPartyId,userPartyUuid \
-    --out ../../K6/testdata/access-management/enduser/connections/delegation-check/organizations/$env.csv
+    --out K6/testdata/access-management/enduser/connections/delegation-check/organizations/$env.csv
 done
 ```
 
@@ -101,9 +102,9 @@ bostyrer as the leader of a konkursbo.
 
 ```bash
 for env in at22 tt02; do
-  go run . find organizations --unit-type KBO --count 10 --env $env --format csv \
+  testudo find organizations --unit-type KBO --count 10 --env $env --format csv \
     --columns organizationIdentifier,partyUuid,personRole,ssn,userId,userPartyId,userPartyUuid \
-    --out ../../K6/testdata/access-management/enduser/connections/delegation-check/konkursbo/$env.csv
+    --out K6/testdata/access-management/enduser/connections/delegation-check/konkursbo/$env.csv
 done
 ```
 
@@ -115,9 +116,9 @@ client's leader had no user and testudo left that row out.
 
 ```bash
 for env in at22 tt02; do
-  go run . find organizations --role regnskapsfoerer --count 10 --env $env --format csv \
+  testudo find organizations --role regnskapsfoerer --count 10 --env $env --format csv \
     --columns organizationIdentifier,partyUuid,personRole,ssn,userId,userPartyId,userPartyUuid,clientOrganizationIdentifier,clientPartyUuid,clientPersonRole,clientSsn,clientUserId,clientUserPartyId,clientUserPartyUuid \
-    --out ../../K6/testdata/access-management/enduser/connections/delegation-check/regnskapsforere/$env.csv
+    --out K6/testdata/access-management/enduser/connections/delegation-check/regnskapsforere/$env.csv
 done
 ```
 
