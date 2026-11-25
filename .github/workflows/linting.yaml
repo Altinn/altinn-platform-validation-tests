@@ -7,6 +7,7 @@ on:
       - ".github/workflows/**"
       - "K6/**"
       - "conf"
+      - "hack/find_checks_with_dynamic_names.mjs"
       - "jsconfig.json"
       - "package.json"
       - "**/*.jsonnet"

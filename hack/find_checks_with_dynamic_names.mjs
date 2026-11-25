@@ -1,52 +1,31 @@
 #!/usr/bin/env node
 
+// Fails when a k6 check() name is not a plain string.
+//
+// Check names become labels in Grafana. A name built at run time, from an id, a
+// status or an operation, splits one check into many series, so every name must be
+// written out in full where check() is called. Values that help diagnose a failure
+// belong in the failure log instead.
+//
+// Usage: node hack/find_checks_with_dynamic_names.mjs [directory]   (default: K6)
+
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 import { parse } from "@babel/parser";
 
-const SCRIPT_DIR = path.dirname(fileURLToPath(import.meta.url));
-const ROOT = process.argv[2] || ".";
-const EXCEPTIONS_FILE = path.join(
-    SCRIPT_DIR,
-    "k6-check-exceptions.json",
-);
+const REPO_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const ROOT = path.resolve(process.argv[2] ?? path.join(REPO_ROOT, "K6"));
 
-const EXTENSIONS = new Set([
-    ".js",
-    ".jsx",
-    ".ts",
-    ".tsx",
-]);
-
-const IGNORE_DIRS = new Set([
-    "node_modules",
-    ".git",
-    "dist",
-    "build",
-    "coverage",
-]);
+const EXTENSIONS = new Set([".js", ".mjs", ".cjs", ".ts"]);
+const IGNORE_DIRS = new Set(["node_modules", ".git"]);
 
 let filesScanned = 0;
 let checksFound = 0;
-let dynamicChecksFound = 0;
-let allowedChecksFound = 0;
-let violationsFound = 0;
 
-const usedExceptions = new Set();
-
-function loadExceptions() {
-    if (!fs.existsSync(EXCEPTIONS_FILE)) {
-        return {};
-    }
-
-    return JSON.parse(
-        fs.readFileSync(EXCEPTIONS_FILE, "utf8"),
-    );
-}
-
-const exceptions = loadExceptions();
+/** @type {{file: string, line: number, column: number, message: string}[]} */
+const violations = [];
 
 function getFiles(dir) {
     const files = [];
@@ -60,10 +39,7 @@ function getFiles(dir) {
 
         if (entry.isDirectory()) {
             files.push(...getFiles(fullPath));
-            continue;
-        }
-
-        if (EXTENSIONS.has(path.extname(entry.name))) {
+        } else if (EXTENSIONS.has(path.extname(entry.name))) {
             files.push(fullPath);
         }
     }
@@ -71,234 +47,163 @@ function getFiles(dir) {
     return files;
 }
 
-function isCheckCall(node) {
-    return (
-        node?.type === "CallExpression" &&
-        node.callee?.type === "Identifier" &&
-        node.callee.name === "check"
-    );
+function relativeToRepo(file) {
+    return path.relative(REPO_ROOT, file).split(path.sep).join("/");
 }
 
-function isObjectExpression(node) {
-    return node?.type === "ObjectExpression";
+function report(file, node, message) {
+    violations.push({
+        file: relativeToRepo(file),
+        line: node.loc.start.line,
+        column: node.loc.start.column + 1,
+        message,
+    });
 }
 
-function sourceForNode(node) {
-    if (!node) {
-        return "<unknown>";
-    }
+/**
+ * Finds the names check() goes by in a file: `check` itself, any alias it is
+ * imported from k6 under, and any name the k6 module itself is imported as.
+ *
+ * @param {object} program - The parsed file.
+ * @returns {{functions: Set<string>, namespaces: Set<string>}} The names to match calls on.
+ */
+function findCheckBindings(program) {
+    const functions = new Set(["check"]);
+    const namespaces = new Set();
 
-    if (node.type === "TemplateLiteral") {
-        let result = "`";
+    for (const statement of program.body) {
+        if (statement.type !== "ImportDeclaration" || statement.source.value !== "k6") {
+            continue;
+        }
 
-        node.quasis.forEach((quasi, index) => {
-            result += quasi.value.raw;
-
-            if (index < node.expressions.length) {
-                result += "${";
-                result += sourceForNode(node.expressions[index]);
-                result += "}";
+        for (const specifier of statement.specifiers) {
+            if (specifier.type === "ImportSpecifier") {
+                const imported = specifier.imported.name ?? specifier.imported.value;
+                if (imported === "check") {
+                    functions.add(specifier.local.name);
+                }
+            } else {
+                namespaces.add(specifier.local.name);
             }
-        });
-
-        return result + "`";
+        }
     }
 
-    if (node.type === "Identifier") {
-        return node.name;
-    }
-
-    if (node.type === "StringLiteral") {
-        return JSON.stringify(node.value);
-    }
-
-    if (node.type === "NumericLiteral") {
-        return String(node.value);
-    }
-
-    if (node.type === "BinaryExpression") {
-        return (
-            sourceForNode(node.left) +
-            ` ${node.operator} ` +
-            sourceForNode(node.right)
-        );
-    }
-
-    if (node.type === "CallExpression") {
-        return `${sourceForNode(node.callee)}(...)`;
-    }
-
-    return `<${node.type}>`;
+    return { functions, namespaces };
 }
 
-function getRelativeFile(file) {
-    return path.relative(process.cwd(), file);
-}
-
-function getExceptionKey(file, name) {
-    return `${getRelativeFile(file)}::${name}`;
-}
-
-function isException(file, name) {
-    const relativeFile = getRelativeFile(file);
-    const fileExceptions = exceptions[relativeFile];
-
-    if (!fileExceptions) {
+function isCheckCall(node, bindings) {
+    if (node.type !== "CallExpression") {
         return false;
     }
 
-    const allowed = fileExceptions.includes(name);
+    const callee = node.callee;
 
-    if (allowed) {
-        usedExceptions.add(
-            getExceptionKey(file, name),
-        );
+    if (callee.type === "Identifier") {
+        return bindings.functions.has(callee.name);
     }
 
-    return allowed;
+    if (callee.type !== "MemberExpression" || callee.object.type !== "Identifier") {
+        return false;
+    }
+
+    const property = callee.computed ? callee.property.value : callee.property.name;
+
+    return bindings.namespaces.has(callee.object.name) && property === "check";
+}
+
+function isStaticKey(property) {
+    if (!property.computed) {
+        return true;
+    }
+
+    const key = property.key;
+
+    return key.type === "StringLiteral" ||
+        (key.type === "TemplateLiteral" && key.expressions.length === 0);
+}
+
+function analyzeCheck(node, file, source) {
+    checksFound++;
+
+    const names = node.arguments[1];
+
+    if (names?.type !== "ObjectExpression") {
+        report(file, node, "check() names must be an object literal written at the call");
+        return;
+    }
+
+    for (const property of names.properties) {
+        if (property.type === "SpreadElement") {
+            report(file, property, `check() names must not be spread in: ${source.slice(property.start, property.end)}`);
+        } else if (!isStaticKey(property)) {
+            report(file, property, `check() name is not a plain string: ${source.slice(property.key.start, property.key.end)}`);
+        }
+    }
+}
+
+function walk(node, visit) {
+    if (!node || typeof node !== "object") {
+        return;
+    }
+
+    if (Array.isArray(node)) {
+        node.forEach((child) => walk(child, visit));
+        return;
+    }
+
+    if (typeof node.type === "string") {
+        visit(node);
+    }
+
+    for (const [key, value] of Object.entries(node)) {
+        if (key !== "loc" && key !== "extra" && value && typeof value === "object") {
+            walk(value, visit);
+        }
+    }
 }
 
 function analyzeFile(file) {
     filesScanned++;
 
     const source = fs.readFileSync(file, "utf8");
-
     let ast;
 
     try {
         ast = parse(source, {
             sourceType: "unambiguous",
-            plugins: [
-                "jsx",
-                "typescript",
-            ],
+            plugins: path.extname(file) === ".ts" ? ["typescript"] : [],
         });
     } catch (error) {
-        console.error(`⚠️  Could not parse ${file}`);
-        console.error(`   ${error.message}`);
+        // A file that cannot be read cannot be shown to be clean.
+        violations.push({
+            file: relativeToRepo(file),
+            line: error.loc?.line ?? 1,
+            column: (error.loc?.column ?? 0) + 1,
+            message: `could not parse: ${error.message}`,
+        });
         return;
     }
 
-    walk(ast.program, file);
+    const bindings = findCheckBindings(ast.program);
+
+    walk(ast.program, (node) => {
+        if (isCheckCall(node, bindings)) {
+            analyzeCheck(node, file, source);
+        }
+    });
 }
 
-function walk(node, file) {
-    if (!node || typeof node !== "object") {
-        return;
-    }
-
-    if (isCheckCall(node)) {
-        analyzeCheck(node, file);
-    }
-
-    for (const key of Object.keys(node)) {
-        if (
-            key === "loc" ||
-            key === "start" ||
-            key === "end" ||
-            key === "tokens" ||
-            key === "comments"
-        ) {
-            continue;
-        }
-
-        const value = node[key];
-
-        if (Array.isArray(value)) {
-            for (const child of value) {
-                walk(child, file);
-            }
-        } else if (value && typeof value === "object") {
-            walk(value, file);
-        }
-    }
-}
-
-function analyzeCheck(node, file) {
-    checksFound++;
-
-    const checkObject = node.arguments?.find(isObjectExpression);
-
-    if (!checkObject) {
-        return;
-    }
-
-    for (const property of checkObject.properties || []) {
-        if (property.type !== "ObjectProperty") {
-            continue;
-        }
-
-        if (!property.computed) {
-            continue;
-        }
-
-        dynamicChecksFound++;
-
-        const loc = property.loc?.start || node.loc?.start;
-        const name = sourceForNode(property.key);
-
-        if (isException(file, name)) {
-            allowedChecksFound++;
-
-            // console.log("⚠️  Allowed dynamic k6 check name");
-        } else {
-            violationsFound++;
-
-            console.log("❌ Dynamic k6 check name");
-        }
-
-        console.log(`   File: ${getRelativeFile(file)}`);
-        console.log(`   Line: ${loc.line}`);
-        console.log(`   Column: ${loc.column + 1}`);
-        console.log(`   Name: ${name}`);
-        console.log();
-    }
-}
-
-function reportUnusedExceptions() {
-    let unusedCount = 0;
-
-    for (const [file, names] of Object.entries(exceptions)) {
-        for (const name of names) {
-            const key = `${file}::${name}`;
-
-            if (usedExceptions.has(key)) {
-                continue;
-            }
-
-            unusedCount++;
-
-            console.log("⚠️  Unused exception");
-            console.log(`   File: ${file}`);
-            console.log(`   Name: ${name}`);
-            console.log();
-        }
-    }
-
-    return unusedCount;
-}
-
-const files = getFiles(ROOT);
-
-for (const file of files) {
+for (const file of getFiles(ROOT)) {
     analyzeFile(file);
 }
 
-const unusedExceptions = reportUnusedExceptions();
+for (const violation of violations) {
+    console.log(`${violation.file}:${violation.line}:${violation.column}  ${violation.message}`);
+}
 
-console.log("========================================");
-console.log("k6 check analysis");
-console.log("========================================");
-console.log(`Files scanned:          ${filesScanned}`);
-console.log(`check() calls found:    ${checksFound}`);
-console.log(`Dynamic check names:    ${dynamicChecksFound}`);
-console.log(`Allowed exceptions:     ${allowedChecksFound}`);
-console.log(`Violations:             ${violationsFound}`);
-console.log(`Unused exceptions:      ${unusedExceptions}`);
-console.log("========================================");
+console.log();
+console.log(`Files scanned:       ${filesScanned}`);
+console.log(`check() calls found: ${checksFound}`);
+console.log(`Violations:          ${violations.length}`);
 
-// Fail CI for either actual violations or stale exceptions.
-process.exitCode =
-    violationsFound > 0 || unusedExceptions > 0
-        ? 1
-        : 0;
+process.exitCode = violations.length > 0 ? 1 : 0;

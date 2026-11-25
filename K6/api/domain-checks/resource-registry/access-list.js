@@ -25,14 +25,14 @@ function organizationNumberOf(member) {
  *
  * @param {AccessListInfoDto|null} accessList - The access list returned by the API.
  * @param {{owner: string, identifier: string, name: string, description: string}} expected - What was written.
- * @param {string} operation - Name of the operation, used in the check name and logs.
+ * @param {string} operation - Name of the operation, used in the logs.
  * @returns {boolean} True if every field matches, false otherwise.
  */
 function CheckAccessListInfo(accessList, expected, operation) {
     const expectedUrn = `urn:altinn:access-list:${expected.owner}:${expected.identifier}`;
 
     const success = check(accessList, {
-        [`CheckAccessListInfo - ${operation} returns the list as written`]: (list) =>
+        "CheckAccessListInfo - The list is returned as written": (list) =>
             list !== null &&
             list.identifier === expected.identifier &&
             list.urn === expectedUrn &&
@@ -55,14 +55,14 @@ function CheckAccessListInfo(accessList, expected, operation) {
  *
  * @param {AccessListMembershipDtoAggregateVersionVersionedPaginated|null} page - The members page returned by the API.
  * @param {Array<string>} expectedOrganizationNumbers - The organization numbers the list has to hold, and no others.
- * @param {string} operation - Name of the operation, used in the check name and logs.
+ * @param {string} operation - Name of the operation, used in the logs.
  * @returns {boolean} True if the members match, false otherwise.
  */
 function CheckMembers(page, expectedOrganizationNumbers, operation) {
     const organizationNumbers = (page?.data ?? []).map(organizationNumberOf);
 
     const success = check(page, {
-        [`CheckMembers - ${operation} holds exactly the expected members`]: (response) =>
+        "CheckMembers - The list holds exactly the expected members": (response) =>
             Array.isArray(response?.data) && sameSet(organizationNumbers, expectedOrganizationNumbers),
     });
 
@@ -84,7 +84,7 @@ function CheckMembers(page, expectedOrganizationNumbers, operation) {
  *
  * @param {Array<AccessListResourceConnectionDto>|null|undefined} connections - The connections returned by the API.
  * @param {Array<{resourceIdentifier: string, actionFilters: Array<string>|null}>} expected - The connections the list has to hold.
- * @param {string} operation - Name of the operation, used in the check name and logs.
+ * @param {string} operation - Name of the operation, used in the logs.
  * @returns {boolean} True if the connections match, false otherwise.
  */
 function CheckResourceConnections(connections, expected, operation) {
@@ -98,7 +98,7 @@ function CheckResourceConnections(connections, expected, operation) {
         .map((wanted) => wanted.resourceIdentifier);
 
     const success = check(connections, {
-        [`CheckResourceConnections - ${operation} holds exactly the expected connections`]: (items) =>
+        "CheckResourceConnections - The list holds exactly the expected connections": (items) =>
             Array.isArray(items) &&
             sameSet(identifiers, expected.map((wanted) => wanted.resourceIdentifier)) &&
             wrongFilters.length === 0,

@@ -65,17 +65,17 @@ function CheckAvailableClients(clients, orgNo) {
  * Checks that a delegation echoes the agent system user and the client it was for.
  *
  * Both the delegate and the remove endpoint answer with the same pair, so this
- * covers either. The operation name goes into the check, so a test that does both
+ * covers either. The operation name goes into the log, so a test that does both
  * says which one failed.
  *
  * @param {{agent: string, client: string}|null} delegation - The delegation response.
  * @param {{agent: string, client: string}} expected - The agent system user and client the call was made for.
- * @param {string} operation - Name of the operation, used in the check name and logs.
+ * @param {string} operation - Name of the operation, used in the logs.
  * @returns {boolean} True if the response echoes the pair, false otherwise.
  */
 function CheckDelegationEchoesClient(delegation, expected, operation) {
     const success = check(delegation, {
-        [`CheckDelegationEchoesClient - ${operation} echoes the agent system user and the client`]: (response) =>
+        "CheckDelegationEchoesClient - The delegation echoes the agent system user and the client": (response) =>
             response !== null &&
             response !== undefined &&
             response.agent === expected.agent &&

@@ -44,7 +44,7 @@ function CheckConsentRequestCreated(consentRequest, expected) {
  */
 function CheckConsentRequestStatus(consentRequest, expectedStatus) {
     const success = check(consentRequest, {
-        [`CheckConsentRequestStatus - Consent request has status '${expectedStatus}'`]: (request) =>
+        "CheckConsentRequestStatus - Consent request has the expected status": (request) =>
             request?.status === expectedStatus,
     });
 
@@ -135,12 +135,12 @@ function CheckConsentApproved(approved) {
  * reads as a pass on the status code alone.
  *
  * @param {any} response - The parsed response.
- * @param {string} operation - Name of the operation, used in the check name and logs.
+ * @param {string} operation - Name of the operation, used in the logs.
  * @returns {boolean} True if there is a body to work with, false otherwise.
  */
 function CheckConsentResponse(response, operation) {
     const success = check(response, {
-        [`CheckConsentResponse - ${operation} returns a body`]: (body) =>
+        "CheckConsentResponse - The response has a body": (body) =>
             body !== null && body !== undefined,
     });
 

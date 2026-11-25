@@ -7,12 +7,12 @@ import { SystemUser } from "../../../clients/authentication/types.js";
  *
  * @param {SystemUser|null} systemUser - The system user the lookup returned.
  * @param {{id: string, systemId: string}} expected - The system user the lookup was made for.
- * @param {string} operation - Name of the operation, used in the check name and logs.
+ * @param {string} operation - Name of the operation, used in the logs.
  * @returns {boolean} True if the lookup found that system user, false otherwise.
  */
 function CheckSystemUserFound(systemUser, expected, operation) {
     const success = check(systemUser, {
-        [`CheckSystemUserFound - ${operation} found the expected system user`]: (found) =>
+        "CheckSystemUserFound - The lookup found the expected system user": (found) =>
             found !== null &&
             found?.id === expected.id &&
             found?.systemId === expected.systemId,
@@ -35,7 +35,7 @@ function CheckSystemUserFound(systemUser, expected, operation) {
  * comparison happens to accept.
  *
  * @param {{stats?: {pageStart?: number, pageEnd?: number, sequenceMax?: number}|null, data?: unknown[]|null}|null} page - A page of the stream.
- * @param {string} operation - Name of the operation, used in the check name and logs.
+ * @param {string} operation - Name of the operation, used in the logs.
  * @returns {boolean} True if the stats describe the page, false otherwise.
  */
 function CheckStreamStats(page, operation) {
@@ -49,13 +49,13 @@ function CheckStreamStats(page, operation) {
     const sequenceMax = typeof stats?.sequenceMax === "number" ? stats.sequenceMax : null;
 
     const success = check(page, {
-        [`CheckStreamStats - ${operation} reports where in the stream the page sits`]: () =>
+        "CheckStreamStats - The page reports where in the stream it sits": () =>
             pageStart !== null && pageEnd !== null && sequenceMax !== null,
-        [`CheckStreamStats - ${operation} ends the page no earlier than it starts`]: () =>
+        "CheckStreamStats - The page ends no earlier than it starts": () =>
             pageStart !== null && pageEnd !== null && pageEnd >= pageStart,
-        [`CheckStreamStats - ${operation} holds at least what the page does`]: () =>
+        "CheckStreamStats - The stream holds at least what the page does": () =>
             pageEnd !== null && sequenceMax !== null && sequenceMax >= pageEnd,
-        [`CheckStreamStats - ${operation} puts no more items on the page than the stats say`]: () =>
+        "CheckStreamStats - The page holds no more items than the stats say": () =>
             pageStart !== null && pageEnd !== null && items.length <= pageEnd - pageStart + 1,
     });
 

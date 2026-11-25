@@ -67,9 +67,13 @@ export default function () {
     }
 
     for (const [name, healthCheck] of Object.entries(body.entries)) {
-        check(healthCheck, {
-            [`${name} status is healthy`]: (hc) =>
+        const healthy = check(healthCheck, {
+            "each infoportal health entry status is healthy": (hc) =>
                 hc?.status === "Healthy",
         });
+
+        if (!healthy) {
+            console.log(`Infoportal health entry ${name} is ${healthCheck?.status}`);
+        }
     }
 }

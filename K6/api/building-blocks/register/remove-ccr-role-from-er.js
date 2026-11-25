@@ -46,9 +46,9 @@ export function RemoveCcrRoleFromEr(
     );
 
     const succeed = check(res, {
-        [`RemoveCcrRoleFromEr(${ccrRole}) - status code is 200`]: (r) =>
+        "RemoveCcrRoleFromEr - status code is 200": (r) =>
             r.status === 200,
-        [`RemoveCcrRoleFromEr(${ccrRole}) - batch status is OK_ER_DATA_PROCESSED`]: (
+        "RemoveCcrRoleFromEr - batch status is OK_ER_DATA_PROCESSED": (
             r,
         ) =>
             typeof r.body === "string" &&
@@ -56,7 +56,7 @@ export function RemoveCcrRoleFromEr(
     });
 
     if (!succeed) {
-        console.log(res.status);
+        console.log(`ccrRole ${ccrRole}, status ${res.status}`);
         console.log(res.body);
     }
 

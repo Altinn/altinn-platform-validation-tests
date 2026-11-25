@@ -69,10 +69,14 @@ export function DecisionPost(
         // compiler cannot follow, so the type is restated here.
         const decided = /** @type {XacmlJsonResponseExternal|null} */ (response);
 
-        check(decided, {
-            [`DecisionPost - decision is ${expectedDecision}`]: (b) =>
+        const asExpected = check(decided, {
+            "DecisionPost - decision is as expected": (b) =>
                 b?.response?.[0]?.decision === expectedDecision,
         });
+
+        if (!asExpected) {
+            console.error(`DecisionPost - expected decision ${expectedDecision}, got ${decided?.response?.[0]?.decision}`);
+        }
     }
 
     return response;
