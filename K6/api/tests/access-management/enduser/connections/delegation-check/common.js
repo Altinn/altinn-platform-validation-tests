@@ -1,10 +1,10 @@
 import { fail } from "k6";
 
-import { ConnectionsClient, CreateAccessPackageQueryBuilder, CreateConnectionQueryBuilder, DeleteConnectionQueryBuilder } from "../../../../../../clients/access-management/enduser/connections/index.js";
+import { ConnectionsClient, CreateAccessPackageQueryBuilder, CreateConnectionQueryBuilder, CreateResourceRightsQueryBuilder, DeleteConnectionQueryBuilder, GetResourceDelegationCheckQueryBuilder } from "../../../../../../clients/access-management/enduser/connections/index.js";
 import { PersonalTokenBuilder, PersonalTokenGenerator } from "../../../../../../common-imports.js";
 import { fetchTestData, getItemFromList, lazy, pickUnique, requireEnv } from "../../../../../../helpers.js";
 import { AltinnScopes, CreateScopeString } from "../../../../../../scopes.js";
-import { CreateAccessPackage, CreateConnection, DeleteConnection } from "../../../../../building-blocks/access-management/enduser/connections/index.js";
+import { CreateAccessPackage, CreateConnection, CreateResourceRights, DeleteConnection, GetResourceDelegationCheck } from "../../../../../building-blocks/access-management/enduser/connections/index.js";
 
 const ENDUSER_SCOPES = CreateScopeString([
     AltinnScopes.PORTAL.ENDUSER,
@@ -179,20 +179,145 @@ function delegateAccessPackage(delegatingOrganization, receivingOrganization, ac
  * @returns {void}
  */
 export function removeKeyRoleConnection(data, label) {
+    removeConnection(data.delegatingOrganization, data.receivingOrganization.partyUuid, label);
+}
+
+/**
+ * The leader of the organization removes its connection to a party, with
+ * everything delegated on it.
+ *
+ * @param {OrganizationRow} organization The organization that made the connection.
+ * @param {string} toPartyUuid Party UUID of the party it was made to.
+ * @param {{[key: string]: string}} label k6 request label for the step.
+ * @returns {void}
+ */
+function removeConnection(organization, toPartyUuid, label) {
     const { connections, tokenGenerator } = getClients();
 
-    tokenGenerator.setTokenGeneratorOptions(getPersonTokenOpts(data.delegatingOrganization));
+    tokenGenerator.setTokenGeneratorOptions(getPersonTokenOpts(organization));
 
     DeleteConnection(
         connections,
         new DeleteConnectionQueryBuilder()
-            .withParty(data.delegatingOrganization.partyUuid)
-            .withFrom(data.delegatingOrganization.partyUuid)
-            .withTo(data.receivingOrganization.partyUuid)
+            .withParty(organization.partyUuid)
+            .withFrom(organization.partyUuid)
+            .withTo(toPartyUuid)
             .withCascade(true)
             .build(),
         label,
     );
+}
+
+/**
+ * An organization and a person outside it whom its leader has made
+ * tilgangsstyrer directly, and given some rights on a resource.
+ *
+ * @typedef {object} DirectTilgangsstyrer
+ * @property {OrganizationRow} organization The organization.
+ * @property {PersonRow} person The person who is tilgangsstyrer for it.
+ */
+
+/**
+ * Setup for the tests where a person outside an organization is its
+ * tilgangsstyrer through a direct delegation. Draws an AS and a private
+ * person. The daglig leder of the AS adds the person as a connection,
+ * delegates tilgangsstyrer to them, and delegates the rights on the resource
+ * with the actions. The keys of the rights come from the daglig leder's own
+ * resource delegation check, since they are opaque. The run stops if any of
+ * it fails, after removing what was made.
+ *
+ * @param {string} resource The resource identifier, for example tilgangspakke_delegering_ressurs.
+ * @param {Array<string>} actions The actions of the rights to delegate, for example read and write.
+ * @param {{createConnection: {[key: string]: string}, delegatePackage: {[key: string]: string}, rightKeys: {[key: string]: string}, delegateRights: {[key: string]: string}, deleteConnection: {[key: string]: string}}} labels k6 request labels for the steps.
+ * @returns {DirectTilgangsstyrer} The organization and the person.
+ */
+export function setupDirectTilgangsstyrer(resource, actions, labels) {
+    /** @type {OrganizationRow} */
+    const organization = getItemFromList(loadFixture("organizations"), true);
+    /** @type {PersonRow} */
+    const person = getItemFromList(loadFixture("persons"), true);
+    const { connections, tokenGenerator } = getClients();
+
+    const giveUp = (/** @type {string} */ reason) => {
+        removeConnection(organization, person.partyUuid, labels.deleteConnection);
+        fail(`${reason}, from ${organization.organizationIdentifier} to person ${person.userId}`);
+    };
+
+    tokenGenerator.setTokenGeneratorOptions(getPersonTokenOpts(organization));
+
+    const connection = CreateConnection(
+        connections,
+        new CreateConnectionQueryBuilder()
+            .withParty(organization.partyUuid)
+            .build(),
+        { personIdentifier: person.personIdentifier, lastName: person.lastName },
+        labels.createConnection,
+    );
+
+    if (connection === null) {
+        fail(`Could not add person ${person.userId} as a connection of ${organization.organizationIdentifier}`);
+    }
+
+    const assignment = CreateAccessPackage(
+        connections,
+        new CreateAccessPackageQueryBuilder()
+            .withParty(organization.partyUuid)
+            .withTo(person.partyUuid)
+            .withPackage("tilgangsstyrer")
+            .build(),
+        null,
+        labels.delegatePackage,
+    );
+
+    if (assignment === null) {
+        giveUp("Could not delegate tilgangsstyrer");
+    }
+
+    const leaderCheck = GetResourceDelegationCheck(
+        connections,
+        new GetResourceDelegationCheckQueryBuilder()
+            .withParty(organization.partyUuid)
+            .withResource(resource)
+            .build(),
+        labels.rightKeys,
+    );
+
+    const keys = (leaderCheck?.rights ?? [])
+        .filter((rightCheck) => rightCheck.result === true && actions.includes(rightCheck.right?.action?.value ?? ""))
+        .map((rightCheck) => rightCheck.right?.key ?? "");
+
+    if (keys.length !== actions.length) {
+        giveUp(`The daglig leder may not delegate all of ${JSON.stringify(actions)} on ${resource}`);
+    }
+
+    const delegated = CreateResourceRights(
+        connections,
+        new CreateResourceRightsQueryBuilder()
+            .withParty(organization.partyUuid)
+            .withTo(person.partyUuid)
+            .withResource(resource)
+            .build(),
+        { directRightKeys: keys },
+        labels.delegateRights,
+    );
+
+    if (!delegated) {
+        giveUp(`Could not delegate ${JSON.stringify(actions)} on ${resource}`);
+    }
+
+    return { organization, person };
+}
+
+/**
+ * Removes the connection setupDirectTilgangsstyrer made, with everything
+ * delegated on it.
+ *
+ * @param {DirectTilgangsstyrer} data The organization and the person.
+ * @param {{[key: string]: string}} label k6 request label for the step.
+ * @returns {void}
+ */
+export function removeDirectTilgangsstyrer(data, label) {
+    removeConnection(data.organization, data.person.partyUuid, label);
 }
 
 /**
@@ -228,6 +353,7 @@ export function setupPartsrederier() {
  *
  * @typedef {object} PersonRow
  * @property {string} personIdentifier National identity number.
+ * @property {string} lastName Last name, as Register has it. Needed to add the person as a connection.
  * @property {string} userId Altinn user id.
  * @property {string} partyId Party id of the person.
  * @property {string} partyUuid Party UUID of the person.

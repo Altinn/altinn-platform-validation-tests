@@ -20,6 +20,7 @@ the user can and cannot delegate.
 | [innehaver-checks-access-packages-by-urn.js](innehaver-checks-access-packages-by-urn.js) | `GET_Enduser_Conn_AccPcks_DelgCheck_Innehaver_UrnFilter` | Innehaver of an ENK | `party`, `packages` |
 | [bestyrende-reder-checks-access-packages-by-id.js](bestyrende-reder-checks-access-packages-by-id.js) | `GET_Enduser_Conn_AccPcks_DelgCheck_Bestyrende_idFiler` | Bestyrende reder of a partsrederi | `party`, `packageIds` |
 | [private-person-checks-own-access-packages.js](private-person-checks-own-access-packages.js) | `GET_Enduser_Conn_AccPcks_DelgCheck_PrivatePerson_NoFilter` | A private person, for themselves | `party` only |
+| [direct-tilgangsstyrer-checks-resource-rights.js](direct-tilgangsstyrer-checks-resource-rights.js) | `GET_Enduser_Conn_Resource_DelgCheck_DirectTilgangstyrer` | A person the daglig leder of an AS has made tilgangsstyrer | `party`, `resource` (resource delegation check) |
 
 `daglig-leder-checks-delegable-access-packages.js` checks that the answer covers access
 packages, that none of the packages only a person can hold (`innbygger-*` and `vergemal-*`)
@@ -104,6 +105,30 @@ own party, without a filter. It checks that only the packages a person can hold
 the guardianship authority manages. The Bruno test uses the daglig leder of its regnskapsfører
 fixture as the person; any adult works, so these are random persons.
 
+`direct-tilgangsstyrer-checks-resource-rights.js` is the only test here that checks a resource
+(`GET /enduser/connections/resources/delegationcheck`) rather than access packages. It writes
+data. In `setup()` it draws an AS from `organizations` and a person from `persons`. The
+daglig leder of the AS adds the person as a connection, delegates `tilgangsstyrer` to them,
+and delegates `read` and `write` on the resource `tilgangspakke_delegering_ressurs`. The keys
+of the rights are opaque, so they come from the daglig leder's own resource delegation check.
+The person then runs the check for the AS. The test checks that a right is returned for each
+of the six actions in the resource's policy, that the person can delegate `read` and `write`
+because they were delegated to them (reason `DelegationAccess`), and that they cannot delegate
+`delete`, `instantiate`, `sign` or `confirm`. `teardown()` removes the connection with
+everything on it.
+
+This follows the Bruno fixture `tilgangstyrer_med_enkeltrettighet`, who has `tilgangsstyrer`
+and, in at22, `read`, `write` and `instantiate` on the resource. The Bruno test only checks
+that six rights are returned: its loop over the results uses `rights.Length` and never runs.
+Found while porting it:
+
+- `tilgangsstyrer` is what lets the person run the check. Without it the check answers `403`,
+  also when the person has rights on the resource.
+- `tilgangsstyrer` does not give the rights themselves. With `tilgangsstyrer` only, all six
+  rights come back `false`.
+- A person is added as a connection with their national identity number and last name in
+  the body, not with `to`, so `persons` has a `lastName` column.
+
 ## Test data
 
 Each test draws one row per iteration from a fixture in
@@ -160,12 +185,13 @@ done
 ```
 
 **`persons/<environment>.csv`**: private persons who can log in, 18 or older and resident
-(testudo's default). These files were made on 2026-11-25.
+(testudo's default), with the last name needed to add them as a connection. These files were
+made on 2026-11-25.
 
 ```bash
 for env in at22 tt02; do
   testudo find persons --count 10 --env $env --format csv \
-    --columns personIdentifier,userId,partyId,partyUuid \
+    --columns personIdentifier,lastName,userId,partyId,partyUuid \
     --out K6/testdata/access-management/enduser/connections/delegation-check/persons/$env.csv
 done
 ```

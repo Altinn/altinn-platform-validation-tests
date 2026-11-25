@@ -60,3 +60,9 @@ test_definitions:
     contexts:
       - environment: at22
       - environment: tt02
+
+  - test_file: direct-tilgangsstyrer-checks-resource-rights.js
+    test_scope: enduser-connections-delegation-check
+    contexts:
+      - environment: at22
+      - environment: tt02
