@@ -76,6 +76,16 @@ type Organization struct {
 	// Hovedenhet is the hovedenhet in Register when the organization is an
 	// underenhet (BEDR or AAFY).
 	Hovedenhet *register.Party `json:"hovedenhet,omitempty"`
+	// Client is the client in Register the organization was found through
+	// when it was fetched with a role: an organization that has it as
+	// tilrettelegger, e.g. as regnskapsfører.
+	Client *register.Party `json:"client,omitempty"`
+	// ClientPersonRole is the role ClientPerson has in the client, e.g.
+	// daglig-leder.
+	ClientPersonRole string `json:"clientPersonRole,omitempty"`
+	// ClientPerson is the client's leader in Register, or nil when the client
+	// has none, or the leader does not exist in Register.
+	ClientPerson *register.Party `json:"clientPerson,omitempty"`
 }
 
 // organizationCandidate is an organization from Tenor that has not been
@@ -90,7 +100,13 @@ type organizationCandidate struct {
 	// organization is an underenhet.
 	hovedenhet string
 	role       string
-	kildedata  json.RawMessage
+	// client is the organization number of the client a tilrettelegger was
+	// found through, when it was fetched with a role, and clientPerson the
+	// fødselsnummer of the client's leader, with clientPersonRole.
+	client           string
+	clientPerson     string
+	clientPersonRole string
+	kildedata        json.RawMessage
 }
 
 // OrganizationQuery is which organizations FindOrganizations fetches. Only
@@ -126,7 +142,8 @@ type OrganizationQuery struct {
 // FindOrganizations fetches q.Count organizations with a person with the role
 // q.PersonRole, or with a leader, where both the organization and the person
 // exist in Register for q.Env. For underenheter the person is from the
-// hovedenhet, which must also exist in Register. Others are replaced with new
+// hovedenhet, which must also exist in Register, as must the client a
+// tilrettelegger was found through. Others are replaced with new
 // ones from Tenor, in up to maxRegisterRounds rounds, and how many were
 // replaced is written to log. All the parties in a round are looked up in the
 // same call.
@@ -170,6 +187,12 @@ func FindOrganizations(ctx context.Context, c *tenor.Client, reg *register.Clien
 			if k.hovedenhet != "" {
 				ids = append(ids, k.hovedenhet)
 			}
+			if k.client != "" {
+				ids = append(ids, k.client)
+			}
+			if k.clientPerson != "" {
+				ids = append(ids, k.clientPerson)
+			}
 		}
 		partyByID, err := reg.LookupIdentifiers(ctx, ids, registerFields...)
 		if err != nil {
@@ -187,17 +210,35 @@ func FindOrganizations(ctx context.Context, c *tenor.Client, reg *register.Clien
 					found = false
 				}
 			}
+			var client *register.Party
+			if k.client != "" {
+				if cl, ok := partyByID[k.client]; ok {
+					client = &cl
+				} else {
+					found = false
+				}
+			}
+			// The client's leader is optional: a CSV row that asks for it is
+			// left out when it is missing.
+			var clientPerson *register.Party
+			clientPersonRole := ""
+			if cp, ok := partyByID[k.clientPerson]; ok && k.clientPerson != "" {
+				clientPerson, clientPersonRole = &cp, k.clientPersonRole
+			}
 			if !found || !personFound {
 				notInRegister++
 				continue
 			}
 			organizations = append(organizations, Organization{
-				Role:       k.role,
-				Kildedata:  k.kildedata,
-				Party:      party,
-				PersonRole: k.personRole,
-				Person:     person,
-				Hovedenhet: hovedenhet,
+				Role:             k.role,
+				Kildedata:        k.kildedata,
+				Party:            party,
+				PersonRole:       k.personRole,
+				Person:           person,
+				Hovedenhet:       hovedenhet,
+				Client:           client,
+				ClientPersonRole: clientPersonRole,
+				ClientPerson:     clientPerson,
 			})
 			if len(organizations) == q.Count {
 				break
@@ -205,7 +246,7 @@ func FindOrganizations(ctx context.Context, c *tenor.Client, reg *register.Clien
 		}
 	}
 	if notInRegister > 0 {
-		fmt.Fprintf(log, "Register (%s): %d organizations from Tenor, or their person or hovedenhet, do not exist and were replaced.\n", q.Env, notInRegister)
+		fmt.Fprintf(log, "Register (%s): %d organizations from Tenor, or their person, hovedenhet or client, do not exist and were replaced.\n", q.Env, notInRegister)
 	}
 	return organizations, nil
 }

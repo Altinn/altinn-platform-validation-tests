@@ -47,7 +47,10 @@ var defaultOrganizationColumns = []string{"organizationIdentifier", "displayName
 // the person with personRole: the leader, or the role in --person-role. The
 // hovedenhet columns are the hovedenhet of an underenhet (the role hovedenhet
 // in Register, overordnetEnhet in Enhetsregisteret), and empty for other
-// organizations.
+// organizations. The client columns are the client a tilrettelegger was found
+// through with --role, and empty without it. clientPersonRole, clientSsn,
+// clientUserId, clientUserPartyId and clientUserPartyUuid are the client's
+// leader.
 var organizationColumns = []column[parties.Organization]{
 	{name: "organizationIdentifier", value: func(o parties.Organization) string { return o.OrganizationIdentifier }},
 	{name: "displayName", value: func(o parties.Organization) string { return o.DisplayName }},
@@ -66,6 +69,16 @@ var organizationColumns = []column[parties.Organization]{
 	{name: "hovedenhetPartyId", value: func(o parties.Organization) string { return partyID(o.Hovedenhet) }},
 	{name: "hovedenhetPartyUuid", value: func(o parties.Organization) string { return hovedenhet(o).PartyUUID }},
 	{name: "hovedenhetUnitType", value: func(o parties.Organization) string { return hovedenhet(o).UnitType }},
+	{name: "clientOrganizationIdentifier", value: func(o parties.Organization) string { return clientOf(o).OrganizationIdentifier }},
+	{name: "clientDisplayName", value: func(o parties.Organization) string { return clientOf(o).DisplayName }},
+	{name: "clientPartyId", value: func(o parties.Organization) string { return partyID(o.Client) }},
+	{name: "clientPartyUuid", value: func(o parties.Organization) string { return clientOf(o).PartyUUID }},
+	{name: "clientUnitType", value: func(o parties.Organization) string { return clientOf(o).UnitType }},
+	{name: "clientPersonRole", value: func(o parties.Organization) string { return o.ClientPersonRole }},
+	{name: "clientSsn", value: func(o parties.Organization) string { return clientPersonOf(o).PersonIdentifier }},
+	{name: "clientUserId", value: func(o parties.Organization) string { return userID(o.ClientPerson) }},
+	{name: "clientUserPartyId", value: func(o parties.Organization) string { return partyID(o.ClientPerson) }},
+	{name: "clientUserPartyUuid", value: func(o parties.Organization) string { return clientPersonOf(o).PartyUUID }},
 }
 
 // hovedenhet is the hovedenhet of o, or an empty party when o is not an
@@ -75,6 +88,24 @@ func hovedenhet(o parties.Organization) register.Party {
 		return register.Party{}
 	}
 	return *o.Hovedenhet
+}
+
+// clientOf is the client a tilrettelegger was found through, or an empty party
+// when o was not fetched with --role.
+func clientOf(o parties.Organization) register.Party {
+	if o.Client == nil {
+		return register.Party{}
+	}
+	return *o.Client
+}
+
+// clientPersonOf is the leader of the client a tilrettelegger was found
+// through, or an empty party when there is none.
+func clientPersonOf(o parties.Organization) register.Party {
+	if o.ClientPerson == nil {
+		return register.Party{}
+	}
+	return *o.ClientPerson
 }
 
 // validate checks the flags before anything is fetched. countSet is whether
@@ -160,7 +191,8 @@ styreleder or styremedlem.
 
 Without flags, AS organizations are fetched. Choose other unit types with
 --unit-type, specific organizations with --orgno, or tilretteleggere (revisor,
-regnskapsfoerer or forretningsfoerer) with --role.
+regnskapsfoerer or forretningsfoerer) with --role. A tilrettelegger is found
+through one of its clients, and the client columns describe that client.
 
 With --subunits, underenheter (BEDR and AAFY) of organizations with the unit
 types in --unit-type are fetched instead of the organizations themselves, one
@@ -304,7 +336,7 @@ func runOrganizations(ctx context.Context, c *tenor.Client, reg *register.Client
 	case formatCSV:
 		skipped, err := writeCSV(out, organizations, columns)
 		if skipped > 0 {
-			fmt.Fprintf(log, "Skipped %d rows with missing values (e.g. a person without a user, or hovedenhet columns for an organization that is not an underenhet).\n", skipped)
+			fmt.Fprintf(log, "Skipped %d rows with missing values (e.g. a person without a user, hovedenhet columns for an organization that is not an underenhet, or client columns without --role).\n", skipped)
 		}
 		if err != nil {
 			return err

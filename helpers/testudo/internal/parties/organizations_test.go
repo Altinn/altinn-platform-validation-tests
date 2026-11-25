@@ -123,7 +123,7 @@ func TestFindOrganizationsRequiresDagligLederInRegister(t *testing.T) {
 		v[0].PersonRole != "daglig-leder" || v[0].Person.PersonIdentifier != tenortest.LeaderSSN(1) || v[0].Person.PartyID != 701 {
 		t.Fatalf("organizations = %+v", v)
 	}
-	if !strings.Contains(log.String(), "Register (at22): 1 organizations from Tenor, or their person or hovedenhet, do not exist") {
+	if !strings.Contains(log.String(), "Register (at22): 1 organizations from Tenor, or their person, hovedenhet or client, do not exist") {
 		t.Errorf("log = %q", log.String())
 	}
 }
@@ -192,7 +192,7 @@ func TestFindOrganizationsUnderenheter(t *testing.T) {
 	})
 	var log bytes.Buffer
 	v, err = FindOrganizations(context.Background(), c, withoutHovedenhet, OrganizationQuery{Count: 3, Subunits: true, Env: "at23"}, &log)
-	if err != nil || len(v) != 0 || !strings.Contains(log.String(), "1 organizations from Tenor, or their person or hovedenhet, do not exist") {
+	if err != nil || len(v) != 0 || !strings.Contains(log.String(), "1 organizations from Tenor, or their person, hovedenhet or client, do not exist") {
 		t.Errorf("without hovedenhet in Register: organizations = %+v, err = %v, log = %q", v, err, log.String())
 	}
 }
