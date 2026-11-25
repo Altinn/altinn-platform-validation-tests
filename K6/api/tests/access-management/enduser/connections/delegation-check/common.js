@@ -214,6 +214,15 @@ export function setupEnkeltpersonforetak() {
 }
 
 /**
+ * Setup for the tests that act as the bestyrende reder of a partsrederi.
+ *
+ * @returns {{partsrederier: Array<OrganizationRow>}} Partsrederier with their bestyrende reder.
+ */
+export function setupPartsrederier() {
+    return { partsrederier: loadFixture("partsrederier") };
+}
+
+/**
  * Creates the client and its token generator once per k6 runtime, for nobody
  * in particular. Which end user an iteration acts as is set per row with
  * setTokenGeneratorOptions and getPersonTokenOpts.

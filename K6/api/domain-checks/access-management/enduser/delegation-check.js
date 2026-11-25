@@ -158,6 +158,55 @@ function CheckPackageCanBeDelegatedThroughRole(checks, packageUrn) {
 }
 
 /**
+ * Checks that the access package is returned with the role among its reasons,
+ * so the user's role on the party gives the package.
+ *
+ * @param {AccessPackageDtoCheck[]} checks - The delegation check results returned by the API.
+ * @param {string} packageUrn - The URN of the access package.
+ * @param {string} roleUrn - The URN of the role, for example urn:altinn:external-role:ccr:bestyrende-reder.
+ * @returns {boolean} True if one of the package's reasons is the role, false otherwise.
+ */
+function CheckPackageIsGivenByRole(checks, packageUrn, roleUrn) {
+    const packageCheck = FindPackage(checks, packageUrn);
+
+    const success = check(packageCheck, {
+        "CheckPackageIsGivenByRole - Access package is given by the user's role on the party": (returned) =>
+            (returned?.reasons ?? []).some((reason) => reason.roleUrn === roleUrn),
+    });
+
+    if (!success) {
+        console.error(`CheckPackageIsGivenByRole - expected '${packageUrn}' to be given by '${roleUrn}', got: ${JSON.stringify(packageCheck ?? "not returned")}`);
+    }
+
+    return success;
+}
+
+/**
+ * Checks that the access package is returned without the role among its
+ * reasons, so the role does not give the package, whatever the user's other
+ * roles give.
+ *
+ * @param {AccessPackageDtoCheck[]} checks - The delegation check results returned by the API.
+ * @param {string} packageUrn - The URN of the access package.
+ * @param {string} roleUrn - The URN of the role, for example urn:altinn:external-role:ccr:bestyrende-reder.
+ * @returns {boolean} True if the package is returned and none of its reasons is the role, false otherwise.
+ */
+function CheckPackageIsNotGivenByRole(checks, packageUrn, roleUrn) {
+    const packageCheck = FindPackage(checks, packageUrn);
+
+    const success = check(packageCheck, {
+        "CheckPackageIsNotGivenByRole - Access package is not given by the role": (returned) =>
+            returned !== undefined && !(returned.reasons ?? []).some((reason) => reason.roleUrn === roleUrn),
+    });
+
+    if (!success) {
+        console.error(`CheckPackageIsNotGivenByRole - expected '${packageUrn}' not to be given by '${roleUrn}', got: ${JSON.stringify(packageCheck ?? "not returned")}`);
+    }
+
+    return success;
+}
+
+/**
  * Checks that the delegation check lists the same access packages as it does
  * for the user's own organization, whatever the result for each.
  *
@@ -191,5 +240,7 @@ export const DelegationCheckDomainChecks = {
     CheckPackageCannotBeDelegated,
     CheckOnlyFilteredPackagesAreReturned,
     CheckPackageCanBeDelegatedThroughRole,
+    CheckPackageIsGivenByRole,
+    CheckPackageIsNotGivenByRole,
     CheckSamePackagesAsOwnOrganization,
 };

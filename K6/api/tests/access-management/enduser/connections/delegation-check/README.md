@@ -18,6 +18,7 @@ the user can and cannot delegate.
 | [bostyrer-checks-konkursbo-access-packages.js](bostyrer-checks-konkursbo-access-packages.js) | `GET_Enduser_Conn_AccPcks_DelgCheck_BOBE_Role_idFilter` | Bostyrer of a konkursbo | `party`, `packageIds` |
 | [regnskapsforer-checks-regnskapsforer-packages-for-client.js](regnskapsforer-checks-regnskapsforer-packages-for-client.js) | `GET_Enduser_Conn_AccPcks_DelgCheck_REGN_Role_idFilter` | Leader of a regnskapsfører, for one of its clients | `party`, `packageIds` |
 | [innehaver-checks-access-packages-by-urn.js](innehaver-checks-access-packages-by-urn.js) | `GET_Enduser_Conn_AccPcks_DelgCheck_Innehaver_UrnFilter` | Innehaver of an ENK | `party`, `packages` |
+| [bestyrende-reder-checks-access-packages-by-id.js](bestyrende-reder-checks-access-packages-by-id.js) | `GET_Enduser_Conn_AccPcks_DelgCheck_Bestyrende_idFiler` | Bestyrende reder of a partsrederi | `party`, `packageIds` |
 
 `daglig-leder-checks-delegable-access-packages.js` checks that the answer covers access
 packages, that none of the packages only a person can hold (`innbygger-*` and `vergemal-*`)
@@ -85,6 +86,16 @@ can delegate the first two because the innehaver role gives them (reason
 with the forretningsfører role, cannot be delegated. The Bruno test checks the results only,
 not the reasons.
 
+`bestyrende-reder-checks-access-packages-by-id.js` filters on the ids of `familievern` and
+`samle-behandle-avlopsvann`. It checks that only those two are returned, that the bestyrende
+reder role is among the reasons for `samle-behandle-avlopsvann`, and that it is not among the
+reasons for `familievern`. Like the Bruno test, it checks the roles in the reasons, not the
+results: in Tenor every bestyrende reder is also a deltaker in the partsrederi, and that role
+gives both packages. The Bruno test also checks that `deltaker-fullt-ansvar` gives both
+packages, since its fixture's bestyrende reder is a deltaker with full liability. That is left
+out here, because the test data has deltakere with shared liability (`deltaker-delt-ansvar`)
+as well.
+
 ## Test data
 
 Each test draws one row per iteration from a fixture in
@@ -126,6 +137,17 @@ for env in at22 tt02; do
   testudo find organizations --unit-type ENK --person-role innehaver --count 10 --env $env --format csv \
     --columns organizationIdentifier,partyUuid,personRole,ssn,userId,userPartyId,userPartyUuid \
     --out K6/testdata/access-management/enduser/connections/delegation-check/enkeltpersonforetak/$env.csv
+done
+```
+
+**`partsrederier/<environment>.csv`**: a partsrederi (`PRE`) and its bestyrende reder. These
+files were made on 2026-11-25.
+
+```bash
+for env in at22 tt02; do
+  testudo find organizations --unit-type PRE --person-role bestyrende-reder --count 10 --env $env --format csv \
+    --columns organizationIdentifier,partyUuid,personRole,ssn,userId,userPartyId,userPartyUuid \
+    --out K6/testdata/access-management/enduser/connections/delegation-check/partsrederier/$env.csv
 done
 ```
 
