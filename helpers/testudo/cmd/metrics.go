@@ -17,7 +17,7 @@ const keyExpiryCacheFor = 5 * time.Minute
 var keyExpiryDesc = prometheus.NewDesc(
 	"maskinporten_client_key_expiry_timestamp_seconds",
 	"When the key on the Maskinporten client expires, in Unix seconds. Days left is (value - time()) / 86400. Keys without exp are left out.",
-	[]string{"client_id", "client_name", "org", "used_by", "kid"}, nil,
+	[]string{"client_id", "org", "used_by", "kid"}, nil,
 )
 
 // keyExpiryCollector is a Gauge with one series per key on keyClients. The
@@ -50,7 +50,7 @@ func (c *keyExpiryCollector) Collect(ch chan<- prometheus.Metric) {
 			continue
 		}
 		ch <- prometheus.MustNewConstMetric(keyExpiryDesc, prometheus.GaugeValue, float64(k.Expires.Unix()),
-			k.ClientID, k.ClientName, k.Org, k.UsedBy, k.Kid)
+			k.ClientID, k.Org, k.UsedBy, k.Kid)
 	}
 }
 

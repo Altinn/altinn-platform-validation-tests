@@ -39,7 +39,7 @@ func TestKeyExpiryCollector(t *testing.T) {
 	want := `
 # HELP maskinporten_client_key_expiry_timestamp_seconds When the key on the Maskinporten client expires, in Unix seconds. Days left is (value - time()) / 86400. Keys without exp are left out.
 # TYPE maskinporten_client_key_expiry_timestamp_seconds gauge
-maskinporten_client_key_expiry_timestamp_seconds{client_id="` + keyClients[0].id + `",client_name="tenor-autorisasjon",kid="k1",org="991825827",used_by="` + keyClients[0].usedBy + `"} 1.7987616e+09
+maskinporten_client_key_expiry_timestamp_seconds{client_id="` + keyClients[0].id + `",kid="k1",org="991825827",used_by="` + keyClients[0].usedBy + `"} 1.7987616e+09
 `
 	if err := testutil.CollectAndCompare(collector, strings.NewReader(want)); err != nil {
 		t.Fatal(err)
