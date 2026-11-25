@@ -305,6 +305,18 @@ CLIENT ID                             NAME                ORG        USED BY    
 `cmd/maskinporten.go`. The master client only sees Digdir's clients, so the
 clients for 310149942 and 313175650 are not there yet.
 
+`testudo serve` has the same keys as a Prometheus Gauge on `GET /metrics`, with
+one series per key and the labels `client_id`, `client_name`, `org`, `used_by`
+and `kid`. The value is when the key expires, so days left is computed in the
+query, and the API is asked at most every five minutes:
+
+```promql
+(maskinporten_client_key_expiry_timestamp_seconds - time()) / 86400
+```
+
+If the API cannot be read, the scrape fails, so it shows up as `up == 0`
+rather than as a metric that silently stops.
+
 ## Recipes for K6 setup
 
 Run these from `helpers/testudo`, with testudo installed by `make install`, or

@@ -23,6 +23,8 @@ import (
 	"sync"
 	"time"
 
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/spf13/cobra"
 
 	"github.com/Altinn/altinn-platform-validation-tests/helpers/testudo/internal/errs"
@@ -40,6 +42,7 @@ func newServeCmd() *cobra.Command {
 
   GET /find/persons          same as testudo find persons
   GET /find/organizations    same as testudo find organizations
+  GET /metrics               Prometheus metrics, see testudo maskinporten keys
 
 The query parameters are the flags of the command, with the same names and
 values, e.g. ?env=at23&count=5&unit-type=ENK. Lists can be comma-separated or
@@ -60,9 +63,12 @@ nothing was found, and 502 when Tenor or Register fails.`,
 			if err != nil {
 				return err
 			}
+			reg := prometheus.NewRegistry()
+			reg.MustRegister(&keyExpiryCollector{newClient: newSelfServiceClient, now: time.Now})
 			s := &server{
 				tenor:     c,
 				registers: map[string]*register.Client{},
+				metrics:   promhttp.HandlerFor(reg, promhttp.HandlerOpts{}),
 				log:       cmd.ErrOrStderr(),
 			}
 			return s.listen(cmd.Context(), addr)
@@ -81,8 +87,9 @@ nothing was found, and 502 when Tenor or Register fails.`,
 // made once: Tenor at start, and Register the first time an environment is
 // asked for.
 type server struct {
-	tenor *tenor.Client
-	log   io.Writer
+	tenor   *tenor.Client
+	metrics http.Handler
+	log     io.Writer
 
 	mu        sync.Mutex
 	registers map[string]*register.Client
@@ -93,6 +100,9 @@ func (s *server) handler() http.Handler {
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /find/persons", s.findPersons)
 	mux.HandleFunc("GET /find/organizations", s.findOrganizations)
+	if s.metrics != nil {
+		mux.Handle("GET /metrics", s.metrics)
+	}
 	return mux
 }
 
@@ -113,7 +123,7 @@ func (s *server) listen(ctx context.Context, addr string) error {
 		srv.Shutdown(shutdown)
 	}()
 
-	fmt.Fprintf(s.log, "Listening on %s: GET /find/persons and GET /find/organizations\n", addr)
+	fmt.Fprintf(s.log, "Listening on %s: GET /find/persons, GET /find/organizations and GET /metrics\n", addr)
 	if err := srv.ListenAndServe(); !errors.Is(err, http.ErrServerClosed) {
 		return err
 	}
