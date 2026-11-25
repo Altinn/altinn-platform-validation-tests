@@ -66,12 +66,12 @@ at23:                                   # one section per environment: at22, at2
 
 selfservice:                            # the master client that manages the other Maskinporten clients
   MASKINPORTEN_CLIENT_ID: '...'
-  MASKINPORTEN_JWK: '{"kty":"RSA",...}'
+  MASKINPORTEN_JWK: '{"kty":"RSA",...}'  # or MASKINPORTEN_CLIENT_PEM and MASKINPORTEN_KID, as in K6
 ```
 
 | Key | Used for |
 | --- | --- |
-| `MASKINPORTEN_CLIENT_ID`, `MASKINPORTEN_JWK` | Token for Tenor, with the scope `skatteetaten:testnorge/testdata.read`. |
+| `MASKINPORTEN_CLIENT_ID`, `MASKINPORTEN_JWK` | Token for Tenor, with the scope `skatteetaten:testnorge/testdata.read`. Instead of the JWK, the key can be `MASKINPORTEN_CLIENT_PEM` (PKCS#8 or PKCS#1) with `MASKINPORTEN_KID`. |
 | `TOKEN_GENERATOR_USERNAME`, `TOKEN_GENERATOR_PASSWORD` | Platform access token for Register, from the test token generator. |
 | `API_BASE_URL` | Register for the environment. |
 | `REGISTER_SUBSCRIPTION_KEY` | APIM subscription key for Register. `<ENV>_REGISTER_SUBSCRIPTION_KEY` (for example `AT23_REGISTER_SUBSCRIPTION_KEY`) works too. |
@@ -85,7 +85,8 @@ variables.
 The `selfservice` section is read on its own, with the scope
 `idporten:dcr.read`. It never falls back to the top-level
 `MASKINPORTEN_CLIENT_ID` and `MASKINPORTEN_JWK`, and its environment variables
-are `SELFSERVICE_MASKINPORTEN_CLIENT_ID` and `SELFSERVICE_MASKINPORTEN_JWK`.
+are `SELFSERVICE_MASKINPORTEN_CLIENT_ID` and `SELFSERVICE_MASKINPORTEN_JWK`, or
+`SELFSERVICE_MASKINPORTEN_CLIENT_PEM` and `SELFSERVICE_MASKINPORTEN_KID`.
 
 ## How it picks parties
 

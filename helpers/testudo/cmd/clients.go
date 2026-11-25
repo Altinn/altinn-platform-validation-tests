@@ -36,9 +36,8 @@ func newTenorClient() (*tenor.Client, error) {
 
 // newSelfServiceClient creates a client for the self-service API with a token
 // for the master client, which manages the other Maskinporten clients. Its
-// MASKINPORTEN_CLIENT_ID and MASKINPORTEN_JWK are read from the selfservice
-// section, or from SELFSERVICE_MASKINPORTEN_CLIENT_ID and
-// SELFSERVICE_MASKINPORTEN_JWK.
+// MASKINPORTEN_* values are read from the selfservice section, or from the
+// same names with the SELFSERVICE_ prefix.
 func newSelfServiceClient() (*selfservice.Client, error) {
 	cfg, err := maskinporten.ConfigFrom(config.Namespace("selfservice"))
 	if err != nil {
