@@ -249,6 +249,7 @@ func TestParsePrivateKeyPEM(t *testing.T) {
 		"PKCS#8":        testPKCS8PEM(key),
 		"PKCS#1":        pkcs1,
 		"flattened \\n": strings.ReplaceAll(testPKCS8PEM(key), "\n", `\n`),
+		"folded YAML":   strings.ReplaceAll(testPKCS8PEM(key), "\n", " "),
 	} {
 		got, err := ParsePrivateKeyPEM(s, "kid-1")
 		if err != nil {

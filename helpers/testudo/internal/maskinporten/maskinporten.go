@@ -7,12 +7,14 @@ import (
 	"context"
 	"crypto/rsa"
 	"crypto/x509"
+	"encoding/base64"
 	"encoding/json"
 	"encoding/pem"
 	"fmt"
 	"io"
 	"net/http"
 	"net/url"
+	"regexp"
 	"strings"
 	"sync"
 	"time"
@@ -82,10 +84,28 @@ func ConfigFrom(lookup func(string) string) (Config, error) {
 // ParsePrivateKeyPEM reads a private RSA key in PEM format, PKCS#8 or PKCS#1,
 // and gives it kid. Literal \n is read as a line break, since secret stores
 // and .env files sometimes flatten the newlines.
-func ParsePrivateKeyPEM(s, kid string) (jwk.Key, error) {
-	block, _ := pem.Decode([]byte(strings.TrimSpace(strings.ReplaceAll(s, `\n`, "\n"))))
-	if block == nil {
+var pemRe = regexp.MustCompile(`(?s)-----BEGIN ([A-Z0-9 ]+)-----(.*?)-----END ([A-Z0-9 ]+)-----`)
+
+// decodePEM reads the first PEM block in s. The line breaks in the body do
+// not matter, so a PEM where they have become spaces (a multi-line quoted
+// YAML string) or literal \n is read too.
+func decodePEM(s string) (*pem.Block, error) {
+	m := pemRe.FindStringSubmatch(s)
+	if m == nil || m[1] != m[3] {
 		return nil, fmt.Errorf("%w: not a PEM (-----BEGIN ...)", errs.Invalid)
+	}
+	body := strings.Join(strings.Fields(strings.ReplaceAll(m[2], `\n`, "\n")), "")
+	der, err := base64.StdEncoding.DecodeString(body)
+	if err != nil {
+		return nil, fmt.Errorf("%w: PEM: %v", errs.Invalid, err)
+	}
+	return &pem.Block{Type: m[1], Bytes: der}, nil
+}
+
+func ParsePrivateKeyPEM(s, kid string) (jwk.Key, error) {
+	block, err := decodePEM(s)
+	if err != nil {
+		return nil, err
 	}
 	var raw *rsa.PrivateKey
 	switch block.Type {
