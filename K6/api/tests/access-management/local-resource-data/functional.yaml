@@ -1,0 +1,77 @@
+namespace: access-management
+base_dir: K6/api/tests/access-management/local-resource-data
+test_definitions:
+  # All of these need the resources from create-resources.js, which has been run
+  # in at22, at23 and tt02. yt01 has no enduser request rows with userId and
+  # partyId, which setup needs.
+  #
+  # Run by hand, not scheduled: create-resources.js and
+  # delegable-flag-propagation.js write to the registry,
+  # access-list-membership.js takes about an hour, and
+  # compare-registry-with-access-management.js asks about every resource in the
+  # registry. See README.md.
+  #
+  # access-list-service-owner-delegation.js fails until the fix for
+  # Altinn/altinn-auth#4186 (PR #4831) is deployed. Add it here then.
+
+  # Altinn/altinn-auth#4789: the delegation check
+  - test_file: delegation-check-not-delegable.js
+    contexts:
+      - environment: at22
+      - environment: at23
+      - environment: tt02
+  - test_file: delegation-check-delegable.js
+    contexts:
+      - environment: at22
+      - environment: at23
+      - environment: tt02
+
+  # Altinn/altinn-auth#4790, #4896: service owner connections
+  - test_file: service-owner-connections-not-delegable.js
+    contexts:
+      - environment: at22
+      - environment: at23
+      - environment: tt02
+
+  # Altinn/altinn-auth#4791: enduser request. v2 answered 404 in at23 and tt02 on
+  # 2026-11-25, so the v2 tests run in at22 only. Add an environment once it has v2.
+  - test_file: enduser-request-not-delegable.js
+    contexts:
+      - environment: at22
+      - environment: at23
+      - environment: tt02
+  - test_file: enduser-request-delegable.js
+    contexts:
+      - environment: at22
+      - environment: at23
+      - environment: tt02
+  - test_file: enduser-request-v2-not-delegable.js
+    contexts:
+      - environment: at22
+  - test_file: enduser-request-v2-delegable.js
+    contexts:
+      - environment: at22
+
+  # Altinn/altinn-auth#4792: service owner request
+  - test_file: service-owner-request-not-delegable.js
+    contexts:
+      - environment: at22
+      - environment: at23
+      - environment: tt02
+  - test_file: service-owner-request-delegable.js
+    contexts:
+      - environment: at22
+      - environment: at23
+      - environment: tt02
+
+  # Altinn/altinn-auth#4786, #4789: access lists
+  - test_file: access-list-delegation-check.js
+    contexts:
+      - environment: at22
+      - environment: at23
+      - environment: tt02
+  - test_file: access-list-person.js
+    contexts:
+      - environment: at22
+      - environment: at23
+      - environment: tt02
