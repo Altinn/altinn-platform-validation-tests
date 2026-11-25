@@ -16,21 +16,35 @@ import (
 )
 
 // UnitTypes are the unit types FindOrganizations can fetch, with the codes
-// from Enhetsregisteret: aksjeselskap, enkeltpersonforetak,
-// eierseksjonssameie, borettslag, norskregistrert utenlandsk foretak and
-// konkursbo. Their underenheter are fetched with OrganizationQuery.Subunits.
-var UnitTypes = []string{"AS", "ENK", "ESEK", "BRL", "NUF", "KBO"}
+// from Enhetsregisteret (organisasjonsform). They are the hovedenheter
+// Access Management has roles from Enhetsregisteret for. Their underenheter
+// are fetched with OrganizationQuery.Subunits.
+var UnitTypes = []string{
+	"ANNA", "ANS", "AS", "ASA", "BA", "BBL", "BO", "BRL", "DA", "ENK", "ESEK",
+	"FKF", "FLI", "FYLK", "GFS", "IKJP", "IKS", "IS", "KBO", "KF", "KIRK",
+	"KOMM", "KS", "KTRF", "NOKUS", "NUF", "OPMV", "ORGL", "PERS", "PK", "PRE",
+	"REV", "SA", "SAM", "SE", "SF", "SPA", "STAT", "STI", "SÆR", "TVAM", "UTLA",
+	"UTLANS", "VIFE", "VPFO",
+}
 
 // DefaultUnitType is the unit type fetched when none is chosen.
 const DefaultUnitType = "AS"
 
-// styrelederUnitTypes are the unit types that rarely have a daglig leder,
-// and where the styreleder is the leader.
-var styrelederUnitTypes = []string{"ESEK", "BRL"}
+// defaultLeaderCodes are the role codes of the leader, tried in order: the
+// daglig leder, or the innehaver when there is none.
+var defaultLeaderCodes = []string{"DAGL", "INNH"}
 
-// bostyrerUnitTypes are the unit types run by a bostyrer (BOBE), who is the
-// leader. A konkursbo has no daglig leder.
-var bostyrerUnitTypes = []string{"KBO"}
+// leaderCodes are the role codes of the leader for the unit types that
+// rarely have a daglig leder, tried in order. In Access Management few
+// borettslag and eierseksjonssameier have a daglig leder, but almost all have
+// a styreleder (LEDE). A konkursbo is run by its bostyrer (BOBE), and a
+// partsrederi by its bestyrende reder (BEST).
+var leaderCodes = map[string][]string{
+	"BRL":  {"DAGL", "LEDE"},
+	"ESEK": {"DAGL", "LEDE"},
+	"KBO":  {"BOBE"},
+	"PRE":  {"BEST", "DAGL"},
+}
 
 // underenhetUnitTypes are the underenheter, of hovedenheter with and without
 // business activity. They have no person roles of their own, so the person
@@ -439,16 +453,14 @@ type rollegruppe struct {
 
 // leader returns the fødselsnummer of the daglig leder (DAGL), or of the
 // innehaver (INNH) if there is no daglig leder, and the code for the role.
-// Borettslag and eierseksjonssameier rarely have a daglig leder, so for them
-// it is the styreleder (LEDE) when there is no daglig leder. A konkursbo is
-// run by its bostyrer (BOBE).
+// The unit types in leaderCodes have their own: the styreleder (LEDE) of a
+// borettslag or eierseksjonssameie that has no daglig leder, the bostyrer
+// (BOBE) of a konkursbo, and the bestyrende reder (BEST) of a partsrederi,
+// or its daglig leder when the bestyrende reder is an organization.
 func leader(unitType string, groups []rollegruppe) (personIdentifier, code string) {
-	codes := []string{"DAGL", "INNH"}
-	switch {
-	case slices.Contains(styrelederUnitTypes, unitType):
-		codes = []string{"DAGL", "LEDE"}
-	case slices.Contains(bostyrerUnitTypes, unitType):
-		codes = []string{"BOBE"}
+	codes, ok := leaderCodes[unitType]
+	if !ok {
+		codes = defaultLeaderCodes
 	}
 	for _, code := range codes {
 		if personIdentifier := personWithRole(groups, code); personIdentifier != "" {

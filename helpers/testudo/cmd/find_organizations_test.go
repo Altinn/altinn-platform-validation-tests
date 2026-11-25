@@ -152,7 +152,7 @@ func TestValidateOrganizationsOptions(t *testing.T) {
 	}{
 		{"default", organizationsOptions{count: 1}, false, ""},
 		{"unit types", organizationsOptions{count: 1, unitTypes: []string{"enk", "ESEK", "brl", "nuf"}}, true, ""},
-		{"unknown unit type", organizationsOptions{count: 1, unitTypes: []string{"SA"}}, false, "unknown --unit-type"},
+		{"unknown unit type", organizationsOptions{count: 1, unitTypes: []string{"BEDR"}}, false, "unknown --unit-type"},
 		{"orgno", organizationsOptions{count: 10, organizationNumbers: []string{"313490114", "310418672"}}, false, ""},
 		{"invalid orgno", organizationsOptions{organizationNumbers: []string{"12345"}}, false, "--orgno"},
 		{"orgno and count", organizationsOptions{count: 1, organizationNumbers: []string{"313490114"}}, true, "--count cannot be used with --orgno"},

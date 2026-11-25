@@ -133,8 +133,10 @@ The default is `personIdentifier,userId,partyId,partyUuid`.
 
 Finds organizations together with a person in the organization. By default the
 person is the leader: the daglig leder, the innehaver of an `ENK`, the
-styreleder of a `BRL` or `ESEK` that has no daglig leder, or the bostyrer of a
-`KBO` (konkursbo).
+styreleder of a `BRL` or `ESEK` that has no daglig leder, the bostyrer of a
+`KBO` (konkursbo), or the bestyrende reder of a `PRE` (partsrederi). Some unit
+types have no leader, for example `VPFO` (verdipapirfond); use
+`--person-role kontaktperson` for them.
 
 ```bash
 testudo find organizations --count 3 --env at23
@@ -151,8 +153,8 @@ Fetching 3 organizations with the leader from Tenor with KQL: organisasjonsform.
 | --- | --- | --- |
 | `--count` | `10` | Number of organizations, at most 1000. |
 | `--env` | `at23` | Environment: `at22`, `at23`, `tt02` or `yt01`. |
-| `--unit-type` | `AS` | Comma-separated organisasjonsformer: `AS`, `ENK`, `ESEK`, `BRL`, `NUF`, `KBO`. |
-| `--person-role` | the leader | The person has this role in Enhetsregisteret instead, for example `styreleder`, `styremedlem`, `kontaktperson` or `prokurist`. `--help` lists all 22. |
+| `--unit-type` | `AS` | Comma-separated organisasjonsformer, for example `AS`, `ENK`, `ESEK`, `BRL`, `NUF`, `KBO` or `PRE`. Any hovedenhet Access Management has roles from Enhetsregisteret for; `--help` lists all 45. |
+| `--person-role` | the leader | The person has this role in Enhetsregisteret instead, for example `styreleder`, `styremedlem`, `kontaktperson`, `prokurist` or `bestyrende-reder`. `--help` lists all 22: the roles Access Management has given persons that persons also have in Tenor. |
 | `--role` | | Finds tilretteleggere instead: organizations that are `revisor`, `regnskapsfoerer` or `forretningsfoerer` for at least one client. The `client…` columns describe the client it was found through. |
 | `--subunits` | | Finds underenheter (`BEDR` and `AAFY`) instead, one per hovedenhet. The person is the hovedenhet's, since underenheter have no persons of their own. |
 | `--min-subunits` | | Only organizations with at least this many underenheter. With `--subunits`, it applies to the hovedenheter. |
@@ -322,6 +324,14 @@ behalf of the konkursbo:
 
 ```bash
 testudo find organizations --count 10 --env at23 --unit-type KBO --format csv \
+  --columns organizationIdentifier,partyUuid,personRole,ssn,userId,userPartyId,userPartyUuid
+```
+
+**A partsrederi and its bestyrende reder.** For tests of what the bestyrende
+reder can do on behalf of the partsrederi:
+
+```bash
+testudo find organizations --count 10 --env at23 --unit-type PRE --person-role bestyrende-reder --format csv \
   --columns organizationIdentifier,partyUuid,personRole,ssn,userId,userPartyId,userPartyUuid
 ```
 
