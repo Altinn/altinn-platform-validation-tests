@@ -29,11 +29,12 @@ var keyClients = []struct {
 
 // clientKey is one key on one client, as printed by testudo maskinporten keys.
 type clientKey struct {
-	ClientID string    `json:"clientId"`
-	Org      string    `json:"org"`
-	UsedBy   string    `json:"usedBy"`
-	Kid      string    `json:"kid"`
-	Expires  time.Time `json:"expires,omitzero"`
+	ClientID   string    `json:"clientId"`
+	ClientName string    `json:"clientName"`
+	Org        string    `json:"org"`
+	UsedBy     string    `json:"usedBy"`
+	Kid        string    `json:"kid"`
+	Expires    time.Time `json:"expires,omitzero"`
 	// DaysLeft is whole days until Expires, negative when it has expired, and
 	// nil when the key has no exp.
 	DaysLeft *int `json:"daysLeft"`
@@ -100,11 +101,12 @@ func clientKeys(ctx context.Context, c *selfservice.Client, now time.Time) ([]cl
 		var keys []clientKey
 		for _, k := range jwks {
 			key := clientKey{
-				ClientID: client.ClientID,
-				Org:      client.ClientOrgno,
-				UsedBy:   kc.usedBy,
-				Kid:      k.Kid,
-				Expires:  k.Expires(),
+				ClientID:   client.ClientID,
+				ClientName: client.ClientName,
+				Org:        client.ClientOrgno,
+				UsedBy:     kc.usedBy,
+				Kid:        k.Kid,
+				Expires:    k.Expires(),
 			}
 			if !key.Expires.IsZero() {
 				days := int(math.Floor(key.Expires.Sub(now).Hours() / 24))
@@ -130,13 +132,13 @@ func clientKeys(ctx context.Context, c *selfservice.Client, now time.Time) ([]cl
 
 func writeKeysText(out io.Writer, keys []clientKey) error {
 	w := tabwriter.NewWriter(out, 0, 0, 2, ' ', 0)
-	fmt.Fprintln(w, "CLIENT ID\tORG\tUSED BY\tKID\tEXPIRES\tDAYS LEFT")
+	fmt.Fprintln(w, "CLIENT ID\tNAME\tORG\tUSED BY\tKID\tEXPIRES\tDAYS LEFT")
 	for _, k := range keys {
 		expires, days := "no exp", "-"
 		if k.DaysLeft != nil {
 			expires, days = k.Expires.Format(time.DateOnly), strconv.Itoa(*k.DaysLeft)
 		}
-		fmt.Fprintf(w, "%s\t%s\t%s\t%s\t%s\t%s\n", k.ClientID, k.Org, k.UsedBy, k.Kid, expires, days)
+		fmt.Fprintf(w, "%s\t%s\t%s\t%s\t%s\t%s\t%s\n", k.ClientID, k.ClientName, k.Org, k.UsedBy, k.Kid, expires, days)
 	}
 	return w.Flush()
 }

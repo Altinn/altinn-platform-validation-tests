@@ -297,8 +297,8 @@ with the master client in the `selfservice` section of the configuration.
 testudo maskinporten keys
 ```
 ```
-CLIENT ID                             ORG        USED BY                                     KID      EXPIRES     DAYS LEFT
-89e4066f-3d32-4a47-9259-4752f9041a35  991825827  Playwright MASKINPORTEN_JWK, testudo Tenor  d26b...  2027-02-26  92
+CLIENT ID                             NAME                ORG        USED BY                                     KID      EXPIRES     DAYS LEFT
+89e4066f-3d32-4a47-9259-4752f9041a35  tenor-autorisasjon  991825827  Playwright MASKINPORTEN_JWK, testudo Tenor  d26b...  2027-02-26  92
 ```
 
 `--json` prints JSON. The clients are listed in `keyClients` in
@@ -307,8 +307,9 @@ clients for 310149942 and 313175650 are not there yet.
 
 `testudo serve` has the same keys as a Prometheus Gauge on `GET /metrics`, with
 one series per key and the labels `client_id`, `org`, `used_by` and `kid`. The
-value is when the key expires, so days left is computed in the query, and the
-API is asked at most every five minutes:
+client name is left out, since it is free text. The value is when the key
+expires, so days left is computed in the query, and the API is asked at most
+every five minutes:
 
 ```promql
 (maskinporten_client_key_expiry_timestamp_seconds - time()) / 86400

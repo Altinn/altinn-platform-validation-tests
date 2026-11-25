@@ -63,7 +63,8 @@ func TestClientKeys(t *testing.T) {
 	if want := "expired:-2 soon:1 later:100 no-exp:nil"; strings.Join(got, " ") != want {
 		t.Errorf("keys = %s, want %s", strings.Join(got, " "), want)
 	}
-	if k := keys[0]; k.ClientID != keyClients[0].id || k.Org != "991825827" || k.UsedBy != keyClients[0].usedBy {
+	if k := keys[0]; k.ClientID != keyClients[0].id || k.ClientName != "name-"+keyClients[0].id[:4] ||
+		k.Org != "991825827" || k.UsedBy != keyClients[0].usedBy {
 		t.Errorf("key = %+v", k)
 	}
 
