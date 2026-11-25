@@ -2,7 +2,7 @@ import { fail } from "k6";
 
 import { ConnectionsClient, CreateAccessPackageQueryBuilder, CreateConnectionQueryBuilder, DeleteConnectionQueryBuilder } from "../../../../../../clients/access-management/enduser/connections/index.js";
 import { PersonalTokenBuilder, PersonalTokenGenerator } from "../../../../../../common-imports.js";
-import { fetchTestData, lazy, pickUnique, requireEnv } from "../../../../../../helpers.js";
+import { fetchTestData, getItemFromList, lazy, pickUnique, requireEnv } from "../../../../../../helpers.js";
 import { AltinnScopes, CreateScopeString } from "../../../../../../scopes.js";
 import { CreateAccessPackage, CreateConnection, DeleteConnection } from "../../../../../building-blocks/access-management/enduser/connections/index.js";
 
@@ -26,10 +26,31 @@ const ENDUSER_SCOPES = CreateScopeString([
  */
 
 /**
+ * The client of a regnskapsfører, and the client's leader.
+ *
+ * @typedef {object} RegnskapsforerClientColumns
+ * @property {string} clientOrganizationIdentifier Organization number of the client.
+ * @property {string} clientPartyUuid Party UUID of the client.
+ * @property {string} clientPersonRole The client leader's role, for example daglig-leder.
+ * @property {string} clientSsn National identity number of the client's leader.
+ * @property {string} clientUserId Altinn user id of the client's leader.
+ * @property {string} clientUserPartyId Party id of the client's leader.
+ * @property {string} clientUserPartyUuid Party UUID of the client's leader.
+ */
+
+/**
+ * A regnskapsfører, its leader (daglig leder, or innehaver of an ENK), one of
+ * its clients and the client's leader. Made with testudo, see the README in
+ * this folder.
+ *
+ * @typedef {OrganizationRow & RegnskapsforerClientColumns} RegnskapsforerRow
+ */
+
+/**
  * Reads one fixture in this folder for the environment.
  *
  * @param {string} fixture The fixture's folder under delegation-check, for example organizations.
- * @returns {Array<OrganizationRow>} The rows.
+ * @returns {Array<*>} The rows.
  */
 function loadFixture(fixture) {
     requireEnv(["ENVIRONMENT", "BASE_URL"]);
@@ -68,6 +89,50 @@ export function setupOrganizations() {
  */
 export function setupKeyRoleConnection(accessPackage, labels) {
     const [delegatingOrganization, receivingOrganization] = pickUnique(loadFixture("organizations"), 2);
+
+    return delegateAccessPackage(delegatingOrganization, receivingOrganization, accessPackage, labels);
+}
+
+/**
+ * Setup for the tests where the leader of a regnskapsfører acts for one of
+ * its clients. Draws a regnskapsfører, and the client's leader makes the
+ * regnskapsfører tilgangsstyrer for the client. The regnskapsfører role alone
+ * does not let the regnskapsfører's leader run the delegation check for the
+ * client. The run stops if that fails, after removing what was made.
+ *
+ * @param {{createConnection: {[key: string]: string}, delegatePackage: {[key: string]: string}, deleteConnection: {[key: string]: string}}} labels k6 request labels for the steps.
+ * @returns {KeyRoleConnection} The client as the delegating organization, and the regnskapsfører as the receiving one.
+ */
+export function setupRegnskapsforerAsTilgangsstyrer(labels) {
+    /** @type {RegnskapsforerRow} */
+    const regnskapsforer = getItemFromList(loadFixture("regnskapsforere"), true);
+
+    /** @type {OrganizationRow} */
+    const client = {
+        organizationIdentifier: regnskapsforer.clientOrganizationIdentifier,
+        partyUuid: regnskapsforer.clientPartyUuid,
+        personRole: regnskapsforer.clientPersonRole,
+        ssn: regnskapsforer.clientSsn,
+        userId: regnskapsforer.clientUserId,
+        userPartyId: regnskapsforer.clientUserPartyId,
+        userPartyUuid: regnskapsforer.clientUserPartyUuid,
+    };
+
+    return delegateAccessPackage(client, regnskapsforer, "tilgangsstyrer", labels);
+}
+
+/**
+ * The leader of the delegating organization adds the receiving organization as
+ * a connection and delegates the access package to it. The run stops if that
+ * fails, after removing what was made.
+ *
+ * @param {OrganizationRow} delegatingOrganization The organization that delegates.
+ * @param {OrganizationRow} receivingOrganization The organization that receives the access package.
+ * @param {string} accessPackage The access package to delegate.
+ * @param {{createConnection: {[key: string]: string}, delegatePackage: {[key: string]: string}, deleteConnection: {[key: string]: string}}} labels k6 request labels for the steps.
+ * @returns {KeyRoleConnection} The two organizations.
+ */
+function delegateAccessPackage(delegatingOrganization, receivingOrganization, accessPackage, labels) {
     const { connections, tokenGenerator } = getClients();
 
     tokenGenerator.setTokenGeneratorOptions(getPersonTokenOpts(delegatingOrganization));
@@ -106,8 +171,8 @@ export function setupKeyRoleConnection(accessPackage, labels) {
 }
 
 /**
- * Removes the connection setupKeyRoleConnection made, with the access package
- * on it.
+ * Removes the connection setupKeyRoleConnection or
+ * setupRegnskapsforerAsTilgangsstyrer made, with the access package on it.
  *
  * @param {KeyRoleConnection} data The two organizations.
  * @param {{[key: string]: string}} label k6 request label for the step.

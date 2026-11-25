@@ -16,6 +16,7 @@ the user can and cannot delegate.
 | [daglig-leder-checks-access-packages-by-id-and-urn.js](daglig-leder-checks-access-packages-by-id-and-urn.js) | `GET_Enduser_Conn_AccPcks_DelgCheck_Dagl_UrnIdFiltr` | Daglig leder of an AS | `party`, `packageIds`, `packages` |
 | [daglig-leder-checks-access-packages-through-key-role.js](daglig-leder-checks-access-packages-through-key-role.js) | `GET_Enduser_Conn_AccPcks_DelgCheck_KeyRole` | Daglig leder of an AS that is tilgangsstyrer for another AS | `party` only |
 | [bostyrer-checks-konkursbo-access-packages.js](bostyrer-checks-konkursbo-access-packages.js) | `GET_Enduser_Conn_AccPcks_DelgCheck_BOBE_Role_idFilter` | Bostyrer of a konkursbo | `party`, `packageIds` |
+| [regnskapsforer-checks-regnskapsforer-packages-for-client.js](regnskapsforer-checks-regnskapsforer-packages-for-client.js) | `GET_Enduser_Conn_AccPcks_DelgCheck_REGN_Role_idFilter` | Leader of a regnskapsfører, for one of its clients | `party`, `packageIds` |
 
 `daglig-leder-checks-delegable-access-packages.js` checks that the answer covers access
 packages, that none of the packages only a person can hold (`innbygger-*` and `vergemal-*`)
@@ -64,6 +65,17 @@ returned, and that the bostyrer can delegate both because the bostyrer role give
 (reason `Direct-RolePackage`). The Bruno test only checks the first item in the response,
 whichever package that is.
 
+`regnskapsforer-checks-regnskapsforer-packages-for-client.js` also writes data. In `setup()`
+it draws a regnskapsfører, and the leader of one of its clients makes the regnskapsfører
+tilgangsstyrer for the client; `teardown()` removes it. Being the client's regnskapsfører is
+not enough to run the delegation check for the client: it answers `403` without the
+`tilgangsstyrer` delegation. The test filters on the ids of
+`regnskapsforer-med-signeringsrettighet` and `regnskapsforer-uten-signeringsrettighet`, and
+checks that only those two are returned and that the regnskapsfører's leader can delegate
+neither (reason `NoAccess`). The Bruno test only checks the first item in the response. The
+Bruno fixture's `klient_org_other` gives the same answer, so it has presumably made its
+regnskapsfører tilgangsstyrer already.
+
 ## Test data
 
 Each test draws one row per iteration from a fixture in
@@ -92,6 +104,20 @@ for env in at22 tt02; do
   go run . find organizations --unit-type KBO --count 10 --env $env --format csv \
     --columns organizationIdentifier,partyUuid,personRole,ssn,userId,userPartyId,userPartyUuid \
     --out ../../K6/testdata/access-management/enduser/connections/delegation-check/konkursbo/$env.csv
+done
+```
+
+**`regnskapsforere/<environment>.csv`**: a regnskapsfører and its leader (daglig leder, or
+innehaver of an ENK), one of its clients, and the client's leader (daglig leder, innehaver or
+styreleder). testudo finds a regnskapsfører through a client that has it as `REGN` in
+Enhetsregisteret, and the `client…` columns describe that client. at22 got 9 rows, since one
+client's leader had no user and testudo left that row out.
+
+```bash
+for env in at22 tt02; do
+  go run . find organizations --role regnskapsfoerer --count 10 --env $env --format csv \
+    --columns organizationIdentifier,partyUuid,personRole,ssn,userId,userPartyId,userPartyUuid,clientOrganizationIdentifier,clientPartyUuid,clientPersonRole,clientSsn,clientUserId,clientUserPartyId,clientUserPartyUuid \
+    --out ../../K6/testdata/access-management/enduser/connections/delegation-check/regnskapsforere/$env.csv
 done
 ```
 

@@ -31,6 +31,12 @@ test_definitions:
       - environment: at22
       - environment: tt02
 
+  - test_file: regnskapsforer-checks-regnskapsforer-packages-for-client.js
+    test_scope: enduser-connections-delegation-check
+    contexts:
+      - environment: at22
+      - environment: tt02
+
   - test_file: bostyrer-checks-konkursbo-access-packages.js
     test_scope: enduser-connections-delegation-check
     contexts:
