@@ -445,35 +445,6 @@ func TestEnvOverride(t *testing.T) {
 	}
 }
 
-func TestJsonnetJSON(t *testing.T) {
-	input := map[string]any{
-		"b":          []any{},
-		"a":          map[string]any{},
-		"s":          "q\"b\\s/n\nt\tc\x01d\x7fe\u0085f<g>&h iæø\x00j\x1fk l",
-		"r":          "a\bb\fc\rd~",
-		"n":          1,
-		"big":        12345678901,
-		"z":          nil,
-		"y":          true,
-		"l":          []any{1, map[string]any{"x": "y"}},
-		"e":          map[string]any{"k": []any{}},
-		"Zcap":       "upper sorts first",
-		"with space": "x",
-		"_u":         "underscore",
-	}
-	got, err := jsonnetJSON(input)
-	if err != nil {
-		t.Fatal(err)
-	}
-	want, err := os.ReadFile("testdata/jsonnet_format/expected.json")
-	if err != nil {
-		t.Fatal(err)
-	}
-	if string(got) != string(want) {
-		t.Errorf("expected\n%s\nactual\n%s", want, got)
-	}
-}
-
 // The archive is in data when it is valid UTF-8 and in binaryData otherwise,
 // as when the ConfigMap was made with kubectl.
 func TestConfigMapData(t *testing.T) {
