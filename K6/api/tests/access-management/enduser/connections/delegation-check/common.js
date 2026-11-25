@@ -223,6 +223,41 @@ export function setupPartsrederier() {
 }
 
 /**
+ * A private person who can log in, with the person's own party. Made with
+ * testudo, see the README in this folder.
+ *
+ * @typedef {object} PersonRow
+ * @property {string} personIdentifier National identity number.
+ * @property {string} userId Altinn user id.
+ * @property {string} partyId Party id of the person.
+ * @property {string} partyUuid Party UUID of the person.
+ */
+
+/**
+ * Setup for the tests that act as a private person on their own behalf.
+ *
+ * @returns {{persons: Array<PersonRow>}} Private persons.
+ */
+export function setupPersons() {
+    return { persons: loadFixture("persons") };
+}
+
+/**
+ * Token options for acting as a private person.
+ *
+ * @param {PersonRow} row The person the iteration acts as.
+ * @returns {*} Options to hand to setTokenGeneratorOptions.
+ */
+export function getPrivatePersonTokenOpts(row) {
+    return getPersonTokenOpts({
+        ssn: row.personIdentifier,
+        userId: row.userId,
+        userPartyId: row.partyId,
+        userPartyUuid: row.partyUuid,
+    });
+}
+
+/**
  * Creates the client and its token generator once per k6 runtime, for nobody
  * in particular. Which end user an iteration acts as is set per row with
  * setTokenGeneratorOptions and getPersonTokenOpts.
@@ -246,7 +281,7 @@ export const getClients = lazy(function () {
  * Token options for acting as the person in a row. The scopes are repeated,
  * since the options replace the ones the generator was built with.
  *
- * @param {OrganizationRow} row The row whose person the iteration acts as.
+ * @param {Pick<OrganizationRow, "ssn" | "userId" | "userPartyId" | "userPartyUuid">} row The row whose person the iteration acts as.
  * @returns {*} Options to hand to setTokenGeneratorOptions.
  */
 export function getPersonTokenOpts(row) {

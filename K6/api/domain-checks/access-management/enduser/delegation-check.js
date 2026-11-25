@@ -7,12 +7,23 @@ import { sameSet } from "../../../../helpers.js";
  */
 
 /**
+ * Access packages a private person can delegate on their own behalf.
+ */
+const INNBYGGER_PACKAGE_PREFIX = "urn:altinn:accesspackage:innbygger-";
+
+/**
+ * Guardianship access packages. The guardianship authority manages them, so
+ * they can never be delegated.
+ */
+const VERGEMAL_PACKAGE_PREFIX = "urn:altinn:accesspackage:vergemal-";
+
+/**
  * Access packages that only a person can hold. They are never offered for an
- * organization.
+ * organization, and they are the only ones offered for a private person.
  */
 const PERSON_ONLY_PACKAGE_PREFIXES = [
-    "urn:altinn:accesspackage:innbygger-",
-    "urn:altinn:accesspackage:vergemal-",
+    INNBYGGER_PACKAGE_PREFIX,
+    VERGEMAL_PACKAGE_PREFIX,
 ];
 
 /**
@@ -62,6 +73,73 @@ function CheckNoPersonOnlyPackages(checks) {
 
     if (!success) {
         console.error(`CheckNoPersonOnlyPackages - returned for an organization: ${JSON.stringify(offending)}`);
+    }
+
+    return success;
+}
+
+/**
+ * Checks that only access packages a person can hold (innbygger and vergemål)
+ * are returned when the party is a private person.
+ *
+ * @param {AccessPackageDtoCheck[]} checks - The delegation check results returned by the API.
+ * @returns {boolean} True if no other packages are returned, false otherwise.
+ */
+function CheckOnlyPersonPackagesAreReturned(checks) {
+    const offending = checks
+        .map((packageCheck) => packageCheck.package?.urn ?? "")
+        .filter((urn) => !PERSON_ONLY_PACKAGE_PREFIXES.some((prefix) => urn.startsWith(prefix)));
+
+    const success = check(offending, {
+        "CheckOnlyPersonPackagesAreReturned - Only innbygger and vergemål packages are returned for a private person": () => offending.length === 0,
+    });
+
+    if (!success) {
+        console.error(`CheckOnlyPersonPackagesAreReturned - returned for a private person: ${JSON.stringify(offending)}`);
+    }
+
+    return success;
+}
+
+/**
+ * Checks that innbygger packages are returned and that the user can delegate
+ * all of them.
+ *
+ * @param {AccessPackageDtoCheck[]} checks - The delegation check results returned by the API.
+ * @returns {boolean} True if at least one innbygger package is returned and all have result true, false otherwise.
+ */
+function CheckInnbyggerPackagesCanBeDelegated(checks) {
+    const innbygger = checks.filter((packageCheck) => (packageCheck.package?.urn ?? "").startsWith(INNBYGGER_PACKAGE_PREFIX));
+    const notDelegable = innbygger.filter((packageCheck) => packageCheck.result !== true).map((packageCheck) => packageCheck.package?.urn);
+
+    const success = check(innbygger, {
+        "CheckInnbyggerPackagesCanBeDelegated - All innbygger packages can be delegated": () => innbygger.length > 0 && notDelegable.length === 0,
+    });
+
+    if (!success) {
+        console.error(`CheckInnbyggerPackagesCanBeDelegated - ${innbygger.length} innbygger packages, not delegable: ${JSON.stringify(notDelegable)}`);
+    }
+
+    return success;
+}
+
+/**
+ * Checks that the user can delegate none of the vergemål packages returned.
+ *
+ * @param {AccessPackageDtoCheck[]} checks - The delegation check results returned by the API.
+ * @returns {boolean} True if every vergemål package has result false, false otherwise.
+ */
+function CheckVergemalPackagesCannotBeDelegated(checks) {
+    const delegable = checks
+        .filter((packageCheck) => (packageCheck.package?.urn ?? "").startsWith(VERGEMAL_PACKAGE_PREFIX) && packageCheck.result !== false)
+        .map((packageCheck) => packageCheck.package?.urn);
+
+    const success = check(delegable, {
+        "CheckVergemalPackagesCannotBeDelegated - No vergemål package can be delegated": () => delegable.length === 0,
+    });
+
+    if (!success) {
+        console.error(`CheckVergemalPackagesCannotBeDelegated - delegable: ${JSON.stringify(delegable)}`);
     }
 
     return success;
@@ -236,6 +314,9 @@ function CheckSamePackagesAsOwnOrganization(checks, ownOrganizationChecks) {
 export const DelegationCheckDomainChecks = {
     CheckPackagesAreReturned,
     CheckNoPersonOnlyPackages,
+    CheckOnlyPersonPackagesAreReturned,
+    CheckInnbyggerPackagesCanBeDelegated,
+    CheckVergemalPackagesCannotBeDelegated,
     CheckPackageCanBeDelegated,
     CheckPackageCannotBeDelegated,
     CheckOnlyFilteredPackagesAreReturned,
