@@ -465,6 +465,12 @@ TestRun name and its `uniq_name` label are
 made from the test id and the timestamp, so each test in a run gets its own
 name.
 
+A test runs in an environment unless its context says `enabled: false` under
+`test_type:`. Leaving out `enabled:` means enabled, also when `test_type:` is
+there. The generator in the altinn-platform image, which the CronJobs and the
+ad-hoc workflows still use, skips a `test_type:` without `enabled:`, so write
+`enabled: true` until they use testudo.
+
 ### Schedules
 
 The CronJob runs the tests in the config file on the schedule in `schedule:`, a

@@ -300,7 +300,7 @@ func (r K8sManifestGenerator) Generate(cf ConfigFile) error {
 	var jobs []func() error
 	for i, td := range cf.TestDefinitions {
 		for _, c := range td.Contexts {
-			if !c.TestTypeDefinition.Enabled {
+			if !*c.TestTypeDefinition.Enabled {
 				continue
 			}
 			ids = append(ids, *c.TestRun.Id)

@@ -102,6 +102,37 @@ test_definitions:
 	}
 }
 
+// A test runs unless its file says enabled: false, also when test_type is
+// there without enabled.
+func TestEnabledDefaultsToTrue(t *testing.T) {
+	for _, tt := range []struct {
+		name, testType string
+		want           bool
+	}{
+		{"no test_type", "", true},
+		{"test_type without enabled", "\n        test_type:\n          type: smoke", true},
+		{"enabled: true", "\n        test_type:\n          type: smoke\n          enabled: true", true},
+		{"enabled: false", "\n        test_type:\n          type: smoke\n          enabled: false", false},
+	} {
+		t.Run(tt.name, func(t *testing.T) {
+			path := writeConfig(t, `
+namespace: platform
+test_definitions:
+  - test_file: k6/first_test.js
+    contexts:
+      - environment: yt01`+tt.testType+"\n")
+			cf, err := ReadConfigFile(path)
+			if err != nil {
+				t.Fatal(err)
+			}
+			cf.SetDefaults(path)
+			if got := *cf.TestDefinitions[0].Contexts[0].TestTypeDefinition.Enabled; got != tt.want {
+				t.Errorf("expected enabled %t, actual %t", tt.want, got)
+			}
+		})
+	}
+}
+
 var validEnvironmentsTests = []struct {
 	envName  string // input
 	expected bool   // expected result
@@ -190,8 +221,8 @@ test_definitions:
 	if *configFile.TestDefinitions[0].Contexts[0].TestTypeDefinition.Type != "functional" {
 		t.Errorf("setDefaults: expected %s, actual %s", "functional", *configFile.TestDefinitions[0].Contexts[0].TestTypeDefinition.Type)
 	}
-	if configFile.TestDefinitions[0].Contexts[0].TestTypeDefinition.Enabled != true {
-		t.Errorf("setDefaults: expected %t, actual %t", true, configFile.TestDefinitions[0].Contexts[0].TestTypeDefinition.Enabled)
+	if !*configFile.TestDefinitions[0].Contexts[0].TestTypeDefinition.Enabled {
+		t.Errorf("setDefaults: expected enabled, actual disabled")
 	}
 	if *configFile.TestDefinitions[0].Contexts[0].TestRun.Name != "first-test" {
 		t.Errorf("setDefaults: expected %s, actual %s", "first-test", *configFile.TestDefinitions[0].Contexts[0].TestRun.Name)
@@ -263,8 +294,8 @@ test_definitions:
 	if *configFile.TestDefinitions[0].Contexts[0].TestTypeDefinition.Type != "functional" {
 		t.Errorf("setDefaults: expected %s, actual %s", "functional", *configFile.TestDefinitions[0].Contexts[0].TestTypeDefinition.Type)
 	}
-	if configFile.TestDefinitions[0].Contexts[0].TestTypeDefinition.Enabled != true {
-		t.Errorf("setDefaults: expected %t, actual %t", true, configFile.TestDefinitions[0].Contexts[0].TestTypeDefinition.Enabled)
+	if !*configFile.TestDefinitions[0].Contexts[0].TestTypeDefinition.Enabled {
+		t.Errorf("setDefaults: expected enabled, actual disabled")
 	}
 	if *configFile.TestDefinitions[0].Contexts[0].TestRun.Name != "test-k8s-wrapper-get-deployments" {
 		t.Errorf("setDefaults: expected %s, actual %s", "test-k8s-wrapper-get-deployments", *configFile.TestDefinitions[0].Contexts[0].TestRun.Name)

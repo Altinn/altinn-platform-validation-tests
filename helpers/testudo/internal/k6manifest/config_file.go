@@ -36,9 +36,11 @@ type TestContext struct {
 }
 
 type TestTypeDefinition struct {
-	Type       *string `yaml:"type"`
-	Enabled    bool    `yaml:"enabled"`
-	ConfigFile string  `yaml:"config_file"`
+	Type *string `yaml:"type"`
+	// Enabled is nil when the file leaves it out. SetDefaults makes that true,
+	// so a test runs unless its file says enabled: false.
+	Enabled    *bool  `yaml:"enabled"`
+	ConfigFile string `yaml:"config_file"`
 }
 
 type TestRun struct {
@@ -147,10 +149,10 @@ func (cFile *ConfigFile) SetDefaults(filePath string) {
 		for _, c := range td.Contexts {
 			if c.TestTypeDefinition == nil {
 				testType := testTypeFromFileName(filePath)
-				c.TestTypeDefinition = &TestTypeDefinition{
-					Type:    &testType,
-					Enabled: true,
-				}
+				c.TestTypeDefinition = &TestTypeDefinition{Type: &testType}
+			}
+			if c.TestTypeDefinition.Enabled == nil {
+				c.TestTypeDefinition.Enabled = new(true)
 			}
 			if c.TestRun == nil {
 				c.TestRun = &TestRun{}
