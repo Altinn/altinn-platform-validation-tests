@@ -41,6 +41,39 @@ at23:
 	}
 }
 
+func TestNamespace(t *testing.T) {
+	viper.Reset()
+	t.Cleanup(viper.Reset)
+	viper.SetConfigType("yaml")
+	if err := viper.ReadConfig(strings.NewReader(`
+MASKINPORTEN_CLIENT_ID: tenor-client
+MASKINPORTEN_JWK: tenor-key
+selfservice:
+  MASKINPORTEN_CLIENT_ID: master-client
+`)); err != nil {
+		t.Fatal(err)
+	}
+	t.Setenv("MASKINPORTEN_CLIENT_ID", "tenor-from-shell")
+	t.Setenv("SELFSERVICE_MASKINPORTEN_JWK", "master-key-from-shell")
+
+	lookup := Namespace("selfservice")
+	for k, want := range map[string]string{
+		"MASKINPORTEN_CLIENT_ID":   "master-client",
+		"MASKINPORTEN_JWK":         "master-key-from-shell",
+		"TOKEN_GENERATOR_USERNAME": "",
+	} {
+		if got := lookup(k); got != want {
+			t.Errorf("%s = %q, want %q", k, got, want)
+		}
+	}
+
+	viper.Reset()
+	os.Unsetenv("SELFSERVICE_MASKINPORTEN_JWK")
+	if got := lookup("MASKINPORTEN_JWK"); got != "" {
+		t.Errorf("the shared MASKINPORTEN_JWK must not be used, got %q", got)
+	}
+}
+
 func TestLoad(t *testing.T) {
 	viper.Reset()
 	t.Cleanup(viper.Reset)

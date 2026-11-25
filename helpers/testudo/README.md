@@ -63,6 +63,10 @@ TOKEN_GENERATOR_PASSWORD: '...'
 at23:                                   # one section per environment: at22, at23, tt02, yt01
   API_BASE_URL: 'https://platform.at23.altinn.cloud'
   REGISTER_SUBSCRIPTION_KEY: '...'
+
+selfservice:                            # the master client that manages the other Maskinporten clients
+  MASKINPORTEN_CLIENT_ID: '...'
+  MASKINPORTEN_JWK: '{"kty":"RSA",...}'
 ```
 
 | Key | Used for |
@@ -77,6 +81,11 @@ A value is taken from the environment variable with the same name first, then
 from the section for `--env`, then from the top of the file. The same file can
 therefore be used in CI, where the values come from secrets as environment
 variables.
+
+The `selfservice` section is read on its own, with the scope
+`idporten:dcr.read`. It never falls back to the top-level
+`MASKINPORTEN_CLIENT_ID` and `MASKINPORTEN_JWK`, and its environment variables
+are `SELFSERVICE_MASKINPORTEN_CLIENT_ID` and `SELFSERVICE_MASKINPORTEN_JWK`.
 
 ## How it picks parties
 
