@@ -287,6 +287,24 @@ report is missing or no tests ran, the message says that the run did not start.
 
 The message is sent to the webhook in `SLACK_WEBHOOK_URL`.
 
+## maskinporten keys
+
+Lists the keys on the Maskinporten clients the tests use, and how many days are
+left until each expires. The clients are read from Digdir's self-service API
+with the master client in the `selfservice` section of the configuration.
+
+```bash
+testudo maskinporten keys
+```
+```
+CLIENT ID                             NAME                ORG        USED BY                                     KID      EXPIRES     DAYS LEFT
+89e4066f-3d32-4a47-9259-4752f9041a35  tenor-autorisasjon  991825827  Playwright MASKINPORTEN_JWK, testudo Tenor  d26b...  2027-02-26  92
+```
+
+`--json` prints JSON. The clients are listed in `keyClients` in
+`cmd/maskinporten.go`. The master client only sees Digdir's clients, so the
+clients for 310149942 and 313175650 are not there yet.
+
 ## Recipes for K6 setup
 
 Run these from `helpers/testudo`, with testudo installed by `make install`, or
