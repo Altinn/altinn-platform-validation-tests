@@ -42,3 +42,9 @@ test_definitions:
     contexts:
       - environment: at22
       - environment: tt02
+
+  - test_file: innehaver-checks-access-packages-by-urn.js
+    test_scope: enduser-connections-delegation-check
+    contexts:
+      - environment: at22
+      - environment: tt02

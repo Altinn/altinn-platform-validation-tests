@@ -11,9 +11,9 @@ const ENDUSER_SCOPES = CreateScopeString([
 ]);
 
 /**
- * An organization and a person with a role in it, such as its daglig leder or
- * the bostyrer of a konkursbo. Made with testudo, see the README in this
- * folder.
+ * An organization and a person with a role in it, such as its daglig leder,
+ * the innehaver of an enkeltpersonforetak or the bostyrer of a konkursbo. Made
+ * with testudo, see the README in this folder.
  *
  * @typedef {object} OrganizationRow
  * @property {string} organizationIdentifier Organization number.
@@ -202,6 +202,15 @@ export function removeKeyRoleConnection(data, label) {
  */
 export function setupKonkursbo() {
     return { konkursbo: loadFixture("konkursbo") };
+}
+
+/**
+ * Setup for the tests that act as the innehaver of an enkeltpersonforetak.
+ *
+ * @returns {{enkeltpersonforetak: Array<OrganizationRow>}} Enkeltpersonforetak with their innehaver.
+ */
+export function setupEnkeltpersonforetak() {
+    return { enkeltpersonforetak: loadFixture("enkeltpersonforetak") };
 }
 
 /**

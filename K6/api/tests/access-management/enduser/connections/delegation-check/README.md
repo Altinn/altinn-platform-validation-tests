@@ -17,6 +17,7 @@ the user can and cannot delegate.
 | [daglig-leder-checks-access-packages-through-key-role.js](daglig-leder-checks-access-packages-through-key-role.js) | `GET_Enduser_Conn_AccPcks_DelgCheck_KeyRole` | Daglig leder of an AS that is tilgangsstyrer for another AS | `party` only |
 | [bostyrer-checks-konkursbo-access-packages.js](bostyrer-checks-konkursbo-access-packages.js) | `GET_Enduser_Conn_AccPcks_DelgCheck_BOBE_Role_idFilter` | Bostyrer of a konkursbo | `party`, `packageIds` |
 | [regnskapsforer-checks-regnskapsforer-packages-for-client.js](regnskapsforer-checks-regnskapsforer-packages-for-client.js) | `GET_Enduser_Conn_AccPcks_DelgCheck_REGN_Role_idFilter` | Leader of a regnskapsfører, for one of its clients | `party`, `packageIds` |
+| [innehaver-checks-access-packages-by-urn.js](innehaver-checks-access-packages-by-urn.js) | `GET_Enduser_Conn_AccPcks_DelgCheck_Innehaver_UrnFilter` | Innehaver of an ENK | `party`, `packages` |
 
 `daglig-leder-checks-delegable-access-packages.js` checks that the answer covers access
 packages, that none of the packages only a person can hold (`innbygger-*` and `vergemal-*`)
@@ -76,6 +77,14 @@ neither (reason `NoAccess`). The Bruno test only checks the first item in the re
 Bruno fixture's `klient_org_other` gives the same answer, so it has presumably made its
 regnskapsfører tilgangsstyrer already.
 
+`innehaver-checks-access-packages-by-urn.js` filters on `packages` with the codes
+`hovedadministrator` and `barnehageleder` and the full urns of `eksplisitt` and
+`forretningsforer-eiendom`. It checks that only those four are returned, that the innehaver
+can delegate the first two because the innehaver role gives them (reason
+`Direct-RolePackage`), and that `eksplisitt` and `forretningsforer-eiendom`, which only comes
+with the forretningsfører role, cannot be delegated. The Bruno test checks the results only,
+not the reasons.
+
 ## Test data
 
 Each test draws one row per iteration from a fixture in
@@ -105,6 +114,18 @@ for env in at22 tt02; do
   testudo find organizations --unit-type KBO --count 10 --env $env --format csv \
     --columns organizationIdentifier,partyUuid,personRole,ssn,userId,userPartyId,userPartyUuid \
     --out K6/testdata/access-management/enduser/connections/delegation-check/konkursbo/$env.csv
+done
+```
+
+**`enkeltpersonforetak/<environment>.csv`**: an enkeltpersonforetak (`ENK`) and its
+innehaver. `--person-role innehaver` is needed, since testudo takes the daglig leder as the
+leader of an ENK that has one. These files were made on 2026-11-25.
+
+```bash
+for env in at22 tt02; do
+  testudo find organizations --unit-type ENK --person-role innehaver --count 10 --env $env --format csv \
+    --columns organizationIdentifier,partyUuid,personRole,ssn,userId,userPartyId,userPartyUuid \
+    --out K6/testdata/access-management/enduser/connections/delegation-check/enkeltpersonforetak/$env.csv
 done
 ```
 
