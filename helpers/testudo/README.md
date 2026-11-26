@@ -24,6 +24,7 @@ cluster, see [k6 generate](#k6-generate).
 - [notify playwright](#notify-playwright)
 - [Recipes for K6 setup](#recipes-for-k6-setup)
 - [k6 generate](#k6-generate)
+- [version](#version)
 - [What testudo does not do](#what-testudo-does-not-do)
 - [Development](#development)
 - [Sources](#sources)
@@ -36,7 +37,8 @@ Every change to testudo on `main` is built for Linux, macOS and Windows (amd64
 and arm64) and published as the
 [testudo-latest](https://github.com/Altinn/altinn-platform-validation-tests/releases/tag/testudo-latest)
 release. It has no version number: the release notes name the commit it was
-built from, and the next change replaces the files.
+built from, and the next change replaces the files. `testudo version` shows the
+commit of the binary you have.
 
 ```bash
 gh release download testudo-latest --repo Altinn/altinn-platform-validation-tests \
@@ -558,6 +560,30 @@ testudo k6 generate --slack environment K6/api/tests/portaler/smoke.yaml
 A key the config file format does not have, for example a typo such as
 `enviroment:`, is an error, so it is not silently ignored.
 
+## version
+
+Shows which build of testudo you have: the commit it was built from, when that
+commit was made, and the Go version and platform it was built for.
+
+```bash
+testudo version
+testudo version --json
+```
+
+```text
+commit:      19963b6680dbcbb1328e5a459a827fcf1590384d
+commit time: 2026-11-26T11:37:50Z
+go:          go1.27.2
+platform:    linux/amd64
+```
+
+Go records the commit when testudo is built in a git checkout, as
+[make build](#build) and the [testudo-latest](#download) release are. If the
+checkout had changes that were not committed, the commit line says so. `go run`
+records no commit, so it is `unknown`. A testudo installed with
+`go install …@<version>` has a `version:` line instead of a commit. The config
+file is not read, so `version` works even when the config file is broken.
+
 ## What testudo does not do
 
 testudo only finds parties that already exist. It does not create
@@ -584,6 +610,7 @@ make fmt      # formats the code
 | `internal/playwright/`, `internal/slack/` | Reading the Playwright report and sending to Slack, for `notify playwright`. |
 | `internal/k6manifest/` | Reads the K6 config files and makes the manifests for `k6 generate`. `testrun.go` makes the TestRun. `assets/` has the default load profile for each test type and the k6 cluster config. `testdata/` has example config files and the expected output, made at a fixed time (1700000000000 in Unix milliseconds) so the timestamps and TestRun names in it are as they are. The expected TestRun and CronJob files were made with jsonnet, so the tests compare them as JSON values, not as text. |
 | `internal/tools/` | Checks that the programs a command runs, such as k6, are on PATH. A command calls `tools.Require` before it starts. |
+| `internal/buildinfo/` | The commit, commit time and Go version Go recorded in the binary, for `version`. |
 
 `TestGenerate` in `internal/k6manifest/` runs k6, and fails when it is not on
 PATH. Install k6 before you run the tests.
