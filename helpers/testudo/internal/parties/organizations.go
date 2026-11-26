@@ -17,14 +17,16 @@ import (
 
 // UnitTypes are the unit types FindOrganizations can fetch, with the codes
 // from Enhetsregisteret (organisasjonsform). They are the hovedenheter
-// Access Management has roles from Enhetsregisteret for. Their underenheter
-// are fetched with OrganizationQuery.Subunits.
+// Access Management has roles from Enhetsregisteret for, and ADOS
+// (administrativ enhet - offentlig sektor). Their underenheter are fetched
+// with OrganizationQuery.Subunits. ADOS units are underenheter themselves
+// (see underenhetUnitTypes), so they come with their hovedenhet.
 var UnitTypes = []string{
-	"ANNA", "ANS", "AS", "ASA", "BA", "BBL", "BO", "BRL", "DA", "ENK", "ESEK",
-	"FKF", "FLI", "FYLK", "GFS", "IKJP", "IKS", "IS", "KBO", "KF", "KIRK",
-	"KOMM", "KS", "KTRF", "NOKUS", "NUF", "OPMV", "ORGL", "PERS", "PK", "PRE",
-	"REV", "SA", "SAM", "SE", "SF", "SPA", "STAT", "STI", "SÆR", "TVAM", "UTLA",
-	"UTLANS", "VIFE", "VPFO",
+	"ADOS", "ANNA", "ANS", "AS", "ASA", "BA", "BBL", "BO", "BRL", "DA", "ENK",
+	"ESEK", "FKF", "FLI", "FYLK", "GFS", "IKJP", "IKS", "IS", "KBO", "KF",
+	"KIRK", "KOMM", "KS", "KTRF", "NOKUS", "NUF", "OPMV", "ORGL", "PERS", "PK",
+	"PRE", "REV", "SA", "SAM", "SE", "SF", "SPA", "STAT", "STI", "SÆR", "TVAM",
+	"UTLA", "UTLANS", "VIFE", "VPFO",
 }
 
 // DefaultUnitType is the unit type fetched when none is chosen.
@@ -47,10 +49,23 @@ var leaderCodes = map[string][]string{
 }
 
 // underenhetUnitTypes are the underenheter, of hovedenheter with and without
-// business activity. They have no person roles of their own, so the person
-// is from the hovedenhet, which is the role with the same code (BEDR or
-// AAFY) in Enhetsregisteret. Access Management sets ParentId from it.
-var underenhetUnitTypes = []string{"BEDR", "AAFY"}
+// business activity, and administrative units in the public sector. They
+// have no person roles of their own, so the person is from the hovedenhet,
+// which is the role with the same code (BEDR, AAFY or ADOS) in
+// Enhetsregisteret. Access Management sets ParentId from it; for ADOS only
+// when the feature flag AccessManagement.Subunit.AdosInheritance is on.
+var underenhetUnitTypes = []string{"BEDR", "AAFY", "ADOS"}
+
+// standaloneUnderenhetUnitTypes are the unit types in UnitTypes that are
+// underenheter themselves, so they cannot be used with
+// OrganizationQuery.Subunits.
+var standaloneUnderenhetUnitTypes = []string{"ADOS"}
+
+// IsUnderenhetUnitType reports whether the unit type in UnitTypes is an
+// underenhet itself, ignoring case.
+func IsUnderenhetUnitType(name string) bool {
+	return slices.Contains(standaloneUnderenhetUnitTypes, strings.ToUpper(name))
+}
 
 // FindUnitType looks up the unit type in UnitTypes, ignoring case.
 func FindUnitType(name string) (string, error) {
@@ -88,7 +103,7 @@ type Organization struct {
 	// is from the hovedenhet.
 	Person register.Party `json:"person"`
 	// Hovedenhet is the hovedenhet in Register when the organization is an
-	// underenhet (BEDR or AAFY).
+	// underenhet (BEDR, AAFY or ADOS).
 	Hovedenhet *register.Party `json:"hovedenhet,omitempty"`
 	// Client is the client in Register the organization was found through
 	// when it was fetched with a role: an organization that has it as
@@ -550,7 +565,7 @@ func fetchGivenOrganizations(ctx context.Context, c *tenor.Client, organizationN
 
 // toOrganizationCandidate turns a brreg document into a candidate, with the
 // person with personRole, or the leader when it is empty. For underenheter it
-// is the hovedenhet, from the role BEDR or AAFY, or from
+// is the hovedenhet, from the role BEDR, AAFY or ADOS, or from
 // underenhet.hovedenhet if the role is missing. Documents without a valid
 // organization number are skipped.
 func toOrganizationCandidate(md tenor.Metadata, personRole PersonRole) (organizationCandidate, bool) {
