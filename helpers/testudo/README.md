@@ -449,7 +449,7 @@ Makes the Kubernetes manifests that run the tests in a K6 config file
 where the test is enabled, and the CronJob that runs them on a schedule. The
 code was moved here from
 [actions/generate-k6-manifests](https://github.com/Altinn/altinn-platform/tree/main/actions/generate-k6-manifests)
-in altinn-platform, and the output is the same, except that the `generated-by`
+in altinn-platform, and the manifests hold the same values, except that the `generated-by`
 label on the ConfigMaps, TestRuns, runner pods and CronJobs is `testudo`. The
 generator in altinn-platform wrote `k6-action-image`, and `github-action` on the
 CronJobs. The ad-hoc workflows still use
@@ -578,7 +578,7 @@ make fmt      # formats the code
 | `internal/maskinporten/`, `internal/platformtoken/` | Tokens for Tenor and Register. |
 | `internal/config/` | Reads `~/.testudo.yaml` and environment variables. |
 | `internal/playwright/`, `internal/slack/` | Reading the Playwright report and sending to Slack, for `notify playwright`. |
-| `internal/k6manifest/` | Reads the K6 config files and makes the manifests for `k6 generate`. `testrun.go` makes the TestRun, in the same format jsonnet wrote it in before. `assets/` has the default load profile for each test type and the k6 cluster config. `testdata/` has example config files and the expected output, made at a fixed time (1700000000000 in Unix milliseconds) so the timestamps and TestRun names in it are as they are. |
+| `internal/k6manifest/` | Reads the K6 config files and makes the manifests for `k6 generate`. `testrun.go` makes the TestRun. `assets/` has the default load profile for each test type and the k6 cluster config. `testdata/` has example config files and the expected output, made at a fixed time (1700000000000 in Unix milliseconds) so the timestamps and TestRun names in it are as they are. The expected TestRun and CronJob files were made with jsonnet, so the tests compare them as JSON values, not as text. |
 | `internal/tools/` | Checks that the programs a command runs, such as k6, are on PATH. A command calls `tools.Require` before it starts. |
 
 `TestGenerate` in `internal/k6manifest/` runs k6, and fails when it is not on

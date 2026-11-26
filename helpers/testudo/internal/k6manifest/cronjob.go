@@ -65,7 +65,7 @@ func (r K8sManifestGenerator) WriteCronJob(configPath string, cf *ConfigFile) er
 	if err != nil {
 		return err
 	}
-	b, err := jsonnetJSON(newCronJob(repoPath, cf.Namespace, schedule))
+	b, err := manifestJSON(newCronJob(repoPath, cf.Namespace, schedule))
 	if err != nil {
 		return err
 	}

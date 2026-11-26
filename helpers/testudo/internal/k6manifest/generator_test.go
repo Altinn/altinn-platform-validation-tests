@@ -59,7 +59,7 @@ func validateConfigFolder(confDir string, testVersion string, t *testing.T) {
 }
 
 func validateTestRun(path, testVersion, deployEnv string, t *testing.T) {
-	generatedFile, knownExpectedFile, equalContents := readFilesAndCompareContents(path, fmt.Sprintf("./testdata/expected_generated_files/%s/%s/testrun.json", testVersion, deployEnv))
+	generatedFile, knownExpectedFile, equalContents := readJSONFilesAndCompareValues(t, path, fmt.Sprintf("./testdata/expected_generated_files/%s/%s/testrun.json", testVersion, deployEnv))
 	if !equalContents {
 		t.Errorf("generate %s: expected \n%s, actual \n%s", testVersion, knownExpectedFile, generatedFile)
 	}
@@ -371,6 +371,27 @@ func readFilesAndCompareContents(filePath1 string, filePath2 string) (string, st
 		log.Fatal(err)
 	}
 	return string(file1), string(file2), string(file1) == string(file2)
+}
+
+// readJSONFilesAndCompareValues reads two JSON files and reports whether they
+// hold the same value. The expected TestRun and CronJob files were made with
+// jsonnet, which formats JSON differently, so only the values are compared.
+func readJSONFilesAndCompareValues(t *testing.T, actualPath, expectedPath string) (actual, expected string, equal bool) {
+	t.Helper()
+	read := func(path string) (string, any) {
+		b, err := os.ReadFile(path)
+		if err != nil {
+			t.Fatal(err)
+		}
+		var v any
+		if err := json.Unmarshal(b, &v); err != nil {
+			t.Fatalf("%s: %v", path, err)
+		}
+		return string(b), v
+	}
+	actual, actualValue := read(actualPath)
+	expected, expectedValue := read(expectedPath)
+	return actual, expected, reflect.DeepEqual(actualValue, expectedValue)
 }
 
 // getInfoFromFilePath returns the first folder of path below root (the test

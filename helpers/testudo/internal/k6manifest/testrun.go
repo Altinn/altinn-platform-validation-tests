@@ -222,7 +222,7 @@ func (r K8sManifestGenerator) writeTestRun(p testRunParameters, cluster k6Cluste
 	if err != nil {
 		return err
 	}
-	b, err := jsonnetJSON(tr)
+	b, err := manifestJSON(tr)
 	if err != nil {
 		return err
 	}
@@ -241,102 +241,15 @@ func toString(v any) string {
 	return fmt.Sprint(v)
 }
 
-// jsonnetJSON formats v the way jsonnet writes a file: keys sorted, three
-// spaces of indentation, { } and [ ] for empty objects and arrays, and a
-// newline at the end. The TestRun used to be made with jsonnet, and this keeps
-// the files byte for byte the same.
-func jsonnetJSON(v any) ([]byte, error) {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return nil, err
-	}
-	d := json.NewDecoder(bytes.NewReader(b))
-	d.UseNumber()
-	var generic any
-	if err := d.Decode(&generic); err != nil {
-		return nil, err
-	}
+// manifestJSON is v as JSON indented with two spaces, with a newline at the
+// end. &, < and > are written as they are, not as \u escapes.
+func manifestJSON(v any) ([]byte, error) {
 	var buf bytes.Buffer
-	writeJsonnetValue(&buf, generic, "")
-	buf.WriteByte('\n')
+	enc := json.NewEncoder(&buf)
+	enc.SetIndent("", "  ")
+	enc.SetEscapeHTML(false)
+	if err := enc.Encode(v); err != nil {
+		return nil, err
+	}
 	return buf.Bytes(), nil
-}
-
-func writeJsonnetValue(buf *bytes.Buffer, v any, indent string) {
-	const step = "   "
-	switch v := v.(type) {
-	case map[string]any:
-		if len(v) == 0 {
-			buf.WriteString("{ }")
-			return
-		}
-		buf.WriteString("{\n")
-		keys := slices.Sorted(maps.Keys(v))
-		for i, k := range keys {
-			buf.WriteString(indent + step)
-			writeJsonnetString(buf, k)
-			buf.WriteString(": ")
-			writeJsonnetValue(buf, v[k], indent+step)
-			if i < len(keys)-1 {
-				buf.WriteByte(',')
-			}
-			buf.WriteByte('\n')
-		}
-		buf.WriteString(indent + "}")
-	case []any:
-		if len(v) == 0 {
-			buf.WriteString("[ ]")
-			return
-		}
-		buf.WriteString("[\n")
-		for i, e := range v {
-			buf.WriteString(indent + step)
-			writeJsonnetValue(buf, e, indent+step)
-			if i < len(v)-1 {
-				buf.WriteByte(',')
-			}
-			buf.WriteByte('\n')
-		}
-		buf.WriteString(indent + "]")
-	case string:
-		writeJsonnetString(buf, v)
-	case json.Number:
-		buf.WriteString(v.String())
-	case bool:
-		fmt.Fprint(buf, v)
-	case nil:
-		buf.WriteString("null")
-	}
-}
-
-// writeJsonnetString escapes s the way jsonnet does: like JSON, but only
-// control characters are written as \u escapes. <, > and & are left as they
-// are.
-func writeJsonnetString(buf *bytes.Buffer, s string) {
-	buf.WriteByte('"')
-	for _, r := range s {
-		switch r {
-		case '"':
-			buf.WriteString(`\"`)
-		case '\\':
-			buf.WriteString(`\\`)
-		case '\b':
-			buf.WriteString(`\b`)
-		case '\f':
-			buf.WriteString(`\f`)
-		case '\n':
-			buf.WriteString(`\n`)
-		case '\r':
-			buf.WriteString(`\r`)
-		case '\t':
-			buf.WriteString(`\t`)
-		default:
-			if r < 0x20 || (r >= 0x7f && r <= 0x9f) {
-				fmt.Fprintf(buf, `\u%04x`, r)
-			} else {
-				buf.WriteRune(r)
-			}
-		}
-	}
-	buf.WriteByte('"')
 }

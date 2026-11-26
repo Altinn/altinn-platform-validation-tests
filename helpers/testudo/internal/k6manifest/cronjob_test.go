@@ -41,7 +41,8 @@ func writeCronJob(t *testing.T, configPath string, cf *ConfigFile) (string, map[
 }
 
 // The golden file was made with cronjob.jsonnet, which this replaces. Only the
-// generated-by label has changed since, from github-action to testudo.
+// generated-by label has changed since, from github-action to testudo. jsonnet
+// formatted the file differently, so the values are compared, not the text.
 func TestCronJobIsAsBefore(t *testing.T) {
 	const name = "K6_api_tests_access-management-bff_access-packages_functional.json"
 	g := K8sManifestGenerator{CronJobDirectory: t.TempDir(), RepoRootDirectory: "."}
@@ -49,15 +50,8 @@ func TestCronJobIsAsBefore(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	got, err := os.ReadFile(filepath.Join(g.CronJobDirectory, name))
-	if err != nil {
-		t.Fatal(err)
-	}
-	want, err := os.ReadFile(filepath.Join("testdata", "cronjob", name))
-	if err != nil {
-		t.Fatal(err)
-	}
-	if string(got) != string(want) {
+	got, want, equal := readJSONFilesAndCompareValues(t, filepath.Join(g.CronJobDirectory, name), filepath.Join("testdata", "cronjob", name))
+	if !equal {
 		t.Errorf("expected\n%s\nactual\n%s", want, got)
 	}
 }

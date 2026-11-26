@@ -6,8 +6,9 @@
 //
 // The code was moved here from actions/generate-k6-manifests in
 // altinn-platform. It used kubectl for the ConfigMap and jsonnet for the
-// TestRun; both are made in Go now, and the files are the same as before,
-// except that the generated-by label is testudo.
+// TestRun; both are made in Go now. The manifests hold the same values as
+// before, except that the generated-by label is testudo, but the TestRun and
+// CronJob are indented like the ConfigMap, not the way jsonnet wrote them.
 package k6manifest
 
 import (
