@@ -454,7 +454,8 @@ label on the ConfigMaps, TestRuns, runner pods and CronJobs is `testudo`. The
 generator in altinn-platform wrote `k6-action-image`, and `github-action` on the
 CronJobs. The ad-hoc workflows still use
 the action from altinn-platform, and the CronJobs still run the generator in
-the altinn-platform image.
+the altinn-platform image. The CronJobs themselves are still made by
+`hack/create_cronjobs.sh`, see [Schedules](#schedules).
 
 Run it from the root of the repository, since the paths in the config files are
 relative to it. `k6` must be on PATH, since it makes the k6 archives. testudo
@@ -518,17 +519,24 @@ Without `schedule:`, functional, healthcheck and browser tests run every 15
 minutes (`*/15 * * * *`), and smoke tests every hour (`0 * * * *`). Breakpoint
 tests only get a CronJob when their file has a `schedule:`.
 
-The [Generate and Apply K6 CronJobs](../../.github/workflows/apply-cronjobs.yaml)
-workflow applies the CronJobs for all config files when a config file changes on
-`main`. It only makes the CronJobs, which do not need k6:
+testudo's CronJobs are not applied yet. The
+[Generate and Apply K6 CronJobs](../../.github/workflows/apply-cronjobs.yaml)
+workflow still makes them with `hack/create_cronjobs.sh` and
+`hack/cronjob.jsonnet`: functional, healthcheck and browser tests every 10 to 20
+minutes, smoke tests once an hour at a random minute, and no breakpoint tests.
+It does not read `schedule:`, so `schedule:` has no effect in the cluster until
+the workflow uses testudo.
+
+`--cronjobs-only` makes only the CronJobs, which do not need k6:
 
 ```bash
 testudo k6 generate --cronjobs-only K6/api/tests/portaler/smoke.yaml K6/api/tests/portaler/functional.yaml
 ```
 
-The CronJob names and files are made from the path of the config file, as
-before, so applying replaces the CronJobs in the cluster. A name longer than 52
-characters loses its vowels.
+The CronJob names and files are made from the path of the config file, the
+same way `hack/cronjob.jsonnet` makes them, so applying testudo's CronJobs will
+replace the ones in the cluster. A name longer than 52 characters loses its
+vowels.
 
 Arguments after `--` are given to k6 in the TestRun. Each `-e` or
 `--env KEY=VALUE` among them is also set as an environment variable for the
