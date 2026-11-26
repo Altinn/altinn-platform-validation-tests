@@ -127,19 +127,17 @@ function SameMembers(actual, expected) {
 }
 
 /**
- * Runs one assertion under the name the check is reported by.
+ * Logs why a check failed. The check itself is called with its name written out,
+ * so the name stays a plain string.
  *
- * @param {string} name - The check name.
- * @param {*} target - The value the assertion reads.
- * @param {(value: any) => boolean} assertion - Returns true when the check held.
- * @param {() => string[]} diagnose - Returns lines to log when it did not.
+ * @param {boolean} success - Whether the check held.
+ * @param {string} checkName - The domain check that ran, for the log.
+ * @param {() => string[]} diagnose - Returns lines to log when it did not hold.
  * @returns {boolean} True if the check held.
  */
-function Assert(name, target, assertion, diagnose) {
-    const success = check(target, { [name]: assertion });
-
+function LogIfFailed(success, checkName, diagnose) {
     if (!success) {
-        console.error(`FAILED: ${name}`);
+        console.error(`FAILED: ${checkName}`);
         diagnose().forEach((line) => console.error(`  ${line}`));
     }
 
@@ -176,9 +174,11 @@ function IsInsideRetentionWindow(deletedDate, retentionYears) {
  * @returns {boolean} True if the check held.
  */
 function CheckResponseIsPartyArray(parties) {
-    return Assert("CheckResponseIsPartyArray - the response is an array of parties", parties,
-        (body) => Array.isArray(body),
-        () => [`expected an array, got: ${JSON.stringify(parties)}`]);
+    const success = check(parties, {
+        "CheckResponseIsPartyArray - the response is an array of parties": (body) => Array.isArray(body),
+    });
+
+    return LogIfFailed(success, "CheckResponseIsPartyArray", () => [`expected an array, got: ${JSON.stringify(parties)}`]);
 }
 
 /**
@@ -191,9 +191,11 @@ function CheckResponseIsPartyArray(parties) {
  * @returns {boolean} True if the check held.
  */
 function CheckResponseIsNonEmptyPartyArray(parties) {
-    return Assert("CheckResponseIsNonEmptyPartyArray - the response is a non empty array of parties", parties,
-        (body) => Array.isArray(body) && body.length > 0,
-        () => [`expected a non empty array, got: ${JSON.stringify(parties)}`]);
+    const success = check(parties, {
+        "CheckResponseIsNonEmptyPartyArray - the response is a non empty array of parties": (body) => Array.isArray(body) && body.length > 0,
+    });
+
+    return LogIfFailed(success, "CheckResponseIsNonEmptyPartyArray", () => [`expected a non empty array, got: ${JSON.stringify(parties)}`]);
 }
 
 /**
@@ -203,9 +205,11 @@ function CheckResponseIsNonEmptyPartyArray(parties) {
  * @returns {boolean} True if the check held.
  */
 function CheckResponseIsEmptyPartyArray(parties) {
-    return Assert("CheckResponseIsEmptyPartyArray - the response is an empty array of parties", parties,
-        (body) => Array.isArray(body) && body.length === 0,
-        () => [`expected an empty array, got: ${JSON.stringify(TopLevelPartyUuids(parties))}`]);
+    const success = check(parties, {
+        "CheckResponseIsEmptyPartyArray - the response is an empty array of parties": (body) => Array.isArray(body) && body.length === 0,
+    });
+
+    return LogIfFailed(success, "CheckResponseIsEmptyPartyArray", () => [`expected an empty array, got: ${JSON.stringify(TopLevelPartyUuids(parties))}`]);
 }
 
 /**
@@ -253,7 +257,11 @@ function CheckEveryPartyMatchesContract(parties) {
         }
     }
 
-    return Assert("CheckEveryPartyMatchesContract - every party matches the contract", parties, () => problems.length === 0, () => problems);
+    const success = check(parties, {
+        "CheckEveryPartyMatchesContract - every party matches the contract": () => problems.length === 0,
+    });
+
+    return LogIfFailed(success, "CheckEveryPartyMatchesContract", () => problems);
 }
 
 /**
@@ -264,12 +272,14 @@ function CheckEveryPartyMatchesContract(parties) {
  * @returns {boolean} True if the check held.
  */
 function CheckPartyIsPresent(parties, partyUuid) {
-    return Assert("CheckPartyIsPresent - the party is in the party list", parties,
-        (body) => FindParty(body, partyUuid) !== undefined,
-        () => [
-            `'${partyUuid}' was not in the party list`,
-            `party uuids returned: ${JSON.stringify(PartyUuidList(parties))}`,
-        ]);
+    const success = check(parties, {
+        "CheckPartyIsPresent - the party is in the party list": (body) => FindParty(body, partyUuid) !== undefined,
+    });
+
+    return LogIfFailed(success, "CheckPartyIsPresent", () => [
+        `'${partyUuid}' was not in the party list`,
+        `party uuids returned: ${JSON.stringify(PartyUuidList(parties))}`,
+    ]);
 }
 
 /**
@@ -280,9 +290,11 @@ function CheckPartyIsPresent(parties, partyUuid) {
  * @returns {boolean} True if the check held.
  */
 function CheckPartyIsAbsent(parties, partyUuid) {
-    return Assert("CheckPartyIsAbsent - the party is not in the party list", parties,
-        (body) => FindParty(body, partyUuid) === undefined,
-        () => [`'${partyUuid}' was in the party list and should not have been`]);
+    const success = check(parties, {
+        "CheckPartyIsAbsent - the party is not in the party list": (body) => FindParty(body, partyUuid) === undefined,
+    });
+
+    return LogIfFailed(success, "CheckPartyIsAbsent", () => [`'${partyUuid}' was in the party list and should not have been`]);
 }
 
 /**
@@ -294,12 +306,14 @@ function CheckPartyIsAbsent(parties, partyUuid) {
  * @returns {boolean} True if the check held.
  */
 function CheckPartyIsNotTopLevel(parties, subunitPartyUuid) {
-    return Assert("CheckPartyIsNotTopLevel - the subunit is not returned at the top level", parties,
-        (body) => !TopLevelPartyUuids(body).includes(Normalise(subunitPartyUuid)),
-        () => [
-            `subunit '${subunitPartyUuid}' was returned at the top level`,
-            `top level party uuids: ${JSON.stringify(TopLevelPartyUuids(parties))}`,
-        ]);
+    const success = check(parties, {
+        "CheckPartyIsNotTopLevel - the subunit is not returned at the top level": (body) => !TopLevelPartyUuids(body).includes(Normalise(subunitPartyUuid)),
+    });
+
+    return LogIfFailed(success, "CheckPartyIsNotTopLevel", () => [
+        `subunit '${subunitPartyUuid}' was returned at the top level`,
+        `top level party uuids: ${JSON.stringify(TopLevelPartyUuids(parties))}`,
+    ]);
 }
 
 /**
@@ -312,12 +326,14 @@ function CheckPartyIsNotTopLevel(parties, subunitPartyUuid) {
 function CheckOnlyTheseTopLevelParties(parties, expectedPartyUuids) {
     const expected = expectedPartyUuids.map(Normalise);
 
-    return Assert("CheckOnlyTheseTopLevelParties - only the expected parties are returned at the top level", parties,
-        (body) => SameMembers(TopLevelPartyUuids(body), expected),
-        () => [
-            `expected: ${JSON.stringify(expected)}`,
-            `got: ${JSON.stringify(TopLevelPartyUuids(parties))}`,
-        ]);
+    const success = check(parties, {
+        "CheckOnlyTheseTopLevelParties - only the expected parties are returned at the top level": (body) => SameMembers(TopLevelPartyUuids(body), expected),
+    });
+
+    return LogIfFailed(success, "CheckOnlyTheseTopLevelParties", () => [
+        `expected: ${JSON.stringify(expected)}`,
+        `got: ${JSON.stringify(TopLevelPartyUuids(parties))}`,
+    ]);
 }
 
 /**
@@ -331,13 +347,15 @@ function CheckOnlyTheseTopLevelParties(parties, expectedPartyUuids) {
 function CheckPartyIsOnlyHierarchyElement(parties, partyUuid) {
     const party = FindParty(parties, partyUuid);
 
-    return Assert("CheckPartyIsOnlyHierarchyElement - the party is only a hierarchy element with no access of its own", party,
-        (found) => found !== undefined &&
+    const success = check(party, {
+        "CheckPartyIsOnlyHierarchyElement - the party is only a hierarchy element with no access of its own": (found) => found !== undefined &&
             found.onlyHierarchyElementWithNoAccess === true &&
             AllAccess(found).length === 0,
-        () => party === undefined
-            ? [`'${partyUuid}' was not in the party list`]
-            : [`'${partyUuid}' came back with onlyHierarchyElementWithNoAccess=${party.onlyHierarchyElementWithNoAccess}, access: ${JSON.stringify(AllAccess(party))}`]);
+    });
+
+    return LogIfFailed(success, "CheckPartyIsOnlyHierarchyElement", () => party === undefined
+        ? [`'${partyUuid}' was not in the party list`]
+        : [`'${partyUuid}' came back with onlyHierarchyElementWithNoAccess=${party.onlyHierarchyElementWithNoAccess}, access: ${JSON.stringify(AllAccess(party))}`]);
 }
 
 /**
@@ -350,11 +368,13 @@ function CheckPartyIsOnlyHierarchyElement(parties, partyUuid) {
 function CheckPartyHoldsAccessItself(parties, partyUuid) {
     const party = FindParty(parties, partyUuid);
 
-    return Assert("CheckPartyHoldsAccessItself - the party holds the access itself", party,
-        (found) => found !== undefined && found.onlyHierarchyElementWithNoAccess === false,
-        () => party === undefined
-            ? [`'${partyUuid}' was not in the party list`]
-            : [`'${partyUuid}' came back as a hierarchy carrier with no access of its own`]);
+    const success = check(party, {
+        "CheckPartyHoldsAccessItself - the party holds the access itself": (found) => found !== undefined && found.onlyHierarchyElementWithNoAccess === false,
+    });
+
+    return LogIfFailed(success, "CheckPartyHoldsAccessItself", () => party === undefined
+        ? [`'${partyUuid}' was not in the party list`]
+        : [`'${partyUuid}' came back as a hierarchy carrier with no access of its own`]);
 }
 
 /**
@@ -368,13 +388,15 @@ function CheckPartyHoldsAccessItself(parties, partyUuid) {
 function CheckPartyIsOrganizationWithNumber(parties, partyUuid, expectedOrganizationNumber) {
     const party = FindParty(parties, partyUuid);
 
-    return Assert("CheckPartyIsOrganizationWithNumber - the party is an organization with the expected number", party,
-        (found) => found !== undefined &&
+    const success = check(party, {
+        "CheckPartyIsOrganizationWithNumber - the party is an organization with the expected number": (found) => found !== undefined &&
             found.type === "Organization" &&
             found.organizationNumber === expectedOrganizationNumber,
-        () => party === undefined
-            ? [`'${partyUuid}' was not in the party list`]
-            : [`expected Organization/${expectedOrganizationNumber} on '${partyUuid}', got ${party.type}/${party.organizationNumber}`]);
+    });
+
+    return LogIfFailed(success, "CheckPartyIsOrganizationWithNumber", () => party === undefined
+        ? [`'${partyUuid}' was not in the party list`]
+        : [`expected Organization/${expectedOrganizationNumber} on '${partyUuid}', got ${party.type}/${party.organizationNumber}`]);
 }
 
 /**
@@ -388,11 +410,13 @@ function CheckPartyIsOrganizationWithNumber(parties, partyUuid, expectedOrganiza
 function CheckPartyType(parties, partyUuid, expectedType) {
     const party = FindParty(parties, partyUuid);
 
-    return Assert("CheckPartyType - the party is of the expected type", party,
-        (found) => found !== undefined && found.type === expectedType,
-        () => party === undefined
-            ? [`'${partyUuid}' was not in the party list`]
-            : [`expected type '${expectedType}' on '${partyUuid}', got '${party.type}'`]);
+    const success = check(party, {
+        "CheckPartyType - the party is of the expected type": (found) => found !== undefined && found.type === expectedType,
+    });
+
+    return LogIfFailed(success, "CheckPartyType", () => party === undefined
+        ? [`'${partyUuid}' was not in the party list`]
+        : [`expected type '${expectedType}' on '${partyUuid}', got '${party.type}'`]);
 }
 
 /**
@@ -406,9 +430,11 @@ function CheckPartyType(parties, partyUuid, expectedType) {
 function CheckPartyHasNoNationalIdentityNumber(parties, partyUuid) {
     const party = FindParty(parties, partyUuid);
 
-    return Assert("CheckPartyHasNoNationalIdentityNumber - the party carries no national identity number", party,
-        (found) => found !== undefined && found.personId === null,
-        () => [`expected personId null on '${partyUuid}', got '${party?.personId}'`]);
+    const success = check(party, {
+        "CheckPartyHasNoNationalIdentityNumber - the party carries no national identity number": (found) => found !== undefined && found.personId === null,
+    });
+
+    return LogIfFailed(success, "CheckPartyHasNoNationalIdentityNumber", () => [`expected personId null on '${partyUuid}', got '${party?.personId}'`]);
 }
 
 /**
@@ -422,9 +448,11 @@ function CheckPartyHasNoNationalIdentityNumber(parties, partyUuid) {
 function CheckPartyHasEmailId(parties, partyUuid, expectedEmailId) {
     const party = FindParty(parties, partyUuid);
 
-    return Assert("CheckPartyHasEmailId - the party carries the expected email id", party,
-        (found) => found !== undefined && found.emailId === expectedEmailId,
-        () => [`expected '${expectedEmailId}' on '${partyUuid}', got '${party?.emailId}'`]);
+    const success = check(party, {
+        "CheckPartyHasEmailId - the party carries the expected email id": (found) => found !== undefined && found.emailId === expectedEmailId,
+    });
+
+    return LogIfFailed(success, "CheckPartyHasEmailId", () => [`expected '${expectedEmailId}' on '${partyUuid}', got '${party?.emailId}'`]);
 }
 
 /**
@@ -441,15 +469,17 @@ function CheckPartyHasEmailId(parties, partyUuid, expectedEmailId) {
 function CheckPartyIncludesAccessPackages(parties, partyUuid, expectedAccessPackages) {
     const party = FindParty(parties, partyUuid);
 
-    return Assert("CheckPartyIncludesAccessPackages - the party holds the expected access packages", party,
-        (found) => found !== undefined &&
+    const success = check(party, {
+        "CheckPartyIncludesAccessPackages - the party holds the expected access packages": (found) => found !== undefined &&
             expectedAccessPackages.every((wanted) => (found.authorizedAccessPackages ?? []).includes(wanted)),
-        () => party === undefined
-            ? [`'${partyUuid}' was not in the party list`]
-            : [
-                `expected '${partyUuid}' to hold: ${JSON.stringify(expectedAccessPackages)}`,
-                `got: ${JSON.stringify(party.authorizedAccessPackages ?? [])}`,
-            ]);
+    });
+
+    return LogIfFailed(success, "CheckPartyIncludesAccessPackages", () => party === undefined
+        ? [`'${partyUuid}' was not in the party list`]
+        : [
+            `expected '${partyUuid}' to hold: ${JSON.stringify(expectedAccessPackages)}`,
+            `got: ${JSON.stringify(party.authorizedAccessPackages ?? [])}`,
+        ]);
 }
 
 /**
@@ -462,9 +492,11 @@ function CheckPartyIncludesAccessPackages(parties, partyUuid, expectedAccessPack
 function CheckPartyHasSomeAccessPackages(parties, partyUuid) {
     const party = FindParty(parties, partyUuid);
 
-    return Assert("CheckPartyHasSomeAccessPackages - the party holds at least one access package", party,
-        (found) => found !== undefined && (found.authorizedAccessPackages ?? []).length > 0,
-        () => [`expected access packages on '${partyUuid}', got: ${JSON.stringify(party?.authorizedAccessPackages ?? [])}`]);
+    const success = check(party, {
+        "CheckPartyHasSomeAccessPackages - the party holds at least one access package": (found) => found !== undefined && (found.authorizedAccessPackages ?? []).length > 0,
+    });
+
+    return LogIfFailed(success, "CheckPartyHasSomeAccessPackages", () => [`expected access packages on '${partyUuid}', got: ${JSON.stringify(party?.authorizedAccessPackages ?? [])}`]);
 }
 
 /**
@@ -479,10 +511,12 @@ function CheckPartyIncludesRole(parties, partyUuid, expectedRole) {
     const party = FindParty(parties, partyUuid);
     const wanted = expectedRole.toLowerCase();
 
-    return Assert("CheckPartyIncludesRole - the party holds the expected role", party,
-        (found) => found !== undefined &&
+    const success = check(party, {
+        "CheckPartyIncludesRole - the party holds the expected role": (found) => found !== undefined &&
             (found.authorizedRoles ?? []).some((/** @type {*} */ role) => String(role).toLowerCase() === wanted),
-        () => [`expected role '${expectedRole}' on '${partyUuid}', got: ${JSON.stringify(party?.authorizedRoles ?? [])}`]);
+    });
+
+    return LogIfFailed(success, "CheckPartyIncludesRole", () => [`expected role '${expectedRole}' on '${partyUuid}', got: ${JSON.stringify(party?.authorizedRoles ?? [])}`]);
 }
 
 /**
@@ -496,14 +530,16 @@ function CheckPartyIncludesRole(parties, partyUuid, expectedRole) {
 function CheckPartyHasExactlyResources(parties, partyUuid, expectedResources) {
     const party = FindParty(parties, partyUuid);
 
-    return Assert("CheckPartyHasExactlyResources - the party holds exactly the expected resources", party,
-        (found) => found !== undefined && SameMembers(found.authorizedResources ?? [], expectedResources),
-        () => party === undefined
-            ? [`'${partyUuid}' was not in the party list`]
-            : [
-                `expected '${partyUuid}' to hold exactly: ${JSON.stringify(expectedResources)}`,
-                `got: ${JSON.stringify(party.authorizedResources ?? [])}`,
-            ]);
+    const success = check(party, {
+        "CheckPartyHasExactlyResources - the party holds exactly the expected resources": (found) => found !== undefined && SameMembers(found.authorizedResources ?? [], expectedResources),
+    });
+
+    return LogIfFailed(success, "CheckPartyHasExactlyResources", () => party === undefined
+        ? [`'${partyUuid}' was not in the party list`]
+        : [
+            `expected '${partyUuid}' to hold exactly: ${JSON.stringify(expectedResources)}`,
+            `got: ${JSON.stringify(party.authorizedResources ?? [])}`,
+        ]);
 }
 
 /**
@@ -516,11 +552,13 @@ function CheckPartyHasExactlyResources(parties, partyUuid, expectedResources) {
 function CheckPartyHasSomeAccess(parties, partyUuid) {
     const party = FindParty(parties, partyUuid);
 
-    return Assert("CheckPartyHasSomeAccess - the party holds some access", party,
-        (found) => found !== undefined && AllAccess(found).length > 0,
-        () => party === undefined
-            ? [`'${partyUuid}' was not in the party list`]
-            : [`expected some delegated access on '${partyUuid}'`]);
+    const success = check(party, {
+        "CheckPartyHasSomeAccess - the party holds some access": (found) => found !== undefined && AllAccess(found).length > 0,
+    });
+
+    return LogIfFailed(success, "CheckPartyHasSomeAccess", () => party === undefined
+        ? [`'${partyUuid}' was not in the party list`]
+        : [`expected some delegated access on '${partyUuid}'`]);
 }
 
 /**
@@ -533,9 +571,11 @@ function CheckPartyHasSomeAccess(parties, partyUuid) {
 function CheckPartyHasNoSubunits(parties, partyUuid) {
     const party = FindParty(parties, partyUuid);
 
-    return Assert("CheckPartyHasNoSubunits - the party has no subunits", party,
-        (found) => found !== undefined && (found.subunits ?? []).length === 0,
-        () => [`'${partyUuid}' came back with subunits: ${JSON.stringify((party?.subunits ?? []).map((subunit) => subunit.partyUuid))}`]);
+    const success = check(party, {
+        "CheckPartyHasNoSubunits - the party has no subunits": (found) => found !== undefined && (found.subunits ?? []).length === 0,
+    });
+
+    return LogIfFailed(success, "CheckPartyHasNoSubunits", () => [`'${partyUuid}' came back with subunits: ${JSON.stringify((party?.subunits ?? []).map((subunit) => subunit.partyUuid))}`]);
 }
 
 /**
@@ -550,14 +590,16 @@ function CheckSubunitIsNestedUnderMainUnit(parties, mainUnitPartyUuid, subunitPa
     const mainUnit = FindParty(parties, mainUnitPartyUuid);
     const wanted = Normalise(subunitPartyUuid);
 
-    return Assert("CheckSubunitIsNestedUnderMainUnit - the subunit is nested under the main unit", mainUnit,
-        (found) => (found?.subunits ?? []).some((/** @type {*} */ subunit) => Normalise(subunit.partyUuid) === wanted),
-        () => mainUnit === undefined
-            ? [`main unit '${mainUnitPartyUuid}' was not in the party list`]
-            : [
-                `expected '${subunitPartyUuid}' under '${mainUnitPartyUuid}'`,
-                `subunits returned: ${JSON.stringify((mainUnit.subunits ?? []).map((subunit) => subunit.partyUuid))}`,
-            ]);
+    const success = check(mainUnit, {
+        "CheckSubunitIsNestedUnderMainUnit - the subunit is nested under the main unit": (found) => (found?.subunits ?? []).some((/** @type {*} */ subunit) => Normalise(subunit.partyUuid) === wanted),
+    });
+
+    return LogIfFailed(success, "CheckSubunitIsNestedUnderMainUnit", () => mainUnit === undefined
+        ? [`main unit '${mainUnitPartyUuid}' was not in the party list`]
+        : [
+            `expected '${subunitPartyUuid}' under '${mainUnitPartyUuid}'`,
+            `subunits returned: ${JSON.stringify((mainUnit.subunits ?? []).map((subunit) => subunit.partyUuid))}`,
+        ]);
 }
 
 /**
@@ -572,16 +614,18 @@ function CheckSubunitInheritsMainUnitAccessPackages(parties, mainUnitPartyUuid, 
     const mainUnit = FindParty(parties, mainUnitPartyUuid);
     const subunit = FindParty(parties, subunitPartyUuid);
 
-    return Assert("CheckSubunitInheritsMainUnitAccessPackages - the subunit inherits the access packages of its main unit", subunit,
-        (found) => found !== undefined && mainUnit !== undefined &&
+    const success = check(subunit, {
+        "CheckSubunitInheritsMainUnitAccessPackages - the subunit inherits the access packages of its main unit": (found) => found !== undefined && mainUnit !== undefined &&
             (mainUnit.authorizedAccessPackages ?? [])
                 .every((wanted) => (found.authorizedAccessPackages ?? []).includes(wanted)),
-        () => mainUnit === undefined || subunit === undefined
-            ? [`main unit '${mainUnitPartyUuid}' or subunit '${subunitPartyUuid}' was not in the party list`]
-            : [
-                `main unit '${mainUnitPartyUuid}' holds: ${JSON.stringify(mainUnit.authorizedAccessPackages ?? [])}`,
-                `subunit '${subunitPartyUuid}' holds: ${JSON.stringify(subunit.authorizedAccessPackages ?? [])}`,
-            ]);
+    });
+
+    return LogIfFailed(success, "CheckSubunitInheritsMainUnitAccessPackages", () => mainUnit === undefined || subunit === undefined
+        ? [`main unit '${mainUnitPartyUuid}' or subunit '${subunitPartyUuid}' was not in the party list`]
+        : [
+            `main unit '${mainUnitPartyUuid}' holds: ${JSON.stringify(mainUnit.authorizedAccessPackages ?? [])}`,
+            `subunit '${subunitPartyUuid}' holds: ${JSON.stringify(subunit.authorizedAccessPackages ?? [])}`,
+        ]);
 }
 
 /**
@@ -598,9 +642,11 @@ function CheckSomeMainUnitHoldsInstancesAndHasSubunits(parties) {
     const qualifying = (parties ?? []).filter((party) =>
         (party.authorizedInstances ?? []).length > 0 && (party.subunits ?? []).length > 0);
 
-    return Assert("CheckSomeMainUnitHoldsInstancesAndHasSubunits - a main unit both holds instances and has subunits", parties,
-        () => qualifying.length > 0,
-        () => ["no main unit in the response both holds instances and has subunits, so there is nothing for the inheritance rule to be tested against: the fixture or the subject needs revisiting"]);
+    const success = check(parties, {
+        "CheckSomeMainUnitHoldsInstancesAndHasSubunits - a main unit both holds instances and has subunits": () => qualifying.length > 0,
+    });
+
+    return LogIfFailed(success, "CheckSomeMainUnitHoldsInstancesAndHasSubunits", () => ["no main unit in the response both holds instances and has subunits, so there is nothing for the inheritance rule to be tested against: the fixture or the subject needs revisiting"]);
 }
 
 /**
@@ -641,11 +687,13 @@ function CheckNoSubunitInheritsInstances(parties) {
 
     // The precondition check above is the primary guard. This keeps the same protection
     // for any caller that asserts the rule without it.
-    return Assert("CheckNoSubunitInheritsInstances - no subunit inherits instances from its main unit", parties,
-        () => problems.length === 0 && inspected > 0,
-        () => inspected === 0
-            ? ["no main unit in the response both holds instances and has subunits, so the rule was never exercised: the fixture or the subject needs revisiting"]
-            : problems);
+    const success = check(parties, {
+        "CheckNoSubunitInheritsInstances - no subunit inherits instances from its main unit": () => problems.length === 0 && inspected > 0,
+    });
+
+    return LogIfFailed(success, "CheckNoSubunitInheritsInstances", () => inspected === 0
+        ? ["no main unit in the response both holds instances and has subunits, so the rule was never exercised: the fixture or the subject needs revisiting"]
+        : problems);
 }
 
 /**
@@ -660,7 +708,11 @@ function CheckEveryPartyHasNoAccessInformation(parties) {
         .filter((party) => AllAccess(party).length > 0)
         .map((party) => `${party.partyUuid} carries ${JSON.stringify(AllAccess(party))}`);
 
-    return Assert("CheckEveryPartyHasNoAccessInformation - no party carries access information", parties, () => problems.length === 0, () => problems);
+    const success = check(parties, {
+        "CheckEveryPartyHasNoAccessInformation - no party carries access information": () => problems.length === 0,
+    });
+
+    return LogIfFailed(success, "CheckEveryPartyHasNoAccessInformation", () => problems);
 }
 
 /**
@@ -675,9 +727,11 @@ function CheckNoPartyCarriesResource(parties, resourceId) {
         .filter((party) => (party.authorizedResources ?? []).includes(resourceId))
         .map((party) => party.partyUuid);
 
-    return Assert("CheckNoPartyCarriesResource - no party carries the resource", parties,
-        () => offenders.length === 0,
-        () => [`'${resourceId}' unexpectedly appeared on: ${JSON.stringify(offenders)}`]);
+    const success = check(parties, {
+        "CheckNoPartyCarriesResource - no party carries the resource": () => offenders.length === 0,
+    });
+
+    return LogIfFailed(success, "CheckNoPartyCarriesResource", () => [`'${resourceId}' unexpectedly appeared on: ${JSON.stringify(offenders)}`]);
 }
 
 /**
@@ -690,9 +744,11 @@ function CheckNoDuplicateParties(parties) {
     const partyUuids = PartyUuidList(parties);
     const duplicates = partyUuids.filter((partyUuid, index) => partyUuids.indexOf(partyUuid) !== index);
 
-    return Assert("CheckNoDuplicateParties - no party is returned more than once", parties,
-        () => duplicates.length === 0,
-        () => [`duplicate party uuids: ${JSON.stringify([...new Set(duplicates)])}`]);
+    const success = check(parties, {
+        "CheckNoDuplicateParties - no party is returned more than once": () => duplicates.length === 0,
+    });
+
+    return LogIfFailed(success, "CheckNoDuplicateParties", () => [`duplicate party uuids: ${JSON.stringify([...new Set(duplicates)])}`]);
 }
 
 /**
@@ -703,12 +759,14 @@ function CheckNoDuplicateParties(parties) {
  * @returns {boolean} True if the check held.
  */
 function CheckPartyUuidsMatchBaseline(parties, baselinePartyUuids) {
-    return Assert("CheckPartyUuidsMatchBaseline - the party list matches the baseline", parties,
-        (body) => SameMembers(PartyUuidList(body), baselinePartyUuids),
-        () => [
-            `baseline: ${JSON.stringify(baselinePartyUuids)}`,
-            `got: ${JSON.stringify(PartyUuidList(parties))}`,
-        ]);
+    const success = check(parties, {
+        "CheckPartyUuidsMatchBaseline - the party list matches the baseline": (body) => SameMembers(PartyUuidList(body), baselinePartyUuids),
+    });
+
+    return LogIfFailed(success, "CheckPartyUuidsMatchBaseline", () => [
+        `baseline: ${JSON.stringify(baselinePartyUuids)}`,
+        `got: ${JSON.stringify(PartyUuidList(parties))}`,
+    ]);
 }
 
 /**
@@ -719,9 +777,11 @@ function CheckPartyUuidsMatchBaseline(parties, baselinePartyUuids) {
  * @returns {boolean} True if the check held.
  */
 function CheckProblemBodyMentions(problem, expectedInBody) {
-    return Assert("CheckProblemBodyMentions - the problem body mentions the expected value", problem,
-        (body) => JSON.stringify(body ?? "").includes(expectedInBody),
-        () => [`expected '${expectedInBody}' in the problem body, got: ${JSON.stringify(problem)}`]);
+    const success = check(problem, {
+        "CheckProblemBodyMentions - the problem body mentions the expected value": (body) => JSON.stringify(body ?? "").includes(expectedInBody),
+    });
+
+    return LogIfFailed(success, "CheckProblemBodyMentions", () => [`expected '${expectedInBody}' in the problem body, got: ${JSON.stringify(problem)}`]);
 }
 
 export {

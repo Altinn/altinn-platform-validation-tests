@@ -39,14 +39,14 @@ function RoleCodes(resources) {
  *
  * @param {ClientResourcesDtoPaginatedResult|AgentResourcesDtoPaginatedResult|null} resources - The result to search.
  * @param {string} resourceRefId - Reference id of the resource that should be there.
- * @param {string} operation - Name of the call being checked, used in the check name.
+ * @param {string} operation - Name of the call being checked, used in the logs.
  * @returns {boolean} True if the resource is listed, false otherwise.
  */
 function CheckResourceDelegated(resources, resourceRefId, operation) {
     const refIds = ResourceRefIds(resources);
 
     const success = check(resources, {
-        [`CheckResourceDelegated - ${operation} lists the delegated resource`]: () =>
+        "CheckResourceDelegated - The delegated resource is listed": () =>
             refIds.includes(resourceRefId),
     });
 
@@ -62,14 +62,14 @@ function CheckResourceDelegated(resources, resourceRefId, operation) {
  *
  * @param {ClientResourcesDtoPaginatedResult|AgentResourcesDtoPaginatedResult|null} resources - The result to search.
  * @param {string} resourceRefId - Reference id of the resource that should be gone.
- * @param {string} operation - Name of the call being checked, used in the check name.
+ * @param {string} operation - Name of the call being checked, used in the logs.
  * @returns {boolean} True if the resource is absent, false otherwise.
  */
 function CheckResourceNotDelegated(resources, resourceRefId, operation) {
     const refIds = ResourceRefIds(resources);
 
     const success = check(resources, {
-        [`CheckResourceNotDelegated - ${operation} no longer lists the resource`]: () =>
+        "CheckResourceNotDelegated - The resource is no longer listed": () =>
             !refIds.includes(resourceRefId),
     });
 
@@ -85,14 +85,14 @@ function CheckResourceNotDelegated(resources, resourceRefId, operation) {
  *
  * @param {ClientResourcesDtoPaginatedResult|AgentResourcesDtoPaginatedResult|null} resources - The result to search.
  * @param {string} roleCode - The role code the delegation used.
- * @param {string} operation - Name of the call being checked, used in the check name.
+ * @param {string} operation - Name of the call being checked, used in the logs.
  * @returns {boolean} True if the role is present, false otherwise.
  */
 function CheckResourcesGrantedViaRole(resources, roleCode, operation) {
     const codes = RoleCodes(resources);
 
     const success = check(resources, {
-        [`CheckResourcesGrantedViaRole - ${operation} groups the access under ${roleCode}`]: () =>
+        "CheckResourcesGrantedViaRole - The access is grouped under the expected role": () =>
             codes.includes(roleCode),
     });
 
@@ -112,14 +112,14 @@ function CheckResourcesGrantedViaRole(resources, roleCode, operation) {
  *
  * @param {Array<ResourceDelegationDto>|null} delegations - What the write call returned, or null when the call failed. Null fails the check rather than throwing, so a failed write is reported the same way a wrong one is.
  * @param {{from: string, to: string}} expected - The party the delegation is from, and the agent it is to.
- * @param {string} operation - Name of the call being checked, used in the check name.
+ * @param {string} operation - Name of the call being checked, used in the logs.
  * @returns {boolean} True if a matching delegation came back, false otherwise.
  */
 function CheckDelegationEchoed(delegations, expected, operation) {
     const entries = delegations ?? [];
 
     const success = check(delegations, {
-        [`CheckDelegationEchoed - ${operation} echoes a delegation from the client to the agent`]: () =>
+        "CheckDelegationEchoed - A delegation from the client to the agent is echoed": () =>
             entries.some((delegation) =>
                 delegation?.fromId === expected.from && delegation?.toId === expected.to),
     });
@@ -145,7 +145,7 @@ function CheckDelegationEchoed(delegations, expected, operation) {
  *
  * @param {AgentDtoPaginatedResult|null} agents - The agent list to search.
  * @param {string} agentUuid - Party uuid of the agent the fixture expects.
- * @param {string} operation - Name of the call being checked, used in the check name.
+ * @param {string} operation - Name of the call being checked, used in the logs.
  * @returns {boolean} True if the agent is registered, false otherwise.
  */
 function CheckAgentRegistered(agents, agentUuid, operation) {
@@ -154,7 +154,7 @@ function CheckAgentRegistered(agents, agentUuid, operation) {
         .filter((id) => id !== undefined && id !== null);
 
     const success = check(agents, {
-        [`CheckAgentRegistered - ${operation} lists the expected agent`]: () =>
+        "CheckAgentRegistered - The expected agent is listed": () =>
             ids.includes(agentUuid),
     });
 
@@ -178,7 +178,7 @@ function CheckAgentRegistered(agents, agentUuid, operation) {
  * @param {ClientDtoPaginatedResult|null} clients - The client list to search.
  * @param {string} clientUuid - Party uuid of the client the fixture expects.
  * @param {string} roleCode - Role the delegation is meant to go through.
- * @param {string} operation - Name of the call being checked, used in the check name.
+ * @param {string} operation - Name of the call being checked, used in the logs.
  * @returns {boolean} True if the client is listed with that role, false otherwise.
  */
 function CheckClientListed(clients, clientUuid, roleCode, operation) {
@@ -190,7 +190,7 @@ function CheckClientListed(clients, clientUuid, roleCode, operation) {
         .filter((code) => code !== undefined && code !== null);
 
     const success = check(clients, {
-        [`CheckClientListed - ${operation} lists the expected client with the expected role`]: () =>
+        "CheckClientListed - The expected client is listed with the expected role": () =>
             entry !== undefined && roles.includes(roleCode),
     });
 

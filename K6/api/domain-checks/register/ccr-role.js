@@ -14,7 +14,7 @@ import { check } from "k6";
  */
 function CheckRoleRemoved(propagated, ccrRole) {
     const success = check(propagated, {
-        [`CheckRoleRemoved - Register dropped the ${ccrRole} customer`]: (result) =>
+        "CheckRoleRemoved - Register dropped the customer": (result) =>
             result === true,
     });
 
@@ -39,7 +39,7 @@ function CheckRoleRemoved(propagated, ccrRole) {
  */
 function CheckRoleAddedBack(propagated, ccrRole) {
     const success = check(propagated, {
-        [`CheckRoleAddedBack - Register lists the ${ccrRole} customer again`]: (result) =>
+        "CheckRoleAddedBack - Register lists the customer again": (result) =>
             result === true,
     });
 

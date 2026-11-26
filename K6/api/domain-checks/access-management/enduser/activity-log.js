@@ -14,7 +14,7 @@ const TRIGGERS = ["Created", "Updated", "Deleted"];
  * @param {ActivityLogDtoPaginatedResult|null} log - The page of the activity log.
  * @param {string} party - Party UUID the log was read for.
  * @param {ActivityLogDirection} direction - The direction the log was read in.
- * @param {string} operation - Name of the call being checked, used in the check name.
+ * @param {string} operation - Name of the call being checked, used in the logs.
  * @returns {boolean} True if every entry matches, false otherwise.
  */
 function CheckEntriesMatchDirection(log, party, direction, operation) {
@@ -22,7 +22,7 @@ function CheckEntriesMatchDirection(log, party, direction, operation) {
     const mismatches = (log?.data ?? []).filter((entry) => entry?.[side] !== party);
 
     const success = check(log, {
-        [`CheckEntriesMatchDirection - ${operation} only lists entries with ${side} = party`]: () =>
+        "CheckEntriesMatchDirection - Every entry is on the expected side of the party": () =>
             mismatches.length === 0,
     });
 
@@ -38,7 +38,7 @@ function CheckEntriesMatchDirection(log, party, direction, operation) {
  * trigger are values the Swagger lists.
  *
  * @param {ActivityLogDtoPaginatedResult|null} log - The page of the activity log.
- * @param {string} operation - Name of the call being checked, used in the check name.
+ * @param {string} operation - Name of the call being checked, used in the logs.
  * @returns {boolean} True if every entry is valid, false otherwise.
  */
 function CheckEntriesValid(log, operation) {
@@ -50,7 +50,7 @@ function CheckEntriesValid(log, operation) {
         (entry.subtype !== null && !SUBTYPES.includes(entry.subtype)));
 
     const success = check(log, {
-        [`CheckEntriesValid - ${operation} entries have id, when and valid type, subtype and trigger`]: () =>
+        "CheckEntriesValid - Entries have id, when and valid type, subtype and trigger": () =>
             invalid.length === 0,
     });
 
@@ -65,14 +65,14 @@ function CheckEntriesValid(log, operation) {
  * Checks that every filter value has an id to filter on.
  *
  * @param {ActivityLogFilterValueDtoPaginatedResult|null} values - The filter values.
- * @param {string} operation - Name of the call being checked, used in the check name.
+ * @param {string} operation - Name of the call being checked, used in the logs.
  * @returns {boolean} True if every value has an id, false otherwise.
  */
 function CheckFilterValuesHaveIds(values, operation) {
     const withoutId = (values?.data ?? []).filter((value) => !value?.id);
 
     const success = check(values, {
-        [`CheckFilterValuesHaveIds - ${operation} values have an id`]: () =>
+        "CheckFilterValuesHaveIds - Filter values have an id": () =>
             withoutId.length === 0,
     });
 
@@ -95,7 +95,7 @@ function CheckFilterFields(fields, area) {
     const actual = [...(fields ?? [])].sort();
 
     const success = check(fields, {
-        [`CheckFilterFields - ${area} offers the expected filter fields`]: () =>
+        "CheckFilterFields - The area offers the expected filter fields": () =>
             JSON.stringify(actual) === JSON.stringify(expected),
     });
 
@@ -117,7 +117,7 @@ function CheckActivityTypes(types, area) {
     const invalid = (types ?? []).filter((type) => !type?.id || !TYPES.includes(type.type));
 
     const success = check(types, {
-        [`CheckActivityTypes - ${area} lists activity types with id and valid type`]: () =>
+        "CheckActivityTypes - The area lists activity types with id and valid type": () =>
             Array.isArray(types) && types.length > 0 && invalid.length === 0,
     });
 
@@ -136,7 +136,7 @@ function CheckActivityTypes(types, area) {
  *
  * @param {ActivityLogDtoPaginatedResult|null} log - The page of the activity log.
  * @param {Array<ActivityTypeDto>} types - The types the log was filtered on.
- * @param {string} operation - Name of the call being checked, used in the check name.
+ * @param {string} operation - Name of the call being checked, used in the logs.
  * @returns {boolean} True if every entry is of one of the types, false otherwise.
  */
 function CheckEntriesMatchTypes(log, types, operation) {
@@ -153,7 +153,7 @@ function CheckEntriesMatchTypes(log, types, operation) {
     const others = (log?.data ?? []).filter((entry) => !types.some((type) => matches(entry, type)));
 
     const success = check(log, {
-        [`CheckEntriesMatchTypes - ${operation} only lists entries of the filtered types`]: () =>
+        "CheckEntriesMatchTypes - Only entries of the filtered types are listed": () =>
             others.length === 0,
     });
 
@@ -171,7 +171,7 @@ function CheckEntriesMatchTypes(log, types, operation) {
  * @param {ActivityLogDtoPaginatedResult|null} log - The page of the activity log.
  * @param {string} after - Start of the window, ISO date-time.
  * @param {string} before - End of the window, ISO date-time.
- * @param {string} operation - Name of the call being checked, used in the check name.
+ * @param {string} operation - Name of the call being checked, used in the logs.
  * @returns {boolean} True if every entry is inside the window, false otherwise.
  */
 function CheckEntriesWithinWindow(log, after, before, operation) {
@@ -183,7 +183,7 @@ function CheckEntriesWithinWindow(log, after, before, operation) {
     });
 
     const success = check(log, {
-        [`CheckEntriesWithinWindow - ${operation} only lists entries between after and before`]: () =>
+        "CheckEntriesWithinWindow - Only entries between after and before are listed": () =>
             outside.length === 0,
     });
 
@@ -201,7 +201,7 @@ function CheckEntriesWithinWindow(log, after, before, operation) {
  * @param {ActivityLogFilterValueDtoPaginatedResult|null} values - The filter values the search returned.
  * @param {string} term - The term searched for.
  * @param {string} expectedId - Id of the value the term was taken from.
- * @param {string} operation - Name of the call being checked, used in the check name.
+ * @param {string} operation - Name of the call being checked, used in the logs.
  * @returns {boolean} True if the search returned what it should, false otherwise.
  */
 function CheckFilterValuesMatchTerm(values, term, expectedId, operation) {
@@ -209,9 +209,9 @@ function CheckFilterValuesMatchTerm(values, term, expectedId, operation) {
     const withoutTerm = data.filter((value) => !(value?.name ?? "").toLowerCase().includes(term.toLowerCase()));
 
     const success = check(values, {
-        [`CheckFilterValuesMatchTerm - ${operation} only lists values containing the term`]: () =>
+        "CheckFilterValuesMatchTerm - Only values containing the term are listed": () =>
             withoutTerm.length === 0,
-        [`CheckFilterValuesMatchTerm - ${operation} lists the value the term was taken from`]: () =>
+        "CheckFilterValuesMatchTerm - The value the term was taken from is listed": () =>
             data.some((value) => value?.id === expectedId),
     });
 

@@ -38,18 +38,18 @@ export function GetRoleHolders(
     let holders = null;
 
     const succeed = check(res, {
-        [`GetRoleHolders(${ccrRole}) - status code is 200`]: (r) =>
+        "GetRoleHolders - status code is 200": (r) =>
             r.status === 200,
     });
 
     if (!succeed) {
-        console.log(res.status);
+        console.log(`ccrRole ${ccrRole}, status ${res.status}`);
         console.log(res.body);
         return holders;
     }
 
     check(res, {
-        [`GetRoleHolders(${ccrRole}) - body is valid`]: (r) => {
+        "GetRoleHolders - body is valid": (r) => {
             try {
                 holders = JSON.parse(r.body).data ?? [];
 

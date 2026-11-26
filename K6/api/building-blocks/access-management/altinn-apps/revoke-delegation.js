@@ -72,14 +72,21 @@ export function RevokeDelegation(
     });
 
     if (parsed && expectedStatus !== null) {
-        check(delegation, {
-            [`RevokeDelegation - every right is ${expectedStatus}`]: (/** @type {AppsInstanceDelegationResponseDto|null} */ b) => {
+        const asExpected = check(delegation, {
+            "RevokeDelegation - every right has the expected status": (/** @type {AppsInstanceDelegationResponseDto|null} */ b) => {
                 const rights = b?.rights ?? [];
 
                 return rights.length > 0
                     && rights.every((right) => right.status === expectedStatus);
             },
         });
+
+        if (!asExpected) {
+            // delegation is filled in from inside a check callback, which the compiler
+            // cannot follow, so the type is restated here.
+            const revoked = /** @type {AppsInstanceDelegationResponseDto|null} */ (delegation);
+            console.error(`RevokeDelegation - expected every right to be ${expectedStatus}, got: ${JSON.stringify((revoked?.rights ?? []).map((right) => right.status))}`);
+        }
     }
 
     return delegation;

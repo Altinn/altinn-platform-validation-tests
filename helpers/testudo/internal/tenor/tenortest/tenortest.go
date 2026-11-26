@@ -251,12 +251,13 @@ func AuditorClient(t *testing.T) *tenor.Client {
 	}
 	// The clients in order, so the candidates become auditor 1, 2 and 3.
 	// Auditor 1 has two clients, to check that the same auditor is only
-	// included once.
+	// included once, and that its client with a leader (KLIENT 12) is
+	// preferred to the first one, which has none.
 	clients := []map[string]any{
 		BrregDoc("100000011", "KLIENT 11 AS", "", AuditorWithLeader),
-		BrregDoc("100000012", "KLIENT 12 AS", "", AuditorWithLeader),
+		BrregDoc("100000012", "KLIENT 12 AS", "10000000012", AuditorWithLeader),
 		BrregDoc("100000021", "KLIENT 21 AS", "", AuditorWithoutLeader),
-		BrregDoc("100000031", "KLIENT 31 AS", "", AuditorWithLeader2),
+		BrregDoc("100000031", "KLIENT 31 AS", "10000000031", AuditorWithLeader2),
 	}
 
 	return NewClient(t, func(w http.ResponseWriter, r *http.Request) {

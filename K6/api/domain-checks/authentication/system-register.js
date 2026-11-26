@@ -55,12 +55,12 @@ function CheckSystemIdInVendorGetById(registeredSystemResponse, expectedSystemId
  * Checks that an update endpoint reported success.
  *
  * @param {SystemRegisterUpdateResult|null} updateResult - The result from an update call.
- * @param {string} operation - Name of the operation, used in the check name and logs.
+ * @param {string} operation - Name of the operation, used in the logs.
  * @returns {boolean} True if the update succeeded, false otherwise.
  */
 function CheckUpdateSucceeded(updateResult, operation) {
     const success = check(updateResult, {
-        [`CheckUpdateSucceeded - ${operation} reports succeeded: true`]: (result) => {
+        "CheckUpdateSucceeded - The update reports succeeded: true": (result) => {
             return result !== null && result.succeeded === true;
         },
     });

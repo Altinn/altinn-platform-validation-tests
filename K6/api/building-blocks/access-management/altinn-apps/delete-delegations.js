@@ -65,8 +65,8 @@ export function DeleteDelegations(
     });
 
     if (parsed && expectedStatus !== null) {
-        check(result, {
-            [`DeleteDelegations - every right is ${expectedStatus}`]: (/** @type {AppsInstanceRevokeResponseDtoPaginated|null} */ b) => {
+        const asExpected = check(result, {
+            "DeleteDelegations - every right has the expected status": (/** @type {AppsInstanceRevokeResponseDtoPaginated|null} */ b) => {
                 const rights = (b?.data ?? []).flatMap(
                     (delegation) => delegation.rights ?? [],
                 );
@@ -75,6 +75,14 @@ export function DeleteDelegations(
                     && rights.every((right) => right.status === expectedStatus);
             },
         });
+
+        if (!asExpected) {
+            // result is filled in from inside a check callback, which the compiler
+            // cannot follow, so the type is restated here.
+            const deleted = /** @type {AppsInstanceRevokeResponseDtoPaginated|null} */ (result);
+            const statuses = (deleted?.data ?? []).flatMap((delegation) => (delegation.rights ?? []).map((right) => right.status));
+            console.error(`DeleteDelegations - expected every right to be ${expectedStatus}, got: ${JSON.stringify(statuses)}`);
+        }
     }
 
     return result;

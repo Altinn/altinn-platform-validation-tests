@@ -27,6 +27,14 @@ func TestFetchTilretteleggere(t *testing.T) {
 	if v[0].role != "revisor" || v[0].person != "10000000001" {
 		t.Errorf("first = %+v", v[0])
 	}
+	// Each keeps a client it was found through, one with a leader when there
+	// is one, and the client's leader.
+	if v[0].client != "100000012" || v[0].clientPerson != "10000000012" || v[0].clientPersonRole != "daglig-leder" {
+		t.Errorf("first client = %q, %q, %q", v[0].client, v[0].clientPerson, v[0].clientPersonRole)
+	}
+	if v[1].client != "100000031" || v[1].clientPerson != "10000000031" {
+		t.Errorf("second client = %q, %q", v[1].client, v[1].clientPerson)
+	}
 
 	v, _ = fetchTilretteleggere(context.Background(), c, revisor, PersonRole{}, 1)
 	if len(v) != 1 || v[0].organizationIdentifier != tenortest.AuditorWithLeader {

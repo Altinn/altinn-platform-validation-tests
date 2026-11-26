@@ -18,6 +18,7 @@ recipe for each file that is made with testudo today.
 - [find organizations](#find-organizations)
 - [Output](#output)
 - [API](#api)
+- [notify playwright](#notify-playwright)
 - [Recipes for K6 setup](#recipes-for-k6-setup)
 - [What testudo does not do](#what-testudo-does-not-do)
 - [Development](#development)
@@ -131,8 +132,11 @@ The default is `personIdentifier,userId,partyId,partyUuid`.
 ## find organizations
 
 Finds organizations together with a person in the organization. By default the
-person is the leader: the daglig leder, the innehaver of an `ENK`, or the
-styreleder of a `BRL` or `ESEK` that has no daglig leder.
+person is the leader: the daglig leder, the innehaver of an `ENK`, the
+styreleder of a `BRL` or `ESEK` that has no daglig leder, the bostyrer of a
+`KBO` (konkursbo), or the bestyrende reder of a `PRE` (partsrederi). Some unit
+types have no leader, for example `VPFO` (verdipapirfond); use
+`--person-role kontaktperson` for them.
 
 ```bash
 testudo find organizations --count 3 --env at23
@@ -149,9 +153,9 @@ Fetching 3 organizations with the leader from Tenor with KQL: organisasjonsform.
 | --- | --- | --- |
 | `--count` | `10` | Number of organizations, at most 1000. |
 | `--env` | `at23` | Environment: `at22`, `at23`, `tt02` or `yt01`. |
-| `--unit-type` | `AS` | Comma-separated organisasjonsformer: `AS`, `ENK`, `ESEK`, `BRL`, `NUF`, `ADOS`. `ADOS` units come with their hovedenhet, see [ADOS units](#ados-units). |
-| `--person-role` | the leader | The person has this role in Enhetsregisteret instead, for example `styreleder`, `styremedlem`, `kontaktperson` or `prokurist`. `--help` lists all 21. |
-| `--role` | | Finds tilretteleggere instead: organizations that are `revisor`, `regnskapsfoerer` or `forretningsfoerer` for at least one client. |
+| `--unit-type` | `AS` | Comma-separated organisasjonsformer, for example `AS`, `ENK`, `ESEK`, `BRL`, `NUF`, `KBO` or `PRE`. Any hovedenhet Access Management has roles from Enhetsregisteret for, and `ADOS`, whose units come with their hovedenhet, see [ADOS units](#ados-units). `--help` lists all 46. |
+| `--person-role` | the leader | The person has this role in Enhetsregisteret instead, for example `styreleder`, `styremedlem`, `kontaktperson`, `prokurist` or `bestyrende-reder`. `--help` lists all 22: the roles Access Management has given persons that persons also have in Tenor. |
+| `--role` | | Finds tilretteleggere instead: organizations that are `revisor`, `regnskapsfoerer` or `forretningsfoerer` for at least one client. The `client…` columns describe the client it was found through. |
 | `--subunits` | | Finds underenheter (`BEDR` and `AAFY`) instead, one per hovedenhet. The person is the hovedenhet's, since underenheter have no persons of their own. |
 | `--min-subunits` | | Only organizations with at least this many underenheter. With `--subunits`, it applies to the hovedenheter. |
 | `--orgno` | | Comma-separated organization numbers to fetch instead of searching. |
@@ -181,11 +185,13 @@ the organization in the `ADOS` role. This also applies to `--orgno`.
 | `partyId`, `partyUuid` | The organization's party id and party uuid. |
 | `unitType` | Organisasjonsform, for example `AS` or `BEDR`. |
 | `type` | The tilrettelegger role with `--role`, for example `regnskapsfoerer`. |
-| `personRole` | The person's role, for example `daglig-leder`, `innehaver` or `styreleder`. |
+| `personRole` | The person's role, for example `daglig-leder`, `innehaver`, `styreleder` or `bostyrer`. |
 | `ssn` | The person's fødselsnummer. |
 | `userId`, `userPartyId`, `userPartyUuid` | The person's user id, party id and party uuid. |
 | `lastName` | The person's last name. |
 | `hovedenhetOrganizationIdentifier`, `hovedenhetDisplayName`, `hovedenhetPartyId`, `hovedenhetPartyUuid`, `hovedenhetUnitType` | The hovedenhet of an underenhet. Empty for other organizations. |
+| `clientOrganizationIdentifier`, `clientDisplayName`, `clientPartyId`, `clientPartyUuid`, `clientUnitType` | With `--role`, the client the tilrettelegger was found through: an organization that has it as `revisor`, `regnskapsfoerer` or `forretningsfoerer`. It exists in Register too. Empty without `--role`. |
+| `clientPersonRole`, `clientSsn`, `clientUserId`, `clientUserPartyId`, `clientUserPartyUuid` | With `--role`, the client's leader, as for `personRole`, `ssn` and the rest. testudo prefers a client with a leader, but a row that asks for these columns is left out when the client has none. |
 
 The default is `organizationIdentifier,displayName,partyId,partyUuid`.
 
@@ -257,6 +263,36 @@ each request and what it fetched to stderr. Stop it with Ctrl+C.
 > The server answers anyone who can reach it, with your keys. Keep the default
 > `localhost` unless the network around it is closed.
 
+## notify playwright
+
+Sends the result of a Playwright run to Slack.
+
+```bash
+testudo notify playwright --env at23 --report test-results.json \
+  --report-url https://... --playwright-exit 1 --dry-run
+```
+```
+:red_circle: *at23*: 2 of 14 Playwright tests failed
+• logs in
+• switches language
+Report: https://...
+```
+
+A test is counted once however many browsers it ran in, and is failed if it
+failed in at least one. The message names the first five failed tests, and only
+their titles, since error messages can contain test data from prod. If the
+report is missing or no tests ran, the message says that the run did not start.
+
+| Flag | Default | Description |
+| --- | --- | --- |
+| `--env` | | Environment the tests ran against. `prod` is shown as Production. |
+| `--report` | `test-results.json` | Path to the Playwright JSON report. |
+| `--report-url` | | URL to the published HTML report. |
+| `--playwright-exit` | `0` | Exit code from Playwright, shown when no tests ran. |
+| `--dry-run` | | Prints the message instead of sending it. |
+
+The message is sent to the webhook in `SLACK_WEBHOOK_URL`.
+
 ## Recipes for K6 setup
 
 Run these from `helpers/testudo`, with testudo installed by `make install`, or
@@ -294,6 +330,22 @@ testudo find organizations --count 10 --env at23 --unit-type AS,ENK,NUF --format
   --columns organizationIdentifier,unitType,ssn
 ```
 
+**A konkursbo and its bostyrer.** For tests of what the bostyrer can do on
+behalf of the konkursbo:
+
+```bash
+testudo find organizations --count 10 --env at23 --unit-type KBO --format csv \
+  --columns organizationIdentifier,partyUuid,personRole,ssn,userId,userPartyId,userPartyUuid
+```
+
+**A partsrederi and its bestyrende reder.** For tests of what the bestyrende
+reder can do on behalf of the partsrederi:
+
+```bash
+testudo find organizations --count 10 --env at23 --unit-type PRE --person-role bestyrende-reder --format csv \
+  --columns organizationIdentifier,partyUuid,personRole,ssn,userId,userPartyId,userPartyUuid
+```
+
 **A person with a given ER role.** For example the styreleder, for tests of
 roles other than daglig leder:
 
@@ -308,6 +360,15 @@ forretningsfører) for at least one client, with their daglig leder:
 ```bash
 testudo find organizations --count 10 --env at23 --role regnskapsfoerer --format csv \
   --columns organizationIdentifier,partyUuid,type,ssn,userId,userPartyUuid
+```
+
+Add the client and its leader, for tests where the daglig leder of the
+tilrettelegger acts for one of its clients, or where the client gives the
+tilrettelegger access first:
+
+```bash
+testudo find organizations --count 10 --env at23 --role regnskapsfoerer --format csv \
+  --columns organizationIdentifier,partyUuid,ssn,userId,userPartyId,userPartyUuid,clientOrganizationIdentifier,clientPartyUuid,clientSsn,clientUserId,clientUserPartyId,clientUserPartyUuid
 ```
 
 **Underenheter with their hovedenhet.** For tests of access that is inherited
@@ -420,6 +481,7 @@ make fmt      # formats the code
 | `internal/register/` | Register client. `registertest/` has fakes for tests. |
 | `internal/maskinporten/`, `internal/platformtoken/` | Tokens for Tenor and Register. |
 | `internal/config/` | Reads `~/.testudo.yaml` and environment variables. |
+| `internal/playwright/`, `internal/slack/` | Reading the Playwright report and sending to Slack, for `notify playwright`. |
 
 The code is in English. Words from the domain that have no good English
 equivalent stay in Norwegian, for example hovedenhet, underenhet, daglig leder
@@ -453,8 +515,8 @@ What testudo is built on, and where to look when something changes.
 - [API documentation](https://data.brreg.no/enhetsregisteret/api/dokumentasjon/no/index.html):
   role groups and roles in `kildedata`.
 - [Role types](https://data.brreg.no/enhetsregisteret/api/roller/rolletyper):
-  the codes behind `--person-role` and the leader (`DAGL`, `INNH`, `LEDE` and
-  so on).
+  the codes behind `--person-role` and the leader (`DAGL`, `INNH`, `LEDE`,
+  `BOBE` and so on).
 - [Organisasjonsformer](https://data.brreg.no/enhetsregisteret/api/organisasjonsformer):
   the codes behind `--unit-type`, and `BEDR`, `AAFY` and `ADOS` for underenheter.
 

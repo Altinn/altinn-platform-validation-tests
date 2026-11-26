@@ -31,12 +31,12 @@ export function GetDiscoveryDocument(
     );
 
     const succeed = check(res, {
-        [`GetDiscoveryDocument - status code is ${expectedStatus}`]: (r) =>
+        "GetDiscoveryDocument - status code is as expected": (r) =>
             r.status === expectedStatus,
     });
 
     if (!succeed) {
-        console.log(res.status);
+        console.log(`expected status ${expectedStatus}, got ${res.status}`);
         console.log(res.body);
         return null;
     }

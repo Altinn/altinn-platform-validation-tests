@@ -46,15 +46,15 @@ export function AddCcrRoleToEr(
     );
 
     const succeed = check(res, {
-        [`AddCcrRoleToEr(${ccrRole}) - status code is 200`]: (r) =>
+        "AddCcrRoleToEr - status code is 200": (r) =>
             r.status === 200,
-        [`AddCcrRoleToEr(${ccrRole}) - batch status is OK_ER_DATA_PROCESSED`]: (r) =>
+        "AddCcrRoleToEr - batch status is OK_ER_DATA_PROCESSED": (r) =>
             typeof r.body === "string" &&
             r.body.includes("status=\"OK_ER_DATA_PROCESSED\""),
     });
 
     if (!succeed) {
-        console.log(res.status);
+        console.log(`ccrRole ${ccrRole}, status ${res.status}`);
         console.log(res.body);
     }
 

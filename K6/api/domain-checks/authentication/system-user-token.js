@@ -26,7 +26,7 @@ import { readClaims } from "../common/jwt.js";
  *
  * @param {string|null} token - The token to check.
  * @param {ExpectedSystemUser} expected - The system user the token was asked for.
- * @param {string} operation - Name of the operation, used in the check names and logs.
+ * @param {string} operation - Name of the operation, used in the logs.
  * @returns {boolean} True if the token carries those claims, false otherwise.
  */
 function CheckSystemUserTokenClaims(token, expected, operation) {
@@ -35,19 +35,19 @@ function CheckSystemUserTokenClaims(token, expected, operation) {
     const details = Array.isArray(found) ? (found.length === 1 ? found[0] : null) : (found ?? null);
 
     const success = check(details, {
-        [`CheckSystemUserTokenClaims - ${operation} is a system user token`]: (entry) =>
+        "CheckSystemUserTokenClaims - The token is a system user token": (entry) =>
             entry?.type === "urn:altinn:systemuser",
-        [`CheckSystemUserTokenClaims - ${operation} names the organisation that holds the system user`]: (entry) =>
+        "CheckSystemUserTokenClaims - The token names the organisation that holds the system user": (entry) =>
             entry?.systemuser_org?.authority === "iso6523-actorid-upis" &&
             entry?.systemuser_org?.ID === `0192:${expected.orgNo}`,
-        [`CheckSystemUserTokenClaims - ${operation} names the system user it was asked for`]: (entry) =>
+        "CheckSystemUserTokenClaims - The token names the system user it was asked for": (entry) =>
             Array.isArray(entry?.systemuser_id) && entry.systemuser_id.includes(expected.id),
-        [`CheckSystemUserTokenClaims - ${operation} names the system the system user belongs to`]: (entry) =>
+        "CheckSystemUserTokenClaims - The token names the system the system user belongs to": (entry) =>
             entry?.system_id === expected.systemId,
     });
 
     const expires = check(claims, {
-        [`CheckSystemUserTokenClaims - ${operation} expires, and has not already`]: (payload) =>
+        "CheckSystemUserTokenClaims - The token expires, and has not already": (payload) =>
             typeof payload?.exp === "number" && payload.exp * 1000 > Date.now(),
     });
 

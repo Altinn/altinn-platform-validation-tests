@@ -38,17 +38,17 @@ export function GetCustomers(
     let customers = null;
 
     const succeed = check(res, {
-        [`GetCustomers(${ccrRole}) - status code is 200`]: (r) => r.status === 200,
+        "GetCustomers - status code is 200": (r) => r.status === 200,
     });
 
     if (!succeed) {
-        console.log(res.status);
+        console.log(`ccrRole ${ccrRole}, status ${res.status}`);
         console.log(res.body);
         return customers;
     }
 
     check(res, {
-        [`GetCustomers(${ccrRole}) - body is valid`]: (r) => {
+        "GetCustomers - body is valid": (r) => {
             try {
                 customers = JSON.parse(r.body).data ?? [];
 

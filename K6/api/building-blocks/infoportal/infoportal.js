@@ -15,7 +15,10 @@ export function GetAuthorizedParties(infoPortalApiClient, labels = null) {
         () => infoPortalApiClient.GetAuthorizedParties(labels),
         "GetAuthorizedParties",
     );
-    checker(res, "GetAuthorizedParties");
+    const succeed = check(res, {
+        "GetAuthorizedParties - status code is 200": (r) => r.status === 200,
+    });
+    logFailure(res, succeed);
     return res.json();
 }
 
@@ -31,7 +34,10 @@ export function GetFavorites(infoPortalApiClient, labels = null) {
         () => infoPortalApiClient.GetFavorites(labels),
         "GetFavorites",
     );
-    checker(res, "GetFavorites");
+    const succeed = check(res, {
+        "GetFavorites - status code is 200": (r) => r.status === 200,
+    });
+    logFailure(res, succeed);
     return res.json();
 }
 
@@ -48,23 +54,22 @@ export function GetCurrent(infoPortalApiClient, labels = null) {
         () => infoPortalApiClient.GetCurrent(labels),
         "GetCurrent",
     );
-    checker(res, "GetCurrent");
+    const succeed = check(res, {
+        "GetCurrent - status code is 200": (r) => r.status === 200,
+    });
+    logFailure(res, succeed);
     return res.json();
 }
 
 /**
- * Function to check common response properties
+ * Logs the status and body of a response whose status check failed.
  *
  * @param {import("k6/http").RefinedResponse<"text">} res - response object
- * @param {*} method - method name for logging
- * @param status_code TODO: description
+ * @param {boolean} succeed - whether the status check passed
  */
-function checker(res, method, status_code = 200) {
-    const succeed = check(res, {
-        [`${method} - status code is ${status_code}`]: (r) => r.status === status_code,
-    });
+function logFailure(res, succeed) {
     if (!succeed) {
         console.log(res.status);
         console.log(res.body);
-    };
+    }
 }

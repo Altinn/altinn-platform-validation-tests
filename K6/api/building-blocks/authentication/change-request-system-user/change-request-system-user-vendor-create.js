@@ -43,16 +43,14 @@ export function ChangeRequestSystemUserVendorCreate(
     // correlation id is a new change request, not a repeat, so it answers 201.
     // Both are successful, so a caller that does not care which passes no expectedStatus.
     const succeed = check(res, {
-        [expectedStatus === null
-            ? "ChangeRequestSystemUserVendorCreate - status code is 200 or 201"
-            : `ChangeRequestSystemUserVendorCreate - status code is ${expectedStatus}`]: (r) =>
+        "ChangeRequestSystemUserVendorCreate - status code is as expected": (r) =>
             expectedStatus === null
                 ? r.status === 200 || r.status === 201
                 : r.status === expectedStatus,
     });
 
     if (!succeed) {
-        console.log(res.status);
+        console.log(`expected status ${expectedStatus ?? "200 or 201"}, got ${res.status}`);
         console.log(res.body);
         return changeRequestResponse;
     }

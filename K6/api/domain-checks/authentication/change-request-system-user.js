@@ -55,7 +55,7 @@ function CheckChangeRequestConfirmUrl(changeRequest) {
  */
 function CheckChangeRequestStatus(changeRequest, expectedStatus) {
     const success = check(changeRequest, {
-        [`CheckChangeRequestStatus - Change request has status '${expectedStatus}'`]: (request) =>
+        "CheckChangeRequestStatus - Change request has the expected status": (request) =>
             request?.status === expectedStatus,
     });
 
@@ -180,9 +180,9 @@ function CheckChangeRequestUnwantedAccessPackages(changeRequest, expectedAccessP
  */
 function CheckChangeRequestsCreated(created, expected) {
     const success = check(created, {
-        [`CheckChangeRequestsCreated - Asking ${expected} times created ${expected} change requests`]: (ids) =>
+        "CheckChangeRequestsCreated - One change request was created per request": (ids) =>
             ids.length === expected,
-        [`CheckChangeRequestsCreated - The ${expected} change requests are separate ones`]: (ids) =>
+        "CheckChangeRequestsCreated - The change requests are separate ones": (ids) =>
             new Set(ids).size === expected,
     });
 
