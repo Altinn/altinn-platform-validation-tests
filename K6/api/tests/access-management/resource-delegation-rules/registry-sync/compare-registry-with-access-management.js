@@ -1,13 +1,13 @@
 import { check } from "k6";
 import { Counter } from "k6/metrics";
 
-import { GetResourceDelegationCheckQueryBuilder } from "../../../../clients/access-management/enduser/connections/index.js";
-import { getOptions } from "../../../../helpers.js";
-import { withRetries } from "../../../building-blocks/common/retry.js";
-import { ResourceGetResourceList } from "../../../building-blocks/resource-registry/resource/index.js";
-import { DelegationCheckReasonCode } from "../../../domain-checks/access-management/resource-delegation.js";
-import { getEnduserClients, getEnduserTokenOpts, setup as commonSetup } from "./common.js";
-import { getOwnerResourceClient } from "./resources.js";
+import { GetResourceDelegationCheckQueryBuilder } from "../../../../../clients/access-management/enduser/connections/index.js";
+import { getOptions } from "../../../../../helpers.js";
+import { withRetries } from "../../../../building-blocks/common/retry.js";
+import { ResourceGetResourceList } from "../../../../building-blocks/resource-registry/resource/index.js";
+import { DelegationCheckReasonCode } from "../../../../domain-checks/access-management/resource-delegation.js";
+import { getEnduserClients, getEnduserTokenOpts, setup as commonSetup } from "../common.js";
+import { getOwnerResourceClient } from "../resources.js";
 
 const resourceListLabel = { step: "Read every resource in the registry" };
 const delegationCheckLabel = { step: "Ask Access Management about each resource" };

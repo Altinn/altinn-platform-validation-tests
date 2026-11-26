@@ -3,20 +3,20 @@ import { group } from "k6";
 import {
     GetResourceRightsQueryBuilder,
     ServiceOwnerResourceDelegationBuilder,
-} from "../../../../clients/access-management/service-owner/connections/index.js";
-import { getItemFromList, getOptions } from "../../../../helpers.js";
+} from "../../../../../clients/access-management/service-owner/connections/index.js";
+import { getItemFromList, getOptions } from "../../../../../helpers.js";
 import {
+    ConnectionsCreateResource,
     ConnectionsGetResourceRights,
     ConnectionsRevokeResource,
-} from "../../../building-blocks/access-management/service-owner/connections/index.js";
-import { ExpectProblem } from "../../../building-blocks/common/expect-problem.js";
+} from "../../../../building-blocks/access-management/service-owner/connections/index.js";
 import {
     ProblemCode,
     ResourceDelegationDomainChecks,
-} from "../../../domain-checks/access-management/resource-delegation.js";
-import { ConnectionsDomainChecks } from "../../../domain-checks/access-management/service-owner/connections.js";
-import { getServiceOwnerClients, setup } from "./common.js";
-import { DELEGABLE_ACCESS_LIST_RESOURCE } from "./resources.js";
+} from "../../../../domain-checks/access-management/resource-delegation.js";
+import { ConnectionsDomainChecks } from "../../../../domain-checks/access-management/service-owner/connections.js";
+import { getServiceOwnerClients, setup } from "../common.js";
+import { DELEGABLE_ACCESS_LIST_RESOURCE } from "../resources.js";
 
 export { setup };
 
@@ -41,7 +41,7 @@ export const options = getOptions([rightsLabel, delegateLabel, cleanupLabel]);
  * Altinn/altinn-auth#4790 and #4896 change, which is where it could break again.
  *
  * The organization is the first row of the test data, which is never put on a
- * list. A delegation that is wrongly accepted is revoked on the spot.
+ * list. The delegation is revoked afterwards either way.
  *
  * Run k6-access-list-resource through create-resources.js first.
  *
@@ -57,6 +57,7 @@ export default function (data) {
         const rights = ConnectionsGetResourceRights(
             connections,
             new GetResourceRightsQueryBuilder().WithResource(DELEGABLE_ACCESS_LIST_RESOURCE).Build(),
+            200,
             rightsLabel,
         );
 
@@ -71,25 +72,21 @@ export default function (data) {
             .WithToPerson(to.pid)
             .WithResource(DELEGABLE_ACCESS_LIST_RESOURCE);
 
-        const answer = ExpectProblem(
-            () => connections.ConnectionsCreateResource(
+        ResourceDelegationDomainChecks.CheckProblemCode(
+            ConnectionsCreateResource(
+                connections,
                 builder()
                     .WithRightKeys({ directRightKeys: rights.map((right) => right.key).filter((key) => key !== null) })
                     .Build(),
+                400,
                 delegateLabel,
             ),
-            "ConnectionsCreateResource (organization on no access list)",
-            400,
-        );
-
-        ResourceDelegationDomainChecks.CheckProblemCode(
-            answer,
             ProblemCode.FromPartyNotOnAccessList,
             "ConnectionsCreateResource (organization on no access list)",
         );
 
-        if (answer?.id) {
-            ConnectionsRevokeResource(connections, builder().Build(), cleanupLabel);
-        }
+        // Revoked either way, so a delegation that was wrongly accepted is not
+        // left behind; revoking one that was never created is harmless.
+        ConnectionsRevokeResource(connections, builder().Build(), cleanupLabel);
     });
 }

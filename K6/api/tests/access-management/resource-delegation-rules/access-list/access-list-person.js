@@ -1,14 +1,14 @@
 import { group } from "k6";
 
-import { GetResourceDelegationCheckQueryBuilder } from "../../../../clients/access-management/enduser/connections/index.js";
-import { getItemFromList, getOptions } from "../../../../helpers.js";
-import { GetResourceDelegationCheck } from "../../../building-blocks/access-management/enduser/connections/index.js";
+import { GetResourceDelegationCheckQueryBuilder } from "../../../../../clients/access-management/enduser/connections/index.js";
+import { getItemFromList, getOptions } from "../../../../../helpers.js";
+import { GetResourceDelegationCheck } from "../../../../building-blocks/access-management/enduser/connections/index.js";
 import {
     DelegationCheckReasonCode,
     ResourceDelegationDomainChecks,
-} from "../../../domain-checks/access-management/resource-delegation.js";
-import { getEnduserClients, getEnduserTokenOpts, setup } from "./common.js";
-import { DELEGABLE_ACCESS_LIST_RESOURCE } from "./resources.js";
+} from "../../../../domain-checks/access-management/resource-delegation.js";
+import { getEnduserClients, getEnduserTokenOpts, setup } from "../common.js";
+import { DELEGABLE_ACCESS_LIST_RESOURCE } from "../resources.js";
 
 export { setup };
 

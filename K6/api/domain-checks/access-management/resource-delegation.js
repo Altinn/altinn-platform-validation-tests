@@ -91,11 +91,11 @@ function problemCodes(body) {
 /**
  * Checks that a refusal carries the expected error code.
  *
- * The status code has already been checked by ExpectProblem, the building block
- * for refusals, so what is left is which error the API gave: the top-level code,
- * or one of the codes of the validation errors under it.
+ * The status code has already been checked by the building block, called with
+ * the error status the test expects. What is left is which error the API gave:
+ * the top-level code, or one of the codes of the validation errors under it.
  *
- * @param {*} problem The problem details body ExpectProblem returned.
+ * @param {import("../../../clients/common/problem-details.types.js").AltinnProblemDetails|null} problem The problem details the building block returned.
  * @param {string} code The expected error code. See ProblemCode.
  * @param {string} operation Name of the operation, used in the check name and logs.
  * @returns {boolean} True if the refusal carries that code.

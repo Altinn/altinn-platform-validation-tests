@@ -1,12 +1,12 @@
 import { check, fail, group, sleep } from "k6";
 import { Trend } from "k6/metrics";
 
-import { GetResourceDelegationCheckQueryBuilder } from "../../../../clients/access-management/enduser/connections/index.js";
-import { getItemFromList, getOptions } from "../../../../helpers.js";
-import { ResourceUpdateResource } from "../../../building-blocks/resource-registry/resource/index.js";
-import { DelegationCheckReasonCode } from "../../../domain-checks/access-management/resource-delegation.js";
-import { getEnduserClients, getEnduserTokenOpts, setup as commonSetup } from "./common.js";
-import { buildResource, DELEGABLE_TOGGLE_RESOURCE, getOwnerResourceClient } from "./resources.js";
+import { GetResourceDelegationCheckQueryBuilder } from "../../../../../clients/access-management/enduser/connections/index.js";
+import { getItemFromList, getOptions } from "../../../../../helpers.js";
+import { ResourceUpdateResource } from "../../../../building-blocks/resource-registry/resource/index.js";
+import { DelegationCheckReasonCode } from "../../../../domain-checks/access-management/resource-delegation.js";
+import { getEnduserClients, getEnduserTokenOpts, setup as commonSetup } from "../common.js";
+import { buildResource, DELEGABLE_TOGGLE_RESOURCE, getOwnerResourceClient } from "../resources.js";
 
 const baselineLabel = { step: "1. Make the resource delegable and wait for Access Management" };
 const disableLabel = { step: "2. Mark the resource not delegable and wait for Access Management" };

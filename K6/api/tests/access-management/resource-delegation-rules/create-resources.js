@@ -29,7 +29,7 @@ import {
  *
  * Deliberately left out of run-all.js and functional.yaml, and given no delete
  * step. Run it once per environment, on purpose, with
- * `k6 run K6/api/tests/access-management/local-resource-data/create-resources.js`.
+ * `k6 run K6/api/tests/access-management/resource-delegation-rules/create-resources.js`.
  * Deleting a resource leaves rows behind in resourceregistry.resourcesubjects,
  * reported as Altinn/altinn-resource-registry#848.
  *

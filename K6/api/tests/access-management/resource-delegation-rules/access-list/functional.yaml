@@ -1,0 +1,22 @@
+namespace: access-management
+base_dir: K6/api/tests/access-management/resource-delegation-rules/access-list
+test_definitions:
+  # Whether the delegation check respects a resource's access lists.
+  # Altinn/altinn-auth#4786 and #4789.
+  #
+  # Run by hand, not scheduled: access-list-membership.js takes about an hour,
+  # because of the 10 minute PDP membership cache. access-list-service-owner-
+  # delegation.js fails until the fix for Altinn/altinn-auth#4186 (PR #4831) is
+  # deployed; add it here then.
+  - test_file: access-list-delegation-check.js
+    test_scope: resource-delegation-access-list
+    contexts:
+      - environment: at22
+      - environment: at23
+      - environment: tt02
+  - test_file: access-list-person.js
+    test_scope: resource-delegation-access-list
+    contexts:
+      - environment: at22
+      - environment: at23
+      - environment: tt02

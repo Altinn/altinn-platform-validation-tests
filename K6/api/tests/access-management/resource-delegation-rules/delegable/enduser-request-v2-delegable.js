@@ -1,13 +1,13 @@
 import { group } from "k6";
 
-import { getItemFromList, getOptions } from "../../../../helpers.js";
+import { getItemFromList, getOptions } from "../../../../../helpers.js";
 import {
     CreateResourceRequest,
     WithdrawSentRequest,
-} from "../../../building-blocks/access-management/enduser/request-v2/index.js";
-import { ResourceDelegationDomainChecks } from "../../../domain-checks/access-management/resource-delegation.js";
-import { getEnduserClients, getEnduserTokenOpts, setup } from "./common.js";
-import { DELEGABLE_RESOURCE } from "./resources.js";
+} from "../../../../building-blocks/access-management/enduser/request-v2/index.js";
+import { ResourceDelegationDomainChecks } from "../../../../domain-checks/access-management/resource-delegation.js";
+import { getEnduserClients, getEnduserTokenOpts, setup } from "../common.js";
+import { DELEGABLE_RESOURCE } from "../resources.js";
 
 export { setup };
 
@@ -37,7 +37,7 @@ export default function (data) {
     tokenGenerator.setTokenGeneratorOptions(getEnduserTokenOpts(user));
 
     group("An enduser can request a delegable resource (v2)", function () {
-        const created = CreateResourceRequest(requestV2, user.partyUuid, user.orgUuid, DELEGABLE_RESOURCE, null, requestLabel);
+        const created = CreateResourceRequest(requestV2, user.partyUuid, user.orgUuid, DELEGABLE_RESOURCE, null, 200, requestLabel);
 
         if (ResourceDelegationDomainChecks.CheckRequestCreated(created, "Pending", "CreateResourceRequest (v2)") && created) {
             WithdrawSentRequest(requestV2, user.partyUuid, created.id, withdrawLabel);

@@ -3,41 +3,41 @@ import { fail, group, sleep } from "k6";
 import {
     GetInstanceDelegationCheckQueryBuilder,
     GetResourceDelegationCheckQueryBuilder,
-} from "../../../../clients/access-management/enduser/connections/index.js";
+} from "../../../../../clients/access-management/enduser/connections/index.js";
 import {
     GetResourceRightsQueryBuilder,
     ServiceOwnerResourceDelegationBuilder,
-} from "../../../../clients/access-management/service-owner/connections/index.js";
+} from "../../../../../clients/access-management/service-owner/connections/index.js";
 import {
     AccessListMembersBuilder,
     AccessListResourceConnectionBuilder,
     CreateAccessListBuilder,
-} from "../../../../clients/resource-registry/index.js";
-import { uuidv4 } from "../../../../common-imports.js";
-import { getOptions } from "../../../../helpers.js";
+} from "../../../../../clients/resource-registry/index.js";
+import { uuidv4 } from "../../../../../common-imports.js";
+import { getOptions } from "../../../../../helpers.js";
 import {
     GetInstanceDelegationCheck,
     GetResourceDelegationCheck,
-} from "../../../building-blocks/access-management/enduser/connections/index.js";
+} from "../../../../building-blocks/access-management/enduser/connections/index.js";
 import {
     ConnectionsCreateResource,
     ConnectionsGetResourceRights,
     ConnectionsRevokeResource,
-} from "../../../building-blocks/access-management/service-owner/connections/index.js";
+} from "../../../../building-blocks/access-management/service-owner/connections/index.js";
 import {
     AccessListAddMembers,
     AccessListCreateOrUpdate,
     AccessListDelete,
     AccessListsUpsertResourceConnection,
-} from "../../../building-blocks/resource-registry/access-lists/index.js";
+} from "../../../../building-blocks/resource-registry/access-lists/index.js";
 import {
     DelegationCheckReasonCode,
     ResourceDelegationDomainChecks,
-} from "../../../domain-checks/access-management/resource-delegation.js";
-import { ConnectionsDomainChecks } from "../../../domain-checks/access-management/service-owner/connections.js";
-import { getAccessListClient } from "../../resource-registry/commons.js";
-import { getEnduserClients, getEnduserTokenOpts, getServiceOwnerClients, setup as commonSetup } from "./common.js";
-import { DELEGABLE_ACCESS_LIST_RESOURCE, OWNER } from "./resources.js";
+} from "../../../../domain-checks/access-management/resource-delegation.js";
+import { ConnectionsDomainChecks } from "../../../../domain-checks/access-management/service-owner/connections.js";
+import { getAccessListClient } from "../../../resource-registry/commons.js";
+import { getEnduserClients, getEnduserTokenOpts, getServiceOwnerClients, setup as commonSetup } from "../common.js";
+import { DELEGABLE_ACCESS_LIST_RESOURCE, OWNER } from "../resources.js";
 
 const notOnListLabel = { step: "1. Organization on no list is refused" };
 const createListLabel = { step: "2a. Put the organization on a list" };
@@ -86,7 +86,7 @@ export const options = {
  * run, so a run that died halfway leaves one list behind at most, which the next
  * run and teardown both delete.
  */
-const LIST_ID = "k6-local-resource-data-membership";
+const LIST_ID = "k6-resource-delegation-rules-membership";
 
 /**
  * Reads the test data, and makes sure the organization this test puts on a
@@ -213,8 +213,8 @@ export default function (data) {
 
     group(createListLabel.step, function () {
         AccessListCreateOrUpdate(accessLists, OWNER.orgcode, LIST_ID, new CreateAccessListBuilder()
-            .withName(`k6 local resource data ${LIST_ID}`)
-            .withDescription("Created by local-resource-data/access-list-membership.js")
+            .withName(`k6 resource delegation rules ${LIST_ID}`)
+            .withDescription("Created by resource-delegation-rules/access-list/access-list-membership.js")
             .build(), createListLabel);
         AccessListsUpsertResourceConnection(accessLists, OWNER.orgcode, LIST_ID, DELEGABLE_ACCESS_LIST_RESOURCE,
             new AccessListResourceConnectionBuilder().build(), createListLabel);
@@ -232,6 +232,7 @@ export default function (data) {
         const rights = ConnectionsGetResourceRights(
             serviceOwner.connections,
             new GetResourceRightsQueryBuilder().WithResource(DELEGABLE_ACCESS_LIST_RESOURCE).Build(),
+            200,
             delegateLabel,
         );
 
@@ -247,6 +248,7 @@ export default function (data) {
         const created = ConnectionsCreateResource(
             serviceOwner.connections,
             builder().WithRightKeys({ directRightKeys: rights.map((right) => right.key).filter((key) => key !== null) }).Build(),
+            200,
             delegateLabel,
         );
 

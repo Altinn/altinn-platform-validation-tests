@@ -1,13 +1,13 @@
 import { group } from "k6";
 
-import { getItemFromList, getOptions } from "../../../../helpers.js";
+import { getItemFromList, getOptions } from "../../../../../helpers.js";
 import {
     RequestCreateResourceRequest,
     RequestWithdrawRequest,
-} from "../../../building-blocks/access-management/service-owner/request/index.js";
-import { ResourceDelegationDomainChecks } from "../../../domain-checks/access-management/resource-delegation.js";
-import { getServiceOwnerClients, setup } from "./common.js";
-import { DELEGABLE_RESOURCE } from "./resources.js";
+} from "../../../../building-blocks/access-management/service-owner/request/index.js";
+import { ResourceDelegationDomainChecks } from "../../../../domain-checks/access-management/resource-delegation.js";
+import { getServiceOwnerClients, setup } from "../common.js";
+import { DELEGABLE_RESOURCE } from "../resources.js";
 
 export { setup };
 
@@ -41,6 +41,7 @@ export default function (data) {
                 resource: DELEGABLE_RESOURCE,
                 rightKeys: null,
             },
+            202,
             requestLabel,
         );
 
