@@ -1,12 +1,9 @@
 import { fail, group } from "k6";
 import exec from "k6/execution";
 
-import { ApproveConsentContextBuilder } from "../../../../../clients/access-management-bff/consent/index.js";
-import { randomItem, uuidv4 } from "../../../../../common-imports.js";
-import { requireEnv } from "../../../../../helpers.js";
-import { EnterpriseCreateConsentRequest } from "../../../../building-blocks/access-management/consent-enterprise/index.js";
-import { ApproveConsentRequest } from "../../../../building-blocks/access-management-bff/consent/index.js";
-import { ConsentDomainChecks } from "../../../../domain-checks/access-management/consent.js";
+import { EnterpriseCreateConsentRequest } from "../../../api/building-blocks/access-management/consent-enterprise/index.js";
+import { ApproveConsentRequest } from "../../../api/building-blocks/access-management-bff/consent/index.js";
+import { ConsentDomainChecks } from "../../../api/domain-checks/access-management/consent.js";
 import {
     createConsentRequest,
     getClients,
@@ -17,7 +14,10 @@ import {
     lookupConsentValidTo,
     organizationUrn,
     personUrn,
-} from "../commons.js";
+} from "../../../api/tests/access-management/consent/commons.js";
+import { ApproveConsentContextBuilder } from "../../../clients/access-management-bff/consent/index.js";
+import { randomItem, uuidv4 } from "../../../common-imports.js";
+import { requireEnv } from "../../../helpers.js";
 
 // How many rows of consent data to generate.
 const LOOKUPS = __ENV.LOOKUPS ? parseInt(__ENV.LOOKUPS) : 20;
@@ -37,7 +37,7 @@ export const options = {
  * Plans one consent per iteration, so the default function can request and
  * approve exactly the rows the teardown prints.
  *
- * @returns {Array<{consentId: string, pid: string, orgNo: string, person: import("../commons.js").ConsenterPerson}>} The consents to generate.
+ * @returns {Array<{consentId: string, pid: string, orgNo: string, person: import("../../../api/tests/access-management/consent/commons.js").ConsenterPerson}>} The consents to generate.
  */
 export function setup() {
     requireEnv(["ENVIRONMENT", "BASE_URL", "AM_UI_BASE_URL"]);
@@ -72,7 +72,7 @@ export function setup() {
  * iteration and the teardown prints them as csv. The checks are here so a run
  * that silently produced nothing is not mistaken for one that produced data.
  *
- * @param {Array<{consentId: string, pid: string, orgNo: string, person: import("../commons.js").ConsenterPerson}>} rows The consents planned in setup.
+ * @param {Array<{consentId: string, pid: string, orgNo: string, person: import("../../../api/tests/access-management/consent/commons.js").ConsenterPerson}>} rows The consents planned in setup.
  */
 export default function (rows) {
     const [clients, consenteeTokenGenerator, consenterTokenGenerator] = getClients();
@@ -117,7 +117,7 @@ export default function (rows) {
 /**
  * Prints the generated consents as the csv lookup.js reads.
  *
- * The output is copied into K6/testdata/authentication/consent/lookup/<env>.csv by
+ * The output is copied into K6/testdata/access-management/consent/lookup/<env>.csv by
  * hand, since a k6 run cannot write back to the repo.
  *
  * @param {Array<{consentId: string, pid: string, orgNo: string}>} rows The consents that were generated.

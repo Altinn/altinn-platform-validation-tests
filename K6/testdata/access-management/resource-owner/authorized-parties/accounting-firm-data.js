@@ -1,13 +1,13 @@
 import { fail } from "k6";
 
-import { AuthorizedParty } from "../../../../../../clients/access-management/resource-owner/authorized-parties/authorized-parties.types.js";
-import { AuthorizedPartiesQueryBuilder, AuthorizedPartiesRequestBuilder } from "../../../../../../clients/access-management/resource-owner/authorized-parties/index.js";
-import { CcrHolderRoles } from "../../../../../../clients/register/types.js";
-import { fetchTestData, requireEnv } from "../../../../../../helpers.js";
-import { GetAuthorizedParties } from "../../../../../building-blocks/access-management/resource-owner/authorized-parties/index.js";
-import { RegisterBuildingBlocks } from "../../../../../building-blocks/register/index.js";
-import { getPartyLookupAdminClient } from "../../../../register/commons.js";
-import { getClients } from "../common.js";
+import { GetAuthorizedParties } from "../../../../api/building-blocks/access-management/resource-owner/authorized-parties/index.js";
+import { RegisterBuildingBlocks } from "../../../../api/building-blocks/register/index.js";
+import { getClients } from "../../../../api/tests/access-management/resource-owner/authorized-parties/common.js";
+import { getPartyLookupAdminClient } from "../../../../api/tests/register/commons.js";
+import { AuthorizedParty } from "../../../../clients/access-management/resource-owner/authorized-parties/authorized-parties.types.js";
+import { AuthorizedPartiesQueryBuilder, AuthorizedPartiesRequestBuilder } from "../../../../clients/access-management/resource-owner/authorized-parties/index.js";
+import { CcrHolderRoles } from "../../../../clients/register/types.js";
+import { fetchTestData, requireEnv } from "../../../../helpers.js";
 
 // Generates the rows the five accounting firm scenarios read, one file per environment:
 // clients-and-key-role-parties, access-information-flags, key-role-filter, party-filter

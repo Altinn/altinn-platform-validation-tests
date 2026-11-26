@@ -129,11 +129,14 @@ is regenerate rather than repair.
 A scenario cannot be generated when what it asserts was put there on purpose. The four
 below are in that group, and the section after this one says what each would need.
 
+The generators live in `K6/testdata/access-management/resource-owner/authorized-parties/`,
+next to the rows they write.
+
 | Generator | Writes the rows for |
 | --- | --- |
-| `testdataGeneration/subject-lookup-forms-data.js` | `subject-lookup-forms` |
-| `testdataGeneration/accounting-firm-data.js` | `clients-and-key-role-parties`, `access-information-flags`, `key-role-filter`, `party-filter`, `resource-filter` |
-| `testdataGeneration/subject-only-data.js` | `authorization-boundaries`, `org-code-filter` |
+| `subject-lookup-forms-data.js` | `subject-lookup-forms` |
+| `accounting-firm-data.js` | `clients-and-key-role-parties`, `access-information-flags`, `key-role-filter`, `party-filter`, `resource-filter` |
+| `subject-only-data.js` | `authorization-boundaries`, `org-code-filter` |
 
 The five accounting firm scenarios share one generator because they share one lookup: an
 accounting firm's daglig leder and the parties it answers with. Five generators would mean
@@ -230,5 +233,5 @@ picks by iteration number instead, so ten iterations exercise every row. Regener
 rows additionally needs `REGISTER_SUBSCRIPTION_KEY`:
 
 ```
-k6 run K6/api/tests/access-management/resource-owner/authorized-parties/testdataGeneration/accounting-firm-data.js
+k6 run K6/testdata/access-management/resource-owner/authorized-parties/accounting-firm-data.js
 ```
