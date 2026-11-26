@@ -9,7 +9,7 @@
          "k6-action-image/testid": "yt01-get-deployments"
       },
       "labels": {
-         "generated-by": "k6-action-image",
+         "generated-by": "testudo",
          "uniq_name": "yt01-1700000000000-15jhd"
       },
       "name": "yt01-1700000000000-15jhd",
@@ -87,7 +87,7 @@
                "k6-action-image/testid": "yt01-get-deployments"
             },
             "labels": {
-               "generated-by": "k6-action-image",
+               "generated-by": "testudo",
                "uniq_name": "yt01-1700000000000-15jhd"
             }
          },

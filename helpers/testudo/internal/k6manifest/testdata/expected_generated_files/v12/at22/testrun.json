@@ -9,7 +9,7 @@
          "k6-action-image/testid": "at22-pre-determined"
       },
       "labels": {
-         "generated-by": "k6-action-image",
+         "generated-by": "testudo",
          "uniq_name": "at22-1700000000000-1yt0v"
       },
       "name": "at22-1700000000000-1yt0v",
@@ -87,7 +87,7 @@
                "k6-action-image/testid": "at22-pre-determined"
             },
             "labels": {
-               "generated-by": "k6-action-image",
+               "generated-by": "testudo",
                "uniq_name": "at22-1700000000000-1yt0v"
             }
          },

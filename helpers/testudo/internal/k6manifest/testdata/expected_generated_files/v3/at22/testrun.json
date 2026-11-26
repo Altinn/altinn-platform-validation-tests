@@ -9,7 +9,7 @@
          "k6-action-image/testid": "at22-get-deployments-smoke"
       },
       "labels": {
-         "generated-by": "k6-action-image",
+         "generated-by": "testudo",
          "uniq_name": "at22-1700000000000-dpqzp"
       },
       "name": "at22-1700000000000-dpqzp",
@@ -87,7 +87,7 @@
                "k6-action-image/testid": "at22-get-deployments-smoke"
             },
             "labels": {
-               "generated-by": "k6-action-image",
+               "generated-by": "testudo",
                "uniq_name": "at22-1700000000000-dpqzp"
             }
          },

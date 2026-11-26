@@ -6,7 +6,8 @@
 //
 // The code was moved here from actions/generate-k6-manifests in
 // altinn-platform. It used kubectl for the ConfigMap and jsonnet for the
-// TestRun; both are made in Go now, and the files are the same as before.
+// TestRun; both are made in Go now, and the files are the same as before,
+// except that the generated-by label is testudo.
 package k6manifest
 
 import (
@@ -34,6 +35,11 @@ import (
 
 	"github.com/Altinn/altinn-platform-validation-tests/helpers/testudo/internal/errs"
 )
+
+// generatedBy is the generated-by label on the ConfigMaps, TestRuns, runner
+// pods and CronJobs testudo makes. The generator in altinn-platform wrote
+// k6-action-image, and github-action on the CronJobs.
+const generatedBy = "testudo"
 
 // defaultScenarios has the load profile for each test type, used when the
 // test's own config file does not set one.
@@ -521,7 +527,7 @@ func (r K8sManifestGenerator) writeConfigMap(dirName, configMapName, uniqName st
 			Name:      configMapName,
 			Namespace: namespace,
 			Labels: map[string]string{
-				"generated-by":         "k6-action-image",
+				"generated-by":         generatedBy,
 				"uniq_name":            uniqName,
 				"generation_timestamp": strconv.FormatInt(generationTimestamp, 10),
 			},

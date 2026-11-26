@@ -422,7 +422,10 @@ Makes the Kubernetes manifests that run the tests in a K6 config file
 where the test is enabled, and the CronJob that runs them on a schedule. The
 code was moved here from
 [actions/generate-k6-manifests](https://github.com/Altinn/altinn-platform/tree/main/actions/generate-k6-manifests)
-in altinn-platform, and the output is the same. The ad-hoc workflows still use
+in altinn-platform, and the output is the same, except that the `generated-by`
+label on the ConfigMaps, TestRuns, runner pods and CronJobs is `testudo`. The
+generator in altinn-platform wrote `k6-action-image`, and `github-action` on the
+CronJobs. The ad-hoc workflows still use
 the action from altinn-platform, and the CronJobs still run the generator in
 the altinn-platform image.
 

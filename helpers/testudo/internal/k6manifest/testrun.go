@@ -145,7 +145,7 @@ func newTestRun(p testRunParameters, cluster k6Cluster) (testRun, error) {
 
 	labels := map[string]string{
 		"uniq_name":    p.uniqName,
-		"generated-by": "k6-action-image",
+		"generated-by": generatedBy,
 	}
 	annotations := map[string]string{
 		"k6-action-image/test_name":    p.testName,

@@ -3,7 +3,7 @@
    "kind": "CronJob",
    "metadata": {
       "labels": {
-         "generated-by": "github-action"
+         "generated-by": "testudo"
       },
       "name": "access-packages-functional",
       "namespace": "access-management-bff"

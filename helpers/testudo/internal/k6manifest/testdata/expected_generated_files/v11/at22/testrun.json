@@ -9,7 +9,7 @@
          "k6-action-image/testid": "at22-get-deployments"
       },
       "labels": {
-         "generated-by": "k6-action-image",
+         "generated-by": "testudo",
          "uniq_name": "at22-1700000000000-pyil5"
       },
       "name": "at22-1700000000000-pyil5",
@@ -91,7 +91,7 @@
                "k6-action-image/testid": "at22-get-deployments"
             },
             "labels": {
-               "generated-by": "k6-action-image",
+               "generated-by": "testudo",
                "uniq_name": "at22-1700000000000-pyil5"
             }
          },

@@ -9,7 +9,7 @@
          "k6-action-image/testid": "at23-get-deployments-smoke"
       },
       "labels": {
-         "generated-by": "k6-action-image",
+         "generated-by": "testudo",
          "uniq_name": "at23-1700000000000-v30qc"
       },
       "name": "at23-1700000000000-v30qc",
@@ -87,7 +87,7 @@
                "k6-action-image/testid": "at23-get-deployments-smoke"
             },
             "labels": {
-               "generated-by": "k6-action-image",
+               "generated-by": "testudo",
                "uniq_name": "at23-1700000000000-v30qc"
             }
          },

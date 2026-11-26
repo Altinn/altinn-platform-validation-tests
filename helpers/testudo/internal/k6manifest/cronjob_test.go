@@ -40,7 +40,8 @@ func writeCronJob(t *testing.T, configPath string, cf *ConfigFile) (string, map[
 	return files[0].Name(), cronJob
 }
 
-// The golden file was made with cronjob.jsonnet, which this replaces.
+// The golden file was made with cronjob.jsonnet, which this replaces. Only the
+// generated-by label has changed since, from github-action to testudo.
 func TestCronJobIsAsBefore(t *testing.T) {
 	const name = "K6_api_tests_access-management-bff_access-packages_functional.json"
 	g := K8sManifestGenerator{CronJobDirectory: t.TempDir(), RepoRootDirectory: "."}

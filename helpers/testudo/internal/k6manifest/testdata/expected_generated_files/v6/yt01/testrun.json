@@ -9,7 +9,7 @@
          "k6-action-image/testid": "yt01-get-daemonsets"
       },
       "labels": {
-         "generated-by": "k6-action-image",
+         "generated-by": "testudo",
          "uniq_name": "yt01-1700000000000-ro8we"
       },
       "name": "yt01-1700000000000-ro8we",
@@ -95,7 +95,7 @@
                "k6-action-image/testid": "yt01-get-daemonsets"
             },
             "labels": {
-               "generated-by": "k6-action-image",
+               "generated-by": "testudo",
                "uniq_name": "yt01-1700000000000-ro8we"
             }
          },

@@ -128,7 +128,7 @@ func newCronJob(repoPath, namespace, schedule string) map[string]any {
 			"name":      cronJobName(repoPath, namespace),
 			"namespace": namespace,
 			"labels": map[string]any{
-				"generated-by": "github-action",
+				"generated-by": generatedBy,
 			},
 		},
 		"spec": map[string]any{

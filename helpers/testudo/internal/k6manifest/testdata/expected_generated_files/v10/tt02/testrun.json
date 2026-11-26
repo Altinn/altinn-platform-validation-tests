@@ -9,7 +9,7 @@
          "k6-action-image/testid": "tt02-get-deployments"
       },
       "labels": {
-         "generated-by": "k6-action-image",
+         "generated-by": "testudo",
          "uniq_name": "tt02-1700000000000-z8nrt"
       },
       "name": "tt02-1700000000000-z8nrt",
@@ -103,7 +103,7 @@
                "k6-action-image/testid": "tt02-get-deployments"
             },
             "labels": {
-               "generated-by": "k6-action-image",
+               "generated-by": "testudo",
                "uniq_name": "tt02-1700000000000-z8nrt"
             }
          },
