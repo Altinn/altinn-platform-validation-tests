@@ -1,0 +1,27 @@
+namespace: platform
+test_definitions:
+  - test_file: test_service/k8s_wrapper/get_deployments.js
+    contexts:
+      - environment: at22
+        test_run:
+          name: "get-deployments"
+          resources:
+            requests:
+              cpu: "1"
+              memory: "1000Mi"
+  - test_file: test_service/k8s_wrapper/get_daemonsets.js
+    contexts:
+      - environment: yt01
+        node_type: "default"
+        test_type:
+          type: smoke
+          enabled: true
+          config_file: test_service/test_configs/yt01_config.json
+        test_run:
+          name: "get-daemonsets"
+          id: "yt01-get-daemonsets" # hardcode id
+          env:
+            - name: API_VERSION
+              value: 3
+            - name: FEATURE_FLAG1
+              value: enabled

@@ -36,9 +36,10 @@ func newRootCmd() *cobra.Command {
 	var configFile string
 	root := &cobra.Command{
 		Use:   "testudo",
-		Short: "Test data for the tests in altinn-platform-validation-tests",
+		Short: "Test data and K6 manifests for the tests in altinn-platform-validation-tests",
 		Long: `testudo finds test persons and organizations that exist both in Tenor and in
-Altinn Register, and prints them as text, JSON or CSV.
+Altinn Register, and prints them as text, JSON or CSV. It also makes the
+Kubernetes manifests that run the K6 tests in the k6 cluster.
 
 Flags are always written with two dashes, e.g. --count and --help.`,
 		// The config file is read before the command runs. Nothing is written
@@ -51,6 +52,6 @@ Flags are always written with two dashes, e.g. --count and --help.`,
 	// Declared here so cobra does not add its own help flag with the -h
 	// shorthand. testudo has no single-dash flags.
 	root.PersistentFlags().Bool("help", false, "Show help for the command")
-	root.AddCommand(newFindCmd(), newServeCmd(), newNotifyCmd(), newMetricsCmd())
+	root.AddCommand(newFindCmd(), newServeCmd(), newNotifyCmd(), newMetricsCmd(), newK6Cmd(), newVersionCmd())
 	return root
 }

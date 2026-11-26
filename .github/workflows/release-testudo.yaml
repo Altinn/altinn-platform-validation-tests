@@ -1,0 +1,103 @@
+name: "Test and release testudo"
+
+# Checks testudo on pull requests that change it. On main, it also builds
+# testudo for Linux, macOS and Windows and publishes the binaries as the
+# testudo-latest release. That release has no version number: every change on
+# main replaces its files and moves its tag to the commit they were built from.
+
+on:
+  pull_request:
+    paths:
+      - "helpers/testudo/**"
+      - ".github/workflows/release-testudo.yaml"
+  push:
+    branches:
+      - main
+    paths:
+      - "helpers/testudo/**"
+      - ".github/workflows/release-testudo.yaml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# A newer commit on a pull request replaces the run for the older one. On main,
+# runs wait for each other, so the release always ends up with the newest build.
+concurrency:
+  group: "release-testudo-${{ github.ref }}"
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  check:
+    runs-on: "ubuntu-latest"
+    steps:
+      - name: "Checkout"
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - name: "Set up Go"
+        uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version-file: helpers/testudo/go.mod
+          cache-dependency-path: helpers/testudo/go.sum
+
+      # TestGenerate makes real k6 archives, so k6 must be on PATH.
+      - name: "Set up k6"
+        uses: grafana/setup-k6-action@c47136d33d365efbeb9ae7266908b5dcf98cdece # v1.3.0
+
+      - name: "gofmt, go vet and the tests"
+        run: make -C helpers/testudo check
+
+  release:
+    needs: check
+    # Only from main, also when the workflow is started by hand.
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    runs-on: "ubuntu-latest"
+    permissions:
+      contents: write
+    env:
+      TAG: "testudo-latest"
+      GH_TOKEN: "${{ github.token }}"
+    steps:
+      - name: "Checkout"
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - name: "Set up Go"
+        uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version-file: helpers/testudo/go.mod
+          cache-dependency-path: helpers/testudo/go.sum
+
+      - name: "Build for Linux, macOS and Windows"
+        run: make -C helpers/testudo -j build-all
+
+      - name: "Checksums"
+        working-directory: helpers/testudo/dist
+        run: sha256sum testudo-* > checksums.txt
+
+      - name: "Publish the testudo-latest release"
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          # The tag points to the commit the binaries are built from.
+          git tag --force "$TAG" "$GITHUB_SHA"
+          git push --force origin "refs/tags/$TAG"
+
+          commit_date=$(git log -1 --format=%cs "$GITHUB_SHA")
+          notes="The latest build of testudo from main, made from ${GITHUB_SHA} (${commit_date}).
+
+          It has no version number. Every change to testudo on main replaces these files.
+          See [helpers/testudo/README.md](https://github.com/${GITHUB_REPOSITORY}/blob/${GITHUB_SHA}/helpers/testudo/README.md#download) for how to download and run it."
+
+          if gh release view "$TAG" --repo "$GITHUB_REPOSITORY" > /dev/null 2>&1; then
+            gh release upload "$TAG" helpers/testudo/dist/* --clobber --repo "$GITHUB_REPOSITORY"
+            gh release edit "$TAG" --notes "$notes" --repo "$GITHUB_REPOSITORY"
+          else
+            # Not marked as the repository's latest release, since it is a
+            # rolling build of one helper.
+            gh release create "$TAG" helpers/testudo/dist/* \
+              --title "testudo (latest)" \
+              --notes "$notes" \
+              --latest=false \
+              --repo "$GITHUB_REPOSITORY"
+          fi

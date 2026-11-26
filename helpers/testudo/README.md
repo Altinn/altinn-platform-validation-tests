@@ -11,6 +11,9 @@ Use it to make the CSV files that K6 tests read in `setup()` with
 `fetchTestData()`. [K6/testdata/README.md](../../K6/testdata/README.md) has the
 recipe for each file that is made with testudo today.
 
+testudo also makes the Kubernetes manifests that run the K6 tests in the k6
+cluster, see [k6 generate](#k6-generate).
+
 - [Install](#install)
 - [Configuration](#configuration)
 - [How it picks parties](#how-it-picks-parties)
@@ -21,11 +24,41 @@ recipe for each file that is made with testudo today.
 - [notify playwright](#notify-playwright)
 - [metrics playwright](#metrics-playwright)
 - [Recipes for K6 setup](#recipes-for-k6-setup)
+- [k6 generate](#k6-generate)
+- [version](#version)
 - [What testudo does not do](#what-testudo-does-not-do)
 - [Development](#development)
 - [Sources](#sources)
 
 ## Install
+
+### Download
+
+Every change to testudo on `main` is built for Linux, macOS and Windows (amd64
+and arm64) and published as the
+[testudo-latest](https://github.com/Altinn/altinn-platform-validation-tests/releases/tag/testudo-latest)
+release. It has no version number: the release notes name the commit it was
+built from, and the next change replaces the files. `testudo version` shows the
+commit of the binary you have.
+
+```bash
+gh release download testudo-latest --repo Altinn/altinn-platform-validation-tests \
+  --pattern testudo-linux-amd64 --pattern checksums.txt
+sha256sum --check --ignore-missing checksums.txt
+chmod +x testudo-linux-amd64
+```
+
+On macOS, check with `shasum -a 256 --check --ignore-missing checksums.txt`.
+The files are named `testudo-<os>-<arch>`, for example `testudo-darwin-arm64`
+for a Mac with Apple silicon and `testudo-windows-amd64.exe`. Without `gh`,
+download them from
+`https://github.com/Altinn/altinn-platform-validation-tests/releases/download/testudo-latest/<file>`.
+
+The macOS binaries are not signed. A file downloaded with a browser is
+quarantined, and macOS refuses to run it; remove the quarantine with
+`xattr -d com.apple.quarantine testudo-darwin-arm64`.
+
+### Build
 
 You need Go 1.27 or newer. With an older Go, the `go` command downloads 1.27 by
 itself.
@@ -516,6 +549,147 @@ runs testudo and replaces the header row with the names the file uses.
 > the file, and read
 > [Before you replace a file](../../K6/testdata/README.md#before-you-replace-a-file).
 
+## k6 generate
+
+Makes the Kubernetes manifests that run the tests in a K6 config file
+(`functional.yaml`, `smoke.yaml`, `healthcheck.yaml`, `breakpoint.yaml` or
+`browser.yaml` under `K6/`) in the k6 cluster, for every environment in the file
+where the test is enabled, and the CronJob that runs them on a schedule. The
+code was moved here from
+[actions/generate-k6-manifests](https://github.com/Altinn/altinn-platform/tree/main/actions/generate-k6-manifests)
+in altinn-platform, and the manifests hold the same values, except that the `generated-by`
+label on the ConfigMaps, TestRuns, runner pods and CronJobs is `testudo`. The
+generator in altinn-platform wrote `k6-action-image`, and `github-action` on the
+CronJobs. The ad-hoc workflows still use
+the action from altinn-platform, and the CronJobs still run the generator in
+the altinn-platform image. The CronJobs themselves are still made by
+`hack/create_cronjobs.sh`, see [Schedules](#schedules).
+
+Run it from the root of the repository, since the paths in the config files are
+relative to it. `k6` must be on PATH, since it makes the k6 archives. testudo
+makes the ConfigMaps and TestRuns itself, without kubectl or jsonnet, and sends
+nothing to a cluster.
+
+```bash
+testudo k6 generate K6/api/tests/portaler/smoke.yaml
+kubectl apply --server-side -f .dist/ -R
+```
+
+| Folder | Contents |
+| --- | --- |
+| `.dist/<test id>/` | `configmap.json` with the k6 archive, and `testrun.json` for the k6 operator. This is what you apply. |
+| `.conf/` | `expanded-configfile.yaml`, the config file with all defaults filled in, and `<test id>/tweaked-testconfig.json`, the k6 options for each test. |
+| `.build/<test id>/` | `archive.tar`, the k6 archive. |
+| `.cronjobs/` | The CronJob for the config file, e.g. `K6_api_tests_portaler_smoke.json`. It is kept apart from `.dist/`, so applying the tests never changes a schedule. |
+
+The four folders are emptied first, so manifests from an earlier run are not
+applied by mistake.
+
+The tests are made at the same time, as many at once as `--parallel` says. The
+default is the number of CPUs testudo may use, which in a container is its CPU
+limit. Each test runs `k6 archive`, so this is also how many k6 processes run at
+once.
+
+A test that fails does not stop the others. testudo lists every test that
+failed, in the order of the config file and with its test id, and exits with a
+non-zero code. A test that fails leaves nothing in `.dist/`, so applying `.dist/`
+after a failed run only applies the tests that were made in full. testudo
+checks that k6 is on PATH before it reads the config file or empties the
+folders, so a missing k6 is one error and changes nothing.
+
+Every test in a run gets the time the command started, in
+`MANIFEST_GENERATION_TIMESTAMP` and the `generation_timestamp` label. The
+TestRun name and its `uniq_name` label are
+`<environment>-<timestamp>-<five characters>`, where the five characters are
+made from the test id and the timestamp, so each test in a run gets its own
+name.
+
+A test runs in an environment unless its context says `enabled: false` under
+`test_type:`. Leaving out `enabled:` means enabled, also when `test_type:` is
+there. The generator in the altinn-platform image, which the CronJobs and the
+ad-hoc workflows still use, skips a `test_type:` without `enabled:`, so write
+`enabled: true` until they use testudo.
+
+### Schedules
+
+The CronJob runs the tests in the config file on the schedule in `schedule:`, a
+cron expression at the top of the file:
+
+```yaml
+namespace: portaler
+schedule: "30 6 * * 1-5" # 06:30 on weekdays
+base_dir: K6/api/tests/portaler/
+test_definitions:
+  ...
+```
+
+Without `schedule:`, functional, healthcheck and browser tests run every 15
+minutes (`*/15 * * * *`), and smoke tests every hour (`0 * * * *`). Breakpoint
+tests only get a CronJob when their file has a `schedule:`.
+
+testudo's CronJobs are not applied yet. The
+[Generate and Apply K6 CronJobs](../../.github/workflows/apply-cronjobs.yaml)
+workflow still makes them with `hack/create_cronjobs.sh` and
+`hack/cronjob.jsonnet`: functional, healthcheck and browser tests every 10 to 20
+minutes, smoke tests once an hour at a random minute, and no breakpoint tests.
+It does not read `schedule:`, so `schedule:` has no effect in the cluster until
+the workflow uses testudo.
+
+`--cronjobs-only` makes only the CronJobs, which do not need k6:
+
+```bash
+testudo k6 generate --cronjobs-only K6/api/tests/portaler/smoke.yaml K6/api/tests/portaler/functional.yaml
+```
+
+The CronJob names and files are made from the path of the config file, the
+same way `hack/cronjob.jsonnet` makes them, so applying testudo's CronJobs will
+replace the ones in the cluster. A name longer than 52 characters loses its
+vowels.
+
+Arguments after `--` are given to k6 in the TestRun. Each `-e` or
+`--env KEY=VALUE` among them is also set as an environment variable for the
+test, which is how an ad-hoc breakpoint run sets the load:
+
+```bash
+testudo k6 generate K6/api/tests/access-management/consent/breakpoint.yaml -- --env BREAKPOINT_STAGE_TARGET=50 --env BREAKPOINT_STAGE_DURATION=5m
+```
+
+`--slack` picks the Slack secret the tests get, and so the channel they post
+failed checks to. `test`, the default, gives `slack-test`, so a run from a
+branch or a laptop does not post to the team channels. `environment` gives
+`slack-dev` for at22, at23 and yt01, and `slack-prod` for tt02 and prod:
+
+```bash
+testudo k6 generate --slack environment K6/api/tests/portaler/smoke.yaml
+```
+
+A key the config file format does not have, for example a typo such as
+`enviroment:`, is an error, so it is not silently ignored.
+
+## version
+
+Shows which build of testudo you have: the commit it was built from, when that
+commit was made, and the Go version and platform it was built for.
+
+```bash
+testudo version
+testudo version --json
+```
+
+```text
+commit:      19963b6680dbcbb1328e5a459a827fcf1590384d
+commit time: 2026-11-26T11:37:50Z
+go:          go1.27.2
+platform:    linux/amd64
+```
+
+Go records the commit when testudo is built in a git checkout, as
+[make build](#build) and the [testudo-latest](#download) release are. If the
+checkout had changes that were not committed, the commit line says so. `go run`
+records no commit, so it is `unknown`. A testudo installed with
+`go install …@<version>` has a `version:` line instead of a commit. The config
+file is not read, so `version` works even when the config file is broken.
+
 ## What testudo does not do
 
 testudo only finds parties that already exist. It does not create
@@ -541,6 +715,17 @@ make fmt      # formats the code
 | `internal/config/` | Reads `~/.testudo.yaml` and environment variables. |
 | `internal/playwright/`, `internal/slack/` | Reading the Playwright reports, and sending to Slack for `notify playwright`. |
 | `internal/metrics/` | The Prometheus metrics and the push to the Pushgateway, for `metrics playwright`. |
+| `internal/k6manifest/` | Reads the K6 config files and makes the manifests for `k6 generate`. `testrun.go` makes the TestRun. `assets/` has the default load profile for each test type and the k6 cluster config. `testdata/` has example config files and the expected output, made at a fixed time (1700000000000 in Unix milliseconds) so the timestamps and TestRun names in it are as they are. The expected TestRun and CronJob files were made with jsonnet, so the tests compare them as JSON values, not as text. |
+| `internal/tools/` | Checks that the programs a command runs, such as k6, are on PATH. A command calls `tools.Require` before it starts. |
+| `internal/buildinfo/` | The commit, commit time and Go version Go recorded in the binary, for `version`. |
+
+`TestGenerate` in `internal/k6manifest/` runs k6, and fails when it is not on
+PATH. Install k6 before you run the tests.
+
+The [Test and release testudo](../../.github/workflows/release-testudo.yaml)
+workflow runs `make check` on pull requests that change testudo. On `main` it
+also runs `make build-all` and publishes the binaries as the
+[testudo-latest](#download) release.
 
 The code is in English. Words from the domain that have no good English
 equivalent stay in Norwegian, for example hovedenhet, underenhet, daglig leder
@@ -599,8 +784,18 @@ What testudo is built on, and where to look when something changes.
   in altinn-access-management-frontend: how the Playwright tests used Tenor
   before testudo.
 
+**K6**
+
+- [k6 archive](https://grafana.com/docs/k6/latest/reference/archive/): what
+  `k6 generate` puts in the ConfigMap, and why `--env` values are baked into
+  it.
+- [k6-operator](https://github.com/grafana/k6-operator): the `TestRun`
+  resource that runs the archive in the cluster.
+
 **Go libraries**
 
 - [cobra](https://github.com/spf13/cobra) for the commands and flags,
   [viper](https://github.com/spf13/viper) for the config file, and
   [jwx](https://github.com/lestrrat-go/jwx) for the Maskinporten JWT.
+- [yaml.v3](https://github.com/go-yaml/yaml) for the K6 config files, and
+  [k8s.io/api](https://github.com/kubernetes/api) for the ConfigMap.
