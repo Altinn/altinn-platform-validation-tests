@@ -30,6 +30,33 @@ cluster, see [k6 generate](#k6-generate).
 
 ## Install
 
+### Download
+
+Every change to testudo on `main` is built for Linux, macOS and Windows (amd64
+and arm64) and published as the
+[testudo-latest](https://github.com/Altinn/altinn-platform-validation-tests/releases/tag/testudo-latest)
+release. It has no version number: the release notes name the commit it was
+built from, and the next change replaces the files.
+
+```bash
+gh release download testudo-latest --repo Altinn/altinn-platform-validation-tests \
+  --pattern testudo-linux-amd64 --pattern checksums.txt
+sha256sum --check --ignore-missing checksums.txt
+chmod +x testudo-linux-amd64
+```
+
+On macOS, check with `shasum -a 256 --check --ignore-missing checksums.txt`.
+The files are named `testudo-<os>-<arch>`, for example `testudo-darwin-arm64`
+for a Mac with Apple silicon and `testudo-windows-amd64.exe`. Without `gh`,
+download them from
+`https://github.com/Altinn/altinn-platform-validation-tests/releases/download/testudo-latest/<file>`.
+
+The macOS binaries are not signed. A file downloaded with a browser is
+quarantined, and macOS refuses to run it; remove the quarantine with
+`xattr -d com.apple.quarantine testudo-darwin-arm64`.
+
+### Build
+
 You need Go 1.27 or newer. With an older Go, the `go` command downloads 1.27 by
 itself.
 
@@ -556,6 +583,11 @@ make fmt      # formats the code
 
 `TestGenerate` in `internal/k6manifest/` runs k6, and fails when it is not on
 PATH. Install k6 before you run the tests.
+
+The [Test and release testudo](../../.github/workflows/release-testudo.yaml)
+workflow runs `make check` on pull requests that change testudo. On `main` it
+also runs `make build-all` and publishes the binaries as the
+[testudo-latest](#download) release.
 
 The code is in English. Words from the domain that have no good English
 equivalent stay in Norwegian, for example hovedenhet, underenhet, daglig leder
