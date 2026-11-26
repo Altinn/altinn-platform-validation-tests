@@ -24,6 +24,12 @@ export default defineConfig([
     },
   },
   {
+    files: ["hack/**/*.{js,mjs,cjs}"],
+    languageOptions: {
+      globals: globals.node,
+    },
+  },
+  {
     languageOptions: {
       globals: {
         __ENV: "readonly",

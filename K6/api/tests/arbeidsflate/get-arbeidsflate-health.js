@@ -65,8 +65,12 @@ export default function () {
     }
 
     for (const [name, healthCheck] of Object.entries(body.healthChecks)) {
-        check(healthCheck, {
-            [`${name} status is ok`]: (hc) => hc?.status === "ok",
+        const ok = check(healthCheck, {
+            "each health check status is ok": (hc) => hc?.status === "ok",
         });
+
+        if (!ok) {
+            console.log(`Arbeidsflate health check ${name} is ${healthCheck?.status}`);
+        }
     }
 }

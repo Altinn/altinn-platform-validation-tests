@@ -32,12 +32,12 @@ export function IntrospectToken(
     );
 
     const succeed = check(res, {
-        [`IntrospectToken - status code is ${expectedStatus}`]: (r) =>
+        "IntrospectToken - status code is as expected": (r) =>
             r.status === expectedStatus,
     });
 
     if (!succeed) {
-        console.log(res.status);
+        console.log(`expected status ${expectedStatus}, got ${res.status}`);
         console.log(res.body);
         return null;
     }

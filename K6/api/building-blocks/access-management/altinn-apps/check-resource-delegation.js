@@ -65,14 +65,21 @@ export function CheckResourceDelegation(
     });
 
     if (parsed && expectedStatus !== null) {
-        check(result, {
-            [`CheckResourceDelegation - every result is ${expectedStatus}`]: (/** @type {ResourceRightDelegationCheckResultDtoPaginated|null} */ b) => {
+        const asExpected = check(result, {
+            "CheckResourceDelegation - every result has the expected status": (/** @type {ResourceRightDelegationCheckResultDtoPaginated|null} */ b) => {
                 const data = b?.data ?? [];
 
                 return data.length > 0
                     && data.every((item) => item.status === expectedStatus);
             },
         });
+
+        if (!asExpected) {
+            // result is filled in from inside a check callback, which the compiler
+            // cannot follow, so the type is restated here.
+            const checked = /** @type {ResourceRightDelegationCheckResultDtoPaginated|null} */ (result);
+            console.error(`CheckResourceDelegation - expected every result to be ${expectedStatus}, got: ${JSON.stringify((checked?.data ?? []).map((item) => item.status))}`);
+        }
     }
 
     return result;

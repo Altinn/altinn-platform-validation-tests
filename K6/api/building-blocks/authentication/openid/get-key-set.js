@@ -32,12 +32,12 @@ export function GetKeySet(
     );
 
     const succeed = check(res, {
-        [`GetKeySet - status code is ${expectedStatus}`]: (r) =>
+        "GetKeySet - status code is as expected": (r) =>
             r.status === expectedStatus,
     });
 
     if (!succeed) {
-        console.log(res.status);
+        console.log(`expected status ${expectedStatus}, got ${res.status}`);
         console.log(res.body);
         return null;
     }
