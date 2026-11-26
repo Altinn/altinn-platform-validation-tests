@@ -1,6 +1,7 @@
 .build
 .conf
 .dist
+.cronjobs
 node_modules
 package-lock.json
 # Playwright

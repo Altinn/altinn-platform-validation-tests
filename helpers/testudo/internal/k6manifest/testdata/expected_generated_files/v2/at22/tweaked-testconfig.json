@@ -1,0 +1,9 @@
+{
+  "iterations": 1,
+  "thresholds": {
+    "http_req_duration": [
+      "avg\u003c123"
+    ]
+  },
+  "vus": 1
+}

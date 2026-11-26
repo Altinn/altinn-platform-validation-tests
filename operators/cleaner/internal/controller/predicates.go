@@ -17,6 +17,10 @@ func hasTargetLabels(labels map[string]string) bool {
 		return false
 	}
 
+	// The ConfigMaps and TestRuns for the k6 tests only have the generated-by
+	// label. testudo makes them now; the generator in altinn-platform, which
+	// the CronJobs still run, wrote k6-action-image.
 	return labels["app"] == "k6" ||
+		labels["generated-by"] == "testudo" ||
 		labels["generated-by"] == "k6-action-image"
 }

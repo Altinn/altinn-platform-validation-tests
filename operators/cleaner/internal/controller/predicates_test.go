@@ -45,6 +45,11 @@ var _ = Describe("hasTargetLabels", func() {
 			true,
 		),
 		Entry(
+			"generated-by=testudo",
+			map[string]string{"generated-by": "testudo"},
+			true,
+		),
+		Entry(
 			"both target labels",
 			map[string]string{
 				"app":          "k6",
