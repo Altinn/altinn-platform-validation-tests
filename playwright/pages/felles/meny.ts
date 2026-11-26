@@ -33,8 +33,7 @@ export class MenyPom {
     /**
      * Venter på at knappen er aktivert og ikke bare synlig. Headeren rendrer den
      * `disabled` mens den henter det den trenger, og `click()` blokkerer da uten
-     * egen timeout til testen har brukt opp tiden sin. Det har skjedd, se
-     * `helpers/junitparser/example-junit-report.xml`.
+     * egen timeout til testen har brukt opp tiden sin. Det har skjedd.
      *
      * Klikket prøves på nytt til menyen er åpen. Infoportalen rendrer knappen før
      * siden er hydrert, og et klikk før det åpner ingenting.
