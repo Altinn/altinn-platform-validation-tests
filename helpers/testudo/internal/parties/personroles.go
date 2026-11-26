@@ -19,8 +19,16 @@ type PersonRole struct {
 }
 
 // PersonRoles are the person roles FindOrganizations can fetch. They are the
-// roles Access Management imports from Enhetsregisteret and that persons have
+// roles from Enhetsregisteret that Access Management has assigned to persons
+// (provider sys-ccr), with Access Management's names, and that persons have
 // in Tenor.
+//
+// Left out are the roles only organizations have in Tenor, such as revisor,
+// revisoradressat, regnskapsforeradressat, konkursdebitor and
+// personlige-konkurs, and the roles Access Management has that Tenor does
+// not: sameier, kontaktperson-ados, kontaktperson-nuf, kontaktperson-kommune
+// and kontaktperson-revisor. Access Management seems to derive the last
+// four from kontaktperson, which Tenor has.
 var PersonRoles = []PersonRole{
 	{Name: "daglig-leder", Code: "DAGL"},
 	{Name: "innehaver", Code: "INNH"},
@@ -33,6 +41,8 @@ var PersonRoles = []PersonRole{
 	{Name: "norsk-representant", Code: "REPR"},
 	{Name: "deltaker-delt-ansvar", Code: "DTPR"},
 	{Name: "deltaker-fullt-ansvar", Code: "DTSO"},
+	{Name: "komplementar", Code: "KOMP"},
+	{Name: "bestyrende-reder", Code: "BEST"},
 	{Name: "forretningsforer", Code: "FFØR"},
 	{Name: "prokurist", Code: "PROK"},
 	{Name: "prokurist-fellesskap", Code: "POFE"},
@@ -40,10 +50,9 @@ var PersonRoles = []PersonRole{
 	{Name: "signerer", Code: "SIGN"},
 	{Name: "signerer-fellesskap", Code: "SIFE"},
 	{Name: "signerer-hver-for-seg", Code: "SIHV"},
-	{Name: "stifter", Code: "STFT"},
+	{Name: "bostyrer", Code: "BOBE"},
 	// The spelling is Access Management's.
-	{Name: "elektronisk-signeringsrettig", Code: "ESGR"},
-	{Name: "elektronisk-signeringsrett-tildeler", Code: "ETDL"},
+	{Name: "kontorfelleskapmedlem", Code: "KTRF"},
 }
 
 // PersonRoleNames are the names in PersonRoles, for help texts and error

@@ -125,7 +125,7 @@ func TestRunOrganizationsCSV(t *testing.T) {
 	if out.String() != want {
 		t.Errorf("csv = %q", out.String())
 	}
-	if !strings.Contains(log.String(), "1 organizations from Tenor, or their person or hovedenhet, do not exist") {
+	if !strings.Contains(log.String(), "1 organizations from Tenor, or their person, hovedenhet or client, do not exist") {
 		t.Errorf("log = %q", log.String())
 	}
 
@@ -152,7 +152,7 @@ func TestValidateOrganizationsOptions(t *testing.T) {
 	}{
 		{"default", organizationsOptions{count: 1}, false, ""},
 		{"unit types", organizationsOptions{count: 1, unitTypes: []string{"enk", "ESEK", "brl", "nuf"}}, true, ""},
-		{"unknown unit type", organizationsOptions{count: 1, unitTypes: []string{"SA"}}, false, "unknown --unit-type"},
+		{"unknown unit type", organizationsOptions{count: 1, unitTypes: []string{"BEDR"}}, false, "unknown --unit-type"},
 		{"orgno", organizationsOptions{count: 10, organizationNumbers: []string{"313490114", "310418672"}}, false, ""},
 		{"invalid orgno", organizationsOptions{organizationNumbers: []string{"12345"}}, false, "--orgno"},
 		{"orgno and count", organizationsOptions{count: 1, organizationNumbers: []string{"313490114"}}, true, "--count cannot be used with --orgno"},
@@ -167,6 +167,7 @@ func TestValidateOrganizationsOptions(t *testing.T) {
 		{"unknown person role", organizationsOptions{count: 1, personRole: "LEDE"}, false, "unknown --person-role"},
 		{"subunits", organizationsOptions{count: 1, subunits: true, unitTypes: []string{"ENK"}}, false, ""},
 		{"BEDR is not a unit type", organizationsOptions{count: 1, unitTypes: []string{"BEDR"}}, false, "unknown --unit-type"},
+		{"KBO with bostyrer", organizationsOptions{count: 1, unitTypes: []string{"kbo"}, personRole: "bostyrer"}, false, ""},
 		{"subunits and orgno", organizationsOptions{subunits: true, organizationNumbers: []string{"313490114"}}, false, "--subunits cannot be used with --orgno or --role"},
 		{"subunits and role", organizationsOptions{count: 1, subunits: true, role: "revisor"}, false, "--subunits cannot be used"},
 		{"min subunits", organizationsOptions{count: 1, minSubunits: 2}, false, ""},
@@ -297,6 +298,10 @@ func TestRunOrganizationsRoleCSVAndJSON(t *testing.T) {
 	partiesByURN := map[string]string{
 		string(register.OrganizationURN(tenortest.AuditorWithLeader)): `{"partyUuid":"f-1","partyId":801,"organizationIdentifier":"` + tenortest.AuditorWithLeader + `","displayName":"REVISOR EN AS"}`,
 		string(register.PersonURN("10000000001")):                     `{"partyUuid":"d-1","partyId":802,"personIdentifier":"10000000001"}`,
+		// The client the revisor was found through, and the client's daglig
+		// leder.
+		string(register.OrganizationURN("100000012")): `{"partyUuid":"k-1","partyId":803,"organizationIdentifier":"100000012","displayName":"KLIENT 12 AS"}`,
+		string(register.PersonURN("10000000012")):     `{"partyUuid":"kd-1","partyId":804,"personIdentifier":"10000000012","user":{"userId":30012}}`,
 	}
 	var urnCounts []int
 	reg := registertest.NewClient(t, func(w http.ResponseWriter, r *http.Request) {
@@ -319,9 +324,24 @@ func TestRunOrganizationsRoleCSVAndJSON(t *testing.T) {
 	if want := "organizationIdentifier,displayName,partyId,partyUuid\n" + tenortest.AuditorWithLeader + ",REVISOR EN AS,801,f-1\n"; out.String() != want {
 		t.Errorf("csv = %q", out.String())
 	}
-	// The tilrettelegger and the daglig leder in the same call.
-	if fmt.Sprint(urnCounts) != "[2]" {
+	// The tilrettelegger and its daglig leder, and the client and its daglig
+	// leder, in the same call.
+	if fmt.Sprint(urnCounts) != "[4]" {
 		t.Errorf("urns per call = %v", urnCounts)
+	}
+
+	// The client columns give the client the revisor was found through, and
+	// the client's leader.
+	out.Reset()
+	opts.output.columns = "organizationIdentifier,clientOrganizationIdentifier,clientDisplayName,clientPartyId,clientPartyUuid," +
+		"clientPersonRole,clientSsn,clientUserId,clientUserPartyId,clientUserPartyUuid"
+	if err := runOrganizations(context.Background(), c, reg, &out, &log, opts); err != nil {
+		t.Fatal(err)
+	}
+	if want := "organizationIdentifier,clientOrganizationIdentifier,clientDisplayName,clientPartyId,clientPartyUuid," +
+		"clientPersonRole,clientSsn,clientUserId,clientUserPartyId,clientUserPartyUuid\n" +
+		tenortest.AuditorWithLeader + ",100000012,KLIENT 12 AS,803,k-1,daglig-leder,10000000012,30012,804,kd-1\n"; out.String() != want {
+		t.Errorf("csv with client = %q", out.String())
 	}
 
 	// The type column gives the role.

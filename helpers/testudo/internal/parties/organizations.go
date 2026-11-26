@@ -16,17 +16,35 @@ import (
 )
 
 // UnitTypes are the unit types FindOrganizations can fetch, with the codes
-// from Enhetsregisteret: aksjeselskap, enkeltpersonforetak,
-// eierseksjonssameie, borettslag and norskregistrert utenlandsk foretak.
-// Their underenheter are fetched with OrganizationQuery.Subunits.
-var UnitTypes = []string{"AS", "ENK", "ESEK", "BRL", "NUF"}
+// from Enhetsregisteret (organisasjonsform). They are the hovedenheter
+// Access Management has roles from Enhetsregisteret for. Their underenheter
+// are fetched with OrganizationQuery.Subunits.
+var UnitTypes = []string{
+	"ANNA", "ANS", "AS", "ASA", "BA", "BBL", "BO", "BRL", "DA", "ENK", "ESEK",
+	"FKF", "FLI", "FYLK", "GFS", "IKJP", "IKS", "IS", "KBO", "KF", "KIRK",
+	"KOMM", "KS", "KTRF", "NOKUS", "NUF", "OPMV", "ORGL", "PERS", "PK", "PRE",
+	"REV", "SA", "SAM", "SE", "SF", "SPA", "STAT", "STI", "SÆR", "TVAM", "UTLA",
+	"UTLANS", "VIFE", "VPFO",
+}
 
 // DefaultUnitType is the unit type fetched when none is chosen.
 const DefaultUnitType = "AS"
 
-// styrelederUnitTypes are the unit types that rarely have a daglig leder,
-// and where the styreleder is the leader.
-var styrelederUnitTypes = []string{"ESEK", "BRL"}
+// defaultLeaderCodes are the role codes of the leader, tried in order: the
+// daglig leder, or the innehaver when there is none.
+var defaultLeaderCodes = []string{"DAGL", "INNH"}
+
+// leaderCodes are the role codes of the leader for the unit types that
+// rarely have a daglig leder, tried in order. In Access Management few
+// borettslag and eierseksjonssameier have a daglig leder, but almost all have
+// a styreleder (LEDE). A konkursbo is run by its bostyrer (BOBE), and a
+// partsrederi by its bestyrende reder (BEST).
+var leaderCodes = map[string][]string{
+	"BRL":  {"DAGL", "LEDE"},
+	"ESEK": {"DAGL", "LEDE"},
+	"KBO":  {"BOBE"},
+	"PRE":  {"BEST", "DAGL"},
+}
 
 // underenhetUnitTypes are the underenheter, of hovedenheter with and without
 // business activity. They have no person roles of their own, so the person
@@ -72,6 +90,16 @@ type Organization struct {
 	// Hovedenhet is the hovedenhet in Register when the organization is an
 	// underenhet (BEDR or AAFY).
 	Hovedenhet *register.Party `json:"hovedenhet,omitempty"`
+	// Client is the client in Register the organization was found through
+	// when it was fetched with a role: an organization that has it as
+	// tilrettelegger, e.g. as regnskapsfører.
+	Client *register.Party `json:"client,omitempty"`
+	// ClientPersonRole is the role ClientPerson has in the client, e.g.
+	// daglig-leder.
+	ClientPersonRole string `json:"clientPersonRole,omitempty"`
+	// ClientPerson is the client's leader in Register, or nil when the client
+	// has none, or the leader does not exist in Register.
+	ClientPerson *register.Party `json:"clientPerson,omitempty"`
 }
 
 // organizationCandidate is an organization from Tenor that has not been
@@ -86,7 +114,13 @@ type organizationCandidate struct {
 	// organization is an underenhet.
 	hovedenhet string
 	role       string
-	kildedata  json.RawMessage
+	// client is the organization number of the client a tilrettelegger was
+	// found through, when it was fetched with a role, and clientPerson the
+	// fødselsnummer of the client's leader, with clientPersonRole.
+	client           string
+	clientPerson     string
+	clientPersonRole string
+	kildedata        json.RawMessage
 }
 
 // OrganizationQuery is which organizations FindOrganizations fetches. Only
@@ -122,7 +156,8 @@ type OrganizationQuery struct {
 // FindOrganizations fetches q.Count organizations with a person with the role
 // q.PersonRole, or with a leader, where both the organization and the person
 // exist in Register for q.Env. For underenheter the person is from the
-// hovedenhet, which must also exist in Register. Others are replaced with new
+// hovedenhet, which must also exist in Register, as must the client a
+// tilrettelegger was found through. Others are replaced with new
 // ones from Tenor, in up to maxRegisterRounds rounds, and how many were
 // replaced is written to log. All the parties in a round are looked up in the
 // same call.
@@ -166,6 +201,12 @@ func FindOrganizations(ctx context.Context, c *tenor.Client, reg *register.Clien
 			if k.hovedenhet != "" {
 				ids = append(ids, k.hovedenhet)
 			}
+			if k.client != "" {
+				ids = append(ids, k.client)
+			}
+			if k.clientPerson != "" {
+				ids = append(ids, k.clientPerson)
+			}
 		}
 		partyByID, err := reg.LookupIdentifiers(ctx, ids, registerFields...)
 		if err != nil {
@@ -183,17 +224,35 @@ func FindOrganizations(ctx context.Context, c *tenor.Client, reg *register.Clien
 					found = false
 				}
 			}
+			var client *register.Party
+			if k.client != "" {
+				if cl, ok := partyByID[k.client]; ok {
+					client = &cl
+				} else {
+					found = false
+				}
+			}
+			// The client's leader is optional: a CSV row that asks for it is
+			// left out when it is missing.
+			var clientPerson *register.Party
+			clientPersonRole := ""
+			if cp, ok := partyByID[k.clientPerson]; ok && k.clientPerson != "" {
+				clientPerson, clientPersonRole = &cp, k.clientPersonRole
+			}
 			if !found || !personFound {
 				notInRegister++
 				continue
 			}
 			organizations = append(organizations, Organization{
-				Role:       k.role,
-				Kildedata:  k.kildedata,
-				Party:      party,
-				PersonRole: k.personRole,
-				Person:     person,
-				Hovedenhet: hovedenhet,
+				Role:             k.role,
+				Kildedata:        k.kildedata,
+				Party:            party,
+				PersonRole:       k.personRole,
+				Person:           person,
+				Hovedenhet:       hovedenhet,
+				Client:           client,
+				ClientPersonRole: clientPersonRole,
+				ClientPerson:     clientPerson,
 			})
 			if len(organizations) == q.Count {
 				break
@@ -201,7 +260,7 @@ func FindOrganizations(ctx context.Context, c *tenor.Client, reg *register.Clien
 		}
 	}
 	if notInRegister > 0 {
-		fmt.Fprintf(log, "Register (%s): %d organizations from Tenor, or their person or hovedenhet, do not exist and were replaced.\n", q.Env, notInRegister)
+		fmt.Fprintf(log, "Register (%s): %d organizations from Tenor, or their person, hovedenhet or client, do not exist and were replaced.\n", q.Env, notInRegister)
 	}
 	return organizations, nil
 }
@@ -394,12 +453,14 @@ type rollegruppe struct {
 
 // leader returns the fødselsnummer of the daglig leder (DAGL), or of the
 // innehaver (INNH) if there is no daglig leder, and the code for the role.
-// Borettslag and eierseksjonssameier rarely have a daglig leder, so for them
-// it is the styreleder (LEDE) when there is no daglig leder.
+// The unit types in leaderCodes have their own: the styreleder (LEDE) of a
+// borettslag or eierseksjonssameie that has no daglig leder, the bostyrer
+// (BOBE) of a konkursbo, and the bestyrende reder (BEST) of a partsrederi,
+// or its daglig leder when the bestyrende reder is an organization.
 func leader(unitType string, groups []rollegruppe) (personIdentifier, code string) {
-	codes := []string{"DAGL", "INNH"}
-	if slices.Contains(styrelederUnitTypes, unitType) {
-		codes = []string{"DAGL", "LEDE"}
+	codes, ok := leaderCodes[unitType]
+	if !ok {
+		codes = defaultLeaderCodes
 	}
 	for _, code := range codes {
 		if personIdentifier := personWithRole(groups, code); personIdentifier != "" {

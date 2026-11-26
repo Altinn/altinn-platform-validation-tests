@@ -92,13 +92,25 @@ func fetchTilretteleggere(ctx context.Context, c *tenor.Client, role Role, perso
 	// candidate are kept.
 	var organizationNumbers []string
 	seen := map[string]bool{}
+	// The client each candidate was found through, with the client's leader.
+	clientOf := map[string]organizationCandidate{}
 	newCandidate := func(md tenor.Metadata) bool {
 		organizationNumber := tilretteleggerFromClient(md, role.Code)
-		if organizationNumber == "" || seen[organizationNumber] {
+		if organizationNumber == "" {
+			return false
+		}
+		client, _ := toOrganizationCandidate(md, PersonRole{})
+		if seen[organizationNumber] {
+			// A later client with a leader replaces one without, so the
+			// client's leader can be used too.
+			if clientOf[organizationNumber].person == "" && client.person != "" {
+				clientOf[organizationNumber] = client
+			}
 			return false
 		}
 		seen[organizationNumber] = true
 		organizationNumbers = append(organizationNumbers, organizationNumber)
+		clientOf[organizationNumber] = client
 		return true
 	}
 	if _, err := c.FetchManyFiltered(ctx, tenor.SourceBrreg, tenor.Exists(role.Field), candidateCount, newCandidate); err != nil {
@@ -120,6 +132,8 @@ func fetchTilretteleggere(ctx context.Context, c *tenor.Client, role Role, perso
 			continue
 		}
 		k.role = role.Name
+		client := clientOf[organizationNumber]
+		k.client, k.clientPerson, k.clientPersonRole = client.organizationIdentifier, client.person, client.personRole
 		tilretteleggere = append(tilretteleggere, k)
 	}
 	return tilretteleggere[:min(count, len(tilretteleggere))], nil

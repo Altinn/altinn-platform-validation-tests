@@ -123,7 +123,7 @@ func TestFindOrganizationsRequiresDagligLederInRegister(t *testing.T) {
 		v[0].PersonRole != "daglig-leder" || v[0].Person.PersonIdentifier != tenortest.LeaderSSN(1) || v[0].Person.PartyID != 701 {
 		t.Fatalf("organizations = %+v", v)
 	}
-	if !strings.Contains(log.String(), "Register (at22): 1 organizations from Tenor, or their person or hovedenhet, do not exist") {
+	if !strings.Contains(log.String(), "Register (at22): 1 organizations from Tenor, or their person, hovedenhet or client, do not exist") {
 		t.Errorf("log = %q", log.String())
 	}
 }
@@ -192,7 +192,7 @@ func TestFindOrganizationsUnderenheter(t *testing.T) {
 	})
 	var log bytes.Buffer
 	v, err = FindOrganizations(context.Background(), c, withoutHovedenhet, OrganizationQuery{Count: 3, Subunits: true, Env: "at23"}, &log)
-	if err != nil || len(v) != 0 || !strings.Contains(log.String(), "1 organizations from Tenor, or their person or hovedenhet, do not exist") {
+	if err != nil || len(v) != 0 || !strings.Contains(log.String(), "1 organizations from Tenor, or their person, hovedenhet or client, do not exist") {
 		t.Errorf("without hovedenhet in Register: organizations = %+v, err = %v, log = %q", v, err, log.String())
 	}
 }
@@ -276,7 +276,11 @@ func TestFindUnitType(t *testing.T) {
 	if code, err := FindUnitType("esek"); err != nil || code != "ESEK" {
 		t.Errorf("code = %q, err = %v", code, err)
 	}
-	if _, err := FindUnitType("SA"); !errors.Is(err, errs.Invalid) || !strings.Contains(err.Error(), "AS, ENK, ESEK, BRL, NUF") {
+	if code, err := FindUnitType("sær"); err != nil || code != "SÆR" {
+		t.Errorf("code = %q, err = %v", code, err)
+	}
+	// Underenheter are fetched with Subunits.
+	if _, err := FindUnitType("BEDR"); !errors.Is(err, errs.Invalid) || !strings.Contains(err.Error(), "AS, ASA, BA") {
 		t.Errorf("err = %v", err)
 	}
 }
@@ -310,6 +314,15 @@ func TestLeader(t *testing.T) {
 		{"styreleder in ESEK", "ESEK", `[` + board + `]`, "55555555555", "LEDE"},
 		{"DAGL before styreleder", "BRL", `[` + board + `,` + dagl("22222222222") + `]`, "22222222222", "DAGL"},
 		{"only board in AS", "AS", `[` + board + `]`, "", ""},
+		// A konkursbo has the bostyrer, and the konkursdebitor, which is an
+		// organization.
+		{"bostyrer in KBO", "KBO", `[{"type":{"kode":"BOBE"},"roller":[{"type":{"kode":"BOBE"},"person":{"foedselsnummer":"66666666666"},"fratraadt":"N"}]},
+			{"type":{"kode":"KDEB"},"roller":[{"type":{"kode":"KDEB"},"virksomhet":{"organisasjonsnummer":"900000004"}}]}]`, "66666666666", "BOBE"},
+		{"no bostyrer in AS", "AS", `[{"type":{"kode":"BOBE"},"roller":[{"type":{"kode":"BOBE"},"person":{"foedselsnummer":"66666666666"}}]}]`, "", ""},
+		{"bestyrende reder in PRE", "PRE", `[` + dagl("22222222222") + `,{"type":{"kode":"BEST"},"roller":[{"type":{"kode":"BEST"},"person":{"foedselsnummer":"88888888888"},"fratraadt":"N"}]}]`, "88888888888", "BEST"},
+		// A bestyrende reder that is an organization has no fødselsnummer.
+		{"DAGL when the bestyrende reder is an organization", "PRE", `[{"type":{"kode":"BEST"},"roller":[{"type":{"kode":"BEST"},"virksomhet":{"organisasjonsnummer":"900000005"}}]},` + dagl("22222222222") + `]`, "22222222222", "DAGL"},
+		{"no bestyrende reder in AS", "AS", `[{"type":{"kode":"BEST"},"roller":[{"type":{"kode":"BEST"},"person":{"foedselsnummer":"88888888888"}}]}]`, "", ""},
 		{"no roles", "AS", `[]`, "", ""},
 	}
 	for _, tt := range tests {
