@@ -36,10 +36,14 @@ const LUKK: Record<Sprak, string> = {
     [Sprak.Nynorsk]: "Lukk",
     [Sprak.Engelsk]: "Close",
 };
-const SOK_ETTER_TILGANGSPAKKER: Record<Sprak, string> = {
-    [Sprak.Bokmaal]: "Søk etter tilgangspakker",
-    [Sprak.Nynorsk]: "Søk etter tilgangspakkar",
-    [Sprak.Engelsk]: "Search for access packages",
+// Søkefeltet fikk nytt navn i altinn-access-management-frontend#2648, i AT23
+// først (18. november 2026): "Søk etter tilgangspakker" ble "Søk i
+// tilgangspakker", og "Search for access packages" ble "Search packages".
+// Matcher begge til endringen også er i TT02 og prod.
+const SOKEFELT_TILGANGSPAKKER: Record<Sprak, RegExp> = {
+    [Sprak.Bokmaal]: /^Søk (etter|i) tilgangspakker$/,
+    [Sprak.Nynorsk]: /^Søk (etter|i) tilgangspakkar$/,
+    [Sprak.Engelsk]: /^Search (for access )?packages$/,
 };
 
 // Knappen i pakkedetaljene, scopet til ett bestemt pakkenavn via dialogen, så
@@ -104,7 +108,7 @@ export class TilgangsstyringBrukerePom {
         await this.giFullmaktButton.click();
 
         const dialog = this.page.getByRole("dialog", { name: dialogTittel(this.sprak, navn) });
-        const sokefelt = dialog.getByRole("searchbox", { name: SOK_ETTER_TILGANGSPAKKER[this.sprak] });
+        const sokefelt = dialog.getByRole("searchbox", { name: SOKEFELT_TILGANGSPAKKER[this.sprak] });
         await sokefelt.click();
         await sokefelt.fill(tilgangspakke);
 

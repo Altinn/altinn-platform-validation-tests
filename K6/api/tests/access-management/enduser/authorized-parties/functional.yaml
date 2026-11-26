@@ -13,6 +13,12 @@ test_definitions:
       - environment: at22
       - environment: tt02
 
+  - test_file: dagl-av-hovedenhet-faar-ados-underenhet-i-aktoerlista.js
+    test_scope: enduser-authorized-parties
+    contexts:
+      - environment: at22
+      - environment: tt02
+
   - test_file: dagl-b-faar-hovedenhet-a-i-aktoerlista.js
     test_scope: enduser-authorized-parties
     contexts:

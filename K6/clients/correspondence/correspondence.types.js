@@ -288,6 +288,7 @@
  * @property {NotificationRecipientExt} customRecipient
  * @property {Array<CustomNotificationRecipientExt>|null} [customNotificationRecipients] Deprecated in Swagger; use customRecipient or customRecipients. Only the first list of recipients will be used. If not set, the notification will be sent to the recipient of the Correspondence
  * @property {boolean} overrideRegisteredContactInformation When set to true, only CustomRecipients will be used for notifications, overriding the default correspondence recipient. This flag can only be used when CustomRecipients is provided. Default value is false (use default contact info + custom recipients).
+ * @property {boolean} [useStaleContactInformation] When set to true, person recipients are notified using their contact information in the Common Contact Register (KRR) even if it has not been verified within the last 18 months. Only intended for service messages. Does not apply to organization recipients. Default value is false.
  */
 
 /**

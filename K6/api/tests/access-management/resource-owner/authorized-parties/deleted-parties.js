@@ -41,9 +41,9 @@ export default function (data) {
             // The fixtures only mean anything while they still sit on the side of the
             // window they were chosen for, so that is asserted before the parties are.
             check(null, {
-                [`${deletedInside.name} was deleted inside the ${retentionYears} year window`]:
+                "The party deleted inside the retention window is still inside it":
                     () => IsInsideRetentionWindow(deletedInside.deletedDate, retentionYears),
-                [`${deletedOutside.name} was deleted outside the ${retentionYears} year window`]:
+                "The party deleted outside the retention window is still outside it":
                     () => !IsInsideRetentionWindow(deletedOutside.deletedDate, retentionYears),
             });
 

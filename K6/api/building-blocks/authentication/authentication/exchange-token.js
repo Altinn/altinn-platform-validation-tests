@@ -33,12 +33,12 @@ export function ExchangeToken(
     );
 
     const succeed = check(res, {
-        [`ExchangeToken - status code is ${expectedStatus}`]: (r) =>
+        "ExchangeToken - status code is as expected": (r) =>
             r.status === expectedStatus,
     });
 
     if (!succeed) {
-        console.log(res.status);
+        console.log(`expected status ${expectedStatus}, got ${res.status}`);
         console.log(res.body);
         return null;
     }

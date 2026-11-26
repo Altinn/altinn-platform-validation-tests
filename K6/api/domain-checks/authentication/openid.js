@@ -112,7 +112,7 @@ function CheckEndpointsBelongToThisEnvironment(discovery, baseUrl) {
         const value = discovery?.[field];
 
         const present = check(discovery, {
-            [`CheckEndpointsBelongToThisEnvironment - ${field} is an absolute URL under this environment`]: () =>
+            "CheckEndpointsBelongToThisEnvironment - Every endpoint is an absolute URL under this environment": () =>
                 typeof value === "string" && value.startsWith(prefix),
         });
 
@@ -142,7 +142,7 @@ function CheckSupportedValuesAreListed(discovery) {
         const value = discovery?.[field];
 
         const listed = check(discovery, {
-            [`CheckSupportedValuesAreListed - ${field} is a non-empty list`]: () =>
+            "CheckSupportedValuesAreListed - Every supported-values field is a non-empty list": () =>
                 Array.isArray(value) && value.length > 0,
         });
 

@@ -66,10 +66,14 @@ export function AuthorizePost(
         // compiler cannot follow, so the type is restated here.
         const decided = /** @type {XacmlJsonResponseExternal|null} */ (response);
 
-        check(decided, {
-            [`AuthorizePost - decision is ${expectedDecision}`]: (b) =>
+        const asExpected = check(decided, {
+            "AuthorizePost - decision is as expected": (b) =>
                 b?.response?.[0]?.decision === expectedDecision,
         });
+
+        if (!asExpected) {
+            console.error(`AuthorizePost - expected decision ${expectedDecision}, got ${decided?.response?.[0]?.decision}`);
+        }
     }
 
     return response;

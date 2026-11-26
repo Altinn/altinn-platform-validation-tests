@@ -14,12 +14,12 @@ import { PolicyRightsDTO } from "../../../clients/resource-registry/types.js";
  *
  * @param {Array<PolicyRightsDTO>|null} rights - The rights returned by the API.
  * @param {Array<string>} expectedActions - The actions the policy asked for.
- * @param {string} operation - Name of the operation, used in the check name and logs.
+ * @param {string} operation - Name of the operation, used in the logs.
  * @returns {boolean} True if there is one right per action, false otherwise.
  */
 function CheckOneRightPerAction(rights, expectedActions, operation) {
     const success = check(rights, {
-        [`CheckOneRightPerAction - ${operation} returns one right per action`]: (response) =>
+        "CheckOneRightPerAction - One right is returned per action": (response) =>
             Array.isArray(response) && response.length === expectedActions.length,
     });
 
@@ -37,7 +37,7 @@ function CheckOneRightPerAction(rights, expectedActions, operation) {
  *
  * @param {Array<PolicyRightsDTO>|null} rights - The rights returned by the API.
  * @param {string} resourceId - The resource the rights were asked for.
- * @param {string} operation - Name of the operation, used in the check name and logs.
+ * @param {string} operation - Name of the operation, used in the logs.
  * @returns {boolean} True if every right is for the resource, false otherwise.
  */
 function CheckRightsForResource(rights, resourceId, operation) {
@@ -46,12 +46,12 @@ function CheckRightsForResource(rights, resourceId, operation) {
     ));
 
     const success = check(rights, {
-        [`CheckRightsForResource - Every right from ${operation} is for the expected resource`]: (response) =>
+        "CheckRightsForResource - Every right is for the expected resource": (response) =>
             Array.isArray(response) && response.length > 0 && foreign.length === 0,
     });
 
     if (!success) {
-        console.error(`CheckRightsForResource - expected every right to be for resource '${resourceId}'`);
+        console.error(`CheckRightsForResource - ${operation} expected every right to be for resource '${resourceId}'`);
         console.error(`CheckRightsForResource - rights for other resources: ${JSON.stringify(foreign.map((right) => right.resource))}`);
     }
 
@@ -63,7 +63,7 @@ function CheckRightsForResource(rights, resourceId, operation) {
  *
  * @param {Array<PolicyRightsDTO>|null} rights - The rights returned by the API.
  * @param {Array<string>} expectedActions - The actions the policy asked for.
- * @param {string} operation - Name of the operation, used in the check name and logs.
+ * @param {string} operation - Name of the operation, used in the logs.
  * @returns {boolean} True if every action is covered, false otherwise.
  */
 function CheckRightsCoverActions(rights, expectedActions, operation) {
@@ -71,7 +71,7 @@ function CheckRightsCoverActions(rights, expectedActions, operation) {
     const missing = expectedActions.filter((action) => !actions.includes(action));
 
     const success = check(rights, {
-        [`CheckRightsCoverActions - ${operation} covers every action the policy asked for`]: () =>
+        "CheckRightsCoverActions - The rights cover every action the policy asked for": () =>
             missing.length === 0,
     });
 
@@ -90,7 +90,7 @@ function CheckRightsCoverActions(rights, expectedActions, operation) {
  * @param {Array<PolicyRightsDTO>|null} rights - The rights returned by the API.
  * @param {Array<string>} expectedSubjects - The subject values the policy granted,
  * for instance role codes.
- * @param {string} operation - Name of the operation, used in the check name and logs.
+ * @param {string} operation - Name of the operation, used in the logs.
  * @returns {boolean} True if every right lists every subject, false otherwise.
  */
 function CheckRightsGrantSubjects(rights, expectedSubjects, operation) {
@@ -107,12 +107,12 @@ function CheckRightsGrantSubjects(rights, expectedSubjects, operation) {
     });
 
     const success = check(rights, {
-        [`CheckRightsGrantSubjects - Every right from ${operation} lists the expected subjects`]: (response) =>
+        "CheckRightsGrantSubjects - Every right lists the expected subjects": (response) =>
             Array.isArray(response) && response.length > 0 && incomplete.length === 0,
     });
 
     if (!success) {
-        console.error(`CheckRightsGrantSubjects - expected every right to list ${JSON.stringify(expectedSubjects)}`);
+        console.error(`CheckRightsGrantSubjects - ${operation} expected every right to list ${JSON.stringify(expectedSubjects)}`);
         console.error(`CheckRightsGrantSubjects - rights missing subjects: ${JSON.stringify(incomplete.map(subjectValues))}`);
     }
 
@@ -128,7 +128,7 @@ function CheckRightsGrantSubjects(rights, expectedSubjects, operation) {
  * @param {Array<PolicyRightsDTO>|null} rights - The rights returned by the API.
  * @param {Array<string>} expectedTypes - The subject attribute types expected,
  * for instance urn:altinn:rolecode and urn:altinn:accesspackage.
- * @param {string} operation - Name of the operation, used in the check name and logs.
+ * @param {string} operation - Name of the operation, used in the logs.
  * @returns {boolean} True if every right carries every type, false otherwise.
  */
 function CheckRightsSubjectTypes(rights, expectedTypes, operation) {
@@ -145,12 +145,12 @@ function CheckRightsSubjectTypes(rights, expectedTypes, operation) {
     });
 
     const success = check(rights, {
-        [`CheckRightsSubjectTypes - Every right from ${operation} carries the expected subject types`]: (response) =>
+        "CheckRightsSubjectTypes - Every right carries the expected subject types": (response) =>
             Array.isArray(response) && response.length > 0 && incomplete.length === 0,
     });
 
     if (!success) {
-        console.error(`CheckRightsSubjectTypes - expected every right to carry ${JSON.stringify(expectedTypes)}`);
+        console.error(`CheckRightsSubjectTypes - ${operation} expected every right to carry ${JSON.stringify(expectedTypes)}`);
         console.error(`CheckRightsSubjectTypes - rights missing types: ${JSON.stringify(incomplete.map(typesOf))}`);
     }
 

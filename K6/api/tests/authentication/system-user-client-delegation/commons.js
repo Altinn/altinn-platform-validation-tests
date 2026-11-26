@@ -1,11 +1,11 @@
-import { fail, group } from "k6";
+import { check, fail, group } from "k6";
 
 import { DeleteAgentSystemUserQueryBuilder, SystemUserClient as BffSystemUserClient } from "../../../../clients/access-management-bff/system-user/index.js";
 import { SystemUserAgentRequestClient } from "../../../../clients/access-management-bff/system-user-agent-request/index.js";
 import { EnterpriseTokenBuilder, EnterpriseTokenGenerator, PersonalTokenBuilder, PersonalTokenGenerator, uuidv4 } from "../../../../common-imports.js";
 import { fetchTestData, getItemFromList, lazy, requireEnv } from "../../../../helpers.js";
 import { AltinnScopes, CreateScopeString } from "../../../../scopes.js";
-import { CreateAgentRequestSystemUserBuilder, RegisterSystemRequestBuilder, RequestSystemUserBuildingBlocks, RequestSystemUserClient, SystemRegisterBuildingBlocks, SystemRegisterClient, SystemUserClientDelegationClient, SystemUserClientDelegationDomainChecks, SystemUserRequestDomainChecks } from "../../../authentication-imports.js";
+import { CreateAgentRequestSystemUserBuilder, RegisterSystemRequestBuilder, RequestSystemUserBuildingBlocks, RequestSystemUserClient, SystemRegisterBuildingBlocks, SystemRegisterClient, SystemUserClientDelegationBuildingBlocks, SystemUserClientDelegationClient, SystemUserClientDelegationDomainChecks, SystemUserRequestDomainChecks } from "../../../authentication-imports.js";
 import { DeleteAgentSystemUser, GetAgentSystemUsers } from "../../../building-blocks/access-management-bff/system-user/index.js";
 import { ApproveAgentRequest, GetAgentRequest } from "../../../building-blocks/access-management-bff/system-user-agent-request/index.js";
 import { pickVendor } from "../change-request-system-user/commons.js";
@@ -95,6 +95,25 @@ const ACCESS_PACKAGES_BY_ORG_TYPE = {
  * @property {string} systemUserId Identifier of the approved agent system user.
  * @property {string[]} accessPackages Urns of the access packages the agent system user was asked for, which decide which of the facilitator's clients are delegable.
  * @property {string} systemNamePrefix What the system was named with, which is what the teardown sweeps on.
+ */
+
+/**
+ * An agent system user in a breakpoint run, and where in its facilitator's client list it starts.
+ *
+ * @typedef {object} BreakpointAgent
+ * @property {number} facilitatorIndex Index into the facilitators of the arranged breakpoint.
+ * @property {string} systemUserId Identifier of the agent system user.
+ * @property {number} clientOffset Where in the facilitator's client list the agent system user starts.
+ */
+
+/**
+ * What a breakpoint run delegates with.
+ *
+ * @typedef {object} ArrangedBreakpoint
+ * @property {ArrangedAgentSystemUser[]} arranged Every agent system user the run made, for the teardown.
+ * @property {{facilitator: Facilitator, clientIds: string[]}[]} facilitators The facilitators and the clients they can delegate.
+ * @property {BreakpointAgent[]} agents The agent system users, round robin over the facilitators.
+ * @property {number} clientsPerAgent How many clients every agent system user is given before the run is done.
  */
 
 /**
@@ -212,17 +231,18 @@ export function getFacilitatorTokenOpts(facilitator) {
  *
  * @param {string} systemNamePrefix - What the run names the system it registers, which is also what the teardown sweeps up. Unique per test file, see the note on it in the caller.
  * @param {string|null} [orgType] - Draw only facilitators of this type, e.g. "revisor". Leave it out to draw from all of them, which is what a test that does not care which access packages it gets wants.
+ * @param {string|null} [orgNo] - Draw only this facilitator, for a test that needs one with many clients.
  * @returns {ArrangedAgentSystemUser[]} A single arranged facilitator, as a list so a test picks from it with getItemFromList like any other test data.
  */
-export function arrangeAgentSystemUser(systemNamePrefix, orgType = null) {
+export function arrangeAgentSystemUser(systemNamePrefix, orgType = null, orgNo = null) {
     requireEnv(["ENVIRONMENT", "BASE_URL", "AM_UI_BASE_URL"]);
 
     /** @type {Facilitator[]} */
     const candidates = fetchTestData(`authentication/system-user-client-delegation/${__ENV.ENVIRONMENT}.csv`)
-        .filter((/** @type {Facilitator} */ row) => orgType === null || row.orgType === orgType);
+        .filter((/** @type {Facilitator} */ row) => (orgType === null || row.orgType === orgType) && (orgNo === null || row.orgNo === orgNo));
 
     if (candidates.length === 0) {
-        fail(`cannot arrange an agent system user: no facilitator of type '${orgType}' in ${__ENV.ENVIRONMENT}`);
+        fail(`cannot arrange an agent system user: no facilitator matches type '${orgType}' and org '${orgNo}' in ${__ENV.ENVIRONMENT}`);
     }
 
     const facilitator = getItemFromList(candidates, randomize);
@@ -331,6 +351,73 @@ export function arrangeAgentSystemUser(systemNamePrefix, orgType = null) {
 }
 
 /**
+ * Arranges agent system users for a breakpoint run on facilitators with many clients.
+ *
+ * Every facilitator gets the same number of agent system users, and the run stops
+ * with fail() if one of them has fewer clients than it needs.
+ *
+ * @param {string} systemNamePrefix - What the run names the systems it registers.
+ * @param {string[]} orgNos - The facilitators to arrange on.
+ * @param {number} agentsPerFacilitator - How many agent system users each facilitator gets.
+ * @param {number} minClients - How many clients each facilitator must have available.
+ * @returns {ArrangedBreakpoint} The agent system users and the clients they can be given.
+ */
+export function arrangeBreakpoint(systemNamePrefix, orgNos, agentsPerFacilitator, minClients) {
+    const { clients, facilitatorTokenGenerator } = getClients();
+
+    const arranged = [];
+    const facilitators = [];
+
+    for (const orgNo of orgNos) {
+        const own = Array.from(
+            { length: agentsPerFacilitator },
+            () => arrangeAgentSystemUser(systemNamePrefix, null, orgNo)[0],
+        );
+
+        arranged.push(...own);
+
+        facilitatorTokenGenerator.setTokenGeneratorOptions(getFacilitatorTokenOpts(own[0].facilitator));
+
+        // Asked for the same access packages, so the facilitator's agent system users have the same clients available.
+        const available = SystemUserClientDelegationBuildingBlocks.GetAvailableClients(clients.facilitator.clientDelegationClient, own[0].systemUserId);
+        const clientIds = (available?.data ?? []).map((client) => client.clientId);
+
+        if (!check(clientIds, { "the facilitator has enough clients available": (ids) => ids.length >= minClients })) {
+            cleanupArranged(arranged);
+
+            fail(`cannot run the breakpoint: ${orgNo} has ${clientIds.length} clients available, needs ${minClients}`);
+        }
+
+        facilitators.push({ facilitator: own[0].facilitator, clientIds });
+    }
+
+    // Round robin over the facilitators first, so consecutive iterations go to different facilitators.
+    /** @type {BreakpointAgent[]} */
+    const agents = [];
+
+    for (let slot = 0; slot < agentsPerFacilitator; slot++) {
+        for (let f = 0; f < orgNos.length; f++) {
+            const clientCount = facilitators[f].clientIds.length;
+
+            agents.push({
+                facilitatorIndex: f,
+                systemUserId: arranged[f * agentsPerFacilitator + slot].systemUserId,
+                // Each agent starts in its own part of the client list, so agents of the same
+                // facilitator are not given the same client at the same time.
+                clientOffset: Math.floor(slot * clientCount / agentsPerFacilitator),
+            });
+        }
+    }
+
+    return {
+        arranged,
+        facilitators,
+        agents,
+        clientsPerAgent: Math.min(...facilitators.map((f) => f.clientIds.length)),
+    };
+}
+
+/**
  * Removes what a test arranged.
  *
  * Call from a test's teardown with what its setup returned, so a run does not
@@ -357,11 +444,16 @@ export function cleanupArranged(arranged) {
             );
 
             SystemRegisterBuildingBlocks.VendorDelete(apiClients.vendor.systemRegisterClient, arrangement.systemId);
+        }
 
-            // The delete above takes the system this run arranged. The sweep takes
-            // whatever an earlier run left in this vendor's register, which is what
-            // happens when the arrange itself broke: k6 skips the teardown when the
-            // setup gives up.
+        // The deletes above take the systems this run arranged. The sweep takes
+        // whatever an earlier run left in the vendor's register, which is what
+        // happens when the arrange itself broke: k6 skips the teardown when the
+        // setup gives up. It runs after the loop, so it never takes a system the
+        // loop has yet to delete when several arrangements share a vendor.
+        for (const arrangement of arranged ?? []) {
+            vendorTokenGenerator.setTokenGeneratorOptions(getVendorTokenOpts(arrangement.vendorOrgNo));
+
             sweepRegisteredSystems(apiClients.vendor.systemRegisterClient, arrangement.vendorOrgNo, arrangement.systemNamePrefix, apiClients.vendor.requestSystemUserClient);
         }
     });

@@ -42,12 +42,12 @@ export function GetAuthorizedPartiesRefused(
     let problem = null;
 
     const refused = check(res, {
-        [`GetAuthorizedPartiesRefused - status code is ${expectedStatus}`]: (r) =>
+        "GetAuthorizedPartiesRefused - status code is as expected": (r) =>
             r.status === expectedStatus,
     });
 
     if (!refused) {
-        console.log(res.status);
+        console.log(`expected status ${expectedStatus}, got ${res.status}`);
         console.log(res.body);
 
         return problem;

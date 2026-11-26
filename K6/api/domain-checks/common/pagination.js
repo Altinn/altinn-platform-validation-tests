@@ -15,12 +15,12 @@ import { check } from "k6";
  * Checks that a paginated response has the fields the pagination relies on.
  *
  * @param {PaginatedResponse|null} paginated - The paginated response.
- * @param {string} operation - Name of the operation, used in the check name and logs.
+ * @param {string} operation - Name of the operation, used in the logs.
  * @returns {boolean} True if the response is shaped as expected, false otherwise.
  */
 function CheckPaginatedShape(paginated, operation) {
     const success = check(paginated, {
-        [`CheckPaginatedShape - ${operation} returns data and links`]: (response) => {
+        "CheckPaginatedShape - The page has data and links": (response) => {
             return response !== null &&
                 Array.isArray(response.data) &&
                 response.links !== null &&
@@ -39,12 +39,12 @@ function CheckPaginatedShape(paginated, operation) {
  * Checks that a paginated response holds at least one item.
  *
  * @param {PaginatedResponse|null} paginated - The paginated response.
- * @param {string} operation - Name of the operation, used in the check name and logs.
+ * @param {string} operation - Name of the operation, used in the logs.
  * @returns {boolean} True if the response holds items, false otherwise.
  */
 function CheckPaginatedNotEmpty(paginated, operation) {
     const success = check(paginated, {
-        [`CheckPaginatedNotEmpty - ${operation} returns at least one item`]: (response) => {
+        "CheckPaginatedNotEmpty - The page has at least one item": (response) => {
             return Array.isArray(response?.data) && response.data.length > 0;
         },
     });
@@ -61,12 +61,12 @@ function CheckPaginatedNotEmpty(paginated, operation) {
  * Checks that more than the first page was returned.
  *
  * @param {number} pages - Number of pages fetched, including the first one.
- * @param {string} operation - Name of the operation, used in the check name and logs.
+ * @param {string} operation - Name of the operation, used in the logs.
  * @returns {boolean} True if more than one page was returned, false otherwise.
  */
 function CheckMultiplePages(pages, operation) {
     const success = check(pages, {
-        [`CheckMultiplePages - ${operation} returns more than one page`]: (count) => count > 1,
+        "CheckMultiplePages - More than one page is returned": (count) => count > 1,
     });
 
     if (!success) {
@@ -82,7 +82,7 @@ function CheckMultiplePages(pages, operation) {
  *
  * @param {PaginatedResponse|null} paginated - The paginated response.
  * @param {string} expectedSystemId - The system the items were asked for.
- * @param {string} itemName - What the items are, used in the check name and logs.
+ * @param {string} itemName - What the items are, used in the logs.
  * @returns {boolean} True if every item belongs to the system, false otherwise.
  */
 function CheckItemsBelongToSystem(paginated, expectedSystemId, itemName) {
@@ -90,7 +90,7 @@ function CheckItemsBelongToSystem(paginated, expectedSystemId, itemName) {
     const foreign = items.filter((item) => item.systemId !== expectedSystemId);
 
     const success = check(paginated, {
-        [`CheckItemsBelongToSystem - Every ${itemName} belongs to the expected system`]: () =>
+        "CheckItemsBelongToSystem - Every item belongs to the expected system": () =>
             items.length > 0 && foreign.length === 0,
     });
 
@@ -108,18 +108,18 @@ function CheckItemsBelongToSystem(paginated, expectedSystemId, itemName) {
  *
  * @param {PaginatedResponse|null} paginated - The paginated response.
  * @param {string} expectedBaseUrl - The prefix the next link is expected to start with.
- * @param {string} operation - Name of the operation, used in the check name and logs.
+ * @param {string} operation - Name of the operation, used in the logs.
  * @returns {boolean} True if the next link is usable, false otherwise.
  */
 function CheckNextLink(paginated, expectedBaseUrl, operation) {
     const nextLink = paginated?.links?.next;
 
     const success = check(paginated, {
-        [`CheckNextLink - ${operation} returns a next link`]: () =>
+        "CheckNextLink - The page has a next link": () =>
             typeof nextLink === "string" && nextLink.length > 0,
-        [`CheckNextLink - ${operation} next link is https`]: () =>
+        "CheckNextLink - The next link is https": () =>
             typeof nextLink === "string" && nextLink.startsWith("https://"),
-        [`CheckNextLink - ${operation} next link points at this environment`]: () =>
+        "CheckNextLink - The next link points at this environment": () =>
             typeof nextLink === "string" && nextLink.startsWith(expectedBaseUrl),
     });
 
@@ -138,14 +138,14 @@ function CheckNextLink(paginated, expectedBaseUrl, operation) {
  * a next link there would send a caller to a page that cannot exist.
  *
  * @param {PaginatedResponse|null} paginated - The paginated response.
- * @param {string} operation - Name of the operation, used in the check name and logs.
+ * @param {string} operation - Name of the operation, used in the logs.
  * @returns {boolean} True if there is no next link, false otherwise.
  */
 function CheckNoNextLink(paginated, operation) {
     const nextLink = paginated?.links?.next;
 
     const success = check(paginated, {
-        [`CheckNoNextLink - ${operation} hands out no next link`]: () =>
+        "CheckNoNextLink - The page hands out no next link": () =>
             nextLink === null || nextLink === undefined || nextLink === "",
     });
 
@@ -167,12 +167,12 @@ function CheckNoNextLink(paginated, operation) {
  *
  * @param {number} distinctItems - Distinct items seen across all pages.
  * @param {number} firstPageItems - Items on the first page.
- * @param {string} operation - Name of the operation, used in the check name and logs.
+ * @param {string} operation - Name of the operation, used in the logs.
  * @returns {boolean} True if paging reached items beyond the first page, false otherwise.
  */
 function CheckPagesHoldDistinctItems(distinctItems, firstPageItems, operation) {
     const success = check(distinctItems, {
-        [`CheckPagesHoldDistinctItems - ${operation} pages hold items the first page did not`]: (count) =>
+        "CheckPagesHoldDistinctItems - The pages hold items the first page did not": (count) =>
             count > firstPageItems,
     });
 
@@ -192,12 +192,12 @@ function CheckPagesHoldDistinctItems(distinctItems, firstPageItems, operation) {
  * says which listing was stuck.
  *
  * @param {string|null} repeatedUrl - The URL that ended the walk by repeating, or null.
- * @param {string} operation - Name of the operation, used in the check name and logs.
+ * @param {string} operation - Name of the operation, used in the logs.
  * @returns {boolean} True if no next link repeated, false otherwise.
  */
 function CheckNextLinksDoNotRepeat(repeatedUrl, operation) {
     const success = check(repeatedUrl, {
-        [`CheckNextLinksDoNotRepeat - ${operation} never hands out the same next link twice`]: (url) =>
+        "CheckNextLinksDoNotRepeat - The walk is never handed the same next link twice": (url) =>
             url === null,
     });
 
@@ -218,12 +218,12 @@ function CheckNextLinksDoNotRepeat(repeatedUrl, operation) {
  *
  * @param {string|null} failedUrl - The URL that did not answer 200, or null.
  * @param {number|null} failedStatus - The status it answered with, or null.
- * @param {string} operation - Name of the operation, used in the check name and logs.
+ * @param {string} operation - Name of the operation, used in the logs.
  * @returns {boolean} True if every page answered, false otherwise.
  */
 function CheckEveryPageLoaded(failedUrl, failedStatus, operation) {
     const success = check(failedUrl, {
-        [`CheckEveryPageLoaded - ${operation} answers every page of the walk`]: (url) =>
+        "CheckEveryPageLoaded - Every page of the walk answers": (url) =>
             url === null,
     });
 

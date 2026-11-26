@@ -1,4 +1,4 @@
-export { CreateData, DeleteData, GetData, GetDataElements, UpdateData, UpdateDataElement, UpdateFileScanStatus } from "./data.js";
+export { CreateData, DeleteData, GetData, GetDataElements, GetDataVersion, UpdateData, UpdateDataElement, UpdateFileScanStatus } from "./data.js";
 export { LockDataElement, UnlockDataElement } from "./data-lock.js";
 export { GetApplication } from "./get-application.js";
 export { GetApplications } from "./get-applications.js";

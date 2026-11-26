@@ -61,7 +61,7 @@ function CheckRequestCreated(request, expected) {
  */
 function CheckRequestStatus(request, expectedStatus) {
     const success = check(request, {
-        [`CheckRequestStatus - Request has status '${expectedStatus}'`]: (created) =>
+        "CheckRequestStatus - Request has the expected status": (created) =>
             created?.status === expectedStatus,
     });
 
