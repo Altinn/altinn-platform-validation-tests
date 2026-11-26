@@ -1,4 +1,5 @@
-// Package playwright reads the JSON report from Playwright.
+// Package playwright reads the reports from Playwright: the JSON report for
+// notifications and the JUnit report for metrics.
 package playwright
 
 import (

@@ -1,0 +1,33 @@
+<testsuites id="" name="" tests="5" failures="1" skipped="1" errors="1" time="60.5">
+<testsuite name="apps/innsending.spec.ts" timestamp="2026-10-30T10:35:18.886Z" hostname="at23-chromium-bokmål" tests="2" failures="0" skipped="1" time="20.91" errors="0">
+<testcase name="Bruker sender inn skjema" classname="apps/innsending.spec.ts" time="20.91">
+<system-out>
+<![CDATA[
+[[ATTACHMENT|test-results/apps-innsending-chromium/trace.zip]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Bruker sletter skjema" classname="apps/innsending.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+</testsuite>
+<testsuite name="apps/innsending.spec.ts" timestamp="2026-10-30T10:35:18.886Z" hostname="at23-edge-bokmål" tests="2" failures="1" skipped="0" time="35.2" errors="0">
+<testcase name="Bruker sender inn skjema" classname="apps/innsending.spec.ts" time="30.1">
+<failure message="innsending.spec.ts:12:5 Bruker sender inn skjema" type="FAILURE">
+<![CDATA[  Error: expect(locator).toBeVisible() failed
+]]>
+</failure>
+</testcase>
+<testcase name="Bruker sletter skjema" classname="apps/innsending.spec.ts" time="5.1">
+</testcase>
+</testsuite>
+<testsuite name="innlogging/dyplenke.spec.ts" timestamp="2026-10-30T10:35:18.886Z" hostname="at23-edge-bokmål" tests="1" failures="0" skipped="0" time="4.4" errors="1">
+<testcase name="Dyplenke › åpner innboksen" classname="innlogging/dyplenke.spec.ts" time="4.4">
+<error message="dyplenke.spec.ts:8:5 Dyplenke › åpner innboksen" type="ERROR">
+<![CDATA[  Error: page.goto: net::ERR_ABORTED at https://af.at23.altinn.cloud/
+]]>
+</error>
+</testcase>
+</testsuite>
+</testsuites>

@@ -19,6 +19,7 @@ recipe for each file that is made with testudo today.
 - [Output](#output)
 - [API](#api)
 - [notify playwright](#notify-playwright)
+- [metrics playwright](#metrics-playwright)
 - [Recipes for K6 setup](#recipes-for-k6-setup)
 - [What testudo does not do](#what-testudo-does-not-do)
 - [Development](#development)
@@ -293,6 +294,63 @@ report is missing or no tests ran, the message says that the run did not start.
 
 The message is sent to the webhook in `SLACK_WEBHOOK_URL`.
 
+## metrics playwright
+
+Pushes the result of a Playwright run to the Prometheus Pushgateway, for the
+Playwright dashboards and alerts. It does what
+[helpers/junitparser](../junitparser) does, and is meant to replace it in the
+Playwright image.
+
+```bash
+testudo metrics playwright --env at23 --report test-results.xml --dry-run
+```
+```
+# HELP playwright_test_run_status Status of the latest Playwright test run (0=passed,1=failed)
+# TYPE playwright_test_run_status gauge
+playwright_test_run_status{deploy_env="at23"} 1
+# HELP playwright_tests_failed_total Total number of failed tests in the suite (failures + errors)
+# TYPE playwright_tests_failed_total gauge
+playwright_tests_failed_total{browser="chromium",deploy_env="at23",language="bokmål",suite="apps/innsending.spec.ts"} 0
+playwright_tests_failed_total{browser="edge",deploy_env="at23",language="bokmål",suite="apps/innsending.spec.ts"} 1
+...
+```
+
+testudo reads the JUnit report, which has one suite per spec file and project.
+The metrics are pushed under the job `playwright_tests` and the grouping key
+`environment`, and replace what the Pushgateway has for that job and
+environment. A failed push is tried again for about a minute.
+
+| Metric | Labels | Value |
+| --- | --- | --- |
+| `playwright_test_run_status` | `deploy_env` | 0 if all tests passed, 1 if at least one failed. A report without tests counts as passed, and testudo logs it. |
+| `playwright_test_run_timestamp_seconds` | `deploy_env` | When the run ended, as a Unix timestamp. |
+| `playwright_tests_total`, `playwright_tests_passed`, `playwright_tests_failed_total`, `playwright_tests_skipped_total` | `suite`, `browser`, `language`, `deploy_env` | Number of tests in the spec file. Failed counts both failures and errors. |
+| `playwright_suite_duration_seconds` | `suite`, `browser`, `language`, `deploy_env` | Duration of the spec file in seconds. |
+| `playwright_test_status` | `suite`, `test`, `browser`, `language`, `deploy_env` | 0 passed, 1 failed, 2 skipped. |
+| `playwright_test_duration_seconds` | `suite`, `test`, `status`, `browser`, `language`, `deploy_env` | Duration of the test in seconds. |
+
+`browser` and `language` come from the project name, which
+[playwright.config.ts](../../playwright/playwright.config.ts) sets to
+`<environment>-<browser>-<language>`, for example `at23-chromium-bokmål`. Only
+the language may contain hyphens. A part that is missing gives `unknown`, and
+testudo logs the project name. A spec file that runs in two browsers has two
+series, so a panel or alert that does not sum over `browser` and `language`
+gets one per browser.
+
+`deploy_env` is `--env`, not the environment in the project name. testudo logs
+a project for another environment.
+
+testudo exits with code 53 when at least one test failed, after the metrics are
+pushed, as junitparser does. The script that runs Playwright in the cluster
+reads it.
+
+| Flag | Default | Description |
+| --- | --- | --- |
+| `--env` | `$DEPLOY_ENV` | Environment the tests ran against: the label `deploy_env` and the grouping key `environment`. |
+| `--report` | `test-results.xml` | Path to the Playwright JUnit report. |
+| `--pushgateway-url` | `http://prometheus-pushgateway.monitoring:9091` | URL to the Pushgateway. |
+| `--dry-run` | | Prints the metrics in the Prometheus text format instead of pushing them. |
+
 ## Recipes for K6 setup
 
 Run these from `helpers/testudo`, with testudo installed by `make install`, or
@@ -481,7 +539,8 @@ make fmt      # formats the code
 | `internal/register/` | Register client. `registertest/` has fakes for tests. |
 | `internal/maskinporten/`, `internal/platformtoken/` | Tokens for Tenor and Register. |
 | `internal/config/` | Reads `~/.testudo.yaml` and environment variables. |
-| `internal/playwright/`, `internal/slack/` | Reading the Playwright report and sending to Slack, for `notify playwright`. |
+| `internal/playwright/`, `internal/slack/` | Reading the Playwright reports, and sending to Slack for `notify playwright`. |
+| `internal/metrics/` | The Prometheus metrics and the push to the Pushgateway, for `metrics playwright`. |
 
 The code is in English. Words from the domain that have no good English
 equivalent stay in Norwegian, for example hovedenhet, underenhet, daglig leder
