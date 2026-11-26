@@ -63,11 +63,15 @@ TOKEN_GENERATOR_PASSWORD: '...'
 at23:                                   # one section per environment: at22, at23, tt02, yt01
   API_BASE_URL: 'https://platform.at23.altinn.cloud'
   REGISTER_SUBSCRIPTION_KEY: '...'
+
+selfservice:                            # the master client that manages the other Maskinporten clients
+  MASKINPORTEN_CLIENT_ID: '...'
+  MASKINPORTEN_JWK: '{"kty":"RSA",...}'  # or MASKINPORTEN_CLIENT_PEM and MASKINPORTEN_KID, as in K6
 ```
 
 | Key | Used for |
 | --- | --- |
-| `MASKINPORTEN_CLIENT_ID`, `MASKINPORTEN_JWK` | Token for Tenor, with the scope `skatteetaten:testnorge/testdata.read`. |
+| `MASKINPORTEN_CLIENT_ID`, `MASKINPORTEN_JWK` | Token for Tenor, with the scope `skatteetaten:testnorge/testdata.read`. Instead of the JWK, the key can be `MASKINPORTEN_CLIENT_PEM` (PKCS#8 or PKCS#1) with `MASKINPORTEN_KID`. |
 | `TOKEN_GENERATOR_USERNAME`, `TOKEN_GENERATOR_PASSWORD` | Platform access token for Register, from the test token generator. |
 | `API_BASE_URL` | Register for the environment. |
 | `REGISTER_SUBSCRIPTION_KEY` | APIM subscription key for Register. `<ENV>_REGISTER_SUBSCRIPTION_KEY` (for example `AT23_REGISTER_SUBSCRIPTION_KEY`) works too. |
@@ -77,6 +81,12 @@ A value is taken from the environment variable with the same name first, then
 from the section for `--env`, then from the top of the file. The same file can
 therefore be used in CI, where the values come from secrets as environment
 variables.
+
+The `selfservice` section is read on its own, with the scope
+`idporten:dcr.read`. It never falls back to the top-level
+`MASKINPORTEN_CLIENT_ID` and `MASKINPORTEN_JWK`, and its environment variables
+are `SELFSERVICE_MASKINPORTEN_CLIENT_ID` and `SELFSERVICE_MASKINPORTEN_JWK`, or
+`SELFSERVICE_MASKINPORTEN_CLIENT_PEM` and `SELFSERVICE_MASKINPORTEN_KID`.
 
 ## How it picks parties
 
@@ -276,6 +286,37 @@ report is missing or no tests ran, the message says that the run did not start.
 | `--dry-run` | | Prints the message instead of sending it. |
 
 The message is sent to the webhook in `SLACK_WEBHOOK_URL`.
+
+## maskinporten keys
+
+Lists the keys on the Maskinporten clients the tests use, and how many days are
+left until each expires. The clients are read from Digdir's self-service API
+with the master client in the `selfservice` section of the configuration.
+
+```bash
+testudo maskinporten keys
+```
+```
+CLIENT ID                             NAME                ORG        USED BY                                     KID      EXPIRES     DAYS LEFT
+89e4066f-3d32-4a47-9259-4752f9041a35  tenor-autorisasjon  991825827  Playwright MASKINPORTEN_JWK, testudo Tenor  d26b...  2027-02-26  92
+```
+
+`--json` prints JSON. The clients are listed in `keyClients` in
+`cmd/maskinporten.go`. The master client only sees Digdir's clients, so the
+clients for 310149942 and 313175650 are not there yet.
+
+`testudo serve` has the same keys as a Prometheus Gauge on `GET /metrics`, with
+one series per key and the labels `client_id`, `org`, `used_by` and `kid`. The
+client name is left out, since it is free text. The value is when the key
+expires, so days left is computed in the query, and the API is asked at most
+every five minutes:
+
+```promql
+(maskinporten_client_key_expiry_timestamp_seconds - time()) / 86400
+```
+
+If the API cannot be read, the scrape fails, so it shows up as `up == 0`
+rather than as a metric that silently stops.
 
 ## Recipes for K6 setup
 

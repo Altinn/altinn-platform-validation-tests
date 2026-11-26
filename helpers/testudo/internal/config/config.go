@@ -71,6 +71,20 @@ func For(env string) func(string) string {
 	}
 }
 
+// Namespace returns a lookup for values that belong to one client and must
+// not be mixed up with the shared values of the same name. A value is taken
+// from the environment variable <NAME>_<KEY>, e.g. SELFSERVICE_MASKINPORTEN_JWK,
+// then from the section name in the config file. There is no fallback to the
+// top level or to the variable without the prefix.
+func Namespace(name string) func(string) string {
+	return func(k string) string {
+		if v, ok := os.LookupEnv(strings.ToUpper(name) + "_" + k); ok {
+			return v
+		}
+		return viper.GetString(name + "." + k)
+	}
+}
+
 // WithHint adds where the value can be set, when the configuration is missing
 // something.
 func WithHint(err error) error {

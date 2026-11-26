@@ -8,8 +8,10 @@ import (
 	"crypto/rand"
 	"crypto/rsa"
 	"crypto/sha256"
+	"crypto/x509"
 	"encoding/base64"
 	"encoding/json"
+	"encoding/pem"
 	"errors"
 	"fmt"
 	"math/big"
@@ -234,6 +236,47 @@ func TestParsePrivateKeyJWK(t *testing.T) {
 	}
 }
 
+func testPKCS8PEM(key *rsa.PrivateKey) string {
+	der, _ := x509.MarshalPKCS8PrivateKey(key)
+	return string(pem.EncodeToMemory(&pem.Block{Type: "PRIVATE KEY", Bytes: der}))
+}
+
+func TestParsePrivateKeyPEM(t *testing.T) {
+	key := testKey()
+	pkcs1 := string(pem.EncodeToMemory(&pem.Block{Type: "RSA PRIVATE KEY", Bytes: x509.MarshalPKCS1PrivateKey(key)}))
+
+	for name, s := range map[string]string{
+		"PKCS#8":        testPKCS8PEM(key),
+		"PKCS#1":        pkcs1,
+		"flattened \\n": strings.ReplaceAll(testPKCS8PEM(key), "\n", `\n`),
+		"folded YAML":   strings.ReplaceAll(testPKCS8PEM(key), "\n", " "),
+	} {
+		got, err := ParsePrivateKeyPEM(s, "kid-1")
+		if err != nil {
+			t.Errorf("%s: %v", name, err)
+			continue
+		}
+		if kid, _ := got.KeyID(); kid != "kid-1" || !exportRSA(t, got).Equal(key) {
+			t.Errorf("%s: kid = %q, equal = %v", name, kid, exportRSA(t, got).Equal(key))
+		}
+	}
+
+	ec, _ := ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
+	ecDER, _ := x509.MarshalPKCS8PrivateKey(ec)
+	publicDER, _ := x509.MarshalPKIXPublicKey(&key.PublicKey)
+
+	for name, s := range map[string]string{
+		"not pem":    "-----BEGIN nothing",
+		"EC key":     string(pem.EncodeToMemory(&pem.Block{Type: "PRIVATE KEY", Bytes: ecDER})),
+		"public key": string(pem.EncodeToMemory(&pem.Block{Type: "PUBLIC KEY", Bytes: publicDER})),
+		"broken DER": string(pem.EncodeToMemory(&pem.Block{Type: "PRIVATE KEY", Bytes: []byte("x")})),
+	} {
+		if _, err := ParsePrivateKeyPEM(s, "k"); !errors.Is(err, errs.Invalid) {
+			t.Errorf("%s: err = %v", name, err)
+		}
+	}
+}
+
 func TestMaskinportenConfigFrom(t *testing.T) {
 	key := testKey()
 
@@ -247,10 +290,23 @@ func TestMaskinportenConfigFrom(t *testing.T) {
 		t.Errorf("cfg = %+v", cfg)
 	}
 
+	cfg, err = ConfigFrom(func(k string) string {
+		return map[string]string{"MASKINPORTEN_CLIENT_ID": "c", "MASKINPORTEN_CLIENT_PEM": testPKCS8PEM(key), "MASKINPORTEN_KID": "pem-kid"}[k]
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if kid, _ := cfg.JWK.KeyID(); kid != "pem-kid" || !exportRSA(t, cfg.JWK).Equal(key) {
+		t.Errorf("cfg from PEM = %+v", cfg)
+	}
+
 	for name, env := range map[string]map[string]string{
 		"without client id": {"MASKINPORTEN_JWK": testJWK(key, "k")},
-		"without jwk":       {"MASKINPORTEN_CLIENT_ID": "c"},
+		"without key":       {"MASKINPORTEN_CLIENT_ID": "c"},
 		"invalid jwk":       {"MASKINPORTEN_CLIENT_ID": "c", "MASKINPORTEN_JWK": "{"},
+		"pem without kid":   {"MASKINPORTEN_CLIENT_ID": "c", "MASKINPORTEN_CLIENT_PEM": testPKCS8PEM(key)},
+		"both jwk and pem": {"MASKINPORTEN_CLIENT_ID": "c", "MASKINPORTEN_JWK": testJWK(key, "k"),
+			"MASKINPORTEN_CLIENT_PEM": testPKCS8PEM(key), "MASKINPORTEN_KID": "k"},
 	} {
 		if _, err := ConfigFrom(func(k string) string { return env[k] }); !errors.Is(err, errs.Invalid) {
 			t.Errorf("%s: err = %v", name, err)

@@ -6,11 +6,15 @@ package maskinporten
 import (
 	"context"
 	"crypto/rsa"
+	"crypto/x509"
+	"encoding/base64"
 	"encoding/json"
+	"encoding/pem"
 	"fmt"
 	"io"
 	"net/http"
 	"net/url"
+	"regexp"
 	"strings"
 	"sync"
 	"time"
@@ -44,23 +48,95 @@ type Config struct {
 	TokenURL string
 }
 
-// ConfigFrom reads MASKINPORTEN_CLIENT_ID and MASKINPORTEN_JWK with
-// lookup, e.g. os.Getenv or viper.GetString.
+// ConfigFrom reads MASKINPORTEN_CLIENT_ID and the private key with lookup,
+// e.g. os.Getenv or viper.GetString. The key is either MASKINPORTEN_JWK, or
+// MASKINPORTEN_CLIENT_PEM with MASKINPORTEN_KID, as in K6.
 func ConfigFrom(lookup func(string) string) (Config, error) {
 	cfg := Config{ClientID: lookup("MASKINPORTEN_CLIENT_ID")}
 	if cfg.ClientID == "" {
 		return cfg, fmt.Errorf("%w: MASKINPORTEN_CLIENT_ID is missing", errs.Invalid)
 	}
-	jwkText := lookup("MASKINPORTEN_JWK")
-	if jwkText == "" {
-		return cfg, fmt.Errorf("%w: MASKINPORTEN_JWK is missing", errs.Invalid)
+	jwkText, pemText, kid := lookup("MASKINPORTEN_JWK"), lookup("MASKINPORTEN_CLIENT_PEM"), lookup("MASKINPORTEN_KID")
+	switch {
+	case jwkText != "" && pemText != "":
+		return cfg, fmt.Errorf("%w: set either MASKINPORTEN_JWK or MASKINPORTEN_CLIENT_PEM, not both", errs.Invalid)
+	case jwkText != "":
+		key, err := ParsePrivateKeyJWK(jwkText)
+		if err != nil {
+			return cfg, fmt.Errorf("MASKINPORTEN_JWK: %w", err)
+		}
+		cfg.JWK = key
+	case pemText != "":
+		if kid == "" {
+			return cfg, fmt.Errorf("%w: MASKINPORTEN_KID is missing, it is needed with MASKINPORTEN_CLIENT_PEM", errs.Invalid)
+		}
+		key, err := ParsePrivateKeyPEM(pemText, kid)
+		if err != nil {
+			return cfg, fmt.Errorf("MASKINPORTEN_CLIENT_PEM: %w", err)
+		}
+		cfg.JWK = key
+	default:
+		return cfg, fmt.Errorf("%w: MASKINPORTEN_JWK or MASKINPORTEN_CLIENT_PEM is missing", errs.Invalid)
 	}
-	key, err := ParsePrivateKeyJWK(jwkText)
-	if err != nil {
-		return cfg, fmt.Errorf("MASKINPORTEN_JWK: %w", err)
-	}
-	cfg.JWK = key
 	return cfg, nil
+}
+
+// ParsePrivateKeyPEM reads a private RSA key in PEM format, PKCS#8 or PKCS#1,
+// and gives it kid. Literal \n is read as a line break, since secret stores
+// and .env files sometimes flatten the newlines.
+var pemRe = regexp.MustCompile(`(?s)-----BEGIN ([A-Z0-9 ]+)-----(.*?)-----END ([A-Z0-9 ]+)-----`)
+
+// decodePEM reads the first PEM block in s. The line breaks in the body do
+// not matter, so a PEM where they have become spaces (a multi-line quoted
+// YAML string) or literal \n is read too.
+func decodePEM(s string) (*pem.Block, error) {
+	m := pemRe.FindStringSubmatch(s)
+	if m == nil || m[1] != m[3] {
+		return nil, fmt.Errorf("%w: not a PEM (-----BEGIN ...)", errs.Invalid)
+	}
+	body := strings.Join(strings.Fields(strings.ReplaceAll(m[2], `\n`, "\n")), "")
+	der, err := base64.StdEncoding.DecodeString(body)
+	if err != nil {
+		return nil, fmt.Errorf("%w: PEM: %v", errs.Invalid, err)
+	}
+	return &pem.Block{Type: m[1], Bytes: der}, nil
+}
+
+func ParsePrivateKeyPEM(s, kid string) (jwk.Key, error) {
+	block, err := decodePEM(s)
+	if err != nil {
+		return nil, err
+	}
+	var raw *rsa.PrivateKey
+	switch block.Type {
+	case "PRIVATE KEY":
+		parsed, err := x509.ParsePKCS8PrivateKey(block.Bytes)
+		if err != nil {
+			return nil, fmt.Errorf("%w: PEM: %v", errs.Invalid, err)
+		}
+		var ok bool
+		if raw, ok = parsed.(*rsa.PrivateKey); !ok {
+			return nil, fmt.Errorf("%w: PEM must be an RSA key, is %T", errs.Invalid, parsed)
+		}
+	case "RSA PRIVATE KEY":
+		var err error
+		if raw, err = x509.ParsePKCS1PrivateKey(block.Bytes); err != nil {
+			return nil, fmt.Errorf("%w: PEM: %v", errs.Invalid, err)
+		}
+	default:
+		return nil, fmt.Errorf("%w: PEM must be a private key, is %q", errs.Invalid, block.Type)
+	}
+	if err := raw.Validate(); err != nil {
+		return nil, fmt.Errorf("%w: PEM: %v", errs.Invalid, err)
+	}
+	key, err := jwk.Import[jwk.Key](raw)
+	if err != nil {
+		return nil, fmt.Errorf("%w: PEM: %v", errs.Invalid, err)
+	}
+	if err := key.Set(jwk.KeyIDKey, kid); err != nil {
+		return nil, fmt.Errorf("%w: kid: %v", errs.Invalid, err)
+	}
+	return key, nil
 }
 
 // ParsePrivateKeyJWK reads a private RSA key in JWK format.

@@ -13,6 +13,7 @@ import (
 	"github.com/Altinn/altinn-platform-validation-tests/helpers/testudo/internal/maskinporten"
 	"github.com/Altinn/altinn-platform-validation-tests/helpers/testudo/internal/platformtoken"
 	"github.com/Altinn/altinn-platform-validation-tests/helpers/testudo/internal/register"
+	"github.com/Altinn/altinn-platform-validation-tests/helpers/testudo/internal/selfservice"
 	"github.com/Altinn/altinn-platform-validation-tests/helpers/testudo/internal/tenor"
 )
 
@@ -31,6 +32,22 @@ func newTenorClient() (*tenor.Client, error) {
 		return nil, err
 	}
 	return tenor.NewClient(tenor.DefaultBaseURL, mp), nil
+}
+
+// newSelfServiceClient creates a client for the self-service API with a token
+// for the master client, which manages the other Maskinporten clients. Its
+// MASKINPORTEN_* values are read from the selfservice section, or from the
+// same names with the SELFSERVICE_ prefix.
+func newSelfServiceClient() (*selfservice.Client, error) {
+	cfg, err := maskinporten.ConfigFrom(config.Namespace("selfservice"))
+	if err != nil {
+		return nil, config.WithHint(fmt.Errorf("selfservice: %w", err))
+	}
+	mp, err := maskinporten.NewClient(cfg, selfservice.ReadScope)
+	if err != nil {
+		return nil, err
+	}
+	return selfservice.NewClient(selfservice.DefaultBaseURL, mp), nil
 }
 
 // newRegisterClient creates a Register client for env with a platform token
