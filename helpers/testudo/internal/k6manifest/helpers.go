@@ -40,29 +40,6 @@ func sanitizeNameFromTestFileName(pathToTestFile string) *string {
 	return &tempString
 }
 
-func getGithubRelatedVars() []*Env {
-	var githubRelatedEnvVars []*Env
-	githubEnvKeys := [8]string{
-		"GITHUB_REPOSITORY",
-		"GITHUB_SERVER_URL",
-		"GITHUB_RUN_ID",
-		"GITHUB_BASE_REF",
-		"GITHUB_HEAD_REF",
-		"GITHUB_REF",
-		"GITHUB_REF_NAME",
-		"GITHUB_SHA",
-	}
-	for i := range githubEnvKeys {
-		if val, ok := os.LookupEnv(githubEnvKeys[i]); ok {
-			githubRelatedEnvVars = append(githubRelatedEnvVars, &Env{
-				Name:  &githubEnvKeys[i],
-				Value: &val,
-			})
-		}
-	}
-	return githubRelatedEnvVars
-}
-
 // testRunName is the name of a TestRun, which is also its uniq_name label:
 // <environment>-<timestamp>-<suffix>. The five-character suffix is made from
 // the test id and the timestamp, so the tests in a run get different names,

@@ -25,22 +25,6 @@
                "value": "yt01"
             },
             {
-               "name": "GITHUB_REF",
-               "value": "refs/heads/main"
-            },
-            {
-               "name": "GITHUB_REPOSITORY",
-               "value": "octocat/Hello-World"
-            },
-            {
-               "name": "GITHUB_RUN_ID",
-               "value": "14965885066"
-            },
-            {
-               "name": "GITHUB_SERVER_URL",
-               "value": "https://github.com"
-            },
-            {
                "name": "K6_NO_USAGE_REPORT",
                "value": "true"
             },

@@ -152,7 +152,6 @@ func (r K8sManifestGenerator) generate(td *TestDefinition, c *TestContext, cf Co
 	manifestGenerationTimestamp := r.GenerationTime.UnixMilli()
 
 	mergedEnvs := handleExtraEnvVars(c.TestRun.Env, envFileSlice)
-	mergedEnvs = handleExtraEnvVars(mergedEnvs, getGithubRelatedVars())
 	mergedEnvs = handleExtraEnvVars(mergedEnvs, envOptions)
 
 	testFilename := td.TestFile

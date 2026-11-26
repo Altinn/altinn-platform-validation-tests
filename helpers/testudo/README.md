@@ -547,10 +547,6 @@ branch or a laptop does not post to the team channels. `environment` gives
 testudo k6 generate --slack environment K6/api/tests/portaler/smoke.yaml
 ```
 
-In GitHub Actions, the `GITHUB_*` variables that are set (`GITHUB_REPOSITORY`,
-`GITHUB_RUN_ID`, `GITHUB_SHA` and so on) are added to the environment of the
-test. They do not pick the Slack secret.
-
 A key the config file format does not have, for example a typo such as
 `enviroment:`, is an error, so it is not silently ignored.
 

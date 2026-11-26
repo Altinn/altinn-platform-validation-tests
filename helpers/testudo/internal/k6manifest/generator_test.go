@@ -90,30 +90,16 @@ func validateConfigMap(path, testVersion, dirName string, t *testing.T) {
 
 // TODO: Hacky just to test
 func preTest(t *testing.T, version string, g *K8sManifestGenerator) {
-	// The GitHub variables are added to the manifests, so they are removed
-	// for the tests that do not set them, e.g. when the tests run in GitHub
-	// Actions.
-	for _, key := range []string{"GITHUB_REPOSITORY", "GITHUB_SERVER_URL", "GITHUB_RUN_ID", "GITHUB_BASE_REF", "GITHUB_HEAD_REF", "GITHUB_REF", "GITHUB_REF_NAME", "GITHUB_SHA"} {
-		t.Setenv(key, "") // restores the value after the test
-		os.Unsetenv(key)
-	}
 	if version == "v7" {
 		g.CommandLineArgs = "-e runFullTestSet=true -e tokenGeneratorUserName=olanordmenn -e orgNoRecipient=1234 -e resourceId=abcd"
 	}
 	if version == "v10" {
-		t.Setenv("GITHUB_REPOSITORY", "octocat/Hello-World")
-		t.Setenv("GITHUB_SERVER_URL", "https://github.com")
-		t.Setenv("GITHUB_RUN_ID", "14965885066")
-		t.Setenv("GITHUB_REF", "refs/heads/main")
-		// The expected files have slack-dev and slack-prod. They used to
-		// come from GITHUB_REF; now they must be asked for.
+		// The expected files have slack-dev and slack-prod.
 		g.Slack = SlackEnvironment
 	}
 }
 
 func TestSlackSecret(t *testing.T) {
-	// GITHUB_REF no longer picks the channel.
-	t.Setenv("GITHUB_REF", "refs/heads/main")
 	for _, tt := range []struct {
 		slack Slack
 		env   string
