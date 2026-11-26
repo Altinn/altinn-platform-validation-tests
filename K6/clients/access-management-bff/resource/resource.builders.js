@@ -115,17 +115,6 @@ class SearchResourcesQueryBuilder {
     }
 
     /**
-     * Optional. Whether to include Altinn 2 services.
-     *
-     * @param {boolean} includeA2Services Whether to include Altinn 2 services.
-     * @returns {SearchResourcesQueryBuilder} This builder, for chaining.
-     */
-    withIncludeA2Services(includeA2Services) {
-        this.query.IncludeA2Services = includeA2Services;
-        return this;
-    }
-
-    /**
      * Optional. Whether to include expired resources.
      *
      * @param {boolean} includeExpired Whether to include expired resources.

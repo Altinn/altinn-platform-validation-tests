@@ -10,6 +10,8 @@
  * @typedef {object} SearchAccessPackagesQuery
  * @property {string} [searchString] Free text search string.
  * @property {string} [typeName] Entity type name to search packages for.
+ * @property {Array<string>} [resourceProviderCode] Service owner org codes.
+ * Only packages with resources from these service owners are returned.
  */
 
 /**

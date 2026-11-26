@@ -103,6 +103,19 @@
  */
 
 /**
+ * Query parameters for {@link GetReceivedRequestsCountForSubunits}.
+ *
+ * Use {@link GetReceivedRequestsCountForSubunitsQueryBuilder} to construct this
+ * object.
+ *
+ * @typedef {object} GetReceivedRequestsCountForSubunitsQuery
+ * @property {string} [party] Party UUID of the party the request is made on
+ * behalf of.
+ * @property {string} [from] Party UUID the access is given from.
+ * @property {Array<import("../common/common.types.js").RequestStatus>} [status] Request statuses to filter by.
+ */
+
+/**
  * Query parameters for {@link GetRequest}.
  *
  * Use {@link GetRequestQueryBuilder} to construct this object.
@@ -185,6 +198,7 @@ export const ConfirmDraftRequestQuery = undefined;
 export const CreatePackageRequestQuery = undefined;
 export const CreateResourceRequestQuery = undefined;
 export const GetReceivedPackageRequestsQuery = undefined;
+export const GetReceivedRequestsCountForSubunitsQuery = undefined;
 export const GetReceivedRequestsCountQuery = undefined;
 export const GetReceivedRequestsQuery = undefined;
 export const GetReceivedResourceRequestsQuery = undefined;

@@ -1,6 +1,6 @@
 import { check } from "k6";
 
-import { ResourceAM } from "../../../../clients/access-management-bff/common/common.types.js";
+import { ServiceResourceFE } from "../../../../clients/access-management-bff/common/common.types.js";
 import { RoleClient } from "../../../../clients/access-management-bff/role/index.js";
 import { GetRoleResourcesQuery } from "../../../../clients/access-management-bff/role/role.types.js";
 import { withRetries } from "../../common/retry.js";
@@ -12,7 +12,7 @@ import { withRetries } from "../../common/retry.js";
  * @param {GetRoleResourcesQuery|null} [queryParams] Optional query parameters.
  * Use {@link GetRoleResourcesQueryBuilder}.
  * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
- * @returns {Array<ResourceAM>|null} The resources.
+ * @returns {Array<ServiceResourceFE>|null} The resources.
  */
 export function GetRoleResources(
     roleClient,
@@ -24,7 +24,7 @@ export function GetRoleResources(
         "GetRoleResources",
     );
 
-    /** @type {Array<ResourceAM>|null} */
+    /** @type {Array<ServiceResourceFE>|null} */
     let resources = null;
 
     const succeed = check(res, {

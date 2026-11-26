@@ -1,7 +1,7 @@
 import http from "k6/http";
 
 import { buildUrl, requestParams } from "../../common/request.js";
-import { ApproveReceivedRequestQuery, ConfirmDraftRequestQuery, CreatePackageRequestQuery, CreateResourceRequestQuery, GetReceivedPackageRequestsQuery, GetReceivedRequestsCountQuery, GetReceivedRequestsQuery, GetReceivedResourceRequestsQuery, GetRequestQuery, GetSentPackageRequestsQuery, GetSentRequestsCountQuery, GetSentRequestsQuery, GetSentResourceRequestsQuery, RejectReceivedRequestQuery, WithdrawSentRequestQuery } from "./request.types.js";
+import { ApproveReceivedRequestQuery, ConfirmDraftRequestQuery, CreatePackageRequestQuery, CreateResourceRequestQuery, GetReceivedPackageRequestsQuery, GetReceivedRequestsCountForSubunitsQuery, GetReceivedRequestsCountQuery, GetReceivedRequestsQuery, GetReceivedResourceRequestsQuery, GetRequestQuery, GetSentPackageRequestsQuery, GetSentRequestsCountQuery, GetSentRequestsQuery, GetSentResourceRequestsQuery, RejectReceivedRequestQuery, WithdrawSentRequestQuery } from "./request.types.js";
 
 const TAGS = {
     GetSentRequests: {
@@ -27,6 +27,9 @@ const TAGS = {
     },
     GetReceivedRequestsCount: {
         action: "get-received-requests-count",
+    },
+    GetReceivedRequestsCountForSubunits: {
+        action: "get-received-requests-count-for-subunits",
     },
     GetRequest: {
         action: "get-request",
@@ -238,6 +241,27 @@ class RequestClient {
             requestParams({
                 endpoint: `${this.FULL_PATH}/received/count`,
                 action: TAGS.GetReceivedRequestsCount.action,
+                labels,
+                token: this.tokenGenerator.getToken(),
+            }),
+        );
+    }
+
+    /**
+     * Gets the number of access requests each subunit of a party has received.
+     *
+     * @param {GetReceivedRequestsCountForSubunitsQuery|null} [query] Optional
+     * query parameters. Prefer using
+     * {@link GetReceivedRequestsCountForSubunitsQueryBuilder}.
+     * @param {{[key: string]: string}|null} [labels] Optional k6 request tags.
+     * @returns {http.RefinedResponse<"text">} Exposes body with best possible type.
+     */
+    GetReceivedRequestsCountForSubunits(query = null, labels = null) {
+        return http.get(
+            buildUrl(`${this.FULL_PATH}/received/count/subunits`, query),
+            requestParams({
+                endpoint: `${this.FULL_PATH}/received/count/subunits`,
+                action: TAGS.GetReceivedRequestsCountForSubunits.action,
                 labels,
                 token: this.tokenGenerator.getToken(),
             }),

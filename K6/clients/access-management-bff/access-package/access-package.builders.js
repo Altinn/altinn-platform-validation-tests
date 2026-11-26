@@ -31,6 +31,30 @@ class SearchAccessPackagesQueryBuilder {
     }
 
     /**
+     * Optional. Adds a service owner org code. Only packages with resources
+     * from these service owners are returned.
+     *
+     * @param {string} resourceProviderCode Service owner org code.
+     * @returns {SearchAccessPackagesQueryBuilder} This builder, for chaining.
+     */
+    addResourceProviderCode(resourceProviderCode) {
+        this.query.resourceProviderCode ??= [];
+        this.query.resourceProviderCode.push(resourceProviderCode);
+        return this;
+    }
+
+    /**
+     * Service owner org codes. Replaces any previous values.
+     *
+     * @param {Array<string>} resourceProviderCode Service owner org codes.
+     * @returns {SearchAccessPackagesQueryBuilder} This builder, for chaining.
+     */
+    withResourceProviderCode(resourceProviderCode) {
+        this.query.resourceProviderCode = resourceProviderCode;
+        return this;
+    }
+
+    /**
      * Builds the query object.
      *
      * @returns {SearchAccessPackagesQuery} The built query parameters.

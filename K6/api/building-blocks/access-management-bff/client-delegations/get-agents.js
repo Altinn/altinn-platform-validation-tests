@@ -2,7 +2,7 @@ import { check } from "k6";
 
 import { GetAgentsQuery } from "../../../../clients/access-management-bff/client-delegations/client-delegations.types.js";
 import { ClientDelegationsClient } from "../../../../clients/access-management-bff/client-delegations/index.js";
-import { AgentDelegation } from "../../../../clients/access-management-bff/common/common.types.js";
+import { AgentDelegationFE } from "../../../../clients/access-management-bff/common/common.types.js";
 import { withRetries } from "../../common/retry.js";
 
 /**
@@ -13,7 +13,7 @@ import { withRetries } from "../../common/retry.js";
  * @param {GetAgentsQuery|null} [queryParams] Optional query parameters. Use
  * {@link GetAgentsQueryBuilder}.
  * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
- * @returns {Array<AgentDelegation>|null} The agents of the party.
+ * @returns {Array<AgentDelegationFE>|null} The agents of the party.
  */
 export function GetAgents(
     clientDelegationsClient,
@@ -25,7 +25,7 @@ export function GetAgents(
         "GetAgents",
     );
 
-    /** @type {Array<AgentDelegation>|null} */
+    /** @type {Array<AgentDelegationFE>|null} */
     let agents = null;
 
     const succeed = check(res, {

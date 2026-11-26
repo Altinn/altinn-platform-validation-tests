@@ -1,6 +1,6 @@
 import { check } from "k6";
 
-import { ResourceRight } from "../../../../clients/access-management-bff/common/common.types.js";
+import { ResourceRightFE } from "../../../../clients/access-management-bff/common/common.types.js";
 import { SingleRightClient } from "../../../../clients/access-management-bff/single-right/index.js";
 import { GetResourceRightsQuery } from "../../../../clients/access-management-bff/single-right/single-right.types.js";
 import { withRetries } from "../../common/retry.js";
@@ -13,7 +13,7 @@ import { withRetries } from "../../common/retry.js";
  * @param {GetResourceRightsQuery|null} [queryParams] Optional query
  * parameters. Use {@link GetResourceRightsQueryBuilder}.
  * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
- * @returns {ResourceRight|null} The rights on the resource.
+ * @returns {ResourceRightFE|null} The rights on the resource.
  */
 export function GetResourceRights(
     singleRightClient,
@@ -25,7 +25,7 @@ export function GetResourceRights(
         "GetResourceRights",
     );
 
-    /** @type {ResourceRight|null} */
+    /** @type {ResourceRightFE|null} */
     let resourceRight = null;
 
     const succeed = check(res, {

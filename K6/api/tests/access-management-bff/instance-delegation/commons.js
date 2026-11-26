@@ -1,6 +1,5 @@
 
 import { AccessPackageClient } from "../../../../clients/access-management-bff/access-package/index.js";
-import { AltinnCdnClient } from "../../../../clients/access-management-bff/altinn-cdn/index.js";
 import { InstanceRightsDelegationDto, Right } from "../../../../clients/access-management-bff/common/common.types.js";
 import { ConnectionClient } from "../../../../clients/access-management-bff/connection/index.js";
 import { ConsentClient } from "../../../../clients/access-management-bff/consent/index.js";
@@ -34,7 +33,6 @@ export const SERVICE_OWNER_ORG_NO = __ENV.ENVIRONMENT === "yt01" ? "713431400" :
  * @returns {{
  * user: UserClient,
  * lookup: LookupClient,
- * altinnCdn: AltinnCdnClient,
  * role: RoleClient,
  * instance: InstanceClient,
  * consent: ConsentClient,
@@ -62,7 +60,6 @@ function buildEndUserClients() {
     return {
         user: new UserClient(__ENV.AM_UI_BASE_URL, tokenGenerator),
         lookup: new LookupClient(__ENV.AM_UI_BASE_URL, tokenGenerator),
-        altinnCdn: new AltinnCdnClient(__ENV.AM_UI_BASE_URL, tokenGenerator),
         role: new RoleClient(__ENV.AM_UI_BASE_URL, tokenGenerator),
         instance: new InstanceClient(__ENV.AM_UI_BASE_URL, tokenGenerator),
         consent: new ConsentClient(__ENV.AM_UI_BASE_URL, tokenGenerator),
@@ -93,7 +90,6 @@ function buildEndUserClients() {
  * serviceOwner: ServiceOwnerApiClient,
  * user: UserClient,
  * lookup: LookupClient,
- * altinnCdn: AltinnCdnClient,
  * role: RoleClient,
  * instance: InstanceClient,
  * consent: ConsentClient,

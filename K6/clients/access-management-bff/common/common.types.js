@@ -25,20 +25,7 @@
  * @property {string|null} description
  * @property {string|null} iconUrl
  * @property {string|null} typeName
- * @property {Array<AccessPackage>|null} accessPackages
- */
-
-/**
- * @typedef {object} AccessPackage
- * @property {string} id UUID.
- * @property {string|null} name
- * @property {string|null} urn
- * @property {string|null} description
- * @property {boolean} isAssignable
- * @property {boolean} isDelegable
- * @property {AccessArea} area
- * @property {Array<ResourceAM>|null} resources
- * @property {TypeDto} type
+ * @property {Array<AccessPackageFE>|null} accessPackages
  */
 
 /**
@@ -49,19 +36,10 @@
  * @property {boolean} isAssignable
  * @property {boolean} isDelegable
  * @property {string|null} description
- * @property {Array<AccessPackageResourceFE>|null} resources
- * @property {Array<Permission>|null} permissions
- */
-
-/**
- * @typedef {object} AccessPackageResourceFE
- * @property {string|null} identifier
- * @property {string|null} title
- * @property {string|null} description
- * @property {string|null} resourceOwnerName
- * @property {string|null} resourceOwnerLogoUrl
- * @property {string|null} resourceOwnerOrgcode
- * @property {ResourceType} resourceType
+ * @property {AccessArea} area
+ * @property {TypeDto} type
+ * @property {Array<ServiceResourceFE>|null} resources
+ * @property {Array<PermissionFE>|null} permissions
  */
 
 /**
@@ -71,8 +49,51 @@
  */
 
 /**
- * @typedef {object} AgentDelegation
- * @property {CompactEntity} agent
+ * @typedef {object} ActivityLogDto
+ * @property {string} id UUID.
+ * @property {string|null} type
+ * @property {string|null} subtype
+ * @property {string|null} trigger
+ * @property {string|null} status
+ * @property {string} when ISO date-time.
+ * @property {string|null} byId UUID.
+ * @property {string|null} byName
+ * @property {string|null} sourceId UUID.
+ * @property {string|null} sourceName
+ * @property {string|null} operationId
+ * @property {string|null} fromId UUID.
+ * @property {string|null} fromName
+ * @property {string|null} fromType
+ * @property {string|null} toId UUID.
+ * @property {string|null} toName
+ * @property {string|null} toType
+ * @property {string|null} viaId UUID.
+ * @property {string|null} viaName
+ * @property {string|null} viaType
+ * @property {string|null} roleId UUID.
+ * @property {string|null} roleName
+ * @property {string|null} viaRoleId UUID.
+ * @property {string|null} viaRoleName
+ * @property {string|null} packageId UUID.
+ * @property {string|null} packageName
+ * @property {string|null} resourceId UUID.
+ * @property {string|null} resourceName
+ * @property {string|null} instanceId
+ * @property {string} itemId UUID.
+ * @property {string|null} parentId UUID.
+ * @property {any} details
+ * @property {string|null} activityTypeId UUID.
+ */
+
+/**
+ * @typedef {object} ActivityLogFilterValueDto
+ * @property {string} id UUID.
+ * @property {string|null} name
+ */
+
+/**
+ * @typedef {object} AgentDelegationFE
+ * @property {PartyFE} agent
  * @property {string} agentAddedAt ISO date-time.
  * @property {Array<ClientDelegationRoleAccessPackages>|null} access
  */
@@ -141,14 +162,38 @@
  */
 
 /**
+ * @typedef {object} AuthorizedPartyFE
+ * @property {string} id UUID.
+ * @property {number|null} partyId
+ * @property {string|null} name
+ * @property {PartyTypeFE} type
+ * @property {string|null} unitType
+ * @property {string|null} organizationIdentifier
+ * @property {string|null} dateOfBirth
+ * @property {boolean} isDeleted
+ * @property {Array<AuthorizedPartyFE>|null} children
+ * @property {PartyFE} parent
+ * @property {Array<string>|null} authorizedResources
+ * @property {Array<string>|null} authorizedRoles
+ * @property {boolean} onlyHierarchyElementWithNoAccess
+ */
+
+/**
  * Allowed values: "None", "Person", "Organization", "SelfIdentified".
  *
  * @typedef {string} AuthorizedPartyType
  */
 
 /**
- * @typedef {object} ClientDelegation
- * @property {CompactEntity} client
+ * @typedef {object} BankruptcyEstateAdministratorFE
+ * @property {PartyFE} administrator
+ * @property {CompactRole} adminRole
+ * @property {string} adminAddedAt ISO date-time.
+ */
+
+/**
+ * @typedef {object} ClientDelegationFE
+ * @property {PartyFE} client
  * @property {Array<ClientDelegationRoleAccessPackages>|null} access
  */
 
@@ -163,24 +208,6 @@
  * @typedef {object} ClientRoleAccessPackages
  * @property {string|null} role
  * @property {Array<string>|null} packages
- */
-
-/**
- * @typedef {object} CompactEntity
- * @property {string} id UUID.
- * @property {string|null} name
- * @property {string|null} type
- * @property {string|null} variant
- * @property {CompactEntity} parent
- * @property {Array<CompactEntity>|null} children
- * @property {number|null} partyId
- * @property {number|null} userId
- * @property {string|null} username
- * @property {string|null} organizationIdentifier
- * @property {string|null} dateOfBirth
- * @property {string|null} dateOfDeath
- * @property {boolean} isDeleted
- * @property {string|null} deletedAt ISO date-time.
  */
 
 /**
@@ -207,10 +234,10 @@
  */
 
 /**
- * @typedef {object} Connection
- * @property {Entity} party
+ * @typedef {object} ConnectionFE
+ * @property {PartyFE} party
  * @property {Array<RoleInfo>|null} roles
- * @property {Array<Connection>|null} connections
+ * @property {Array<ConnectionFE>|null} connections
  */
 
 /**
@@ -296,45 +323,17 @@
  */
 
 /**
- * @typedef {object} Entity
- * @property {string} id UUID.
- * @property {string|null} name
- * @property {string|null} type
- * @property {string|null} variant
- * @property {Entity} parent
- * @property {Array<Entity>|null} children
- * @property {number|null} partyId
- * @property {string|null} organizationIdentifier
- * @property {string|null} dateOfBirth
- * @property {boolean} isDeleted
- */
-
-/**
  * @typedef {object} IdNamePairOfGuid
  * @property {string} id UUID.
  * @property {string|null} name
  */
 
 /**
- * @typedef {object} IdValuePair
- * @property {string} id
- * @property {string} value
- */
-
-/**
  * @typedef {object} InstanceDelegation
  * @property {ServiceResourceFE} resource
  * @property {DelegationInstance} instance
- * @property {Array<Permission>|null} permissions
+ * @property {Array<PermissionFE>|null} permissions
  * @property {DialogLookup} dialogLookup
- */
-
-/**
- * @typedef {object} InstanceRights
- * @property {ResourceAM} resource
- * @property {DelegationInstance} instance
- * @property {Array<RightAccess>|null} directRights
- * @property {Array<RightAccess>|null} indirectRights
  */
 
 /**
@@ -344,15 +343,23 @@
  */
 
 /**
- * @typedef {object} MaskinportenConnection
- * @property {CompactEntity} party
+ * @typedef {object} InstanceRightsFE
+ * @property {ServiceResourceFE} resource
+ * @property {DelegationInstance} instance
+ * @property {Array<RightAccessFE>|null} directRights
+ * @property {Array<RightAccessFE>|null} indirectRights
+ */
+
+/**
+ * @typedef {object} MaskinportenConnectionFE
+ * @property {PartyFE} party
  * @property {Array<CompactRole>|null} roles
  */
 
 /**
- * @typedef {object} MyClientDelegation
- * @property {CompactEntity} provider
- * @property {Array<ClientDelegation>|null} clients
+ * @typedef {object} MyClientDelegationFE
+ * @property {PartyFE} provider
+ * @property {Array<ClientDelegationFE>|null} clients
  */
 
 /**
@@ -379,45 +386,9 @@
  */
 
 /**
- * @typedef {object} OrgContact
- * @property {string|null} phone
- * @property {string|null} url
- */
-
-/**
- * @typedef {object} OrgData
- * @property {object|null} name
- * @property {string|null} logo
- * @property {string|null} emblem
- * @property {string|null} orgnr
- * @property {string|null} homepage
- * @property {Array<string>|null} environments
- * @property {OrgContact} contact
- */
-
-/**
- * @typedef {object} Organization
- * @property {string|null} orgNumber
- * @property {string|null} name
- * @property {string|null} unitType
- * @property {string|null} telephoneNumber
- * @property {string|null} mobileNumber
- * @property {string|null} faxNumber
- * @property {string|null} eMailAddress
- * @property {string|null} internetAddress
- * @property {string|null} mailingAddress
- * @property {string|null} mailingPostalCode
- * @property {string|null} mailingPostalCity
- * @property {string|null} businessAddress
- * @property {string|null} businessPostalCode
- * @property {string|null} businessPostalCity
- * @property {string|null} unitStatus
- */
-
-/**
- * @typedef {object} PackagePermission
+ * @typedef {object} PackagePermissionFE
  * @property {CompactPackage} package
- * @property {Array<Permission>|null} permissions
+ * @property {Array<PermissionFE>|null} permissions
  */
 
 /**
@@ -428,43 +399,50 @@
  */
 
 /**
+ * @typedef {object} PaginatedResultLinks
+ * @property {string|null} next
+ */
+
+/**
+ * @typedef {object} PaginatedResultOfActivityLogDto
+ * @property {Array<ActivityLogDto>|null} data
+ * @property {PaginatedResultLinks} links
+ */
+
+/**
+ * @typedef {object} PaginatedResultOfActivityLogFilterValueDto
+ * @property {Array<ActivityLogFilterValueDto>|null} data
+ * @property {PaginatedResultLinks} links
+ */
+
+/**
  * @typedef {object} PartyFE
- * @property {number} partyId
- * @property {string|null} partyUuid UUID.
- * @property {PartyType} partyTypeName
- * @property {string|null} orgNumber
- * @property {string|null} unitType
+ * @property {string} id UUID.
+ * @property {number|null} partyId
  * @property {string|null} name
- * @property {boolean} isDeleted
+ * @property {PartyTypeFE} type
+ * @property {string|null} unitType
+ * @property {string|null} organizationIdentifier
  * @property {string|null} dateOfBirth ISO date.
- * @property {boolean} onlyHierarchyElementWithNoAccess
- * @property {PersonFE} person
- * @property {Organization} organization
- * @property {Array<PartyFE>|null} childParties
+ * @property {boolean} isDeleted
+ * @property {Array<PartyFE>|null} children
+ * @property {PartyFE} parent
  */
 
 /**
- * Allowed values: 1, 2, 3, 4, 5.
+ * Allowed values: "Person", "Organization", "SystemUser", "SelfIdentified".
  *
- * @typedef {number} PartyType
+ * @typedef {string} PartyTypeFE
  */
 
 /**
- * @typedef {object} Permission
- * @property {CompactEntity} from
- * @property {CompactEntity} to
- * @property {CompactEntity} via
+ * @typedef {object} PermissionFE
+ * @property {PartyFE} from
+ * @property {PartyFE} to
+ * @property {PartyFE} via
  * @property {CompactRole} role
  * @property {CompactRole} viaRole
  * @property {Reason} reason
- */
-
-/**
- * @typedef {object} PersonFE
- * @property {string|null} name
- * @property {string|null} firstName
- * @property {string|null} middleName
- * @property {string|null} lastName
  */
 
 /**
@@ -519,18 +497,6 @@
  */
 
 /**
- * Allowed values: "DAGL", "LEDE", "REGN", "SREVA", "FGRP", "HFOR", "HLSE",
- * "INNH", "KDAT", "KGRL", "KIRK", "KMOR", "KOMP", "KONT", "KTRF", "MEDL",
- * "NEST", "OBS", "OPMV", "ORGL", "POFE", "POHV", "PROK", "READ", "AAFY",
- * "AVKL", "BEDR", "DTPR", "DTSO", "EIKM", "FEMV", "RFAD", "SIFE", "SIGN",
- * "SIHV", "UTBG", "VARA", "VIFE", "MVAU", "MVAG", "KOMK", "KNUF", "KEMN",
- * "FF\u00d8R", "BEST", "REPR", "REVI", "BOBE", "STFT", "KENK", "KDEB", "HVAR",
- * "HNST", "HMDL", "HLED", "ESGR", "FUSJ", "FISJ", "ETDL", "ADOS".
- *
- * @typedef {string} RegistryRoleType
- */
-
-/**
  * Allowed values: "None", "Draft", "Pending", "Approved", "Rejected",
  * "Withdrawn".
  *
@@ -558,7 +524,7 @@
 /**
  * @typedef {object} ResourceDelegation
  * @property {ServiceResourceFE} resource
- * @property {Array<Permission>|null} permissions
+ * @property {Array<PermissionFE>|null} permissions
  */
 
 /**
@@ -596,10 +562,10 @@
  */
 
 /**
- * @typedef {object} ResourceRight
- * @property {ResourceAM} resource
- * @property {Array<RightAccess>|null} directRights
- * @property {Array<RightAccess>|null} indirectRights
+ * @typedef {object} ResourceRightFE
+ * @property {ServiceResourceFE} resource
+ * @property {Array<RightAccessFE>|null} directRights
+ * @property {Array<RightAccessFE>|null} indirectRights
  */
 
 /**
@@ -615,10 +581,10 @@
  */
 
 /**
- * @typedef {object} RightAccess
+ * @typedef {object} RightAccessFE
  * @property {Right} right
  * @property {Reason} reason
- * @property {Array<Permission>|null} permissions
+ * @property {Array<PermissionFE>|null} permissions
  */
 
 /**
@@ -649,9 +615,9 @@
  */
 
 /**
- * @typedef {object} RolePermission
+ * @typedef {object} RolePermissionFE
  * @property {Role} role
- * @property {Array<Permission>|null} permissions
+ * @property {Array<PermissionFE>|null} permissions
  */
 
 /**
@@ -662,7 +628,6 @@
  * @property {string|null} rightDescription
  * @property {string|null} homepage
  * @property {string|null} status
- * @property {Array<string>|null} spatial
  * @property {Array<ContactPoint>|null} contactPoints
  * @property {boolean} delegable
  * @property {boolean} visible
@@ -673,7 +638,6 @@
  * @property {Array<ResourceReference>|null} resourceReferences
  * @property {number|null} priorityCounter
  * @property {ResourceType} resourceType
- * @property {Array<IdValuePair>|null} authorizationReference
  * @property {Array<string>|null} keywords
  */
 
@@ -683,19 +647,9 @@
  */
 
 /**
- * @typedef {object} SimplifiedConnection
- * @property {SimplifiedParty} party
- * @property {Array<SimplifiedConnection>|null} connections
- */
-
-/**
- * @typedef {object} SimplifiedParty
- * @property {string} id UUID.
- * @property {string|null} name
- * @property {string|null} type
- * @property {string|null} variant
- * @property {string|null} organizationIdentifier
- * @property {boolean} isDeleted
+ * @typedef {object} SimplifiedConnectionFE
+ * @property {PartyFE} party
+ * @property {Array<SimplifiedConnectionFE>|null} connections
  */
 
 /**
@@ -703,18 +657,6 @@
  * @property {string} id UUID.
  * @property {string} providerId UUID.
  * @property {string|null} name
- */
-
-/**
- * @typedef {object} User
- * @property {string} partyUuid UUID.
- * @property {AuthorizedPartyType} partyType
- * @property {string|null} name
- * @property {Array<RegistryRoleType>|null} registryRoles
- * @property {Array<string>|null} roles
- * @property {string|null} organizationNumber
- * @property {string|null} unitType
- * @property {Array<User>|null} inheritingUsers
  */
 
 /**
@@ -746,9 +688,8 @@
  */
 
 export const AccessAreaFE = undefined;
-export const AccessPackage = undefined;
 export const AccessPackageFE = undefined;
-export const AgentDelegation = undefined;
+export const AgentDelegationFE = undefined;
 export const AgentDelegationRequestFE = undefined;
 export const Altinn2AccountFromTokenRequest = undefined;
 export const Altinn2AccountRequest = undefined;
@@ -756,40 +697,41 @@ export const Altinn2ForgotPasswordRequest = undefined;
 export const ApproveConsentContext = undefined;
 export const AssignmentDto = undefined;
 export const AuthorizedParty = undefined;
-export const ClientDelegation = undefined;
+export const AuthorizedPartyFE = undefined;
+export const BankruptcyEstateAdministratorFE = undefined;
+export const ClientDelegationFE = undefined;
 export const ClientRoleAccessPackages = undefined;
-export const Connection = undefined;
+export const ConnectionFE = undefined;
 export const ConsentRequestStatusType = undefined;
 export const DelegationBatchInputDto = undefined;
 export const DelegationCheck = undefined;
 export const DelegationDto = undefined;
 export const InstanceDelegation = undefined;
-export const InstanceRights = undefined;
 export const InstanceRightsDelegationDto = undefined;
-export const MaskinportenConnection = undefined;
-export const MyClientDelegation = undefined;
+export const InstanceRightsFE = undefined;
+export const MaskinportenConnectionFE = undefined;
+export const MyClientDelegationFE = undefined;
 export const NewSystemUserRequest = undefined;
 export const NotificationAddressModel = undefined;
 export const PaginatedListOfServiceResourceFE = undefined;
+export const PaginatedResultOfActivityLogDto = undefined;
+export const PaginatedResultOfActivityLogFilterValueDto = undefined;
 export const PartyFE = undefined;
 export const PersonInput = undefined;
 export const RequestStatus = undefined;
-export const ResourceAM = undefined;
 export const ResourceCheckDto = undefined;
 export const ResourceDelegation = undefined;
 export const ResourceDelegationBatchInputDto = undefined;
 export const ResourceDelegationDto = undefined;
 export const ResourceOwnerFE = undefined;
-export const ResourceRight = undefined;
+export const ResourceRightFE = undefined;
 export const ResourceType = undefined;
 export const Right = undefined;
 export const RightCheck = undefined;
 export const Role = undefined;
-export const RolePermission = undefined;
+export const RolePermissionFE = undefined;
 export const ServiceResourceFE = undefined;
 export const SettingsControllerUpdateSelectedLanguageRequest = undefined;
-export const SimplifiedConnection = undefined;
-export const SimplifiedParty = undefined;
-export const User = undefined;
+export const SimplifiedConnectionFE = undefined;
 export const UserProfileFE = undefined;
 export const ValidatePersonInput = undefined;

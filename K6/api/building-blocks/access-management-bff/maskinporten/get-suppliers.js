@@ -1,6 +1,6 @@
 import { check } from "k6";
 
-import { MaskinportenConnection } from "../../../../clients/access-management-bff/common/common.types.js";
+import { MaskinportenConnectionFE } from "../../../../clients/access-management-bff/common/common.types.js";
 import { MaskinportenClient } from "../../../../clients/access-management-bff/maskinporten/index.js";
 import { GetSuppliersQuery } from "../../../../clients/access-management-bff/maskinporten/maskinporten.types.js";
 import { withRetries } from "../../common/retry.js";
@@ -13,7 +13,7 @@ import { withRetries } from "../../common/retry.js";
  * @param {GetSuppliersQuery|null} [queryParams] Optional query parameters. Use
  * {@link GetSuppliersQueryBuilder}.
  * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
- * @returns {Array<MaskinportenConnection>|null} The Maskinporten suppliers.
+ * @returns {Array<MaskinportenConnectionFE>|null} The Maskinporten suppliers.
  */
 export function GetSuppliers(
     maskinportenClient,
@@ -25,7 +25,7 @@ export function GetSuppliers(
         "GetSuppliers",
     );
 
-    /** @type {Array<MaskinportenConnection>|null} */
+    /** @type {Array<MaskinportenConnectionFE>|null} */
     let suppliers = null;
 
     const succeed = check(res, {

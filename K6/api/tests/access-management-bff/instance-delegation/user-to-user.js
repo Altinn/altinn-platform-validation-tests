@@ -13,7 +13,6 @@ import { GetRightsMetaQueryBuilder } from "../../../../clients/access-management
 import { DialogByIdVariablesBuilder, DialogSearchVariablesBuilder } from "../../../../clients/dialogporten/graphql/index.js";
 import { fetchTestData, getItemFromList, getNumberOfVUs, getOptions, requireEnv, segmentData } from "../../../../helpers.js";
 import { GetAccessPackageDelegationCheck } from "../../../building-blocks/access-management-bff/access-package/index.js";
-import { GetOrgData, } from "../../../building-blocks/access-management-bff/altinn-cdn/index.js";
 import { GetRightHolders } from "../../../building-blocks/access-management-bff/connection/index.js";
 import { GetActiveConsents } from "../../../building-blocks/access-management-bff/consent/index.js";
 import { CreateInstanceRights } from "../../../building-blocks/access-management-bff/instance/index.js";
@@ -62,7 +61,6 @@ const getIsAdminLabel = { step: "1e. Get is admin for user" };
 const getIsClientAdminLabel = { step: "1f. Get is client admin for user" };
 const getActorListOldLabel = { step: "1g. Get actor list old for user" };
 const getActorListFavoritesLabel = { step: "1h. Get actor list favorites for user" };
-const getOrganizationDataLabel = { step: "1i. Get organization data for user" };
 const getIsInstanceAdminLabel = { step: "1j. Get is instance admin for user" };
 const getDelegatedInstancesForResourceLabel = { step: "1k. Get delegated instances for resource for user" };
 const getActiveConsentLabel = { step: "1l. Get active consent for user" };
@@ -98,7 +96,6 @@ export const options = getOptions([
     getActorListOldLabel,
     getActorListFavoritesLabel,
     getIsInstanceAdminLabel,
-    getOrganizationDataLabel,
     getDelegatedInstancesForResourceLabel,
     getActiveConsentLabel,
     getConnectionsLabel,
@@ -152,7 +149,6 @@ export default function (data) {
         serviceOwner: serviceOwnerApiClient,
         user: userApiClient,
         lookup: lookupApiClient,
-        altinnCdn: altinnCdnApiClient,
         role: roleApiClient,
         instance: instanceApiClient,
         consent: consentApiClient,
@@ -194,7 +190,6 @@ export default function (data) {
         GetIsClientAdmin(userApiClient, from.partyUuid, getIsClientAdminLabel);
         GetActorListOld(userApiClient, getActorListOldLabel);
         GetFavorites(userApiClient, getActorListFavoritesLabel);
-        GetOrgData(altinnCdnApiClient, getOrganizationDataLabel);
         GetIsInstanceAdmin(userApiClient, from.partyUuid, getIsInstanceAdminLabel);
         GetInstanceDelegations(
             instanceApiClient,

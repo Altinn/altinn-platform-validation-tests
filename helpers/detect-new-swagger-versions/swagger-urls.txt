@@ -50,3 +50,8 @@ https://docs.altinn.studio/swagger/altinn-platform-events-v1.json
 
 # https://docs.altinn.studio/nb/notifications/reference/openapi/
 https://docs.altinn.studio/swagger/altinn-notifications-v1.json
+
+# Access Management BFF (https://github.com/Altinn/altinn-access-management-frontend)
+# Not checked by this script or the weekly workflow: the BFF only serves its
+# swagger in Development, so no environment publishes it. Check it by hand
+# whenever you run the script; see "Access Management BFF" in README.md.

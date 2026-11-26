@@ -6,7 +6,6 @@ import {
     GetAccessPackageDelegationsQueryBuilder,
     SearchAccessPackagesQueryBuilder,
 } from "../../../../clients/access-management-bff/access-package/index.js";
-import { AltinnCdnClient } from "../../../../clients/access-management-bff/altinn-cdn/index.js";
 import { Right } from "../../../../clients/access-management-bff/common/common.types.js";
 import {
     ConnectionClient,
@@ -37,9 +36,6 @@ import { fetchTestData, getItemFromList, getNumberOfVUs, getOptions, lazy, requi
 import { AltinnScopes, CreateScopeString } from "../../../../scopes.js";
 import { GetAccessPackageDelegations } from "../../../building-blocks/access-management-bff/access-package/index.js";
 import { SearchAccessPackages } from "../../../building-blocks/access-management-bff/access-package/index.js";
-import {
-    GetOrgData,
-} from "../../../building-blocks/access-management-bff/altinn-cdn/index.js";
 import { CreateRightHolder, DeleteReporteeConnection, GetRightHolders } from "../../../building-blocks/access-management-bff/connection/index.js";
 import { GetResourceOwners, SearchResources } from "../../../building-blocks/access-management-bff/resource/index.js";
 import { GetRolePermissions, } from "../../../building-blocks/access-management-bff/role/index.js";
@@ -67,7 +63,6 @@ const getDelegatedResourcesLabel = { step: "1i. Get delegated resources from org
 const searchAccessPackagesLabel = { step: "1j. Search access packages for org" };
 const searchResourcesLabel = { step: "1k. Search resources for org" };
 const getResourceOwnersLabel = { step: "1l. Get resource owners for org" };
-const getOrganizationDataLabel = { step: "1m. Get organization data for org" };
 
 const searchAccessPackagesLabel2a = { step: "2a. Search access packages for org" };
 const getRightsMetadataLabel2b = { step: "2b. Get rights metadata for resource" };
@@ -113,7 +108,6 @@ export const options = getOptions(
         searchAccessPackagesLabel,
         searchResourcesLabel,
         getResourceOwnersLabel,
-        getOrganizationDataLabel,
 
         resourceDelegationGroup,
         searchAccessPackagesLabel2a,
@@ -155,7 +149,6 @@ export const options = getOptions(
  * UserClient,
  * RoleClient,
  * ResourceClient,
- * AltinnCdnClient,
  * PersonalTokenGenerator
  * ]} The initialized API clients and token generator.
  */
@@ -171,7 +164,7 @@ const getClients = lazy(function () {
 
     const tokenGenerator = new PersonalTokenGenerator(tokenOpts);
 
-    /** @type {[ConnectionClient, AccessPackageClient, SingleRightClient, UserClient, RoleClient, ResourceClient, AltinnCdnClient, PersonalTokenGenerator]} */
+    /** @type {[ConnectionClient, AccessPackageClient, SingleRightClient, UserClient, RoleClient, ResourceClient, PersonalTokenGenerator]} */
     const clients = [
         new ConnectionClient(__ENV.AM_UI_BASE_URL, tokenGenerator),
         new AccessPackageClient(__ENV.AM_UI_BASE_URL, tokenGenerator),
@@ -179,7 +172,6 @@ const getClients = lazy(function () {
         new UserClient(__ENV.AM_UI_BASE_URL, tokenGenerator),
         new RoleClient(__ENV.AM_UI_BASE_URL, tokenGenerator),
         new ResourceClient(__ENV.AM_UI_BASE_URL, tokenGenerator),
-        new AltinnCdnClient(__ENV.AM_UI_BASE_URL, tokenGenerator),
         tokenGenerator,
     ];
 
@@ -212,7 +204,6 @@ export default function (segmentedData) {
         userApiClient,
         roleApiClient,
         resourceApiClient,
-        altinnCdnApiClient,
         tokenGenerator,
     ] = getClients();
 
@@ -319,12 +310,10 @@ export default function (segmentedData) {
                 .withPage(1)
                 .withResultsPerPage(7)
                 .withSearchString("")
-                .withIncludeA2Services(false)
                 .build(),
             searchResourcesLabel,
         );
         GetResourceOwners(resourceApiClient, null, getResourceOwnersLabel);
-        GetOrgData(altinnCdnApiClient, getOrganizationDataLabel);
     });
 
     // Part 2.

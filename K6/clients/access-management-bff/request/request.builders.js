@@ -1,5 +1,5 @@
 import { RequestStatus } from "../common/common.types.js";
-import { ApproveReceivedRequestQuery, ConfirmDraftRequestQuery, CreatePackageRequestQuery, CreateResourceRequestQuery, GetReceivedPackageRequestsQuery, GetReceivedRequestsCountQuery, GetReceivedRequestsQuery, GetReceivedResourceRequestsQuery, GetRequestQuery, GetSentPackageRequestsQuery, GetSentRequestsCountQuery, GetSentRequestsQuery, GetSentResourceRequestsQuery, RejectReceivedRequestQuery, WithdrawSentRequestQuery } from "./request.types.js";
+import { ApproveReceivedRequestQuery, ConfirmDraftRequestQuery, CreatePackageRequestQuery, CreateResourceRequestQuery, GetReceivedPackageRequestsQuery, GetReceivedRequestsCountForSubunitsQuery, GetReceivedRequestsCountQuery, GetReceivedRequestsQuery, GetReceivedResourceRequestsQuery, GetRequestQuery, GetSentPackageRequestsQuery, GetSentRequestsCountQuery, GetSentRequestsQuery, GetSentResourceRequestsQuery, RejectReceivedRequestQuery, WithdrawSentRequestQuery } from "./request.types.js";
 
 /**
  * Builder for the query parameters of {@link GetSentRequests}.
@@ -544,6 +544,70 @@ class GetReceivedRequestsCountQueryBuilder {
 }
 
 /**
+ * Builder for the query parameters of {@link GetReceivedRequestsCountForSubunits}.
+ */
+class GetReceivedRequestsCountForSubunitsQueryBuilder {
+    constructor() {
+        this.query = /** @type {GetReceivedRequestsCountForSubunitsQuery} */ ({});
+    }
+
+    /**
+     * Optional. Party UUID of the party the request is made on behalf of.
+     *
+     * @param {string} party Party UUID of the party the request is made on behalf
+     * of.
+     * @returns {GetReceivedRequestsCountForSubunitsQueryBuilder} This builder, for chaining.
+     */
+    withParty(party) {
+        this.query.party = party;
+        return this;
+    }
+
+    /**
+     * Optional. Party UUID the access is given from.
+     *
+     * @param {string} from Party UUID the access is given from.
+     * @returns {GetReceivedRequestsCountForSubunitsQueryBuilder} This builder, for chaining.
+     */
+    withFrom(from) {
+        this.query.from = from;
+        return this;
+    }
+
+    /**
+     * Request statuses to filter by. Can be called more than once.
+     *
+     * @param {RequestStatus} statu Request statuses to filter by.
+     * @returns {GetReceivedRequestsCountForSubunitsQueryBuilder} This builder, for chaining.
+     */
+    addStatu(statu) {
+        this.query.status ??= [];
+        this.query.status.push(statu);
+        return this;
+    }
+
+    /**
+     * Request statuses to filter by. Replaces any previous values.
+     *
+     * @param {Array<RequestStatus>} status Request statuses to filter by.
+     * @returns {GetReceivedRequestsCountForSubunitsQueryBuilder} This builder, for chaining.
+     */
+    withStatus(status) {
+        this.query.status = status;
+        return this;
+    }
+
+    /**
+     * Builds the query object.
+     *
+     * @returns {GetReceivedRequestsCountForSubunitsQuery} The built query parameters.
+     */
+    build() {
+        return this.query;
+    }
+}
+
+/**
  * Builder for the query parameters of {@link GetRequest}.
  */
 class GetRequestQueryBuilder {
@@ -847,6 +911,7 @@ export {
     CreatePackageRequestQueryBuilder,
     CreateResourceRequestQueryBuilder,
     GetReceivedPackageRequestsQueryBuilder,
+    GetReceivedRequestsCountForSubunitsQueryBuilder,
     GetReceivedRequestsCountQueryBuilder,
     GetReceivedRequestsQueryBuilder,
     GetReceivedResourceRequestsQueryBuilder,
