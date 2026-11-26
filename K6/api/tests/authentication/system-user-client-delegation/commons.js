@@ -382,7 +382,7 @@ export function arrangeBreakpoint(systemNamePrefix, orgNos, agentsPerFacilitator
         const available = SystemUserClientDelegationBuildingBlocks.GetAvailableClients(clients.facilitator.clientDelegationClient, own[0].systemUserId);
         const clientIds = (available?.data ?? []).map((client) => client.clientId);
 
-        if (!check(clientIds, { [`the facilitator has at least ${minClients} clients available`]: (ids) => ids.length >= minClients })) {
+        if (!check(clientIds, { "the facilitator has enough clients available": (ids) => ids.length >= minClients })) {
             cleanupArranged(arranged);
 
             fail(`cannot run the breakpoint: ${orgNo} has ${clientIds.length} clients available, needs ${minClients}`);
