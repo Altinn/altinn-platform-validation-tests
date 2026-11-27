@@ -237,6 +237,7 @@
  * @typedef {object} ConnectionFE
  * @property {PartyFE} party
  * @property {Array<RoleInfo>|null} roles
+ * @property {Array<RoleInfo>|null} viaRoles
  * @property {Array<ConnectionFE>|null} connections
  */
 

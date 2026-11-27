@@ -9203,6 +9203,13 @@
             },
             "nullable": true
           },
+          "viaRoles": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RoleInfo"
+            },
+            "nullable": true
+          },
           "connections": {
             "type": "array",
             "items": {
