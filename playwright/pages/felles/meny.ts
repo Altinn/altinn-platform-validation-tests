@@ -93,8 +93,10 @@ export class MenyPom {
     }
 }
 
-const languageLabels: Record<Sprak, string> = {
-    [Sprak.Bokmaal]: "Norsk (bokmål)",
-    [Sprak.Nynorsk]: "Norsk (nynorsk)",
-    [Sprak.Engelsk]: "English",
+// Tilgangsstyring skriver "Norsk (bokmål)", arbeidsflaten bare "Bokmål". Som med en streng
+// matches deler av navnet, uten hensyn til store og små bokstaver.
+const languageLabels: Record<Sprak, RegExp> = {
+    [Sprak.Bokmaal]: /Norsk \(bokmål\)|Bokmål/i,
+    [Sprak.Nynorsk]: /Norsk \(nynorsk\)|Nynorsk/i,
+    [Sprak.Engelsk]: /English/i,
 };
