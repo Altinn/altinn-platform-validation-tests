@@ -1,7 +1,7 @@
 import http from "k6/http";
 
 import { withRetries } from "../../api/building-blocks/common/retry.js";
-import { requireEnv } from "../../helpers.js";
+import { appsBaseUrl, requireEnv } from "../../helpers.js";
 import { requestParams } from "../common/request.js";
 
 class AltinnCdnClient {
@@ -72,13 +72,7 @@ class AltinnCdnClient {
      * @returns The base URL for the particular org and environment
      */
     GetBaseUrlForOrgInEnvironment(org, environment = "tt02") {
-        let endpoint = "";
-        if (environment == "tt02") {
-            endpoint = `https://${org}.apps.tt02.altinn.no`;
-        } else if (environment == "prod") {
-            endpoint = `https://${org}.apps.altinn.no`;
-        }
-        return endpoint;
+        return appsBaseUrl(org, environment);
     }
     /**
      * GetBaseUrlForOrgInEnvironment

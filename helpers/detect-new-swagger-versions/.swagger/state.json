@@ -64,5 +64,8 @@
   },
   "https://platform.tt02.altinn.no/dialogporten/swagger/v1/swagger.json": {
     "hash": "3d857708f50b72cb092ec7c3cb9c06fbae638907658a363f7e445ba03cd24a4d"
+  },
+  "https://ttd.apps.tt02.altinn.no/ttd/brukermonster-test-app/v1/customOpenapi.json": {
+    "hash": "1c749e638bfa4c384c4cb8dfc93779f9576ac89c7761bcbea4eb660cb51836fc"
   }
 }
