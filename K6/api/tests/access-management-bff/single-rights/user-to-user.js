@@ -295,7 +295,6 @@ export default function (segmentedData) {
                 .withPage(1)
                 .withResultsPerPage(7)
                 .withSearchString("")
-                .withIncludeA2Services(false)
                 .build(),
             searchResourcesLabel,
         );

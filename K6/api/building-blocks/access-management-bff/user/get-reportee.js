@@ -1,6 +1,6 @@
 import { check } from "k6";
 
-import { AuthorizedParty } from "../../../../clients/access-management-bff/common/common.types.js";
+import { AuthorizedPartyFE } from "../../../../clients/access-management-bff/common/common.types.js";
 import { UserClient } from "../../../../clients/access-management-bff/user/index.js";
 import { withRetries } from "../../common/retry.js";
 
@@ -10,7 +10,7 @@ import { withRetries } from "../../common/retry.js";
  * @param {UserClient} userClient Client for the user endpoints.
  * @param {string} partyUuid Party UUID of the reportee.
  * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
- * @returns {AuthorizedParty|null} The reportee.
+ * @returns {AuthorizedPartyFE|null} The reportee.
  */
 export function GetReportee(userClient, partyUuid, labels = null) {
     const res = withRetries(
@@ -18,7 +18,7 @@ export function GetReportee(userClient, partyUuid, labels = null) {
         "GetReportee",
     );
 
-    /** @type {AuthorizedParty|null} */
+    /** @type {AuthorizedPartyFE|null} */
     let reportee = null;
 
     const succeed = check(res, {

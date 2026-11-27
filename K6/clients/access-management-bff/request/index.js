@@ -4,6 +4,7 @@ export {
     CreatePackageRequestQueryBuilder,
     CreateResourceRequestQueryBuilder,
     GetReceivedPackageRequestsQueryBuilder,
+    GetReceivedRequestsCountForSubunitsQueryBuilder,
     GetReceivedRequestsCountQueryBuilder,
     GetReceivedRequestsQueryBuilder,
     GetReceivedResourceRequestsQueryBuilder,

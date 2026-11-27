@@ -1,6 +1,6 @@
 import { check } from "k6";
 
-import { SimplifiedParty } from "../../../../clients/access-management-bff/common/common.types.js";
+import { PartyFE } from "../../../../clients/access-management-bff/common/common.types.js";
 import { InstanceClient } from "../../../../clients/access-management-bff/instance/index.js";
 import { GetInstanceSimplifiedUsersQuery } from "../../../../clients/access-management-bff/instance/instance.types.js";
 import { withRetries } from "../../common/retry.js";
@@ -13,7 +13,7 @@ import { withRetries } from "../../common/retry.js";
  * @param {GetInstanceSimplifiedUsersQuery|null} [queryParams] Optional query
  * parameters. Use {@link GetInstanceSimplifiedUsersQueryBuilder}.
  * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
- * @returns {Array<SimplifiedParty>|null} The candidate parties.
+ * @returns {Array<PartyFE>|null} The candidate parties.
  */
 export function GetInstanceSimplifiedUsers(
     instanceClient,
@@ -25,7 +25,7 @@ export function GetInstanceSimplifiedUsers(
         "GetInstanceSimplifiedUsers",
     );
 
-    /** @type {Array<SimplifiedParty>|null} */
+    /** @type {Array<PartyFE>|null} */
     let parties = null;
 
     const succeed = check(res, {

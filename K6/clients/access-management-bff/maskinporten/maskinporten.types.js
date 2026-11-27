@@ -10,8 +10,6 @@
  * @typedef {object} SearchScopesQuery
  * @property {string} [SearchString] Free text search string.
  * @property {Array<string>} [ROFilters] Resource owner org codes to filter by.
- * @property {boolean} [IncludeA2Services] Whether to include Altinn 2
- * services.
  * @property {boolean} [IncludeExpired] Whether to include expired resources.
  * @property {number} [ResultsPerPage] Page size of the search result.
  * @property {number} [Page] Page number of the search result.

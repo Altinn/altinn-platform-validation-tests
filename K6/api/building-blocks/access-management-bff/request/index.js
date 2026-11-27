@@ -6,6 +6,7 @@ export { GetDraftRequest } from "./get-draft-request.js";
 export { GetReceivedPackageRequests } from "./get-received-package-requests.js";
 export { GetReceivedRequests } from "./get-received-requests.js";
 export { GetReceivedRequestsCount } from "./get-received-requests-count.js";
+export { GetReceivedRequestsCountForSubunits } from "./get-received-requests-count-for-subunits.js";
 export { GetReceivedResourceRequests } from "./get-received-resource-requests.js";
 export { GetRequest } from "./get-request.js";
 export { GetSentPackageRequests } from "./get-sent-package-requests.js";

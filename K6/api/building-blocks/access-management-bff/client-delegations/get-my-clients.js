@@ -2,7 +2,7 @@ import { check } from "k6";
 
 import { GetMyClientsQuery } from "../../../../clients/access-management-bff/client-delegations/client-delegations.types.js";
 import { ClientDelegationsClient } from "../../../../clients/access-management-bff/client-delegations/index.js";
-import { MyClientDelegation } from "../../../../clients/access-management-bff/common/common.types.js";
+import { MyClientDelegationFE } from "../../../../clients/access-management-bff/common/common.types.js";
 import { withRetries } from "../../common/retry.js";
 
 /**
@@ -13,7 +13,7 @@ import { withRetries } from "../../common/retry.js";
  * @param {GetMyClientsQuery|null} [queryParams] Optional query parameters. Use
  * {@link GetMyClientsQueryBuilder}.
  * @param {{[key: string]: string}|null} [labels] Optional k6 request labels.
- * @returns {Array<MyClientDelegation>|null} Clients grouped by client
+ * @returns {Array<MyClientDelegationFE>|null} Clients grouped by client
  * provider.
  */
 export function GetMyClients(
@@ -26,7 +26,7 @@ export function GetMyClients(
         "GetMyClients",
     );
 
-    /** @type {Array<MyClientDelegation>|null} */
+    /** @type {Array<MyClientDelegationFE>|null} */
     let myClients = null;
 
     const succeed = check(res, {

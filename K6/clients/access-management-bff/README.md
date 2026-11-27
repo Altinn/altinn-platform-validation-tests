@@ -6,7 +6,11 @@ the base URL a client is constructed with is the host serving that frontend in
 the environment, not the platform host.
 
 Generated from the `Altinn.AccessManagement.UI` swagger document, one client
-folder per swagger tag. The models are shared between the clients and live in
+folder per swagger tag. No environment publishes that document, and the weekly
+swagger check does not cover it, so a copy is kept by hand in
+[`helpers/detect-new-swagger-versions/.swagger/altinn-access-management-frontend-bff.json`](../../../helpers/detect-new-swagger-versions/.swagger/altinn-access-management-frontend-bff.json).
+The [helper README](../../../helpers/detect-new-swagger-versions/README.md#access-management-bff)
+says how to check it for changes. The models are shared between the clients and live in
 `common/common.types.js`, since most of them are used by more than one of them.
 The three `Home` endpoints that serve the frontend itself are not covered, as
 they return HTML and not JSON.
