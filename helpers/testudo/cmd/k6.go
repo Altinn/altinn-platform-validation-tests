@@ -1,3 +1,5 @@
+//go:build !slim
+
 package cmd
 
 import "github.com/spf13/cobra"

@@ -1,3 +1,5 @@
+//go:build !slim
+
 package cmd
 
 // testudo serve: the find commands as an HTTP API. Each command is an
