@@ -1,0 +1,9 @@
+Hey Claude!
+
+We want to build a "slim" version of testudo with only relevant commands for users (devs and testers)
+This first iteration I am thinking we can stick to a slim-latest and we include the find commands and the version command. All the others are mostly needed in automation scenarios.
+
+As usual, don't start to implement right away. Suggest what you'd do, and then we can iterate further.
+
+See you in a bit!
+
