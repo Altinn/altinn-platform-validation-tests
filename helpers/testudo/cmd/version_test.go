@@ -15,19 +15,20 @@ import (
 func TestWriteVersion(t *testing.T) {
 	for _, tt := range []struct {
 		name string
-		info buildinfo.Info
+		info versionInfo
 		want string
 	}{
 		{
 			name: "built in a checkout with changes",
-			info: buildinfo.Info{
+			info: versionInfo{Variant: "full", Info: buildinfo.Info{
 				Commit:     "19963b6680dbcbb1328e5a459a827fcf1590384d",
 				CommitTime: time.Date(2026, 11, 26, 11, 37, 50, 0, time.UTC),
 				Modified:   true,
 				GoVersion:  "go1.27.2",
 				Platform:   "linux/amd64",
-			},
-			want: `commit:      19963b6680dbcbb1328e5a459a827fcf1590384d, with changes that were not committed
+			}},
+			want: `variant:     full
+commit:      19963b6680dbcbb1328e5a459a827fcf1590384d, with changes that were not committed
 commit time: 2026-11-26T11:37:50Z
 go:          go1.27.2
 platform:    linux/amd64
@@ -35,12 +36,13 @@ platform:    linux/amd64
 		},
 		{
 			name: "installed with go install",
-			info: buildinfo.Info{
+			info: versionInfo{Variant: "slim", Info: buildinfo.Info{
 				Version:   "v0.0.0-20261126113750-19963b6680db",
 				GoVersion: "go1.27.2",
 				Platform:  "darwin/arm64",
-			},
+			}},
 			want: `version:     v0.0.0-20261126113750-19963b6680db
+variant:     slim
 commit:      unknown
 commit time: unknown
 go:          go1.27.2
@@ -49,8 +51,9 @@ platform:    darwin/arm64
 		},
 		{
 			name: "built without git",
-			info: buildinfo.Info{GoVersion: "go1.27.2", Platform: "windows/arm64"},
-			want: `commit:      unknown
+			info: versionInfo{Variant: "slim", Info: buildinfo.Info{GoVersion: "go1.27.2", Platform: "windows/arm64"}},
+			want: `variant:     slim
+commit:      unknown
 commit time: unknown
 go:          go1.27.2
 platform:    windows/arm64
@@ -75,6 +78,7 @@ func TestVersion(t *testing.T) {
 		t.Fatal(err)
 	}
 	for _, want := range []string{
+		"variant:     " + variant + "\n",
 		"go:          " + runtime.Version() + "\n",
 		"platform:    " + runtime.GOOS + "/" + runtime.GOARCH + "\n",
 	} {
@@ -93,8 +97,8 @@ func TestVersionJSON(t *testing.T) {
 	if err := json.Unmarshal([]byte(out), &got); err != nil {
 		t.Fatalf("not JSON: %v\n%s", err, out)
 	}
-	if got["goVersion"] != runtime.Version() || got["platform"] != runtime.GOOS+"/"+runtime.GOARCH {
-		t.Errorf("expected goVersion and platform, actual %s", out)
+	if got["variant"] != variant || got["goVersion"] != runtime.Version() || got["platform"] != runtime.GOOS+"/"+runtime.GOARCH {
+		t.Errorf("expected variant, goVersion and platform, actual %s", out)
 	}
 }
 

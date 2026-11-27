@@ -10,6 +10,12 @@ DIST_DIR := dist
 # make build-all PLATFORMS="linux/amd64 windows/amd64"
 PLATFORMS ?= linux/amd64 linux/arm64 darwin/amd64 darwin/arm64 windows/amd64 windows/arm64
 
+# Go build tags. TAGS=slim makes the slim build, with only the commands for
+# finding test data and version, e.g. make build TAGS=slim. Empty is the full
+# build.
+TAGS ?=
+TAGS_FLAG = $(if $(TAGS),-tags $(TAGS))
+
 # .exe on Windows, empty elsewhere.
 EXE := $(shell go env GOEXE)
 
@@ -33,29 +39,31 @@ help: ## Show this help.
 
 .PHONY: build
 build: ## Build testudo for this machine into bin/.
-	go build -o $(BIN_DIR)/$(BINARY)$(EXE) .
+	go build $(TAGS_FLAG) -o $(BIN_DIR)/$(BINARY)$(EXE) .
 
 .PHONY: install
 install: ## Install testudo into GOBIN, so it runs from any folder.
-	go install .
+	go install $(TAGS_FLAG) .
 
 .PHONY: test
 test: ## Run the tests.
-	go test ./...
+	go test $(TAGS_FLAG) ./...
 
 .PHONY: vet
 vet: ## Run go vet.
-	go vet ./...
+	go vet $(TAGS_FLAG) ./...
 
 .PHONY: fmt
 fmt: ## Format the code with gofmt.
 	gofmt -w .
 
 .PHONY: check
-check: ## Check formatting, then run go vet and the tests.
+check: ## Check formatting, then run go vet and the tests for the full and the slim build.
 	@files=$$(gofmt -l .); if [ -n "$$files" ]; then echo "Not formatted with gofmt:"; echo "$$files"; exit 1; fi
 	go vet ./...
+	go vet -tags slim ./...
 	go test ./...
+	go test -tags slim ./...
 
 ##@ Release
 
@@ -66,7 +74,7 @@ build-all: $(PLATFORMS) ## Build testudo for Linux, macOS and Windows into dist/
 # `make -j build-all` builds them in parallel.
 .PHONY: $(PLATFORMS)
 $(PLATFORMS):
-	GOOS=$(os) GOARCH=$(arch) CGO_ENABLED=0 go build $(RELEASE_FLAGS) \
+	GOOS=$(os) GOARCH=$(arch) CGO_ENABLED=0 go build $(TAGS_FLAG) $(RELEASE_FLAGS) \
 		-o $(DIST_DIR)/$(BINARY)-$(os)-$(arch)$(if $(filter windows,$(os)),.exe) .
 
 .PHONY: clean

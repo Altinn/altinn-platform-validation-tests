@@ -16,7 +16,8 @@ func newVersionCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "version",
 		Short: "Show which build of testudo this is",
-		Long: `Show the commit testudo was built from, when that commit was made, and the Go
+		Long: `Show the variant of testudo (full, or slim with only the commands for finding
+test data), the commit it was built from, when that commit was made, and the Go
 version and platform it was built for.
 
 The commit is only known when testudo is built in a git checkout, for example
@@ -30,7 +31,7 @@ The config file is not read, so this works even when it is broken.`,
 		// Replaces the one on the root command, so the config file is not read.
 		PersistentPreRunE: func(*cobra.Command, []string) error { return nil },
 		RunE: func(cmd *cobra.Command, args []string) error {
-			info := buildinfo.Read()
+			info := versionInfo{Variant: variant, Info: buildinfo.Read()}
 			if jsonOutput {
 				return writeJSON(cmd.OutOrStdout(), info)
 			}
@@ -41,13 +42,22 @@ The config file is not read, so this works even when it is broken.`,
 	return cmd
 }
 
+// versionInfo is what testudo version prints. The variant comes from the build
+// tags, which only the command line knows about.
+type versionInfo struct {
+	// Variant is full, or slim for a build with -tags slim.
+	Variant string `json:"variant"`
+	buildinfo.Info
+}
+
 // writeVersion prints info as text, one value on each line. The version line
 // is left out when there is no version, as for a build in a checkout.
-func writeVersion(out io.Writer, info buildinfo.Info) error {
+func writeVersion(out io.Writer, info versionInfo) error {
 	var b strings.Builder
 	if info.Version != "" {
 		fmt.Fprintf(&b, "version:     %s\n", info.Version)
 	}
+	fmt.Fprintf(&b, "variant:     %s\n", info.Variant)
 	commit, commitTime := "unknown", "unknown"
 	if info.Commit != "" {
 		commit = info.Commit

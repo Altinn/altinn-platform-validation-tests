@@ -12,7 +12,10 @@ Use it to make the CSV files that K6 tests read in `setup()` with
 recipe for each file that is made with testudo today.
 
 testudo also makes the Kubernetes manifests that run the K6 tests in the k6
-cluster, see [k6 generate](#k6-generate).
+cluster, see [k6 generate](#k6-generate). `k6 generate`, [serve](#api) and
+[notify playwright](#notify-playwright) are used in automation. The slim
+build, which is the one to use on your own machine, leaves them out, see
+[Download](#download).
 
 - [Install](#install)
 - [Configuration](#configuration)
@@ -34,24 +37,33 @@ cluster, see [k6 generate](#k6-generate).
 ### Download
 
 Every change to testudo on `main` is built for Linux, macOS and Windows (amd64
-and arm64) and published as the
-[testudo-latest](https://github.com/Altinn/altinn-platform-validation-tests/releases/tag/testudo-latest)
-release. It has no version number: the release notes name the commit it was
-built from, and the next change replaces the files. `testudo version` shows the
-commit of the binary you have.
+and arm64) and published as two releases:
+
+- [testudo-slim-latest](https://github.com/Altinn/altinn-platform-validation-tests/releases/tag/testudo-slim-latest):
+  the slim build, with only the commands for finding test data and `version`.
+  Use this one on your own machine.
+- [testudo-latest](https://github.com/Altinn/altinn-platform-validation-tests/releases/tag/testudo-latest):
+  the full build, which also has the commands used in automation:
+  [serve](#api), [notify playwright](#notify-playwright) and
+  [k6 generate](#k6-generate).
+
+They have no version number: the release notes name the commit they were built
+from, and the next change replaces the files. `testudo version` shows the
+variant (`slim` or `full`) and the commit of the binary you have.
 
 ```bash
-gh release download testudo-latest --repo Altinn/altinn-platform-validation-tests \
+gh release download testudo-slim-latest --repo Altinn/altinn-platform-validation-tests \
   --pattern testudo-linux-amd64 --pattern checksums.txt
 sha256sum --check --ignore-missing checksums.txt
 chmod +x testudo-linux-amd64
 ```
 
 On macOS, check with `shasum -a 256 --check --ignore-missing checksums.txt`.
-The files are named `testudo-<os>-<arch>`, for example `testudo-darwin-arm64`
-for a Mac with Apple silicon and `testudo-windows-amd64.exe`. Without `gh`,
-download them from
-`https://github.com/Altinn/altinn-platform-validation-tests/releases/download/testudo-latest/<file>`.
+The files are named `testudo-<os>-<arch>` in both releases, for example
+`testudo-darwin-arm64` for a Mac with Apple silicon and
+`testudo-windows-amd64.exe`. Without `gh`, download them from
+`https://github.com/Altinn/altinn-platform-validation-tests/releases/download/testudo-slim-latest/<file>`,
+or from `testudo-latest` for the full build.
 
 The macOS binaries are not signed. A file downloaded with a browser is
 quarantined, and macOS refuses to run it; remove the quarantine with
@@ -69,11 +81,17 @@ make install        # installs testudo into GOBIN, so it runs from any folder
 make build-all      # dist/ with binaries for Linux, macOS and Windows (amd64 and arm64)
 ```
 
+These make the full build. Add `TAGS=slim` for the slim build, for example
+`make install TAGS=slim`.
+
 Or run it straight from the source:
 
 ```bash
 go run . find persons --count 3 --env at23
 ```
+
+Without make, the slim build is the Go build tag `slim`, as in
+`go install -tags slim .`.
 
 On Windows, run make from Git Bash. Install make with
 `winget install ezwinports.make` if you do not have it. `make help` lists all
@@ -245,6 +263,8 @@ rows than you need if the count matters.
 
 ## API
 
+Only in the full build, see [Download](#download).
+
 `testudo serve` makes the find commands available over HTTP. Each command is
 an endpoint, and its flags are query parameters with the same names:
 
@@ -297,6 +317,8 @@ each request and what it fetched to stderr. Stop it with Ctrl+C.
 > `localhost` unless the network around it is closed.
 
 ## notify playwright
+
+Only in the full build, see [Download](#download).
 
 Sends the result of a Playwright run to Slack.
 
@@ -493,6 +515,8 @@ runs testudo and replaces the header row with the names the file uses.
 
 ## k6 generate
 
+Only in the full build, see [Download](#download).
+
 Makes the Kubernetes manifests that run the tests in a K6 config file
 (`functional.yaml`, `smoke.yaml`, `healthcheck.yaml`, `breakpoint.yaml` or
 `browser.yaml` under `K6/`) in the k6 cluster, for every environment in the file
@@ -610,8 +634,10 @@ A key the config file format does not have, for example a typo such as
 
 ## version
 
-Shows which build of testudo you have: the commit it was built from, when that
-commit was made, and the Go version and platform it was built for.
+Shows which build of testudo you have: the variant, the commit it was built
+from, when that commit was made, and the Go version and platform it was built
+for. The variant is `slim` for the slim build and `full` for the full build
+(see [Download](#download)).
 
 ```bash
 testudo version
@@ -619,6 +645,7 @@ testudo version --json
 ```
 
 ```text
+variant:     slim
 commit:      19963b6680dbcbb1328e5a459a827fcf1590384d
 commit time: 2026-11-26T11:37:50Z
 go:          go1.27.2
@@ -626,7 +653,7 @@ platform:    linux/amd64
 ```
 
 Go records the commit when testudo is built in a git checkout, as
-[make build](#build) and the [testudo-latest](#download) release are. If the
+[make build](#build) and the [releases](#download) are. If the
 checkout had changes that were not committed, the commit line says so. `go run`
 records no commit, so it is `unknown`. A testudo installed with
 `go install …@<version>` has a `version:` line instead of a commit. The config
@@ -643,13 +670,13 @@ and is still made by K6 scripts.
 ## Development
 
 ```bash
-make check    # gofmt, go vet and the tests
+make check    # gofmt, then go vet and the tests for the full and the slim build
 make fmt      # formats the code
 ```
 
 | Folder | Contents |
 | --- | --- |
-| `cmd/` | The commands, their flags and the output (text, JSON, CSV). `serve.go` has the API. |
+| `cmd/` | The commands, their flags and the output (text, JSON, CSV). `serve.go` has the API. `commands_full.go` and `commands_slim.go` say which commands each build has; the files for the automation commands, and their tests, have the build constraint `//go:build !slim`. |
 | `internal/parties/` | Finding persons and organizations: the Tenor queries and the Register lookup. |
 | `internal/tenor/` | Tenor client and KQL helpers. `tenortest/` has fakes for tests. |
 | `internal/register/` | Register client. `registertest/` has fakes for tests. |
@@ -663,10 +690,14 @@ make fmt      # formats the code
 `TestGenerate` in `internal/k6manifest/` runs k6, and fails when it is not on
 PATH. Install k6 before you run the tests.
 
+Editors that use gopls see the full build, and leave `commands_slim.go` out. To
+work on the slim build, set `"buildFlags": ["-tags=slim"]` in the gopls
+settings.
+
 The [Test and release testudo](../../.github/workflows/release-testudo.yaml)
 workflow runs `make check` on pull requests that change testudo. On `main` it
-also runs `make build-all` and publishes the binaries as the
-[testudo-latest](#download) release.
+also runs `make build-all` for each build and publishes the binaries as the
+[testudo-latest and testudo-slim-latest](#download) releases.
 
 The code is in English. Words from the domain that have no good English
 equivalent stay in Norwegian, for example hovedenhet, underenhet, daglig leder
