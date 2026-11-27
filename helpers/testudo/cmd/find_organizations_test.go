@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"slices"
 	"strings"
 	"testing"
 
@@ -162,14 +163,22 @@ func TestValidateOrganizationsOptions(t *testing.T) {
 		{"role and unit type", organizationsOptions{count: 1, role: "revisor", unitTypes: []string{"AS"}}, false, "--role and --unit-type cannot be used together"},
 		{"orgno and role", organizationsOptions{role: "revisor", organizationNumbers: []string{"313490114"}}, false, "--orgno and --role cannot be used together"},
 		// --person-role can be used with all the others.
-		{"person role", organizationsOptions{count: 1, personRole: "styremedlem", unitTypes: []string{"BRL"}}, false, ""},
-		{"person role and orgno", organizationsOptions{personRole: "styreleder", organizationNumbers: []string{"313490114"}}, false, ""},
-		{"unknown person role", organizationsOptions{count: 1, personRole: "LEDE"}, false, "unknown --person-role"},
+		{"person role", organizationsOptions{count: 1, personRoles: []string{"styremedlem"}, unitTypes: []string{"BRL"}}, false, ""},
+		{"person role and orgno", organizationsOptions{personRoles: []string{"styreleder"}, organizationNumbers: []string{"313490114"}}, false, ""},
+		{"unknown person role", organizationsOptions{count: 1, personRoles: []string{"LEDE"}}, false, "unknown --person-role"},
+		// Several person roles too.
+		{"person roles", organizationsOptions{count: 1, personRoles: []string{"daglig-leder", "styreleder"}}, false, ""},
+		{"person roles and orgno", organizationsOptions{personRoles: []string{"daglig-leder", "styreleder"}, organizationNumbers: []string{"313490114"}}, false, ""},
+		{"person roles and role", organizationsOptions{count: 1, personRoles: []string{"daglig-leder", "styreleder"}, role: "revisor"}, false, ""},
+		{"person roles and subunits", organizationsOptions{count: 1, personRoles: []string{"daglig-leder", "styreleder"}, subunits: true}, false, ""},
+		{"one unknown person role", organizationsOptions{count: 1, personRoles: []string{"daglig-leder", "sjef"}}, false, `unknown --person-role "sjef"`},
+		{"empty person role", organizationsOptions{count: 1, personRoles: []string{"daglig-leder", ""}}, false, "--person-role has an empty role"},
+		{"person role twice", organizationsOptions{count: 1, personRoles: []string{"styreleder", "daglig-leder", "styreleder"}}, false, `--person-role has "styreleder" more than once`},
 		{"subunits", organizationsOptions{count: 1, subunits: true, unitTypes: []string{"ENK"}}, false, ""},
 		{"BEDR is not a unit type", organizationsOptions{count: 1, unitTypes: []string{"BEDR"}}, false, "unknown --unit-type"},
 		{"ADOS", organizationsOptions{count: 1, unitTypes: []string{"ados"}}, false, ""},
 		{"subunits and ADOS", organizationsOptions{count: 1, subunits: true, unitTypes: []string{"AS", "ados"}}, false, "--subunits cannot be used with --unit-type ADOS"},
-		{"KBO with bostyrer", organizationsOptions{count: 1, unitTypes: []string{"kbo"}, personRole: "bostyrer"}, false, ""},
+		{"KBO with bostyrer", organizationsOptions{count: 1, unitTypes: []string{"kbo"}, personRoles: []string{"bostyrer"}}, false, ""},
 		{"subunits and orgno", organizationsOptions{subunits: true, organizationNumbers: []string{"313490114"}}, false, "--subunits cannot be used with --orgno or --role"},
 		{"subunits and role", organizationsOptions{count: 1, subunits: true, role: "revisor"}, false, "--subunits cannot be used"},
 		{"min subunits", organizationsOptions{count: 1, minSubunits: 2}, false, ""},
@@ -189,6 +198,75 @@ func TestValidateOrganizationsOptions(t *testing.T) {
 		if !errors.Is(err, errs.Invalid) || !strings.Contains(err.Error(), tt.wantErr) {
 			t.Errorf("%s: err = %v", tt.name, err)
 		}
+	}
+}
+
+func TestPersonRoleFlag(t *testing.T) {
+	tests := []struct {
+		args    []string
+		want    []string
+		wantErr string
+	}{
+		{nil, nil, ""},
+		{[]string{"--person-role", "styreleder"}, []string{"styreleder"}, ""},
+		{[]string{"--person-role", "daglig-leder,styreleder"}, []string{"daglig-leder", "styreleder"}, ""},
+		{[]string{"--person-role", "daglig-leder", "--person-role", "styreleder"}, []string{"daglig-leder", "styreleder"}, ""},
+		{[]string{"--person-role", "daglig-leder,"}, nil, "--person-role has an empty role"},
+		{[]string{"--person-role", "daglig-leder,,styreleder"}, nil, "--person-role has an empty role"},
+		{[]string{"--person-role", "daglig-leder,styreleder,daglig-leder"}, nil, `--person-role has "daglig-leder" more than once`},
+		{[]string{"--person-role", "daglig-leder,sjef"}, nil, `unknown --person-role "sjef"`},
+	}
+	for _, tt := range tests {
+		cmd := newOrganizationsCmd()
+		if err := cmd.ParseFlags(tt.args); err != nil {
+			t.Fatalf("%v: %v", tt.args, err)
+		}
+		personRoles, err := cmd.Flags().GetStringSlice("person-role")
+		if err != nil {
+			t.Fatal(err)
+		}
+		opts := organizationsOptions{count: 1, personRoles: personRoles}
+		err = opts.validate(false)
+		if tt.wantErr != "" {
+			if !errors.Is(err, errs.Invalid) || !strings.Contains(err.Error(), tt.wantErr) {
+				t.Errorf("%v: err = %v, want %q", tt.args, err, tt.wantErr)
+			}
+			continue
+		}
+		if err != nil || !slices.Equal(personRoles, tt.want) {
+			t.Errorf("%v: person roles = %q, err = %v", tt.args, personRoles, err)
+		}
+	}
+}
+
+func TestRunOrganizationsPersonRoles(t *testing.T) {
+	const leader = "11111111111"
+	role := func(code, personIdentifier string) string {
+		return `{"type":{"kode":"` + code + `"},"roller":[{"type":{"kode":"` + code + `"},"person":{"foedselsnummer":"` + personIdentifier + `"},"fratraadt":"N"}]}`
+	}
+	// The first has one person as daglig leder and styreleder, the second
+	// two.
+	docs := []map[string]any{}
+	for orgNumber, styreleder := range map[string]string{"000000001": leader, "000000002": "22222222222"} {
+		source := `{"organisasjonsnummer":"` + orgNumber + `","organisasjonsform":{"kode":"AS"},"rollegrupper":[` + role("DAGL", leader) + `,` + role("LEDE", styreleder) + `]}`
+		docs = append(docs, map[string]any{"tenorMetadata": map[string]any{"id": orgNumber, "kildedata": source}})
+	}
+	c := tenortest.NewClient(t, func(w http.ResponseWriter, r *http.Request) {
+		tenortest.Respond(w, len(docs), docs...)
+	})
+
+	var out, log bytes.Buffer
+	opts := &organizationsOptions{count: 2, personRoles: []string{"daglig-leder", "styreleder"}, output: outputOptions{format: "csv", columns: "organizationIdentifier,personRole,ssn"}}
+	if err := runOrganizations(context.Background(), c, registertest.Echo(t), &out, &log, opts); err != nil {
+		t.Fatal(err)
+	}
+	// The roles are comma-separated, so CSV quotes them.
+	if want := "organizationIdentifier,personRole,ssn\n000000001,\"daglig-leder,styreleder\"," + leader + "\n"; out.String() != want {
+		t.Errorf("csv = %q", out.String())
+	}
+	if !strings.Contains(log.String(), "Fetching 2 organizations with one person who is daglig-leder and styreleder from Tenor") ||
+		!strings.Contains(log.String(), "found only 1 of 2") {
+		t.Errorf("log = %q", log.String())
 	}
 }
 
@@ -224,7 +302,7 @@ func TestRunOrganizationsPersonRole(t *testing.T) {
 	})
 	var out, log bytes.Buffer
 	// Organization 3 has no daglig leder, but it has a styreleder.
-	opts := &organizationsOptions{count: 3, personRole: "styreleder", output: outputOptions{format: "csv", columns: "organizationIdentifier,personRole,ssn"}}
+	opts := &organizationsOptions{count: 3, personRoles: []string{"styreleder"}, output: outputOptions{format: "csv", columns: "organizationIdentifier,personRole,ssn"}}
 	if err := runOrganizations(context.Background(), c, registertest.Echo(t), &out, &log, opts); err != nil {
 		t.Fatal(err)
 	}
@@ -238,7 +316,7 @@ func TestRunOrganizationsPersonRole(t *testing.T) {
 	// Without --person-role the person is the leader, and personRole says
 	// which role.
 	out.Reset()
-	opts.personRole = ""
+	opts.personRoles = nil
 	if err := runOrganizations(context.Background(), c, registertest.Echo(t), &out, &log, opts); err != nil {
 		t.Fatal(err)
 	}

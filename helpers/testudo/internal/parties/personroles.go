@@ -74,6 +74,25 @@ func FindPersonRole(name string) (PersonRole, error) {
 	return PersonRoles[i], nil
 }
 
+// joinPersonRoles gives the names of the roles, comma-separated, e.g.
+// daglig-leder,styreleder.
+func joinPersonRoles(roles []PersonRole) string {
+	names := make([]string, len(roles))
+	for i, r := range roles {
+		names[i] = r.Name
+	}
+	return strings.Join(names, ",")
+}
+
+// personRoleCodes gives the codes of the roles, e.g. DAGL and LEDE.
+func personRoleCodes(roles []PersonRole) []string {
+	codes := make([]string, len(roles))
+	for i, r := range roles {
+		codes[i] = r.Code
+	}
+	return codes
+}
+
 // personRoleByCode looks up the person role with the code from Tenor.
 func personRoleByCode(code string) PersonRole {
 	i := slices.IndexFunc(PersonRoles, func(r PersonRole) bool { return r.Code == code })

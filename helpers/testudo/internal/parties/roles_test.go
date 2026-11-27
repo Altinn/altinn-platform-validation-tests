@@ -15,7 +15,7 @@ func TestFetchTilretteleggere(t *testing.T) {
 	c := tenortest.AuditorClient(t)
 	revisor, _ := FindRole("revisor")
 
-	v, err := fetchTilretteleggere(context.Background(), c, revisor, PersonRole{}, 5)
+	v, err := fetchTilretteleggere(context.Background(), c, revisor, nil, 5)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -36,7 +36,7 @@ func TestFetchTilretteleggere(t *testing.T) {
 		t.Errorf("second client = %q, %q", v[1].client, v[1].clientPerson)
 	}
 
-	v, _ = fetchTilretteleggere(context.Background(), c, revisor, PersonRole{}, 1)
+	v, _ = fetchTilretteleggere(context.Background(), c, revisor, nil, 1)
 	if len(v) != 1 || v[0].organizationIdentifier != tenortest.AuditorWithLeader {
 		t.Errorf("with count 1: %+v", v)
 	}

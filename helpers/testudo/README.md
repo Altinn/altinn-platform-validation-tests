@@ -205,7 +205,7 @@ Fetching 3 organizations with the leader from Tenor with KQL: organisasjonsform.
 | `--count` | `10` | Number of organizations, at most 1000. |
 | `--env` | `at23` | Environment: `at22`, `at23`, `tt02` or `yt01`. |
 | `--unit-type` | `AS` | Comma-separated organisasjonsformer, for example `AS`, `ENK`, `ESEK`, `BRL`, `NUF`, `KBO` or `PRE`. Any hovedenhet Access Management has roles from Enhetsregisteret for, and `ADOS`, whose units come with their hovedenhet, see [ADOS units](#ados-units). `--help` lists all 46. |
-| `--person-role` | the leader | The person has this role in Enhetsregisteret instead, for example `styreleder`, `styremedlem`, `kontaktperson`, `prokurist` or `bestyrende-reder`. `--help` lists all 22: the roles Access Management has given persons that persons also have in Tenor. |
+| `--person-role` | the leader | The person has this role in Enhetsregisteret instead, for example `styreleder`, `styremedlem`, `kontaktperson`, `prokurist` or `bestyrende-reder`. `--help` lists all 22: the roles Access Management has given persons that persons also have in Tenor. Comma-separate several roles, for example `daglig-leder,styreleder`, to get one person who has them all; organizations without such a person are left out. |
 | `--role` | | Finds tilretteleggere instead: organizations that are `revisor`, `regnskapsfoerer` or `forretningsfoerer` for at least one client. The `client…` columns describe the client it was found through. |
 | `--subunits` | | Finds underenheter (`BEDR` and `AAFY`) instead, one per hovedenhet. The person is the hovedenhet's, since underenheter have no persons of their own. |
 | `--min-subunits` | | Only organizations with at least this many underenheter. With `--subunits`, it applies to the hovedenheter. |
@@ -236,7 +236,7 @@ the organization in the `ADOS` role. This also applies to `--orgno`.
 | `partyId`, `partyUuid` | The organization's party id and party uuid. |
 | `unitType` | Organisasjonsform, for example `AS` or `BEDR`. |
 | `type` | The tilrettelegger role with `--role`, for example `regnskapsfoerer`. |
-| `personRole` | The person's role, for example `daglig-leder`, `innehaver`, `styreleder` or `bostyrer`. |
+| `personRole` | The person's role, for example `daglig-leder`, `innehaver`, `styreleder` or `bostyrer`. With several roles in `--person-role` it has them all, for example `"daglig-leder,styreleder"`, quoted since it has a comma. |
 | `ssn` | The person's fødselsnummer. |
 | `userId`, `userPartyId`, `userPartyUuid` | The person's user id, party id and party uuid. |
 | `lastName` | The person's last name. |
@@ -283,6 +283,7 @@ curl "localhost:8080/find/persons?env=at23&count=3"
 curl "localhost:8080/find/persons?env=at23&count=20&columns=personIdentifier,userId,partyUuid"
 curl "localhost:8080/find/organizations?env=at23&count=10&unit-type=ENK&columns=organizationIdentifier,ssn,userId"
 curl "localhost:8080/find/organizations?env=at23&count=5&subunits&columns=organizationIdentifier,hovedenhetOrganizationIdentifier"
+curl "localhost:8080/find/organizations?env=at23&count=5&person-role=daglig-leder,styreleder&columns=organizationIdentifier,personRole,ssn"
 ```
 
 The parameters work as the flags do, with these differences:
@@ -406,6 +407,14 @@ roles other than daglig leder:
 
 ```bash
 testudo find organizations --count 10 --env at23 --person-role styreleder --format csv \
+  --columns organizationIdentifier,partyUuid,personRole,ssn,userId,userPartyUuid
+```
+
+**One person with several ER roles.** For example a daglig leder who is also
+styreleder, for tests of what a person with both roles can do:
+
+```bash
+testudo find organizations --count 10 --env at23 --person-role daglig-leder,styreleder --format csv \
   --columns organizationIdentifier,partyUuid,personRole,ssn,userId,userPartyUuid
 ```
 

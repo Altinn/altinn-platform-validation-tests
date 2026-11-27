@@ -256,7 +256,7 @@ func (s *server) findOrganizations(w http.ResponseWriter, r *http.Request) {
 		minSubunits:         minSubunits,
 		organizationNumbers: listParameter(query, "orgno"),
 		role:                query.Get("role"),
-		personRole:          query.Get("person-role"),
+		personRoles:         listParameter(query, "person-role"),
 		jsonOutput:          jsonOutput,
 		env:                 cmp.Or(query.Get("env"), defaultEnv),
 		output: outputOptions{
