@@ -1,0 +1,63 @@
+namespace: access-management
+base_dir: K6/api/tests/access-management/resource-delegation-rules/delegable
+test_definitions:
+  # Whether Access Management hands out a resource the Resource Registry marks
+  # as delegable, and refuses one it marks as not delegable. Altinn/altinn-auth
+  # #4789 (delegation check), #4790 and #4896 (service owner connections), #4791
+  # (enduser request) and #4792 (service owner request).
+  #
+  # Needs the resources from ../create-resources.js, which has been run in at22,
+  # at23 and tt02. yt01 has no enduser request rows with userId and partyId.
+  - test_file: delegation-check-not-delegable.js
+    test_scope: resource-delegation-delegable
+    contexts:
+      - environment: at22
+      - environment: at23
+      - environment: tt02
+  - test_file: delegation-check-delegable.js
+    test_scope: resource-delegation-delegable
+    contexts:
+      - environment: at22
+      - environment: at23
+      - environment: tt02
+  - test_file: service-owner-connections-not-delegable.js
+    test_scope: resource-delegation-delegable
+    contexts:
+      - environment: at22
+      - environment: at23
+      - environment: tt02
+  - test_file: enduser-request-not-delegable.js
+    test_scope: resource-delegation-delegable
+    contexts:
+      - environment: at22
+      - environment: at23
+      - environment: tt02
+  - test_file: enduser-request-delegable.js
+    test_scope: resource-delegation-delegable
+    contexts:
+      - environment: at22
+      - environment: at23
+      - environment: tt02
+  - test_file: service-owner-request-not-delegable.js
+    test_scope: resource-delegation-delegable
+    contexts:
+      - environment: at22
+      - environment: at23
+      - environment: tt02
+  - test_file: service-owner-request-delegable.js
+    test_scope: resource-delegation-delegable
+    contexts:
+      - environment: at22
+      - environment: at23
+      - environment: tt02
+
+  # v2 of the enduser request API answered 404 in at23 and tt02 on 2026-11-25, so
+  # the v2 tests run in at22 only. Add an environment once it has v2.
+  - test_file: enduser-request-v2-not-delegable.js
+    test_scope: resource-delegation-delegable
+    contexts:
+      - environment: at22
+  - test_file: enduser-request-v2-delegable.js
+    test_scope: resource-delegation-delegable
+    contexts:
+      - environment: at22

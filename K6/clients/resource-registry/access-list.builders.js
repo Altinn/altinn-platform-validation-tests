@@ -83,6 +83,18 @@ class AccessListResourceConnectionBuilder {
     }
 
     /**
+     * Limits the connection to the given actions. Left out, the list gives
+     * every action the resource's policy grants.
+     *
+     * @param {Array<string>} actionFilters Action ids, e.g. "read".
+     * @returns {AccessListResourceConnectionBuilder} This builder, for chaining.
+     */
+    withActionFilters(actionFilters) {
+        this.model.actionFilters = [...actionFilters];
+        return this;
+    }
+
+    /**
      * @returns {UpsertAccessListResourceConnectionDto} The payload.
      */
     build() {

@@ -50,6 +50,7 @@ export default function (data) {
             new GetResourceRightsQueryBuilder()
                 .WithResource(serviceOwner.resource)
                 .Build(),
+            200,
             getRightsLabel,
         );
 
@@ -63,6 +64,7 @@ export default function (data) {
             ConnectionsCreateResource(
                 connections,
                 delegationRequest(serviceOwner, recipient, rights),
+                200,
                 createDelegationLabel,
             ),
         );

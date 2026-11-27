@@ -217,7 +217,7 @@
  */
 
 /**
- * @typedef {0|1} ResourceAccessListMode
+ * @typedef {"Disabled"|"Enabled"} ResourceAccessListMode
  */
 
 /**
