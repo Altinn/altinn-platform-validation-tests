@@ -79,13 +79,13 @@ func tilretteleggerFromClient(md tenor.Metadata, code string) string {
 }
 
 // fetchTilretteleggere fetches count tilretteleggere with the role and a
-// person with personRole, or a leader when it is empty.
+// person who has all the personRoles, or a leader when there are none.
 //
 // It is done in three steps: clients are scanned until we have enough unique
 // candidates, the candidates' own documents are fetched many at a time, and
 // then they are filtered on the person. More candidates than count are
 // fetched, since some are dropped.
-func fetchTilretteleggere(ctx context.Context, c *tenor.Client, role Role, personRole PersonRole, count int) ([]organizationCandidate, error) {
+func fetchTilretteleggere(ctx context.Context, c *tenor.Client, role Role, personRoles []PersonRole, count int) ([]organizationCandidate, error) {
 	candidateCount := 2*count + 10
 
 	// Many clients share a tilrettelegger, so only clients that give a new
@@ -99,7 +99,7 @@ func fetchTilretteleggere(ctx context.Context, c *tenor.Client, role Role, perso
 		if organizationNumber == "" {
 			return false
 		}
-		client, _ := toOrganizationCandidate(md, PersonRole{})
+		client, _ := toOrganizationCandidate(md, nil)
 		if seen[organizationNumber] {
 			// A later client with a leader replaces one without, so the
 			// client's leader can be used too.
@@ -127,7 +127,7 @@ func fetchTilretteleggere(ctx context.Context, c *tenor.Client, role Role, perso
 		if !ok {
 			continue
 		}
-		k, ok := toOrganizationCandidate(md, personRole)
+		k, ok := toOrganizationCandidate(md, personRoles)
 		if !ok || k.person == "" {
 			continue
 		}

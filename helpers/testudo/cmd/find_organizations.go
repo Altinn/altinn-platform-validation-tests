@@ -31,10 +31,10 @@ type organizationsOptions struct {
 	organizationNumbers []string
 	// role is revisor, regnskapsfoerer or forretningsfoerer.
 	role string
-	// personRole is the role the person has in the organization, e.g.
-	// styreleder. Empty means the leader.
-	personRole string
-	output     outputOptions
+	// personRoles are the roles one person has in the organization, e.g.
+	// styreleder, or daglig-leder and styreleder. Empty means the leader.
+	personRoles []string
+	output      outputOptions
 }
 
 // defaultOrganizationColumns are the CSV columns without --columns.
@@ -44,7 +44,8 @@ var defaultOrganizationColumns = []string{"organizationIdentifier", "displayName
 // CSV. All values are from Register, except type, which is the tilrettelegger
 // role, and personRole. The organization's own columns have the field names in
 // Register (Party). ssn, userId, userPartyId, userPartyUuid and lastName are
-// the person with personRole: the leader, or the role in --person-role. The
+// the person with personRole: the leader, or the person with all the roles in
+// --person-role, whose names personRole has, comma-separated. The
 // hovedenhet columns are the hovedenhet of an underenhet (the role hovedenhet
 // in Register, overordnetEnhet in Enhetsregisteret), and empty for other
 // organizations. The client columns are the client a tilrettelegger was found
@@ -126,9 +127,15 @@ func (o *organizationsOptions) validate(countSet bool) error {
 			return fmt.Errorf("%w: unknown --role %q, use one of %s", errs.Invalid, o.role, parties.RoleNames())
 		}
 	}
-	if o.personRole != "" {
-		if _, err := parties.FindPersonRole(o.personRole); err != nil {
-			return fmt.Errorf("%w: unknown --person-role %q, use one of %s", errs.Invalid, o.personRole, parties.PersonRoleNames())
+	for i, name := range o.personRoles {
+		if name == "" {
+			return fmt.Errorf("%w: --person-role has an empty role in the list", errs.Invalid)
+		}
+		if _, err := parties.FindPersonRole(name); err != nil {
+			return fmt.Errorf("%w: unknown --person-role %q, use one of %s", errs.Invalid, name, parties.PersonRoleNames())
+		}
+		if slices.Contains(o.personRoles[:i], name) {
+			return fmt.Errorf("%w: --person-role has %q more than once", errs.Invalid, name)
 		}
 	}
 
@@ -193,7 +200,9 @@ leder, innehaver for ENK, styreleder for BRL and ESEK without a daglig leder,
 bostyrer for KBO (konkursbo), or bestyrende reder for PRE (partsrederi).
 With --person-role it is a person with that role in Enhetsregisteret, e.g.
 styreleder or styremedlem. Some unit types have no leader, e.g. VPFO, so use
---person-role kontaktperson for them.
+--person-role kontaktperson for them. With several comma-separated roles, e.g.
+--person-role daglig-leder,styreleder, it is one person who has them all, and
+organizations without such a person are left out.
 
 Without flags, AS organizations are fetched. Choose other unit types with
 --unit-type, specific organizations with --orgno, or tilretteleggere (revisor,
@@ -220,6 +229,7 @@ underenheter, or with --subunits, the hovedenheter.`,
   testudo find organizations --unit-type kbo --count 5 --format csv --columns organizationIdentifier,personRole,ssn
   testudo find organizations --unit-type pre --count 5 --format csv --columns organizationIdentifier,personRole,ssn
   testudo find organizations --person-role styremedlem --count 5 --format csv --columns organizationIdentifier,personRole,ssn
+  testudo find organizations --person-role daglig-leder,styreleder --count 5 --format csv --columns organizationIdentifier,personRole,ssn
   testudo find organizations --orgno 313490114 --format csv
   testudo find organizations --role regnskapsfoerer --count 5 --format csv`,
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -270,9 +280,9 @@ underenheter, or with --subunits, the hovedenheter.`,
 		&opts.role, "role", "",
 		"Fetch tilretteleggere: "+parties.RoleNames(),
 	)
-	cmd.Flags().StringVar(
-		&opts.personRole, "person-role", "",
-		"The person has this role in the organization (default: the leader): "+parties.PersonRoleNames(),
+	cmd.Flags().StringSliceVar(
+		&opts.personRoles, "person-role", nil,
+		"Comma-separated roles one person has in the organization (default: the leader): "+parties.PersonRoleNames(),
 	)
 	cmd.Flags().BoolVar(
 		&opts.jsonOutput, "json", false,
@@ -312,12 +322,15 @@ func runOrganizations(ctx context.Context, c *tenor.Client, reg *register.Client
 		MinSubunits:         opts.minSubunits,
 		OrganizationNumbers: opts.organizationNumbers,
 		Role:                opts.role,
-		PersonRole:          opts.personRole,
+		PersonRoles:         opts.personRoles,
 		Env:                 opts.env,
 	}
 	person := "the leader"
-	if opts.personRole != "" {
-		person = opts.personRole
+	switch n := len(opts.personRoles); {
+	case n == 1:
+		person = opts.personRoles[0]
+	case n > 1:
+		person = "one person who is " + strings.Join(opts.personRoles[:n-1], ", ") + " and " + opts.personRoles[n-1]
 	}
 	switch {
 	case len(opts.organizationNumbers) > 0:

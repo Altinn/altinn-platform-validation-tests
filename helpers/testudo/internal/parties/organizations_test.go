@@ -28,7 +28,7 @@ func TestFetchOrganizations(t *testing.T) {
 		}
 		w.Write(tenortest.BrregResponse(t, 2, 1, 1, 3))
 	})
-	v, err := fetchOrganizations(context.Background(), c, OrganizationKQL(nil), PersonRole{}, 5)
+	v, err := fetchOrganizations(context.Background(), c, OrganizationKQL(nil), nil, 5)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -58,7 +58,7 @@ func TestFetchOrganizationsRequiresDagligLeder(t *testing.T) {
 		w.Write(tenortest.BrregResponse(t, 1000, seed, start, start+3))
 	})
 
-	v, err := fetchOrganizations(context.Background(), c, OrganizationKQL(nil), PersonRole{}, 4)
+	v, err := fetchOrganizations(context.Background(), c, OrganizationKQL(nil), nil, 4)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -83,7 +83,7 @@ func TestFetchOrganizationsStopsWhenAllAreSeen(t *testing.T) {
 		// 3 hits in total, only 2 have a daglig leder.
 		w.Write(tenortest.BrregResponse(t, 3, 1, 1, 4))
 	})
-	v, err := fetchOrganizations(context.Background(), c, OrganizationKQL(nil), PersonRole{}, 10)
+	v, err := fetchOrganizations(context.Background(), c, OrganizationKQL(nil), nil, 10)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -264,7 +264,7 @@ func TestFindOrganizationsWithPersonRole(t *testing.T) {
 	})
 	// Organization 3 has no daglig leder, but a styreleder, so all three are
 	// included.
-	v, err := FindOrganizations(context.Background(), c, registertest.Echo(t), OrganizationQuery{Count: 3, PersonRole: "styreleder"}, &bytes.Buffer{})
+	v, err := FindOrganizations(context.Background(), c, registertest.Echo(t), OrganizationQuery{Count: 3, PersonRoles: []string{"styreleder"}}, &bytes.Buffer{})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -273,8 +273,150 @@ func TestFindOrganizationsWithPersonRole(t *testing.T) {
 		t.Fatalf("organizations = %+v", v)
 	}
 
-	if _, err := FindOrganizations(context.Background(), c, registertest.Echo(t), OrganizationQuery{Count: 1, PersonRole: "styrekaptein"}, &bytes.Buffer{}); !errors.Is(err, errs.Invalid) {
+	if _, err := FindOrganizations(context.Background(), c, registertest.Echo(t), OrganizationQuery{Count: 1, PersonRoles: []string{"styrekaptein"}}, &bytes.Buffer{}); !errors.Is(err, errs.Invalid) {
 		t.Errorf("unknown person role: err = %v", err)
+	}
+}
+
+func TestFindOrganizationsWithPersonRoles(t *testing.T) {
+	const (
+		both      = "000000001" // One person is daglig leder and styreleder.
+		different = "000000002" // Two persons.
+		resigned  = "000000003" // The daglig leder has resigned as styreleder.
+		leader    = "11111111111"
+	)
+	role := func(code, personIdentifier, fratraadt string) string {
+		return fmt.Sprintf(`{"type":{"kode":%q},"person":{"foedselsnummer":%q},"fratraadt":%q}`, code, personIdentifier, fratraadt)
+	}
+	group := func(code string, roles ...string) string {
+		return fmt.Sprintf(`{"type":{"kode":%q},"roller":[%s]}`, code, strings.Join(roles, ","))
+	}
+	doc := func(orgNumber string, groups ...string) map[string]any {
+		source := fmt.Sprintf(`{"organisasjonsnummer":%q,"organisasjonsform":{"kode":"AS"},"rollegrupper":[%s]}`, orgNumber, strings.Join(groups, ","))
+		return map[string]any{"tenorMetadata": map[string]any{"id": orgNumber, "kildedata": source}}
+	}
+	all := map[string]map[string]any{
+		both: doc(both, group("DAGL", role("DAGL", leader, "N")),
+			group("STYR", role("MEDL", "22222222222", "N"), role("LEDE", leader, "N"))),
+		different: doc(different, group("DAGL", role("DAGL", "33333333333", "N")),
+			group("STYR", role("LEDE", "44444444444", "N"))),
+		resigned: doc(resigned, group("DAGL", role("DAGL", "55555555555", "N")),
+			group("STYR", role("LEDE", "55555555555", "J"), role("LEDE", "66666666666", "N"))),
+	}
+	c := tenortest.NewClient(t, func(w http.ResponseWriter, r *http.Request) {
+		kql := r.URL.Query().Get("kql")
+		ids := []string{both, different, resigned}
+		if strings.HasPrefix(kql, "organisasjonsnummer:(") {
+			ids = strings.Split(strings.Trim(strings.TrimPrefix(kql, "organisasjonsnummer:"), "()"), " or ")
+		}
+		var docs []map[string]any
+		for _, id := range ids {
+			docs = append(docs, all[id])
+		}
+		tenortest.Respond(w, len(docs), docs...)
+	})
+	find := func(q OrganizationQuery) []Organization {
+		t.Helper()
+		v, err := FindOrganizations(context.Background(), c, registertest.Echo(t), q, &bytes.Buffer{})
+		if err != nil {
+			t.Fatal(err)
+		}
+		return v
+	}
+
+	// Only the organization where one person has both roles, and personRole
+	// has both, in the order they were asked for.
+	v := find(OrganizationQuery{Count: 3, PersonRoles: []string{"daglig-leder", "styreleder"}})
+	if len(v) != 1 || v[0].OrganizationIdentifier != both || v[0].PersonRole != "daglig-leder,styreleder" || v[0].Person.PersonIdentifier != leader {
+		t.Errorf("daglig-leder and styreleder: organizations = %+v", v)
+	}
+	v = find(OrganizationQuery{Count: 3, PersonRoles: []string{"styreleder", "daglig-leder"}})
+	if len(v) != 1 || v[0].OrganizationIdentifier != both || v[0].PersonRole != "styreleder,daglig-leder" {
+		t.Errorf("styreleder and daglig-leder: organizations = %+v", v)
+	}
+
+	// The same with --orgno.
+	v = find(OrganizationQuery{OrganizationNumbers: []string{different, both, resigned}, PersonRoles: []string{"daglig-leder", "styreleder"}})
+	if len(v) != 1 || v[0].OrganizationIdentifier != both || v[0].Person.PersonIdentifier != leader {
+		t.Errorf("with organization numbers: organizations = %+v", v)
+	}
+
+	// One role works as before: all three have an active styreleder.
+	v = find(OrganizationQuery{Count: 3, PersonRoles: []string{"styreleder"}})
+	if len(v) != 3 || v[2].OrganizationIdentifier != resigned || v[2].PersonRole != "styreleder" || v[2].Person.PersonIdentifier != "66666666666" {
+		t.Errorf("styreleder: organizations = %+v", v)
+	}
+}
+
+// The roles are passed on to underenheter, which get the person from the
+// hovedenhet, and to tilretteleggere. Their hovedenheter and tilretteleggere
+// only have a daglig leder.
+func TestFindOrganizationsWithPersonRolesPassedOn(t *testing.T) {
+	for name, q := range map[string]OrganizationQuery{
+		"subunits":        {Count: 3, Subunits: true},
+		"tilretteleggere": {Count: 3, Role: "revisor"},
+	} {
+		c := tenortest.SubunitClient(t)
+		if q.Role != "" {
+			c = tenortest.AuditorClient(t)
+		}
+		q.PersonRoles = []string{"daglig-leder"}
+		v, err := FindOrganizations(context.Background(), c, registertest.Echo(t), q, &bytes.Buffer{})
+		if err != nil || len(v) == 0 || v[0].PersonRole != "daglig-leder" {
+			t.Errorf("%s with daglig-leder: organizations = %+v, err = %v", name, v, err)
+		}
+		q.PersonRoles = []string{"daglig-leder", "styreleder"}
+		if v, err := FindOrganizations(context.Background(), c, registertest.Echo(t), q, &bytes.Buffer{}); err != nil || len(v) != 0 {
+			t.Errorf("%s with daglig-leder and styreleder: organizations = %+v, err = %v", name, v, err)
+		}
+	}
+}
+
+func TestPersonWithRoles(t *testing.T) {
+	role := func(code, personIdentifier, fratraadt string) string {
+		return fmt.Sprintf(`{"type":{"kode":%q},"person":{"foedselsnummer":%q},"fratraadt":%q}`, code, personIdentifier, fratraadt)
+	}
+	group := func(code string, roles ...string) string {
+		return fmt.Sprintf(`{"type":{"kode":%q},"roller":[%s]}`, code, strings.Join(roles, ","))
+	}
+	const a, b, c = "11111111111", "22222222222", "33333333333"
+	tests := []struct {
+		name   string
+		groups []string
+		codes  []string
+		want   string
+	}{
+		{"one role gives the first holder", []string{group("STYR", role("MEDL", a, "N"), role("MEDL", b, "N"))}, []string{"MEDL"}, a},
+		{"one role skips a resigned holder", []string{group("STYR", role("MEDL", a, "J"), role("MEDL", b, "N"))}, []string{"MEDL"}, b},
+		{"daglig leder and styreleder", []string{group("DAGL", role("DAGL", a, "N")), group("STYR", role("MEDL", b, "N"), role("LEDE", a, "N"))},
+			[]string{"DAGL", "LEDE"}, a},
+		{"in any order", []string{group("DAGL", role("DAGL", a, "N")), group("STYR", role("MEDL", b, "N"), role("LEDE", a, "N"))},
+			[]string{"LEDE", "DAGL"}, a},
+		{"no shared person", []string{group("DAGL", role("DAGL", a, "N")), group("STYR", role("LEDE", b, "N"))}, []string{"DAGL", "LEDE"}, ""},
+		{"resigned role does not count", []string{group("DAGL", role("DAGL", a, "N")), group("STYR", role("LEDE", a, "J"), role("LEDE", b, "N"))},
+			[]string{"DAGL", "LEDE"}, ""},
+		// A role with several holders: the second styremedlem is the one who
+		// is also signerer, whichever role comes first.
+		{"second holder of the first role", []string{group("STYR", role("MEDL", a, "N"), role("MEDL", b, "N")), group("SIGN", role("SIGN", b, "N"))},
+			[]string{"MEDL", "SIGN"}, b},
+		{"second holder of the last role", []string{group("SIGN", role("SIGN", b, "N")), group("STYR", role("MEDL", a, "N"), role("MEDL", b, "N"))},
+			[]string{"SIGN", "MEDL"}, b},
+		{"resigned holder of both", []string{group("PROK", role("PROK", a, "J"), role("PROK", b, "N")), group("SIGN", role("SIGN", a, "N"), role("SIGN", b, "N"))},
+			[]string{"PROK", "SIGN"}, b},
+		{"three roles", []string{group("DAGL", role("DAGL", a, "N")), group("STYR", role("LEDE", a, "N")), group("SIGN", role("SIGN", c, "N"), role("SIGN", a, "N"))},
+			[]string{"DAGL", "LEDE", "SIGN"}, a},
+		{"three roles, one missing", []string{group("DAGL", role("DAGL", a, "N")), group("STYR", role("LEDE", a, "N")), group("SIGN", role("SIGN", c, "N"))},
+			[]string{"DAGL", "LEDE", "SIGN"}, ""},
+		{"no codes", []string{group("DAGL", role("DAGL", a, "N"))}, nil, ""},
+	}
+	for _, tt := range tests {
+		var groups []rollegruppe
+		if err := json.Unmarshal([]byte("["+strings.Join(tt.groups, ",")+"]"), &groups); err != nil {
+			t.Fatal(err)
+		}
+		if got := personWithRoles(groups, tt.codes); got != tt.want {
+			t.Errorf("%s: got %q, want %q", tt.name, got, tt.want)
+		}
 	}
 }
 
@@ -400,7 +542,7 @@ func TestLeader(t *testing.T) {
 
 func TestToOrganizationCandidate(t *testing.T) {
 	// Organization number from kildedata when the id is missing.
-	k, ok := toOrganizationCandidate(tenor.Metadata{Kildedata: `{"organisasjonsnummer":"123456789","navn":"X AS"}`}, PersonRole{})
+	k, ok := toOrganizationCandidate(tenor.Metadata{Kildedata: `{"organisasjonsnummer":"123456789","navn":"X AS"}`}, nil)
 	if !ok || k.organizationIdentifier != "123456789" || k.person != "" || k.kildedata == nil {
 		t.Errorf("k = %+v, ok = %v", k, ok)
 	}
@@ -408,15 +550,15 @@ func TestToOrganizationCandidate(t *testing.T) {
 	// gets the name from Access Management.
 	source := `{"organisasjonsnummer":"123456789","rollegrupper":[{"type":{"kode":"STYR"},"roller":[{"type":{"kode":"NEST"},"person":{"foedselsnummer":"77777777777"}}]}]}`
 	nest, _ := FindPersonRole("nestleder")
-	if k, _ := toOrganizationCandidate(tenor.Metadata{Kildedata: source}, nest); k.person != "77777777777" || k.personRole != "nestleder" {
+	if k, _ := toOrganizationCandidate(tenor.Metadata{Kildedata: source}, []PersonRole{nest}); k.person != "77777777777" || k.personRole != "nestleder" {
 		t.Errorf("nestleder: %+v", k)
 	}
 	// Invalid kildedata, but a valid id.
-	k, ok = toOrganizationCandidate(tenor.Metadata{ID: "123456789", Kildedata: "not json"}, PersonRole{})
+	k, ok = toOrganizationCandidate(tenor.Metadata{ID: "123456789", Kildedata: "not json"}, nil)
 	if !ok || k.organizationIdentifier != "123456789" || k.kildedata != nil {
 		t.Errorf("invalid kildedata: %+v", k)
 	}
-	if _, ok := toOrganizationCandidate(tenor.Metadata{ID: "01010112345"}, PersonRole{}); ok {
+	if _, ok := toOrganizationCandidate(tenor.Metadata{ID: "01010112345"}, nil); ok {
 		t.Error("fødselsnummer was accepted as organization number")
 	}
 
@@ -433,7 +575,7 @@ func TestToOrganizationCandidate(t *testing.T) {
 			{"type":{"kode":"KONT"},"roller":[{"type":{"kode":"KONT"},"person":{"foedselsnummer":"77777777777"}}]}]}`, "900000003"},
 		"none": {`{"organisasjonsnummer":"800000001","organisasjonsform":{"kode":"BEDR"}}`, ""},
 	} {
-		k, ok := toOrganizationCandidate(tenor.Metadata{Kildedata: tt.source}, PersonRole{})
+		k, ok := toOrganizationCandidate(tenor.Metadata{Kildedata: tt.source}, nil)
 		if !ok || k.hovedenhet != tt.want || k.person != "" || k.hasPersonOrHovedenhet() != (tt.want != "") {
 			t.Errorf("%s: k = %+v", name, k)
 		}

@@ -174,6 +174,22 @@ func TestServeFindOrganizations(t *testing.T) {
 			t.Errorf("%s: kql = %q", target, kql)
 		}
 	}
+
+	// person-role is a list too. Nobody in the fake Tenor has two roles, so
+	// one person as daglig leder and styreleder is not found, while each of
+	// them is.
+	for _, target := range []string{
+		"/find/organizations?env=at23&count=2&person-role=daglig-leder,styreleder",
+		"/find/organizations?env=at23&count=2&person-role=daglig-leder&person-role=styreleder",
+	} {
+		if rec := get(s, target); rec.Code != http.StatusNotFound {
+			t.Errorf("%s: status = %d, body = %s", target, rec.Code, rec.Body)
+		}
+	}
+	rec = get(s, "/find/organizations?env=at23&count=2&person-role=styreleder&columns=organizationIdentifier,personRole")
+	if rec.Code != http.StatusOK || !strings.Contains(rec.Body.String(), "000000001,styreleder\n") {
+		t.Errorf("styreleder: status = %d, body = %q", rec.Code, rec.Body)
+	}
 }
 
 func TestServeFindOrganizationsErrors(t *testing.T) {
@@ -196,6 +212,8 @@ func TestServeFindOrganizationsErrors(t *testing.T) {
 		{"/find/organizations?env=at23&subunits=maybe", "subunits must be true or false"},
 		{"/find/organizations?env=at23&min-subunits=many", "min-subunits must be a number"},
 		{"/find/organizations?env=at23&person-role=sjef", `unknown --person-role "sjef"`},
+		{"/find/organizations?env=at23&person-role=daglig-leder,sjef", `unknown --person-role "sjef"`},
+		{"/find/organizations?env=at23&person-role=styreleder&person-role=styreleder", `--person-role has "styreleder" more than once`},
 	}
 	for _, tt := range tests {
 		rec := get(s, tt.target)

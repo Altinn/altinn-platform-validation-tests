@@ -96,11 +96,13 @@ type Organization struct {
 	// same level as role and kildedata.
 	register.Party
 	// PersonRole is the role Person has in the organization, with the name in
-	// PersonRoles, e.g. daglig-leder or styreleder.
+	// PersonRoles, e.g. daglig-leder or styreleder. With several chosen roles
+	// they are comma-separated, e.g. daglig-leder,styreleder.
 	PersonRole string `json:"personRole"`
 	// Person is the person with PersonRole in Register. Without a chosen
-	// person role it is the leader (see leader). For underenheter the person
-	// is from the hovedenhet.
+	// person role it is the leader (see leader). With several, it is one
+	// person who has them all. For underenheter the person is from the
+	// hovedenhet.
 	Person register.Party `json:"person"`
 	// Hovedenhet is the hovedenhet in Register when the organization is an
 	// underenhet (BEDR, AAFY or ADOS).
@@ -121,8 +123,9 @@ type Organization struct {
 // looked up in Register yet.
 type organizationCandidate struct {
 	organizationIdentifier string
-	// person is the fødselsnummer of the person with personRole. For
-	// underenheter it is empty until the hovedenhet has been fetched.
+	// person is the fødselsnummer of the person with personRole, which is
+	// comma-separated with several roles. For underenheter it is empty until
+	// the hovedenhet has been fetched.
 	person     string
 	personRole string
 	// hovedenhet is the organization number of the hovedenhet when the
@@ -160,18 +163,18 @@ type OrganizationQuery struct {
 	// Role is the name of a role in Roles. Then tilretteleggere with that
 	// role are fetched.
 	Role string
-	// PersonRole is the name of a role in PersonRoles. Then only
-	// organizations where a person has the role are fetched, and Person is
-	// that person. Empty gives the leader.
-	PersonRole string
+	// PersonRoles are names of roles in PersonRoles. Then only organizations
+	// where one person has all of them are fetched, and Person is that
+	// person. Empty gives the leader.
+	PersonRoles []string
 	// Env is the environment in Register.
 	Env string
 }
 
-// FindOrganizations fetches q.Count organizations with a person with the role
-// q.PersonRole, or with a leader, where both the organization and the person
-// exist in Register for q.Env. For underenheter the person is from the
-// hovedenhet, which must also exist in Register, as must the client a
+// FindOrganizations fetches q.Count organizations with a person who has all
+// the roles in q.PersonRoles, or with a leader, where both the organization
+// and the person exist in Register for q.Env. For underenheter the person is
+// from the hovedenhet, which must also exist in Register, as must the client a
 // tilrettelegger was found through. Others are replaced with new
 // ones from Tenor, in up to maxRegisterRounds rounds, and how many were
 // replaced is written to log. All the parties in a round are looked up in the
@@ -183,10 +186,10 @@ func FindOrganizations(ctx context.Context, c *tenor.Client, reg *register.Clien
 	if q.Count < 1 || q.Count > MaxCount {
 		return nil, fmt.Errorf("%w: count must be between 1 and %d, got %d", errs.Invalid, MaxCount, q.Count)
 	}
-	var personRole PersonRole
-	if q.PersonRole != "" {
+	personRoles := make([]PersonRole, len(q.PersonRoles))
+	for i, name := range q.PersonRoles {
 		var err error
-		if personRole, err = FindPersonRole(q.PersonRole); err != nil {
+		if personRoles[i], err = FindPersonRole(name); err != nil {
 			return nil, err
 		}
 	}
@@ -195,7 +198,7 @@ func FindOrganizations(ctx context.Context, c *tenor.Client, reg *register.Clien
 	organizations := make([]Organization, 0, q.Count)
 	notInRegister := 0
 	for round := 0; round < maxRegisterRounds && len(organizations) < q.Count; round++ {
-		candidates, err := fetchForQuery(ctx, c, q, personRole, q.Count-len(organizations))
+		candidates, err := fetchForQuery(ctx, c, q, personRoles, q.Count-len(organizations))
 		if err != nil {
 			return nil, err
 		}
@@ -282,32 +285,32 @@ func FindOrganizations(ctx context.Context, c *tenor.Client, reg *register.Clien
 
 // fetchForQuery fetches count organizations from Tenor according to q: given
 // organizations, tilretteleggere with the role, or organizations with the
-// unit types. Only organizations with a person with personRole, or with a
-// leader when it is empty, are kept. Nothing has been looked up in Register
-// yet.
-func fetchForQuery(ctx context.Context, c *tenor.Client, q OrganizationQuery, personRole PersonRole, count int) ([]organizationCandidate, error) {
+// unit types. Only organizations with a person who has all the personRoles,
+// or with a leader when there are none, are kept. Nothing has been looked up
+// in Register yet.
+func fetchForQuery(ctx context.Context, c *tenor.Client, q OrganizationQuery, personRoles []PersonRole, count int) ([]organizationCandidate, error) {
 	switch {
 	case len(q.OrganizationNumbers) > 0:
-		candidates, err := fetchGivenOrganizations(ctx, c, q.OrganizationNumbers, personRole)
+		candidates, err := fetchGivenOrganizations(ctx, c, q.OrganizationNumbers, personRoles)
 		if err != nil {
 			return nil, err
 		}
-		return withHovedenheter(ctx, c, candidates, personRole)
+		return withHovedenheter(ctx, c, candidates, personRoles)
 	case q.Role != "":
 		role, err := FindRole(q.Role)
 		if err != nil {
 			return nil, err
 		}
-		return fetchTilretteleggere(ctx, c, role, personRole, count)
+		return fetchTilretteleggere(ctx, c, role, personRoles, count)
 	case q.Subunits:
-		return fetchUnderenheter(ctx, c, q.KQL(), personRole, count)
+		return fetchUnderenheter(ctx, c, q.KQL(), personRoles, count)
 	default:
-		candidates, err := fetchOrganizations(ctx, c, q.KQL(), personRole, count)
+		candidates, err := fetchOrganizations(ctx, c, q.KQL(), personRoles, count)
 		if err != nil {
 			return nil, err
 		}
 		// Does nothing when there are no underenheter among the candidates.
-		return withHovedenheter(ctx, c, candidates, personRole)
+		return withHovedenheter(ctx, c, candidates, personRoles)
 	}
 }
 
@@ -330,9 +333,10 @@ const underenheterPerSearch = 20
 
 // fetchUnderenheter fetches count underenheter (BEDR and AAFY), one per
 // hovedenhet. The hovedenheter match kql, which must require underenheter,
-// and have a person with personRole, or a leader, whom the underenhet gets.
-func fetchUnderenheter(ctx context.Context, c *tenor.Client, kql string, personRole PersonRole, count int) ([]organizationCandidate, error) {
-	hovedenheter, err := fetchOrganizations(ctx, c, kql, personRole, count)
+// and have a person who has all the personRoles, or a leader, whom the
+// underenhet gets.
+func fetchUnderenheter(ctx context.Context, c *tenor.Client, kql string, personRoles []PersonRole, count int) ([]organizationCandidate, error) {
+	hovedenheter, err := fetchOrganizations(ctx, c, kql, personRoles, count)
 	if err != nil {
 		return nil, err
 	}
@@ -377,7 +381,7 @@ func fetchFirstUnderenhet(ctx context.Context, c *tenor.Client, hovedenheter []s
 			if err != nil {
 				continue
 			}
-			u, ok := toOrganizationCandidate(md, PersonRole{})
+			u, ok := toOrganizationCandidate(md, nil)
 			if _, exists := underenheter[u.hovedenhet]; ok && u.hovedenhet != "" && !exists {
 				underenheter[u.hovedenhet] = u
 			}
@@ -387,11 +391,11 @@ func fetchFirstUnderenhet(ctx context.Context, c *tenor.Client, hovedenheter []s
 }
 
 // withHovedenheter fetches the hovedenheter of the underenheter among the
-// candidates, many at a time, and gives the underenheter the person with
-// personRole, or the leader, from the hovedenhet. Underenheter whose
+// candidates, many at a time, and gives the underenheter the person who has
+// all the personRoles, or the leader, from the hovedenhet. Underenheter whose
 // hovedenhet does not exist in Tenor or lacks the person are dropped. Other
 // candidates are unchanged.
-func withHovedenheter(ctx context.Context, c *tenor.Client, candidates []organizationCandidate, personRole PersonRole) ([]organizationCandidate, error) {
+func withHovedenheter(ctx context.Context, c *tenor.Client, candidates []organizationCandidate, personRoles []PersonRole) ([]organizationCandidate, error) {
 	var organizationNumbers []string
 	for _, k := range candidates {
 		if k.hovedenhet != "" && !slices.Contains(organizationNumbers, k.hovedenhet) {
@@ -412,7 +416,7 @@ func withHovedenheter(ctx context.Context, c *tenor.Client, candidates []organiz
 			if !ok {
 				continue
 			}
-			h, ok := toOrganizationCandidate(md, personRole)
+			h, ok := toOrganizationCandidate(md, personRoles)
 			if !ok || h.person == "" {
 				continue
 			}
@@ -489,11 +493,38 @@ func leader(unitType string, groups []rollegruppe) (personIdentifier, code strin
 // code, e.g. DAGL or MEDL. Resigned roles and roles without a fødselsnummer
 // are skipped.
 func personWithRole(groups []rollegruppe, code string) string {
+	return personWithRoles(groups, []string{code})
+}
+
+// personWithRoles returns the fødselsnummer of the first person who has all
+// the role codes, e.g. DAGL and LEDE. A role can have several holders, e.g.
+// MEDL or SIGN, so every holder of the first code is tried, in order.
+// Resigned roles and roles without a fødselsnummer are skipped.
+func personWithRoles(groups []rollegruppe, codes []string) string {
+	if len(codes) == 0 {
+		return ""
+	}
+	// The codes each person has, and the holders of the first code.
+	codesOf := map[string][]string{}
+	var holders []string
 	for _, g := range groups {
 		for _, r := range g.Roller {
-			if r.Type.Kode == code && r.Fratraadt != "J" && personIdentifierRe.MatchString(r.Person.Foedselsnummer) {
-				return r.Person.Foedselsnummer
+			personIdentifier := r.Person.Foedselsnummer
+			if r.Fratraadt == "J" || !personIdentifierRe.MatchString(personIdentifier) {
+				continue
 			}
+			codesOf[personIdentifier] = append(codesOf[personIdentifier], r.Type.Kode)
+			if r.Type.Kode == codes[0] {
+				holders = append(holders, personIdentifier)
+			}
+		}
+	}
+	for _, personIdentifier := range holders {
+		hasAll := !slices.ContainsFunc(codes[1:], func(code string) bool {
+			return !slices.Contains(codesOf[personIdentifier], code)
+		})
+		if hasAll {
+			return personIdentifier
 		}
 	}
 	return ""
@@ -519,14 +550,15 @@ func (k organizationCandidate) hasPersonOrHovedenhet() bool {
 }
 
 // fetchOrganizations fetches count unique candidates from brreg-er-fr that
-// match kql and have a person with personRole, or a leader when it is empty.
-// Underenheter are included when they have a hovedenhet, and must get the
-// person with withHovedenheter.
-func fetchOrganizations(ctx context.Context, c *tenor.Client, kql string, personRole PersonRole, count int) ([]organizationCandidate, error) {
+// match kql and have a person who has all the personRoles, or a leader when
+// there are none. Underenheter are included when they have a hovedenhet, and
+// must get the person with withHovedenheter.
+func fetchOrganizations(ctx context.Context, c *tenor.Client, kql string, personRoles []PersonRole, count int) ([]organizationCandidate, error) {
 	// Not all the roles in PersonRoles have a search field in Tenor (e.g.
-	// prokurist), so the person requirement is checked here.
+	// prokurist), and a search cannot say that one person has several roles,
+	// so the person requirement is checked here.
 	hasPerson := func(md tenor.Metadata) bool {
-		k, ok := toOrganizationCandidate(md, personRole)
+		k, ok := toOrganizationCandidate(md, personRoles)
 		return ok && k.hasPersonOrHovedenhet()
 	}
 	documents, err := c.FetchManyFiltered(ctx, tenor.SourceBrreg, kql, count, hasPerson)
@@ -535,7 +567,7 @@ func fetchOrganizations(ctx context.Context, c *tenor.Client, kql string, person
 	}
 	candidates := make([]organizationCandidate, 0, len(documents))
 	for _, md := range documents {
-		if k, ok := toOrganizationCandidate(md, personRole); ok {
+		if k, ok := toOrganizationCandidate(md, personRoles); ok {
 			candidates = append(candidates, k)
 		}
 	}
@@ -545,7 +577,7 @@ func fetchOrganizations(ctx context.Context, c *tenor.Client, kql string, person
 // fetchGivenOrganizations fetches the organizations with the organization
 // numbers, in the same order. Those that do not exist in Tenor or lack the
 // person are skipped. Underenheter must get the person with withHovedenheter.
-func fetchGivenOrganizations(ctx context.Context, c *tenor.Client, organizationNumbers []string, personRole PersonRole) ([]organizationCandidate, error) {
+func fetchGivenOrganizations(ctx context.Context, c *tenor.Client, organizationNumbers []string, personRoles []PersonRole) ([]organizationCandidate, error) {
 	documents, err := fetchByOrganizationNumber(ctx, c, organizationNumbers)
 	if err != nil {
 		return nil, err
@@ -556,7 +588,7 @@ func fetchGivenOrganizations(ctx context.Context, c *tenor.Client, organizationN
 		if !ok {
 			continue
 		}
-		if k, ok := toOrganizationCandidate(md, personRole); ok && k.hasPersonOrHovedenhet() {
+		if k, ok := toOrganizationCandidate(md, personRoles); ok && k.hasPersonOrHovedenhet() {
 			candidates = append(candidates, k)
 		}
 	}
@@ -564,11 +596,12 @@ func fetchGivenOrganizations(ctx context.Context, c *tenor.Client, organizationN
 }
 
 // toOrganizationCandidate turns a brreg document into a candidate, with the
-// person with personRole, or the leader when it is empty. For underenheter it
-// is the hovedenhet, from the role BEDR, AAFY or ADOS, or from
-// underenhet.hovedenhet if the role is missing. Documents without a valid
-// organization number are skipped.
-func toOrganizationCandidate(md tenor.Metadata, personRole PersonRole) (organizationCandidate, bool) {
+// person who has all the personRoles, or the leader when there are none.
+// personRole is their names, comma-separated. For underenheter it is the
+// hovedenhet, from the role BEDR, AAFY or ADOS, or from underenhet.hovedenhet
+// if the role is missing. Documents without a valid organization number are
+// skipped.
+func toOrganizationCandidate(md tenor.Metadata, personRoles []PersonRole) (organizationCandidate, bool) {
 	var kildedata struct {
 		Organisasjonsnummer string `json:"organisasjonsnummer"`
 		Organisasjonsform   struct {
@@ -596,9 +629,9 @@ func toOrganizationCandidate(md tenor.Metadata, personRole PersonRole) (organiza
 		if k.hovedenhet == "" && organizationNumberRe.MatchString(kildedata.Underenhet.Hovedenhet) {
 			k.hovedenhet = kildedata.Underenhet.Hovedenhet
 		}
-	} else if personRole.Code != "" {
-		k.person = personWithRole(kildedata.Rollegrupper, personRole.Code)
-		k.personRole = personRole.Name
+	} else if len(personRoles) > 0 {
+		k.person = personWithRoles(kildedata.Rollegrupper, personRoleCodes(personRoles))
+		k.personRole = joinPersonRoles(personRoles)
 	} else if personIdentifier, code := leader(kildedata.Organisasjonsform.Kode, kildedata.Rollegrupper); personIdentifier != "" {
 		k.person, k.personRole = personIdentifier, personRoleByCode(code).Name
 	}
